@@ -3,10 +3,18 @@
   "version": "1.0.0",
   "private": true,
   "description": "Institutional Restaurant Discovery & Pre-Booking Platform",
+  "workspaces": [
+    "client/user-portal",
+    "server"
+  ],
   "scripts": {
     "dev": "npm --prefix client/user-portal run dev",
     "dev:client": "npm --prefix client/user-portal run dev",
     "dev:server": "npm --prefix server run dev",
-    "build:client": "npm --prefix client/user-portal run build"
+    "build": "npm --prefix client/user-portal run build",
+    "build:client": "npm --prefix client/user-portal run build",
+    "start": "npm --prefix client/user-portal run preview",
+    "start:server": "node server/src/server.js",
+    "postinstall": "npm --prefix client/user-portal install"
   }
 }
