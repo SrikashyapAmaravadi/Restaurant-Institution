@@ -1,0 +1,3 @@
+packages:
+  - 'client/user-portal'
+  - 'server'

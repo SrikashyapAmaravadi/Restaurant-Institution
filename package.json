@@ -8,13 +8,29 @@
     "server"
   ],
   "scripts": {
-    "dev": "npm --prefix client/user-portal run dev",
+    "dev": "npm --prefix client/user-portal install && npm --prefix client/user-portal run dev",
     "dev:client": "npm --prefix client/user-portal run dev",
     "dev:server": "npm --prefix server run dev",
-    "build": "npm --prefix client/user-portal run build",
+    "build": "npm --prefix client/user-portal install && npm --prefix client/user-portal run build",
     "build:client": "npm --prefix client/user-portal run build",
     "start": "npm --prefix client/user-portal run preview",
     "start:server": "node server/src/server.js",
     "postinstall": "npm --prefix client/user-portal install"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "@vitejs/plugin-react": "^6.1.0",
+    "canvas-confetti": "^1.9.4",
+    "lucide-react": "^1.39.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "react-router-dom": "^7.18.3",
+    "tailwindcss": "^4.3.3",
+    "vite": "^8.2.2"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
+    "oxlint": "^1.79.0"
   }
 }
