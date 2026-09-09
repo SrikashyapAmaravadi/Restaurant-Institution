@@ -86,29 +86,97 @@ function handleOfflineFallback(endpoint, options = {}) {
   // 3. Auth: Login (Password)
   if (endpoint === '/auth/login') {
     const email = (body.email || '').toLowerCase().trim();
-    let role = 'STUDENT';
-    let homePath = '/dashboard';
 
-    if (email.includes('superadmin')) {
-      role = 'SUPER_ADMIN';
-      homePath = '/management/superadmin';
-    } else if (email.includes('admin')) {
-      role = 'RESTAURANT_ADMIN';
-      homePath = '/management/admin';
-    } else if (email.includes('staff')) {
-      role = 'RESTAURANT_STAFF';
-      homePath = '/management/staff';
+    const KNOWN_ACCOUNTS = {
+      'owner@spicegarden.com': {
+        id: 'usr-admin-1',
+        name: 'Vikram Singhania',
+        role: 'RESTAURANT_ADMIN',
+        roleLabel: 'Restaurant Owner & Manager',
+        department: 'The Spice Garden',
+        restaurantId: 1,
+        homePath: '/management/admin'
+      },
+      'staff@spicegarden.com': {
+        id: 'usr-staff-1',
+        name: 'Rajesh Kumar',
+        role: 'RESTAURANT_STAFF',
+        roleLabel: 'Front-Desk Host & Service Desk',
+        department: 'The Spice Garden Front Desk',
+        restaurantId: 1,
+        homePath: '/management/staff'
+      },
+      'superadmin@bennett.edu.in': {
+        id: 'usr-superadmin-1',
+        name: 'Dr. A. K. Sharma',
+        role: 'SUPER_ADMIN',
+        roleLabel: 'Platform Governance & Super Admin',
+        department: 'Office of Dean & Campus Operations',
+        homePath: '/management/superadmin'
+      },
+      'student@bennett.edu.in': {
+        id: 'usr-student-1',
+        name: 'Aarav Sharma',
+        role: 'STUDENT',
+        roleLabel: 'Student / Faculty',
+        department: 'B.Tech CSE - Bennett University',
+        homePath: '/dashboard'
+      },
+      'sahith@bennett.edu.in': {
+        id: 'usr-student-2',
+        name: 'Sahith',
+        role: 'STUDENT',
+        roleLabel: 'Student / Faculty',
+        department: 'Bennett University',
+        homePath: '/dashboard'
+      }
+    };
+
+    let userObj = KNOWN_ACCOUNTS[email];
+    if (!userObj) {
+      let role = 'STUDENT';
+      let homePath = '/dashboard';
+      let roleLabel = 'Student / Faculty';
+      let department = 'Bennett University';
+      let restaurantId = null;
+
+      if (email.includes('superadmin') || email.includes('governance')) {
+        role = 'SUPER_ADMIN';
+        homePath = '/management/superadmin';
+        roleLabel = 'Platform Governance & Super Admin';
+        department = 'Office of Dean & Campus Operations';
+      } else if (email.includes('owner') || email.includes('admin') || email.includes('spicegarden')) {
+        role = 'RESTAURANT_ADMIN';
+        homePath = '/management/admin';
+        roleLabel = 'Restaurant Owner & Manager';
+        department = 'The Spice Garden';
+        restaurantId = 1;
+      } else if (email.includes('staff') || email.includes('host') || email.includes('desk') || email.includes('waiter')) {
+        role = 'RESTAURANT_STAFF';
+        homePath = '/management/staff';
+        roleLabel = 'Front-Desk Host & Service Desk';
+        department = 'The Spice Garden Front Desk';
+        restaurantId = 1;
+      }
+
+      const cleanName = email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+      userObj = {
+        id: `usr-${role.toLowerCase()}-${Date.now()}`,
+        email,
+        name: cleanName,
+        role,
+        roleLabel,
+        department,
+        restaurantId,
+        homePath
+      };
     }
 
-    const cleanName = email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
     const mockUser = {
-      id: 888,
+      ...userObj,
       email,
-      name: cleanName,
-      role,
-      department: 'Bennett University',
-      verified: true,
-      homePath
+      institution: 'Bennett University',
+      verified: true
     };
 
     return {
@@ -158,6 +226,183 @@ function handleOfflineFallback(endpoint, options = {}) {
     return null;
   }
 
+  // 6. Data Endpoints Fallbacks (Offline & Static Hosting Mode)
+  if (endpoint.startsWith('/restaurants')) {
+    return {
+      success: true,
+      data: [
+        {
+          id: 1,
+          name: 'The Spice Garden',
+          cuisine: 'North Indian, Mughlai',
+          rating: 4.8,
+          reviews: 142,
+          priceForTwo: 450,
+          location: 'Shop 14, Sector Alpha Commercial, Greater Noida',
+          distance: '0.8 km from Campus',
+          status: 'OPEN',
+          isOpen: true,
+          pureVeg: false,
+          image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=600&q=80',
+          description: 'Authentic royal curries, butter naans, and rich tandoori grills curated for Bennett University students and faculty.'
+        },
+        {
+          id: 2,
+          name: 'Campus Cafe & Roastery',
+          cuisine: 'Continental, Cafe, Beverages',
+          rating: 4.6,
+          reviews: 98,
+          priceForTwo: 320,
+          location: 'Next to Gate 2, Bennett University Main Road',
+          distance: '0.2 km from Campus',
+          status: 'OPEN',
+          isOpen: true,
+          pureVeg: true,
+          image: 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=600&q=80',
+          description: 'Specialty pour-overs, artisanal pizzas, and quiet booth seating designed for campus study sessions.'
+        },
+        {
+          id: 3,
+          name: 'Green Bowl Organics',
+          cuisine: 'Healthy Bowls, Salads, Smoothies',
+          rating: 4.7,
+          reviews: 64,
+          priceForTwo: 380,
+          location: 'TechZone II Commercial Plaza, Greater Noida',
+          distance: '0.5 km from Campus',
+          status: 'OPEN',
+          isOpen: true,
+          pureVeg: true,
+          image: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=600&q=80',
+          description: 'Wholesome farm-fresh protein bowls, cold pressed juices, and clean eating favorites.'
+        },
+        {
+          id: 4,
+          name: 'Kathi Junction & Shawarma House',
+          cuisine: 'Street Food, Rolls, Fast Food',
+          rating: 4.5,
+          reviews: 120,
+          priceForTwo: 240,
+          location: 'Hostel Outer Ring, Opposite Bennett South Gate',
+          distance: '0.1 km from Campus',
+          status: 'OPEN',
+          isOpen: true,
+          pureVeg: false,
+          image: 'https://images.unsplash.com/photo-1561758033-d89a9ad46330?auto=format&fit=crop&w=600&q=80',
+          description: 'Crispy paratha wraps, sizzling shawarmas, and late-night cravings hub for campus hostelers.'
+        }
+      ]
+    };
+  }
+
+  if (endpoint.startsWith('/offers')) {
+    return {
+      success: true,
+      data: [
+        {
+          id: 'off-1',
+          code: 'BENNETT20',
+          title: 'Flat 20% Off for Verified Students',
+          description: 'Show Bennett Student passkey to redeem 20% discount on total billing across all partner restaurants.',
+          discountPercentage: 20,
+          maxDiscount: 150,
+          minBill: 300,
+          active: true,
+          expiryDate: '2026-12-31'
+        },
+        {
+          id: 'off-2',
+          code: 'FARM15',
+          title: 'Farm-to-Table Seasonal Special',
+          description: '15% instant off on organic bowls and seasonal farm specials.',
+          discountPercentage: 15,
+          maxDiscount: 100,
+          minBill: 250,
+          active: true,
+          expiryDate: '2026-12-31'
+        }
+      ]
+    };
+  }
+
+  if (endpoint.startsWith('/institutions')) {
+    return {
+      success: true,
+      data: [
+        {
+          id: 'inst-1',
+          name: 'Bennett University',
+          domain: '@bennett.edu.in',
+          location: 'Plot 8-11, TechZone II, Greater Noida, UP 201310',
+          activeUsers: 3420,
+          status: 'ACTIVE'
+        }
+      ]
+    };
+  }
+
+  if (endpoint.startsWith('/tables')) {
+    return {
+      success: true,
+      data: [
+        { id: 1, tableNumber: 'T1', capacity: 2, isOccupied: false, currentGuest: null },
+        { id: 2, tableNumber: 'T2', capacity: 4, isOccupied: true, currentGuest: 'Aarav Sharma' },
+        { id: 3, tableNumber: 'T3', capacity: 4, isOccupied: false, currentGuest: null },
+        { id: 4, tableNumber: 'T4', capacity: 6, isOccupied: false, currentGuest: null },
+        { id: 5, tableNumber: 'T5', capacity: 2, isOccupied: false, currentGuest: null },
+        { id: 6, tableNumber: 'T6', capacity: 8, isOccupied: false, currentGuest: null }
+      ]
+    };
+  }
+
+  if (endpoint.startsWith('/notifications')) {
+    return {
+      success: true,
+      data: [
+        {
+          id: 'notif-1',
+          title: 'Dining Privilege Active',
+          message: 'Your verified Bennett University student dining status is active with 20% off privileges.',
+          type: 'SYSTEM',
+          read: false,
+          createdAt: new Date().toISOString()
+        }
+      ]
+    };
+  }
+
+  if (endpoint.startsWith('/superadmin/clearance-queue')) {
+    return {
+      success: true,
+      data: [
+        {
+          id: 'clear-1',
+          email: 'sahith@bennett.edu.in',
+          name: 'Sahith',
+          program: 'B.Tech CSE',
+          rollNumber: 'E22CSEU0482',
+          institution: 'Bennett University',
+          status: 'PENDING',
+          submittedAt: new Date().toISOString()
+        }
+      ]
+    };
+  }
+
+  if (endpoint.startsWith('/superadmin/stats')) {
+    return {
+      success: true,
+      data: {
+        totalUsers: 3420,
+        verifiedStudents: 2940,
+        activeReservations: 18,
+        totalBookings: 840,
+        partnerRestaurants: 4,
+        totalRevenue: 245000
+      }
+    };
+  }
+
   return null;
 }
 
@@ -201,10 +446,8 @@ async function request(endpoint, options = {}) {
   }
 
   if (!response.ok) {
-    if (response.status >= 500) {
-      const fallback = handleOfflineFallback(endpoint, options);
-      if (fallback) return fallback;
-    }
+    const fallback = handleOfflineFallback(endpoint, options);
+    if (fallback) return fallback;
     throw new Error(data?.error || `HTTP ${response.status}: Request failed`);
   }
 
