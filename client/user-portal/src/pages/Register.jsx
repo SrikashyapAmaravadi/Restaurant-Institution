@@ -77,7 +77,8 @@ export default function Register() {
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: 'var(--bg-main)',
-        padding: '40px 20px'
+        padding: 'clamp(20px, 5vw, 40px) clamp(12px, 4vw, 20px)',
+        boxSizing: 'border-box'
       }}
     >
       <div
@@ -85,7 +86,8 @@ export default function Register() {
         style={{
           width: '100%',
           maxWidth: 540,
-          padding: '36px 36px',
+          boxSizing: 'border-box',
+          padding: 'clamp(24px, 5vw, 36px) clamp(16px, 4vw, 32px)',
           border: '1px solid var(--border)',
           borderRadius: 'var(--r-lg)',
           background: 'var(--bg-card)',

@@ -142,7 +142,8 @@ export default function Verify() {
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: 'var(--bg-main)',
-        padding: '40px 20px'
+        padding: 'clamp(20px, 5vw, 40px) clamp(12px, 4vw, 20px)',
+        boxSizing: 'border-box'
       }}
     >
       <div
@@ -150,7 +151,8 @@ export default function Verify() {
         style={{
           width: '100%',
           maxWidth: 520,
-          padding: '36px 36px',
+          boxSizing: 'border-box',
+          padding: 'clamp(24px, 5vw, 36px) clamp(16px, 4vw, 36px)',
           textAlign: 'center',
           border: '1px solid var(--border)',
           borderRadius: 'var(--r-lg)',
@@ -246,7 +248,7 @@ export default function Verify() {
 
         <form onSubmit={handleVerify}>
           {/* 6 Digit Inputs */}
-          <div style={{ display: 'flex', justifyContent: 'center', gap: 10, marginBottom: 20 }}>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 'clamp(4px, 1.8vw, 10px)', marginBottom: 20 }}>
             {otp.map((val, idx) => (
               <input
                 key={idx}
@@ -256,12 +258,14 @@ export default function Verify() {
                 value={val}
                 onChange={e => handleChange(idx, e.target.value)}
                 style={{
-                  width: 48,
-                  height: 56,
+                  flex: 1,
+                  minWidth: 0,
+                  maxWidth: 48,
+                  height: 'clamp(42px, 12vw, 56px)',
                   borderRadius: 'var(--r-sm)',
                   background: 'var(--bg-surface)',
                   border: `2px solid ${val ? '#6FAF3D' : 'var(--border)'}`,
-                  fontSize: '1.4rem',
+                  fontSize: 'clamp(16px, 4.5vw, 22px)',
                   fontWeight: 800,
                   color: 'var(--t1)',
                   textAlign: 'center',

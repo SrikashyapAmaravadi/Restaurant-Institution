@@ -104,6 +104,9 @@ html {
   font-size: 16px;
   scroll-behavior: smooth;
   color-scheme: light;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 body {
@@ -113,7 +116,17 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   line-height: 1.55;
+  width: 100%;
+  max-width: 100%;
   overflow-x: hidden;
+  position: relative;
+}
+
+#root {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  min-height: 100vh;
 }
 
 .font-display {

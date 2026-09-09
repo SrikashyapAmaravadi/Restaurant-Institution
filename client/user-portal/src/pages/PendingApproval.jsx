@@ -36,7 +36,8 @@ export default function PendingApproval() {
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: 'var(--bg-main)',
-        padding: '40px 20px'
+        padding: 'clamp(20px, 5vw, 40px) clamp(12px, 4vw, 20px)',
+        boxSizing: 'border-box'
       }}
     >
       <div
@@ -44,7 +45,8 @@ export default function PendingApproval() {
         style={{
           width: '100%',
           maxWidth: 520,
-          padding: '38px 36px',
+          boxSizing: 'border-box',
+          padding: 'clamp(24px, 5vw, 38px) clamp(16px, 4vw, 36px)',
           textAlign: 'center',
           border: '1px solid var(--border)',
           borderRadius: 'var(--r-lg)',

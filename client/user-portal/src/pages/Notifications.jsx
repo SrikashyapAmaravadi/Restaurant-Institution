@@ -56,7 +56,7 @@ export default function Notifications() {
       {/* Header */}
       <div className="anim-fade-up" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, flexWrap: 'wrap', gap: 14 }}>
         <div>
-          <h2 className="font-display" style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--t1)' }}>
+          <h2 className="font-display" style={{ fontSize: 'clamp(1.4rem, 4.5vw, 1.8rem)', fontWeight: 800, color: 'var(--t1)' }}>
             Notification Center
           </h2>
           <p style={{ fontSize: 13, color: 'var(--t3)' }}>
@@ -73,7 +73,7 @@ export default function Notifications() {
       </div>
 
       {/* Tabs */}
-      <div className="tab-bar anim-fade-up delay-1" style={{ marginBottom: 24 }}>
+      <div className="tab-bar anim-fade-up delay-1 tabs-scroll-x" style={{ marginBottom: 24 }}>
         {TABS.map(t => (
           <button
             key={t}

@@ -64,6 +64,9 @@ export default function Landing() {
         display: 'flex',
         flexDirection: 'column',
         overflowX: 'hidden',
+        width: '100%',
+        maxWidth: '100vw',
+        boxSizing: 'border-box',
         cursor: 'pointer'
       }}
     >
@@ -73,7 +76,8 @@ export default function Landing() {
           width: 100%;
           max-width: 1200px;
           margin: 0 auto;
-          padding: 0 16px;
+          padding: 0 14px;
+          box-sizing: border-box;
         }
         @media (min-width: 640px) {
           .landing-container {
@@ -83,8 +87,10 @@ export default function Landing() {
         .hero-grid {
           display: grid;
           grid-template-columns: 1fr;
-          gap: 32px;
+          gap: 28px;
           align-items: center;
+          width: 100%;
+          min-width: 0;
         }
         @media (min-width: 900px) {
           .hero-grid {
@@ -95,7 +101,9 @@ export default function Landing() {
         .metrics-grid {
           display: grid;
           grid-template-columns: repeat(2, 1fr);
-          gap: 12px;
+          gap: 10px;
+          width: 100%;
+          box-sizing: border-box;
         }
         @media (min-width: 640px) {
           .metrics-grid {
@@ -107,6 +115,7 @@ export default function Landing() {
           display: grid;
           grid-template-columns: 1fr;
           gap: 18px;
+          width: 100%;
         }
         @media (min-width: 640px) {
           .venues-grid {
@@ -124,6 +133,7 @@ export default function Landing() {
           display: grid;
           grid-template-columns: 1fr;
           gap: 16px;
+          width: 100%;
         }
         @media (min-width: 768px) {
           .how-grid {
@@ -136,17 +146,33 @@ export default function Landing() {
           flex-direction: column;
           gap: 10px;
           width: 100%;
+          max-width: 100%;
         }
-        @media (min-width: 520px) {
+        .btn-responsive-group .btn {
+          width: 100%;
+          max-width: 100%;
+          white-space: normal;
+          text-align: center;
+          padding: 12px 16px;
+          box-sizing: border-box;
+        }
+        @media (min-width: 560px) {
           .btn-responsive-group {
             flex-direction: row;
             width: auto;
+          }
+          .btn-responsive-group .btn {
+            width: auto;
+            white-space: nowrap;
+            padding: 13px 22px;
           }
         }
         .touch-action-card {
           transition: transform 0.18s ease, box-shadow 0.18s ease;
           cursor: pointer;
           -webkit-tap-highlight-color: transparent;
+          max-width: 100%;
+          box-sizing: border-box;
         }
         .touch-action-card:hover {
           transform: translateY(-3px);
@@ -169,7 +195,8 @@ export default function Landing() {
           background: 'rgba(255, 255, 255, 0.94)',
           borderBottom: '1px solid var(--border)',
           boxShadow: '0 2px 8px rgba(15, 45, 30, 0.05)',
-          cursor: 'pointer'
+          cursor: 'pointer',
+          width: '100%'
         }}
       >
         <div
@@ -184,7 +211,7 @@ export default function Landing() {
           }}
         >
           {/* Brand */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0, flex: 1 }}>
             <div
               style={{
                 width: 38,
@@ -202,7 +229,7 @@ export default function Landing() {
             >
               <Leaf size={20} style={{ color: '#F1F7EC' }} />
             </div>
-            <div>
+            <div style={{ minWidth: 0, flex: 1 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                 <span className="font-display" style={{ fontSize: '1.25rem', fontWeight: 900, color: 'var(--t1)', letterSpacing: '-0.03em' }}>
                   lora
@@ -223,14 +250,14 @@ export default function Landing() {
                   Natural
                 </span>
               </div>
-              <div style={{ fontSize: 10, color: 'var(--t3)', fontWeight: 600 }}>
+              <div style={{ fontSize: 10, color: 'var(--t3)', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 'min(100%, 200px)' }}>
                 Natural · Pure · Sustainable · Bennett Campus
               </div>
             </div>
           </div>
 
           {/* Right Action */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
             <span
               style={{
                 display: 'none',
@@ -260,7 +287,8 @@ export default function Landing() {
                 display: 'flex',
                 alignItems: 'center',
                 gap: 6,
-                borderRadius: 'var(--r-full)'
+                borderRadius: 'var(--r-full)',
+                flexShrink: 0
               }}
             >
               <span>Sign In</span>
@@ -278,49 +306,54 @@ export default function Landing() {
           padding: '42px 0 52px',
           background: 'radial-gradient(ellipse at 50% 0%, #E7F1E1 0%, #EDF5E9 55%, #F1F7EC 100%)',
           borderBottom: '1px solid var(--border)',
-          cursor: 'pointer'
+          cursor: 'pointer',
+          width: '100%',
+          overflow: 'hidden'
         }}
       >
         <div className="landing-container">
           <div className="hero-grid">
             
             {/* Left Content */}
-            <div className="anim-fade-up">
+            <div className="anim-fade-up" style={{ minWidth: 0 }}>
               <div
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: 6,
-                  padding: '5px 14px',
+                  padding: '5px 12px',
                   borderRadius: 'var(--r-full)',
                   background: '#FFFFFF',
                   border: '1px solid var(--border)',
                   boxShadow: 'var(--shadow-sm)',
-                  marginBottom: 16
+                  marginBottom: 16,
+                  maxWidth: '100%',
+                  boxSizing: 'border-box'
                 }}
               >
-                <Leaf size={14} style={{ color: 'var(--primary)' }} />
-                <span style={{ fontSize: 11, fontWeight: 800, color: 'var(--primary)' }}>
-                  Natural · Pure · Sustainable · Bennett Campus Dining
+                <Leaf size={14} style={{ color: 'var(--primary)', flexShrink: 0 }} />
+                <span style={{ fontSize: 'clamp(9.5px, 2.7vw, 11px)', fontWeight: 800, color: 'var(--primary)', lineHeight: 1.3 }}>
+                  Natural · Pure · Sustainable · Bennett Campus
                 </span>
               </div>
 
               <h1
                 className="font-display"
                 style={{
-                  fontSize: 'clamp(2.1rem, 7vw, 3.4rem)',
+                  fontSize: 'clamp(1.85rem, 6.5vw, 3.2rem)',
                   fontWeight: 800,
                   color: 'var(--t1)',
                   lineHeight: 1.15,
                   letterSpacing: '-0.03em',
-                  marginBottom: 14
+                  marginBottom: 14,
+                  wordBreak: 'break-word'
                 }}
               >
                 From Our Fields<br />
                 <span style={{ color: 'var(--primary)' }}>To Your Table.</span>
               </h1>
 
-              <p style={{ fontSize: 'clamp(0.95rem, 2.5vw, 1.1rem)', color: 'var(--t2)', lineHeight: 1.55, maxWidth: 520, marginBottom: 24 }}>
+              <p style={{ fontSize: 'clamp(0.9rem, 2.8vw, 1.05rem)', color: 'var(--t2)', lineHeight: 1.55, maxWidth: 520, marginBottom: 24, wordBreak: 'break-word' }}>
                 Fresh Food, Directly From Farm To Table. Bennett University's official dining reservation and culinary discovery portal. Pre-book dining tables, claim verified 20% campus student privileges, and check in seamlessly with priority QR passes.
               </p>
 
@@ -331,8 +364,7 @@ export default function Landing() {
                   className="btn btn-primary btn-lg"
                   onClick={handleRedirect}
                   style={{
-                    padding: '14px 26px',
-                    fontSize: 14,
+                    fontSize: 'clamp(12.5px, 3.5vw, 14px)',
                     fontWeight: 800,
                     display: 'flex',
                     alignItems: 'center',
@@ -342,9 +374,9 @@ export default function Landing() {
                     boxShadow: '0 6px 18px var(--primary-glow)'
                   }}
                 >
-                  <Leaf size={17} style={{ color: '#F1F7EC' }} />
-                  <span>Sign In &amp; Explore Farm-To-Table</span>
-                  <ArrowRight size={15} />
+                  <Leaf size={16} style={{ color: '#F1F7EC', flexShrink: 0 }} />
+                  <span>Sign In &amp; Explore</span>
+                  <ArrowRight size={14} style={{ flexShrink: 0 }} />
                 </button>
 
                 <button
@@ -352,17 +384,19 @@ export default function Landing() {
                   className="btn btn-outline btn-lg"
                   onClick={handleRedirect}
                   style={{
-                    padding: '14px 22px',
-                    fontSize: 14,
+                    fontSize: 'clamp(12.5px, 3.5vw, 14px)',
                     fontWeight: 700,
                     borderRadius: 'var(--r-full)',
                     background: '#FFFFFF',
                     color: 'var(--primary)',
+                    display: 'flex',
+                    alignItems: 'center',
                     justifyContent: 'center',
+                    gap: 8,
                     border: '1.5px solid var(--border)'
                   }}
                 >
-                  <QrCode size={16} />
+                  <QrCode size={15} style={{ flexShrink: 0 }} />
                   <span>Access Student Dining Pass</span>
                 </button>
               </div>
@@ -618,7 +652,7 @@ export default function Landing() {
           </div>
 
           {/* Dish circular disc cards */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 18 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 240px), 1fr))', gap: 18 }}>
             {[
               { name: 'Beef Pizza', desc: 'Charcoal thin-crust with pulled farm beef & aged mozzarella', price: '₹420', img: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=400&q=80', veg: false },
               { name: 'Black Burger', desc: 'Brioche activated charcoal bun with grilled patty & fresh slaw', price: '₹280', img: 'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=400&q=80', veg: false },
@@ -786,7 +820,7 @@ export default function Landing() {
             </h2>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 14 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: 14 }}>
             <div className="card touch-action-card" style={{ padding: 18, borderRadius: 'var(--r-md)', background: '#FFFFFF', border: '1px solid var(--border)' }}>
               <div style={{ width: 36, height: 36, borderRadius: 8, background: '#E7F1E1', border: '1px solid var(--border)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 10 }}>
                 <Tag size={18} />
@@ -864,8 +898,9 @@ export default function Landing() {
             className="btn btn-md cursor-pointer"
             onClick={handleRedirect}
             style={{
-              padding: '14px 30px',
-              fontSize: 14,
+              padding: '13px clamp(18px, 5vw, 30px)',
+              fontSize: 'clamp(13px, 3.8vw, 14.5px)',
+              maxWidth: '100%',
               fontWeight: 800,
               borderRadius: 'var(--r-full)',
               background: '#6FAF3D',
