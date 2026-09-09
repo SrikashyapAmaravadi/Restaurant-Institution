@@ -33,6 +33,7 @@ export default function RestaurantAdmin() {
   const {
     restaurants = [],
     reservations = [],
+    staffCheckInGuest,
     addMenuItem,
     updateMenuItem,
     deleteMenuItem
@@ -54,12 +55,13 @@ export default function RestaurantAdmin() {
   const [bookings, setBookings] = useState(
     reservations.map(r => ({
       id: r.id,
-      guest: r.guestName,
-      email: r.guestEmail,
-      time: r.time,
-      date: r.date,
-      guests: r.guests,
-      status: r.status,
+      guest: r.guestName || r.guest || 'Campus Diner',
+      email: r.guestEmail || r.email || 'student@bennett.edu.in',
+      time: r.time || '1:30 PM',
+      date: r.date || 'Today',
+      guests: r.guests || 2,
+      status: r.status || 'CONFIRMED',
+      tableAssigned: r.tableAssigned || 'T-01',
       note: r.specialRequest || 'Table booking'
     }))
   );
@@ -67,12 +69,13 @@ export default function RestaurantAdmin() {
   useEffect(() => {
     setBookings(reservations.map(r => ({
       id: r.id,
-      guest: r.guestName,
-      email: r.guestEmail,
-      time: r.time,
-      date: r.date,
-      guests: r.guests,
-      status: r.status,
+      guest: r.guestName || r.guest || 'Campus Diner',
+      email: r.guestEmail || r.email || 'student@bennett.edu.in',
+      time: r.time || '1:30 PM',
+      date: r.date || 'Today',
+      guests: r.guests || 2,
+      status: r.status || 'CONFIRMED',
+      tableAssigned: r.tableAssigned || 'T-01',
       note: r.specialRequest || 'Table booking'
     })));
   }, [reservations]);
@@ -204,9 +207,22 @@ export default function RestaurantAdmin() {
     shift: 'Lunch (11:00 AM – 4:00 PM)'
   });
 
-  const handleStatusChange = (id, newStatus) => {
-    setBookings(bookings.map(b => b.id === id ? { ...b, status: newStatus } : b));
+  const handleStatusUpdate = async (id, newStatus, tableId) => {
+    if (newStatus === 'SEATED') {
+      if (staffCheckInGuest) {
+        await staffCheckInGuest(id, tableId || 'T-01');
+      }
+    } else {
+      try {
+        await api.bookings.updateStatus(id, newStatus, tableId);
+      } catch (err) {
+        console.warn('Backend updateStatus failed, updated locally:', err);
+      }
+    }
+    setBookings(prev => prev.map(b => b.id === id ? { ...b, status: newStatus, tableAssigned: tableId || b.tableAssigned || 'T-01' } : b));
   };
+
+  const handleStatusChange = handleStatusUpdate;
 
   const toggleAvailability = async (itemId) => {
     const current = menuItems.find(item => item.id === itemId);
@@ -592,19 +608,34 @@ export default function RestaurantAdmin() {
                         </span>
                       </td>
                       <td style={{ padding: '14px', textAlign: 'right' }}>
-                        <div style={{ display: 'inline-flex', gap: 6 }}>
+                        <div style={{ display: 'inline-flex', gap: 6, alignItems: 'center', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
                           {b.status === 'PENDING' && (
                             <button
                               className="btn btn-xs btn-success"
-                              onClick={() => handleStatusChange(b.id, 'CONFIRMED')}
+                              onClick={() => handleStatusUpdate(b.id, 'CONFIRMED')}
                             >
                               <CheckCircle2 size={12} /> Confirm
                             </button>
                           )}
-                          {b.status !== 'CANCELLED' && b.status !== 'COMPLETED' && (
+                          {(b.status === 'CONFIRMED' || b.status === 'PENDING') && (
+                            <button
+                              className="btn btn-xs btn-primary"
+                              style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontWeight: 700 }}
+                              onClick={() => handleStatusUpdate(b.id, 'SEATED', b.tableAssigned || 'T-01')}
+                              title="Seat guest and admit into restaurant"
+                            >
+                              <CheckCircle2 size={12} /> Seat &amp; Enter
+                            </button>
+                          )}
+                          {b.status === 'SEATED' && (
+                            <span className="badge badge-success" style={{ fontSize: 11, padding: '4px 8px' }}>
+                              ● Seated ({b.tableAssigned || 'T-01'})
+                            </span>
+                          )}
+                          {b.status !== 'CANCELLED' && b.status !== 'COMPLETED' && b.status !== 'SEATED' && (
                             <button
                               className="btn btn-xs btn-outline"
-                              onClick={() => handleStatusChange(b.id, 'CANCELLED')}
+                              onClick={() => handleStatusUpdate(b.id, 'CANCELLED')}
                             >
                               <XCircle size={12} /> Cancel
                             </button>

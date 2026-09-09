@@ -9,7 +9,15 @@ export function DiningProvider({ children }) {
 
   const [restaurants, setRestaurants] = useState([]);
   const [verifications, setVerifications] = useState([]);
-  const [reservations, setReservations] = useState([]);
+  const [reservations, setReservations] = useState(() => {
+    try {
+      const saved = localStorage.getItem('dine_bennett_reservations');
+      if (saved) return JSON.parse(saved);
+    } catch {
+      // ignore
+    }
+    return [];
+  });
   const [tables, setTables] = useState([]);
   const [notifications, setNotifications] = useState([]);
   const [offers, setOffers] = useState([]);
@@ -53,20 +61,43 @@ export function DiningProvider({ children }) {
         })));
       }
 
-      // Fetch bookings (role-aware: getMy() for users/students, getAll() for admin/staff)
+      // Fetch bookings (role-aware: getMy() for users/students, getAll() for owner/admin/staff)
       let bookRes = null;
       if (user) {
-        if (user.role === 'ADMIN' || user.role === 'SUPER_ADMIN' || user.role === 'RESTAURANT_STAFF') {
+        if (
+          user.role === 'ADMIN' ||
+          user.role === 'SUPER_ADMIN' ||
+          user.role === 'RESTAURANT_STAFF' ||
+          user.role === 'RESTAURANT_ADMIN'
+        ) {
           bookRes = await api.bookings.getAll().catch(() => null);
         } else {
           bookRes = await api.bookings.getMy().catch(() => null);
         }
       }
       if (bookRes?.success && bookRes.data) {
-        setReservations(bookRes.data.map(b => ({
+        const mapped = bookRes.data.map(b => ({
           ...b,
-          orders: b.orders?.map(o => ({ ...o, qty: o.quantity })) || []
-        })));
+          orders: b.orders?.map(o => ({ ...o, qty: o.quantity || o.qty })) || []
+        }));
+        setReservations(mapped);
+        try {
+          localStorage.setItem('dine_bennett_reservations', JSON.stringify(mapped));
+        } catch {
+          // ignore
+        }
+      } else {
+        try {
+          const cached = localStorage.getItem('dine_bennett_reservations');
+          if (cached) {
+            const parsed = JSON.parse(cached);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              setReservations(parsed);
+            }
+          }
+        } catch {
+          // ignore
+        }
       }
 
       // Fetch clearance queue (if user has SUPER_ADMIN role or as public overview)
@@ -92,14 +123,36 @@ export function DiningProvider({ children }) {
   useEffect(() => {
     refreshAllData();
 
-    // Real-time synchronization heartbeat: refreshes state every 25s when window is visible
+    // Listen for local and cross-tab/window reservation synchronization
+    const handleSync = () => {
+      try {
+        const raw = localStorage.getItem('dine_bennett_reservations');
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setReservations(parsed);
+          }
+        }
+      } catch {
+        // ignore
+      }
+    };
+
+    window.addEventListener('storage', handleSync);
+    window.addEventListener('dining_reservations_updated', handleSync);
+
+    // Real-time synchronization heartbeat: refreshes state every 15s when window is visible
     const interval = setInterval(() => {
       if (document.visibilityState === 'visible') {
         refreshAllData();
       }
-    }, 25000);
+    }, 15000);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('storage', handleSync);
+      window.removeEventListener('dining_reservations_updated', handleSync);
+    };
   }, [user]);
 
   // --- REAL BACKEND ACTIONS ---
@@ -179,9 +232,18 @@ export function DiningProvider({ children }) {
       if (res.success && res.data) {
         const complete = {
           ...res.data,
-          orders: res.data.orders?.map(o => ({ ...o, qty: o.quantity })) || []
+          orders: res.data.orders?.map(o => ({ ...o, qty: o.quantity || o.qty })) || []
         };
-        setReservations(prev => [complete, ...prev]);
+        setReservations(prev => {
+          const next = [complete, ...prev.filter(b => b.id !== complete.id)];
+          try {
+            localStorage.setItem('dine_bennett_reservations', JSON.stringify(next));
+            window.dispatchEvent(new Event('dining_reservations_updated'));
+          } catch {
+            // ignore
+          }
+          return next;
+        });
         return complete;
       }
       throw new Error(res.error || 'Failed to create reservation in database');
@@ -196,7 +258,7 @@ export function DiningProvider({ children }) {
    */
   const staffCheckInGuest = async (bookingId, assignedTableId) => {
     const booking = reservations.find(b => b.id === bookingId);
-    const tableId = assignedTableId || booking?.tableAssigned || 'T-04';
+    const tableId = assignedTableId || booking?.tableAssigned || 'T-01';
 
     try {
       await api.bookings.updateStatus(bookingId, 'SEATED', tableId);
@@ -204,9 +266,18 @@ export function DiningProvider({ children }) {
       console.warn('API check-in failed, updating local state:', err.message);
     }
 
-    setReservations(prev => prev.map(b => 
-      b.id === bookingId ? { ...b, status: 'SEATED', tableAssigned: tableId } : b
-    ));
+    setReservations(prev => {
+      const next = prev.map(b => 
+        b.id === bookingId ? { ...b, status: 'SEATED', tableAssigned: tableId } : b
+      );
+      try {
+        localStorage.setItem('dine_bennett_reservations', JSON.stringify(next));
+        window.dispatchEvent(new Event('dining_reservations_updated'));
+      } catch {
+        // ignore
+      }
+      return next;
+    });
 
     setTables(prev => prev.map(t => 
       t.id === tableId ? { ...t, occupied: true, isOccupied: true, guest: booking?.guestName || 'Seated Guest' } : t
@@ -253,9 +324,18 @@ export function DiningProvider({ children }) {
       if (res.success && res.data) {
         const payment = res.data.payment;
 
-        setReservations(prev => prev.map(b => 
-          b.id === bookingId ? { ...b, status: 'COMPLETED', payment } : b
-        ));
+        setReservations(prev => {
+          const next = prev.map(b => 
+            b.id === bookingId ? { ...b, status: 'COMPLETED', payment } : b
+          );
+          try {
+            localStorage.setItem('dine_bennett_reservations', JSON.stringify(next));
+            window.dispatchEvent(new Event('dining_reservations_updated'));
+          } catch {
+            // ignore
+          }
+          return next;
+        });
 
         const tableId = booking?.tableAssigned;
         if (tableId) {
@@ -403,7 +483,16 @@ export function DiningProvider({ children }) {
     try {
       const res = await api.bookings.cancel(bookingId);
       if (res?.success) {
-        setReservations(prev => prev.map(b => b.id === bookingId ? { ...b, status: 'CANCELLED' } : b));
+        setReservations(prev => {
+          const next = prev.map(b => b.id === bookingId ? { ...b, status: 'CANCELLED' } : b);
+          try {
+            localStorage.setItem('dine_bennett_reservations', JSON.stringify(next));
+            window.dispatchEvent(new Event('dining_reservations_updated'));
+          } catch {
+            // ignore
+          }
+          return next;
+        });
         return res.data;
       }
     } catch (err) {

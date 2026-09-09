@@ -471,6 +471,133 @@ function handleOfflineFallback(endpoint, options = {}) {
     };
   }
 
+  // 7. Bookings Resilient Fallback (Multi-User & Multi-Role Local Sync)
+  if (endpoint.startsWith('/bookings')) {
+    const getStoredBookings = () => {
+      try {
+        const raw = localStorage.getItem('dine_bennett_reservations');
+        if (raw) return JSON.parse(raw);
+      } catch {
+        // ignore
+      }
+      return [
+        {
+          id: 'DB-4821',
+          restaurantId: 1,
+          restaurantName: 'The Spice Garden',
+          guestName: 'Aarav Sharma',
+          guestEmail: 'aarav.sharma@bennett.edu.in',
+          date: new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }),
+          time: '1:30 PM',
+          guests: 2,
+          status: 'CONFIRMED',
+          tableAssigned: 'T-01',
+          specialRequest: 'Window Table · Anniversary',
+          qrCode: 'https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=DB-4821-BENNETT-VERIFIED',
+          orders: [
+            { name: 'Smoked Dal Makhani', price: 180, qty: 1 },
+            { name: 'Garlic Butter Naan', price: 75, qty: 2 }
+          ]
+        },
+        {
+          id: 'DB-4822',
+          restaurantId: 1,
+          restaurantName: 'The Spice Garden',
+          guestName: 'Ananya Verma',
+          guestEmail: 'ananya.verma@bennett.edu.in',
+          date: new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }),
+          time: '2:15 PM',
+          guests: 4,
+          status: 'CONFIRMED',
+          tableAssigned: 'T-02',
+          specialRequest: 'Booth Seating · Team Lunch',
+          qrCode: 'https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=DB-4822-BENNETT-VERIFIED',
+          orders: [
+            { name: 'Butter Chicken Masala', price: 215, qty: 1 },
+            { name: 'Garlic Butter Naan', price: 75, qty: 3 }
+          ]
+        },
+        {
+          id: 'DB-4823',
+          restaurantId: 1,
+          restaurantName: 'The Spice Garden',
+          guestName: 'Rohan Mehta',
+          guestEmail: 'rohan.mehta@bennett.edu.in',
+          date: new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }),
+          time: '3:00 PM',
+          guests: 3,
+          status: 'SEATED',
+          tableAssigned: 'T-04',
+          specialRequest: 'Family Table',
+          qrCode: 'https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=DB-4823-BENNETT-VERIFIED',
+          orders: [
+            { name: 'Awadhi Dum Biryani', price: 360, qty: 2 }
+          ]
+        }
+      ];
+    };
+
+    const saveStoredBookings = (list) => {
+      try {
+        localStorage.setItem('dine_bennett_reservations', JSON.stringify(list));
+        window.dispatchEvent(new Event('dining_reservations_updated'));
+      } catch {
+        // ignore
+      }
+    };
+
+    // POST /bookings
+    if (options.method === 'POST') {
+      const current = getStoredBookings();
+      const randomCode = `DB-${Math.floor(1000 + Math.random() * 9000)}`;
+      const newBooking = {
+        ...body,
+        id: body.id || randomCode,
+        status: body.status || 'CONFIRMED',
+        createdAt: new Date().toISOString(),
+        tableAssigned: body.tableAssigned || 'T-01',
+        orders: (body.orders || []).map(o => ({ ...o, qty: o.quantity || o.qty || 1 })),
+        qrCode: body.qrCode || `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${body.id || randomCode}-BENNETT-VERIFIED`
+      };
+      const updated = [newBooking, ...current.filter(b => b.id !== newBooking.id)];
+      saveStoredBookings(updated);
+      return { success: true, data: newBooking };
+    }
+
+    // PATCH /bookings/:id/status
+    const statusMatch = endpoint.match(/\/bookings\/([^/]+)\/status/);
+    if (statusMatch) {
+      const targetId = statusMatch[1];
+      const current = getStoredBookings();
+      let matched = null;
+      const updated = current.map(b => {
+        if (b.id === targetId) {
+          matched = { ...b, status: body.status || 'SEATED', tableAssigned: body.tableAssigned || b.tableAssigned || 'T-01' };
+          return matched;
+        }
+        return b;
+      });
+      saveStoredBookings(updated);
+      return { success: true, data: matched || { id: targetId, status: body.status } };
+    }
+
+    // PATCH /bookings/:id/cancel
+    const cancelMatch = endpoint.match(/\/bookings\/([^/]+)\/cancel/);
+    if (cancelMatch) {
+      const targetId = cancelMatch[1];
+      const current = getStoredBookings();
+      const updated = current.map(b => b.id === targetId ? { ...b, status: 'CANCELLED' } : b);
+      saveStoredBookings(updated);
+      return { success: true, data: { id: targetId, status: 'CANCELLED' } };
+    }
+
+    // GET /bookings or GET /bookings/my
+    return {
+      success: true,
+      data: getStoredBookings()
+    };
+  }
+
   return null;
 }
 

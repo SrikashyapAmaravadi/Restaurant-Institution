@@ -624,7 +624,7 @@ export default function StaffPortal() {
         reservations={reservations}
         onScanSuccess={(code, matchedReservation) => {
           setSearchCode(code);
-          if (matchedReservation && matchedReservation.status === 'CONFIRMED') {
+          if (matchedReservation) {
             handleCheckIn(matchedReservation.id, matchedReservation.tableAssigned || 'T-01');
           }
         }}
