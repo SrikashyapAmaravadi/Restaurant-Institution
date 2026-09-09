@@ -91,6 +91,10 @@ export default function RestaurantDetail() {
         const res = await api.restaurants.getById(id);
         if (res.success && res.data) {
           setRestaurantData(res.data);
+          const rawReviews = res.data.studentReviews || res.data.reviewsList || (Array.isArray(res.data.reviews) ? res.data.reviews : null);
+          if (Array.isArray(rawReviews) && rawReviews.length > 0) {
+            setReviewsList(rawReviews);
+          }
         }
       } catch (err) {
         console.warn('API getById failed:', err);
@@ -102,6 +106,14 @@ export default function RestaurantDetail() {
 
   const fallback = liveRestaurants.find(r => r.id === Number(id)) || liveRestaurants[0];
   const restaurant = restaurantData || fallback;
+
+  const displayReviewsCount = typeof restaurant?.reviews === 'number'
+    ? restaurant.reviews
+    : (Array.isArray(restaurant?.reviews)
+        ? restaurant.reviews.length
+        : (typeof restaurant?.reviewsCount === 'number'
+            ? restaurant.reviewsCount
+            : (reviewsList.length || 0)));
 
   // Curated Fallback Menu for rich visual experience matching poster showcase
   const CURATED_FALLBACK_MENUS = {
@@ -340,7 +352,7 @@ export default function RestaurantDetail() {
 
               <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 16, fontSize: 13, color: 'var(--t3)' }}>
                 <span style={{ display: 'flex', alignItems: 'center', gap: 4, color: '#F59E0B', fontWeight: 700 }}>
-                  <Star size={15} fill="#F59E0B" /> {restaurant.rating} ({restaurant.reviews} reviews)
+                  <Star size={15} fill="#F59E0B" /> {restaurant.rating} ({displayReviewsCount} reviews)
                 </span>
                 <span>·</span>
                 <span style={{ display: 'flex', alignItems: 'center', gap: 4, color: 'var(--primary-light)', fontWeight: 600 }}>
@@ -738,7 +750,7 @@ export default function RestaurantDetail() {
                     ))}
                   </div>
                   <div style={{ fontSize: 12, color: 'var(--t3)' }}>
-                    {restaurant.reviews || reviewsList.length} verified reviews
+                    {displayReviewsCount} verified reviews
                   </div>
                 </div>
 

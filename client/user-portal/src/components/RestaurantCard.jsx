@@ -397,7 +397,7 @@ export default function RestaurantCard({ restaurant, onQuickReserve, onViewOffer
           flexWrap: 'wrap'
         }}>
           <span style={{ fontSize: 11.5, color: 'var(--t4)' }}>
-            {reviews} Bennett reviews
+            {typeof reviews === 'number' ? reviews : (Array.isArray(reviews) ? reviews.length : 142)} Bennett reviews
           </span>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>

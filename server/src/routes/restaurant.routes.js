@@ -222,8 +222,10 @@ router.get('/:id', async (req, res) => {
         tables: restaurant.tables,
         menuItems: restaurant.menuItems,
         offers: restaurant.offers,
-        reviewsCount: restaurant.reviews,
-        reviews: restaurant.studentReviews
+        reviewsCount: typeof restaurant.reviews === 'number' ? restaurant.reviews : (restaurant.studentReviews?.length || 0),
+        reviews: typeof restaurant.reviews === 'number' ? restaurant.reviews : (restaurant.studentReviews?.length || 0),
+        studentReviews: restaurant.studentReviews || [],
+        reviewsList: restaurant.studentReviews || []
       }
     });
   } catch (err) {

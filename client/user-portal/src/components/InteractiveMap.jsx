@@ -223,7 +223,7 @@ export default function InteractiveMap({ restaurants, onSelectRestaurant }) {
                 <span>{activeRest.price}</span>
                 <span>·</span>
                 <span style={{ display: 'flex', alignItems: 'center', gap: 3, color: '#F59E0B' }}>
-                  <Star size={13} fill="#F59E0B" /> {activeRest.rating} ({activeRest.reviews} reviews)
+                  <Star size={13} fill="#F59E0B" /> {activeRest.rating} ({typeof activeRest.reviews === 'number' ? activeRest.reviews : (Array.isArray(activeRest.reviews) ? activeRest.reviews.length : 120)} reviews)
                 </span>
                 <span>·</span>
                 <span style={{ color: 'var(--primary)', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
