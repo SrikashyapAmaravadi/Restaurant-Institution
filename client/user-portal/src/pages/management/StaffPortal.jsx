@@ -236,30 +236,34 @@ export default function StaffPortal() {
 
       {/* Filter Tabs & Search Bar */}
       <div className="anim-fade-up delay-2" style={{ display: 'flex', flexDirection: 'column', gap: 14, marginBottom: 20 }}>
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        <div className="tabs-scroll-x">
           <button
             className={`btn btn-sm ${activeFilter === 'ALL' ? 'btn-primary' : 'btn-outline'}`}
+            style={{ flexShrink: 0 }}
             onClick={() => setActiveFilter('ALL')}
           >
             All Reservations ({reservations.length})
           </button>
           <button
             className={`btn btn-sm ${activeFilter === 'PENDING_CHECKIN' ? 'btn-primary' : 'btn-outline'}`}
+            style={{ flexShrink: 0 }}
             onClick={() => setActiveFilter('PENDING_CHECKIN')}
           >
             Awaiting Check-In ({pendingCount})
           </button>
           <button
             className={`btn btn-sm ${activeFilter === 'SEATED' ? 'btn-primary' : 'btn-outline'}`}
+            style={{ flexShrink: 0 }}
             onClick={() => setActiveFilter('SEATED')}
           >
             Seated Diners ({seatedCount})
           </button>
           <button
             className={`btn btn-sm ${activeFilter === 'COMPLETED' ? 'btn-primary' : 'btn-outline'}`}
+            style={{ flexShrink: 0 }}
             onClick={() => setActiveFilter('COMPLETED')}
           >
-            Completed &amp; Paid ({completedCount})
+            Completed Sessions ({completedCount})
           </button>
         </div>
 
@@ -324,7 +328,7 @@ export default function StaffPortal() {
                 }}
               >
                 {/* Left: Table badge & Guest info */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 18, flexWrap: 'wrap', minWidth: 0, flex: 1 }}>
                   <div style={{
                     width: 56,
                     height: 56,
@@ -347,9 +351,9 @@ export default function StaffPortal() {
                     <span style={{ fontSize: 9.5, opacity: 0.8 }}>TABLE</span>
                   </div>
 
-                  <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
-                      <span style={{ fontSize: 15, fontWeight: 800, color: '#fff' }}>
+                  <div style={{ minWidth: 0, flex: 1 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4, flexWrap: 'wrap' }}>
+                      <span style={{ fontSize: 15, fontWeight: 800, color: 'var(--t1)' }}>
                         {item.guestName || item.name || 'Priya Sharma'}
                       </span>
                       <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--accent)', letterSpacing: '0.05em' }}>
@@ -397,7 +401,7 @@ export default function StaffPortal() {
                 </div>
 
                 {/* Right: Staff Action Buttons */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div className="mobile-full-btn" style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
                   {/* STAGE 1: Check in guest */}
                   {isConfirmed && (
                     <button

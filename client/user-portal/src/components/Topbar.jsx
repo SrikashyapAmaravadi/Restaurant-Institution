@@ -64,12 +64,12 @@ export default function Topbar({ onOpenMobileDrawer }) {
   return (
     <header className="topbar" style={{ gap: 12, flexWrap: 'wrap' }}>
       {/* Left: Mobile Drawer Button + Location / Title */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 1, minWidth: 200 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 1, minWidth: 0 }}>
         <button
-          className="icon-btn"
-          style={{ display: 'flex' }}
+          className="icon-btn mobile-menu-trigger"
           onClick={onOpenMobileDrawer}
           title="Open Menu"
+          aria-label="Toggle mobile menu"
         >
           <Menu size={18} />
         </button>

@@ -79,7 +79,7 @@ export default function Discover() {
       <div className="anim-fade-up" style={{ marginBottom: 20, display: 'flex', flexDirection: 'column', gap: 14 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
           <div>
-            <h2 className="font-display" style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--t1)' }}>
+            <h2 className="font-display" style={{ fontSize: 'clamp(1.35rem, 4vw, 1.75rem)', fontWeight: 800, color: 'var(--t1)' }}>
               District Radar &amp; Discovery
             </h2>
             <p style={{ fontSize: 13, color: 'var(--t3)' }}>
@@ -234,8 +234,8 @@ export default function Discover() {
             ) : (
               <div style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(310px, 1fr))',
-                gap: 20
+                gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 280px), 1fr))',
+                gap: 'clamp(14px, 2.5vw, 20px)'
               }}>
                 {filtered.map(r => (
                   <RestaurantCard

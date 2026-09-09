@@ -210,7 +210,7 @@ export default function RestaurantDetail() {
           boxShadow: 'var(--shadow-lg)'
         }}
       >
-        <div style={{ position: 'relative', height: 320, width: '100%' }}>
+        <div style={{ position: 'relative', height: 'clamp(240px, 40vw, 360px)', width: '100%' }}>
           <img
             src={restaurant.heroImage || restaurant.image}
             alt={restaurant.name}
@@ -225,14 +225,14 @@ export default function RestaurantDetail() {
           {/* Hero Content Overlay */}
           <div style={{
             position: 'absolute',
-            bottom: 24,
-            left: 28,
-            right: 28,
+            bottom: 'clamp(14px, 3vw, 24px)',
+            left: 'clamp(14px, 3vw, 28px)',
+            right: 'clamp(14px, 3vw, 28px)',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'flex-end',
             flexWrap: 'wrap',
-            gap: 20
+            gap: 16
           }}>
             <div style={{ maxWidth: 640 }}>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 10 }}>
@@ -252,7 +252,7 @@ export default function RestaurantDetail() {
                 ))}
               </div>
 
-              <h2 className="font-display" style={{ fontSize: '2.4rem', fontWeight: 800, color: '#fff', lineHeight: 1.15, marginBottom: 8 }}>
+              <h2 className="font-display" style={{ fontSize: 'clamp(1.5rem, 5vw, 2.4rem)', fontWeight: 800, color: '#fff', lineHeight: 1.15, marginBottom: 8 }}>
                 {restaurant.name}
               </h2>
               <p style={{ fontSize: 14, color: 'var(--t2)', marginBottom: 12 }}>
@@ -277,7 +277,7 @@ export default function RestaurantDetail() {
             </div>
 
             {/* Main Action Button */}
-            <div style={{ flexShrink: 0 }}>
+            <div className="mobile-full-btn" style={{ flexShrink: 0 }}>
               <button
                 className="btn btn-accent btn-lg"
                 onClick={() => setShowBookingModal(true)}
@@ -491,7 +491,7 @@ export default function RestaurantDetail() {
                         <span style={{ fontSize: 12, color: 'var(--t4)' }}>({filteredItems.length} items)</span>
                       </div>
 
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 18 }}>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 280px), 1fr))', gap: 'clamp(12px, 2vw, 18px)' }}>
                         {filteredItems.map(item => (
                           <div
                             key={item.id || item.name}
@@ -556,7 +556,7 @@ export default function RestaurantDetail() {
 
         {/* TAB 2: ACTIVE OFFERS */}
         {activeTab === 'Active Offers' && (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: 20 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 300px), 1fr))', gap: 'clamp(14px, 2.5vw, 20px)' }}>
             {offers.length === 0 ? (
               <div className="card" style={{ padding: 40, textAlign: 'center', gridColumn: '1 / -1', background: 'var(--bg-card)', borderRadius: 'var(--r-lg)', border: '1px solid var(--border)' }}>
                 <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'rgba(217, 119, 6, 0.15)', color: '#F59E0B', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
@@ -784,7 +784,7 @@ export default function RestaurantDetail() {
 
         {/* TAB 4: ABOUT & LOCATION */}
         {activeTab === 'About & Location' && (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }} className="about-grid">
+          <div className="about-grid">
             <div className="card" style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 18 }}>
               <h3 className="font-display" style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--t1)' }}>
                 About the Restaurant

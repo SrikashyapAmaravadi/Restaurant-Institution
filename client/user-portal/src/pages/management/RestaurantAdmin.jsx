@@ -418,14 +418,15 @@ export default function RestaurantAdmin() {
         </div>
 
         {/* Tab Switcher Pills */}
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', width: '100%', borderTop: '1px solid rgba(255,255,255,0.15)', paddingTop: 16 }}>
+        <div className="tabs-scroll-x" style={{ borderTop: '1px solid rgba(255,255,255,0.15)', paddingTop: 16, width: '100%' }}>
           <button
             className={`btn btn-sm ${activeTab === 'Reservations' ? 'btn-primary' : 'btn-outline'}`}
             style={{
               color: activeTab === 'Reservations' ? '#FFFFFF' : '#000000',
               backgroundColor: activeTab === 'Reservations' ? undefined : '#FFFFFF',
               borderColor: activeTab === 'Reservations' ? 'rgba(255,255,255,0.3)' : '#C8DEC3',
-              fontWeight: 700
+              fontWeight: 700,
+              flexShrink: 0
             }}
             onClick={() => setActiveTab('Reservations')}
           >
@@ -437,7 +438,8 @@ export default function RestaurantAdmin() {
               color: activeTab === 'Menu' ? '#FFFFFF' : '#000000',
               backgroundColor: activeTab === 'Menu' ? undefined : '#FFFFFF',
               borderColor: activeTab === 'Menu' ? 'rgba(255,255,255,0.3)' : '#C8DEC3',
-              fontWeight: 700
+              fontWeight: 700,
+              flexShrink: 0
             }}
             onClick={() => setActiveTab('Menu')}
           >
@@ -449,7 +451,8 @@ export default function RestaurantAdmin() {
               color: activeTab === 'Offers' ? '#FFFFFF' : '#000000',
               backgroundColor: activeTab === 'Offers' ? undefined : '#FFFFFF',
               borderColor: activeTab === 'Offers' ? 'rgba(255,255,255,0.3)' : '#C8DEC3',
-              fontWeight: 700
+              fontWeight: 700,
+              flexShrink: 0
             }}
             onClick={() => setActiveTab('Offers')}
           >
@@ -461,7 +464,8 @@ export default function RestaurantAdmin() {
               color: activeTab === 'Staff' ? '#FFFFFF' : '#000000',
               backgroundColor: activeTab === 'Staff' ? undefined : '#FFFFFF',
               borderColor: activeTab === 'Staff' ? 'rgba(255,255,255,0.3)' : '#C8DEC3',
-              fontWeight: 700
+              fontWeight: 700,
+              flexShrink: 0
             }}
             onClick={() => setActiveTab('Staff')}
           >
@@ -473,7 +477,8 @@ export default function RestaurantAdmin() {
               color: activeTab === 'Analytics' ? '#FFFFFF' : '#000000',
               backgroundColor: activeTab === 'Analytics' ? undefined : '#FFFFFF',
               borderColor: activeTab === 'Analytics' ? 'rgba(255,255,255,0.3)' : '#C8DEC3',
-              fontWeight: 700
+              fontWeight: 700,
+              flexShrink: 0
             }}
             onClick={() => setActiveTab('Analytics')}
           >
@@ -483,7 +488,7 @@ export default function RestaurantAdmin() {
       </div>
 
       {/* Overview Cards */}
-      <div className="anim-fade-up delay-1" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16, marginBottom: 28 }}>
+      <div className="grid-responsive-kpi anim-fade-up delay-1">
         <div className="card" style={{ padding: 18, background: 'var(--bg-card)' }}>
           <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--t4)', textTransform: 'uppercase' }}>Active Reservations</div>
           <div className="font-display" style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--primary)', margin: '4px 0' }}>
@@ -532,7 +537,7 @@ export default function RestaurantAdmin() {
             <span className="badge badge-info">{bookings.length} Bookings</span>
           </div>
 
-          <div style={{ overflowX: 'auto' }}>
+          <div className="table-responsive">
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, textAlign: 'left' }}>
               <thead>
                 <tr style={{ borderBottom: '2px solid var(--border)', color: 'var(--t4)', textTransform: 'uppercase', fontSize: 11 }}>
@@ -618,7 +623,7 @@ export default function RestaurantAdmin() {
             </button>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 16 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 280px), 1fr))', gap: 16 }}>
             {menuItems.map(item => {
               const inStock = item.isAvailable !== undefined ? item.isAvailable : item.available !== false;
               return (
@@ -680,7 +685,7 @@ export default function RestaurantAdmin() {
             </button>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 16 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 280px), 1fr))', gap: 16 }}>
             {offersList.map(offer => (
               <div key={offer.id} style={{ padding: 18, borderRadius: 'var(--r-sm)', background: '#FEF3C7', border: '1px solid #FCD34D' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
@@ -734,7 +739,7 @@ export default function RestaurantAdmin() {
             </button>
           </div>
 
-          <div style={{ overflowX: 'auto' }}>
+          <div className="table-responsive">
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, textAlign: 'left' }}>
               <thead>
                 <tr style={{ borderBottom: '2px solid var(--border)', color: 'var(--t4)', textTransform: 'uppercase', fontSize: 11 }}>
@@ -868,7 +873,7 @@ export default function RestaurantAdmin() {
                   />
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: 12 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 140px), 1fr))', gap: 12 }}>
                   <div>
                     <label className="form-label">Category</label>
                     <select
@@ -949,7 +954,7 @@ export default function RestaurantAdmin() {
                   />
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 140px), 1fr))', gap: 12 }}>
                   <div>
                     <label className="form-label">Promo Code *</label>
                     <input
@@ -974,7 +979,7 @@ export default function RestaurantAdmin() {
                   </div>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 140px), 1fr))', gap: 12 }}>
                   <div>
                     <label className="form-label">Min Spend (₹)</label>
                     <input

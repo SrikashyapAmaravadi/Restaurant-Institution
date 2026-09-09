@@ -57,7 +57,7 @@ export default function Bookings() {
     <div className="page-pad">
       {/* Header */}
       <div className="anim-fade-up" style={{ marginBottom: 24 }}>
-        <h2 className="font-display" style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--t1)' }}>
+        <h2 className="font-display" style={{ fontSize: 'clamp(1.4rem, 4.5vw, 1.8rem)', fontWeight: 800, color: 'var(--t1)' }}>
           My Dining Reservations
         </h2>
         <p style={{ fontSize: 13, color: 'var(--t3)' }}>
@@ -66,7 +66,7 @@ export default function Bookings() {
       </div>
 
       {/* Tabs */}
-      <div className="tab-bar anim-fade-up delay-1" style={{ marginBottom: 24 }}>
+      <div className="tab-bar anim-fade-up delay-1 tabs-scroll-x" style={{ marginBottom: 24 }}>
         {TABS.map(tab => (
           <button
             key={tab}
@@ -137,7 +137,7 @@ export default function Bookings() {
                 />
 
                 {/* Details */}
-                <div style={{ flex: 1, minWidth: 240 }}>
+                <div style={{ flex: 1, minWidth: 'min(100%, 200px)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
                     <span style={{ fontSize: 12, fontWeight: 800, color: 'var(--accent)', letterSpacing: '0.05em' }}>
                       {b.id}
@@ -197,7 +197,7 @@ export default function Bookings() {
                 </div>
 
                 {/* Action Buttons */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
+                <div className="mobile-full-btn" style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
                   {isConfirmed && (
                     <>
                       <button

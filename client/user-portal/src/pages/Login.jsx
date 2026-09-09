@@ -313,7 +313,7 @@ export default function Login() {
         <div className="card anim-scale-in" style={{
           width: '100%',
           maxWidth: 460,
-          padding: '32px 28px',
+          padding: 'clamp(22px, 5vw, 32px) clamp(16px, 4vw, 28px)',
           background: '#FFFFFF',
           border: '1px solid var(--border)',
           borderRadius: 'var(--r-lg)',
@@ -530,7 +530,7 @@ export default function Login() {
 
                   <form onSubmit={handleVerifyOtp}>
                     {/* 6 Digit Input Boxes */}
-                    <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, marginBottom: 20 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', gap: 'clamp(4px, 1.5vw, 8px)', marginBottom: 20 }}>
                       {otpDigits.map((digit, index) => (
                         <input
                           key={index}
@@ -542,13 +542,16 @@ export default function Login() {
                           onChange={e => handleDigitChange(index, e.target.value)}
                           onKeyDown={e => handleKeyDown(index, e)}
                           style={{
-                            width: 48,
-                            height: 52,
+                            flex: 1,
+                            minWidth: 0,
+                            maxWidth: 48,
+                            height: 'clamp(42px, 11vw, 52px)',
+                            padding: 0,
                             borderRadius: 'var(--r-sm)',
                             border: digit ? '2px solid var(--primary)' : '1.5px solid var(--border)',
                             background: '#FFFFFF',
                             textAlign: 'center',
-                            fontSize: 20,
+                            fontSize: 'clamp(16px, 4.5vw, 20px)',
                             fontWeight: 800,
                             color: 'var(--t1)',
                             outline: 'none',

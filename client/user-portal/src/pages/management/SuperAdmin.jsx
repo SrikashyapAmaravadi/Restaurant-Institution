@@ -437,14 +437,15 @@ export default function SuperAdmin() {
         </div>
 
         {/* Tab Switcher Pills */}
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', width: '100%', borderTop: '1px solid rgba(255,255,255,0.15)', paddingTop: 16 }}>
+        <div className="tabs-scroll-x" style={{ borderTop: '1px solid rgba(255,255,255,0.15)', paddingTop: 16, width: '100%' }}>
           <button
             className={`btn btn-sm ${activeTab === 'Restaurants' ? 'btn-primary' : 'btn-outline'}`}
             style={{
               color: activeTab === 'Restaurants' ? '#FFFFFF' : '#000000',
               backgroundColor: activeTab === 'Restaurants' ? undefined : '#FFFFFF',
               borderColor: activeTab === 'Restaurants' ? 'rgba(255,255,255,0.3)' : '#C8DEC3',
-              fontWeight: 700
+              fontWeight: 700,
+              flexShrink: 0
             }}
             onClick={() => setActiveTab('Restaurants')}
           >
@@ -456,23 +457,25 @@ export default function SuperAdmin() {
               color: activeTab === 'Users' ? '#FFFFFF' : '#000000',
               backgroundColor: activeTab === 'Users' ? undefined : '#FFFFFF',
               borderColor: activeTab === 'Users' ? 'rgba(255,255,255,0.3)' : '#C8DEC3',
-              fontWeight: 700
+              fontWeight: 700,
+              flexShrink: 0
             }}
             onClick={() => setActiveTab('Users')}
           >
-            <Users size={14} /> User Directory
+            <Users size={14} /> User Directory ({usersList.length})
           </button>
           <button
-            className={`btn btn-sm ${activeTab === 'Clearance' ? 'btn-primary' : 'btn-outline'}`}
+            className={`btn btn-sm ${activeTab === 'Verifications' ? 'btn-primary' : 'btn-outline'}`}
             style={{
-              color: activeTab === 'Clearance' ? '#FFFFFF' : '#000000',
-              backgroundColor: activeTab === 'Clearance' ? undefined : '#FFFFFF',
-              borderColor: activeTab === 'Clearance' ? 'rgba(255,255,255,0.3)' : '#C8DEC3',
-              fontWeight: 700
+              color: activeTab === 'Verifications' ? '#FFFFFF' : '#000000',
+              backgroundColor: activeTab === 'Verifications' ? undefined : '#FFFFFF',
+              borderColor: activeTab === 'Verifications' ? 'rgba(255,255,255,0.3)' : '#C8DEC3',
+              fontWeight: 700,
+              flexShrink: 0
             }}
-            onClick={() => setActiveTab('Clearance')}
+            onClick={() => setActiveTab('Verifications')}
           >
-            <ShieldCheck size={14} /> Clearance Queue ({verifications.length})
+            <ShieldCheck size={14} /> Passkey Gate ({verifications.length})
           </button>
           <button
             className={`btn btn-sm ${activeTab === 'Institutions' ? 'btn-primary' : 'btn-outline'}`}
@@ -480,11 +483,25 @@ export default function SuperAdmin() {
               color: activeTab === 'Institutions' ? '#FFFFFF' : '#000000',
               backgroundColor: activeTab === 'Institutions' ? undefined : '#FFFFFF',
               borderColor: activeTab === 'Institutions' ? 'rgba(255,255,255,0.3)' : '#C8DEC3',
-              fontWeight: 700
+              fontWeight: 700,
+              flexShrink: 0
             }}
             onClick={() => setActiveTab('Institutions')}
           >
             <Globe size={14} /> Institutions ({institutions.length})
+          </button>
+          <button
+            className={`btn btn-sm ${activeTab === 'Bookings' ? 'btn-primary' : 'btn-outline'}`}
+            style={{
+              color: activeTab === 'Bookings' ? '#FFFFFF' : '#000000',
+              backgroundColor: activeTab === 'Bookings' ? undefined : '#FFFFFF',
+              borderColor: activeTab === 'Bookings' ? 'rgba(255,255,255,0.3)' : '#C8DEC3',
+              fontWeight: 700,
+              flexShrink: 0
+            }}
+            onClick={() => setActiveTab('Bookings')}
+          >
+            <CalendarCheck size={14} /> Bookings ({reservations.length})
           </button>
           <button
             className={`btn btn-sm ${activeTab === 'Analytics' ? 'btn-primary' : 'btn-outline'}`}
@@ -492,7 +509,8 @@ export default function SuperAdmin() {
               color: activeTab === 'Analytics' ? '#FFFFFF' : '#000000',
               backgroundColor: activeTab === 'Analytics' ? undefined : '#FFFFFF',
               borderColor: activeTab === 'Analytics' ? 'rgba(255,255,255,0.3)' : '#C8DEC3',
-              fontWeight: 700
+              fontWeight: 700,
+              flexShrink: 0
             }}
             onClick={() => setActiveTab('Analytics')}
           >
@@ -504,7 +522,8 @@ export default function SuperAdmin() {
               color: activeTab === 'Moderation' ? '#FFFFFF' : '#000000',
               backgroundColor: activeTab === 'Moderation' ? undefined : '#FFFFFF',
               borderColor: activeTab === 'Moderation' ? 'rgba(255,255,255,0.3)' : '#C8DEC3',
-              fontWeight: 700
+              fontWeight: 700,
+              flexShrink: 0
             }}
             onClick={() => setActiveTab('Moderation')}
           >
@@ -516,7 +535,8 @@ export default function SuperAdmin() {
               color: activeTab === 'Audit' ? '#FFFFFF' : '#000000',
               backgroundColor: activeTab === 'Audit' ? undefined : '#FFFFFF',
               borderColor: activeTab === 'Audit' ? 'rgba(255,255,255,0.3)' : '#C8DEC3',
-              fontWeight: 700
+              fontWeight: 700,
+              flexShrink: 0
             }}
             onClick={() => setActiveTab('Audit')}
           >
@@ -526,7 +546,7 @@ export default function SuperAdmin() {
       </div>
 
       {/* Quick KPI Overview */}
-      <div className="anim-fade-up delay-1" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16, marginBottom: 28 }}>
+      <div className="grid-responsive-kpi anim-fade-up delay-1">
         <div className="card" style={{ padding: 18, background: 'var(--bg-card)' }}>
           <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--t4)', textTransform: 'uppercase' }}>Partner Restaurants</div>
           <div className="font-display" style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--primary)', margin: '4px 0' }}>
@@ -583,7 +603,7 @@ export default function SuperAdmin() {
             </div>
           )}
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 16 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: 16 }}>
             {restaurantsList.map(r => (
               <div key={r.id} style={{ border: '1px solid var(--border)', borderRadius: 'var(--r-sm)', padding: 16, display: 'flex', gap: 14, alignItems: 'flex-start' }}>
                 <img src={r.image} alt={r.name} style={{ width: 80, height: 80, borderRadius: 'var(--r-xs)', objectFit: 'cover' }} />
@@ -682,7 +702,7 @@ export default function SuperAdmin() {
           </div>
 
           {/* Users Table */}
-          <div style={{ overflowX: 'auto' }}>
+          <div className="table-responsive">
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, textAlign: 'left' }}>
               <thead>
                 <tr style={{ borderBottom: '2px solid var(--border)', color: 'var(--t4)', textTransform: 'uppercase', fontSize: 11 }}>
@@ -967,7 +987,7 @@ export default function SuperAdmin() {
           {/* Recent Bookings Activity */}
           <div style={{ marginTop: 20 }}>
             <h4 style={{ fontSize: 14, fontWeight: 700, color: 'var(--t1)', marginBottom: 12 }}>Recent Table Reservations</h4>
-            <div style={{ overflowX: 'auto' }}>
+            <div className="table-responsive">
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12.5 }}>
                 <thead>
                   <tr style={{ borderBottom: '1px solid var(--border)', color: 'var(--t4)', textAlign: 'left' }}>
@@ -1093,7 +1113,7 @@ export default function SuperAdmin() {
             </button>
           </div>
 
-          <div style={{ overflowX: 'auto' }}>
+          <div className="table-responsive">
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12.5 }}>
               <thead>
                 <tr style={{ borderBottom: '2px solid var(--border)', color: 'var(--t4)', textTransform: 'uppercase', fontSize: 11, textAlign: 'left' }}>
@@ -1166,7 +1186,7 @@ export default function SuperAdmin() {
             </div>
 
             <form onSubmit={handleCreateRestaurant} style={{ padding: '0 24px 24px', display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 240px), 1fr))', gap: 14 }}>
                 <div style={{ gridColumn: 'span 2' }}>
                   <label className="form-label">Restaurant Name *</label>
                   <input
