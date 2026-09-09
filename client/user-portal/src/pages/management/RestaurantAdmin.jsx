@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useDining } from '../../context/DiningContext';
 import api from '../../services/api';
+import CameraScannerModal from '../../components/CameraScannerModal';
 import {
   ChefHat,
   Calendar,
@@ -23,7 +24,8 @@ import {
   DollarSign,
   Loader2,
   Star,
-  RefreshCw
+  RefreshCw,
+  QrCode
 } from 'lucide-react';
 
 export default function RestaurantAdmin() {
@@ -46,6 +48,7 @@ export default function RestaurantAdmin() {
   };
 
   const [activeTab, setActiveTab] = useState('Reservations');
+  const [showScannerModal, setShowScannerModal] = useState(false);
 
   // Bookings list from live reservations
   const [bookings, setBookings] = useState(
@@ -534,7 +537,18 @@ export default function RestaurantAdmin() {
                 Approve, check-in, or manage bookings for {restaurant.name}.
               </p>
             </div>
-            <span className="badge badge-info">{bookings.length} Bookings</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <button
+                type="button"
+                className="btn btn-outline btn-sm"
+                onClick={() => setShowScannerModal(true)}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
+                title="Open camera to scan student digital pass"
+              >
+                <QrCode size={15} /> Scan Digital Pass
+              </button>
+              <span className="badge badge-info">{bookings.length} Bookings</span>
+            </div>
           </div>
 
           <div className="table-responsive">
@@ -1090,6 +1104,18 @@ export default function RestaurantAdmin() {
           </div>
         </div>
       )}
+
+      {/* Camera Digital Pass Scanner Modal */}
+      <CameraScannerModal
+        isOpen={showScannerModal}
+        onClose={() => setShowScannerModal(false)}
+        reservations={reservations}
+        onScanSuccess={(code, matched) => {
+          if (matched) {
+            handleStatusUpdate(matched.id, 'SEATED', matched.tableAssigned || 'T-01');
+          }
+        }}
+      />
     </div>
   );
 }

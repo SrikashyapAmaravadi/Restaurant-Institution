@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useDining } from '../../context/DiningContext';
 import { useAuth } from '../../context/AuthContext';
 import PaymentModal from '../../components/PaymentModal';
+import CameraScannerModal from '../../components/CameraScannerModal';
 import api from '../../services/api';
 import {
   Search,
@@ -38,6 +39,7 @@ export default function StaffPortal() {
   const [searchCode, setSearchCode] = useState('');
   const [activeFilter, setActiveFilter] = useState('ALL'); // 'ALL' | 'PENDING_CHECKIN' | 'SEATED' | 'COMPLETED'
   const [paymentModalBooking, setPaymentModalBooking] = useState(null);
+  const [showScannerModal, setShowScannerModal] = useState(false);
   const [selectedTableForOrder, setSelectedTableForOrder] = useState(null);
   const [liveMenu, setLiveMenu] = useState([]);
 
@@ -280,12 +282,11 @@ export default function StaffPortal() {
           </div>
 
           <button
+            type="button"
             className="btn btn-outline btn-md"
-            onClick={() => {
-              const firstConfirmed = reservations.find(r => r.status === 'CONFIRMED');
-              if (firstConfirmed) setSearchCode(firstConfirmed.id);
-            }}
-            title="Scan student digital pass"
+            onClick={() => setShowScannerModal(true)}
+            title="Open camera to scan student digital pass"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 7 }}
           >
             <QrCode size={16} /> Scan Digital Pass
           </button>
@@ -615,6 +616,19 @@ export default function StaffPortal() {
           }}
         />
       )}
+
+      {/* FEATURE 5: LIVE CAMERA DIGITAL PASS SCANNER MODAL */}
+      <CameraScannerModal
+        isOpen={showScannerModal}
+        onClose={() => setShowScannerModal(false)}
+        reservations={reservations}
+        onScanSuccess={(code, matchedReservation) => {
+          setSearchCode(code);
+          if (matchedReservation && matchedReservation.status === 'CONFIRMED') {
+            handleCheckIn(matchedReservation.id, matchedReservation.tableAssigned || 'T-01');
+          }
+        }}
+      />
     </div>
   );
 }
