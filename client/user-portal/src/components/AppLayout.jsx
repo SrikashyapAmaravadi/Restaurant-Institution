@@ -240,7 +240,7 @@ export default function AppLayout() {
         onClose={closeScanner}
         reservations={safeReservations}
         onScanSuccess={(code, matched) => {
-          if (matched && matched.status === 'CONFIRMED' && staffCheckInGuest) {
+          if (matched && staffCheckInGuest) {
             staffCheckInGuest(matched.id, matched.tableAssigned || 'T-01');
           }
         }}

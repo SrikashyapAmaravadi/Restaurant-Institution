@@ -5,6 +5,42 @@ export default function DigitalPassModal({ booking, onClose }) {
   const { openScanner } = useDining() || {};
   if (!booking) return null;
 
+  const [downloading, setDownloading] = useState(false);
+
+  const handleSavePass = async () => {
+    setDownloading(true);
+    try {
+      const qrUrl = booking.qrCode || `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${booking.id}-BENNETT-VERIFIED`;
+      const res = await fetch(qrUrl);
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Bennett-Dining-Pass-${booking.id}.png`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    } catch {
+      const qrUrl = booking.qrCode || `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${booking.id}-BENNETT-VERIFIED`;
+      window.open(qrUrl, '_blank');
+    } finally {
+      setDownloading(false);
+    }
+  };
+
+  const handleDirections = () => {
+    const query = encodeURIComponent(`${booking.restaurantName || 'The Spice Garden'}, Bennett University, Greater Noida`);
+    window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, '_blank');
+  };
+
+  const handleScanPass = () => {
+    onClose();
+    if (openScanner) {
+      openScanner();
+    }
+  };
+
   return (
     <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
       <div className="modal-card anim-scale-in" style={{ maxWidth: 440, background: '#FFFFFF', border: '1px solid var(--border)', boxShadow: 'var(--shadow-xl)' }}>
@@ -92,15 +128,18 @@ export default function DigitalPassModal({ booking, onClose }) {
             <button
               className="btn btn-outline btn-md"
               style={{ flex: 1, background: '#FFFFFF', color: '#000000', fontWeight: 700 }}
-              onClick={() => alert('Booking Pass saved to device downloads!')}
+              onClick={handleSavePass}
+              disabled={downloading}
             >
               <Download size={14} style={{ color: '#000000' }} />
-              <span style={{ color: '#000000', fontWeight: 700 }}>Save Pass</span>
+              <span style={{ color: '#000000', fontWeight: 700 }}>
+                {downloading ? 'Saving...' : 'Save Pass'}
+              </span>
             </button>
             <button
               className="btn btn-primary btn-md"
               style={{ flex: 1 }}
-              onClick={() => alert(`Directions opened: Campus to ${booking.restaurantName} (0.8 km)`)}
+              onClick={handleDirections}
             >
               <MapPin size={14} /> Directions
             </button>
@@ -120,10 +159,7 @@ export default function DigitalPassModal({ booking, onClose }) {
               background: '#FFFFFF',
               border: '1.5px solid var(--border)'
             }}
-            onClick={() => {
-              onClose();
-              if (openScanner) openScanner();
-            }}
+            onClick={handleScanPass}
             title="Open camera to scan this digital pass"
           >
             <Camera size={14} style={{ color: '#000000' }} />
