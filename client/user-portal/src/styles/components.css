@@ -1690,3 +1690,38 @@ button.btn-light:hover svg {
 .text-truncate { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 .flex-center   { display: flex; align-items: center; justify-content: center; }
 
+/* ── Interactive Hover & UX Utility Classes ────────────────────────────────── */
+.hover-lift {
+  transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.24s ease, border-color 0.24s ease;
+}
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 28px rgba(15, 45, 30, 0.12);
+  border-color: rgba(111, 175, 61, 0.5) !important;
+}
+
+.stat-tile-interactive {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, border-color 0.2s ease;
+  cursor: pointer;
+}
+.stat-tile-interactive:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 22px rgba(15, 45, 30, 0.11);
+  border-color: var(--primary) !important;
+}
+
+.table-row-interactive {
+  transition: background-color 0.15s ease;
+}
+.table-row-interactive:hover {
+  background-color: rgba(111, 175, 61, 0.07) !important;
+}
+
+.tab-pill-interactive {
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.tab-pill-interactive:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
