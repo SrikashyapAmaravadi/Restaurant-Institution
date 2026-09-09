@@ -228,24 +228,84 @@ function handleOfflineFallback(endpoint, options = {}) {
 
   // 6. Data Endpoints Fallbacks (Offline & Static Hosting Mode)
   if (endpoint.startsWith('/restaurants')) {
-    return {
-      success: true,
-      data: [
+    const singleMatch = endpoint.match(/\/restaurants\/(\d+)/);
+    const spiceGardenMenu = {
+      'Chef Specialties': [
         {
-          id: 1,
-          name: 'The Spice Garden',
-          cuisine: 'North Indian, Mughlai',
-          rating: 4.8,
-          reviews: 142,
-          priceForTwo: 450,
-          location: 'Shop 14, Sector Alpha Commercial, Greater Noida',
-          distance: '0.8 km from Campus',
-          status: 'OPEN',
-          isOpen: true,
-          pureVeg: false,
-          image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=600&q=80',
-          description: 'Authentic royal curries, butter naans, and rich tandoori grills curated for Bennett University students and faculty.'
+          id: 'sg-1',
+          name: 'Smoked Dal Makhani',
+          desc: 'House specialty prepared fresh daily at The Spice Garden. Verified organic black lentils cooked overnight with cultured butter.',
+          price: 180,
+          veg: true,
+          badge: 'House Specialty',
+          image: 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?auto=format&fit=crop&w=600&q=80'
         },
+        {
+          id: 'sg-2',
+          name: 'Butter Chicken Masala',
+          desc: 'House specialty prepared fresh daily at The Spice Garden. Verified tandoori chicken simmered in rich satin tomato gravy.',
+          price: 215,
+          veg: false,
+          badge: 'Must Try',
+          image: 'https://images.unsplash.com/photo-1588166524941-3bf61a9c41db?auto=format&fit=crop&w=600&q=80'
+        },
+        {
+          id: 'sg-3',
+          name: 'Garlic Butter Naan',
+          desc: 'House specialty prepared fresh daily at The Spice Garden. Verified crispy leavened bread brushed with farm butter and minced garlic.',
+          price: 75,
+          veg: true,
+          badge: 'Popular',
+          image: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=600&q=80'
+        },
+        {
+          id: 'sg-4',
+          name: 'Paneer Tikka Angara',
+          desc: 'House specialty prepared fresh daily at The Spice Garden. Charcoal-smoked cottage cheese cubes marinated in royal Kashmiri chili rub.',
+          price: 280,
+          veg: true,
+          badge: 'Signature',
+          image: 'https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?auto=format&fit=crop&w=600&q=80'
+        },
+        {
+          id: 'sg-5',
+          name: 'Murgh Malai Tikka',
+          desc: 'House specialty prepared fresh daily at The Spice Garden. Cream-marinated tender chicken kebabs finished in clay tandoor.',
+          price: 340,
+          veg: false,
+          badge: 'Chef Special',
+          image: 'https://images.unsplash.com/photo-1599488615731-7e5c2823ff28?auto=format&fit=crop&w=600&q=80'
+        },
+        {
+          id: 'sg-6',
+          name: 'Awadhi Dum Biryani',
+          desc: 'House specialty prepared fresh daily at The Spice Garden. Fragrant aged basmati rice layered with saffron chicken and kewra essence.',
+          price: 360,
+          veg: false,
+          badge: 'Bestseller',
+          image: 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format&fit=crop&w=600&q=80'
+        }
+      ]
+    };
+
+    const allRest = [
+      {
+        id: 1,
+        name: 'The Spice Garden',
+        cuisine: 'North Indian, Mughlai',
+        rating: 4.8,
+        reviews: 142,
+        priceForTwo: 450,
+        location: 'Shop 14, Sector Alpha Commercial, Greater Noida',
+        distance: '0.8 km from Campus',
+        status: 'OPEN',
+        isOpen: true,
+        pureVeg: false,
+        image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=600&q=80',
+        description: 'Authentic royal curries, butter naans, and rich tandoori grills curated for Bennett University students and faculty.',
+        menuByCategory: spiceGardenMenu,
+        menuItems: spiceGardenMenu['Chef Specialties']
+      },
         {
           id: 2,
           name: 'Campus Cafe & Roastery',
@@ -289,9 +349,17 @@ function handleOfflineFallback(endpoint, options = {}) {
           isOpen: true,
           pureVeg: false,
           image: 'https://images.unsplash.com/photo-1561758033-d89a9ad46330?auto=format&fit=crop&w=600&q=80',
-          description: 'Crispy paratha wraps, sizzling shawarmas, and late-night cravings hub for campus hostelers.'
         }
-      ]
+      ];
+
+    if (singleMatch) {
+      const found = allRest.find(r => r.id === Number(singleMatch[1])) || allRest[0];
+      return { success: true, data: found };
+    }
+
+    return {
+      success: true,
+      data: allRest
     };
   }
 
