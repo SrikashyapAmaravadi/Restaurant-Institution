@@ -110,14 +110,27 @@ app.use((err, req, res, next) => {
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`\n======================================================`);
-  console.log(`[START] Dine@Bennett REST API Server running on port ${PORT}`);
-  console.log(`[URL] http://localhost:${PORT}`);
-  console.log(`[RBAC] Active & Enforced Server-Side`);
-  console.log(`[DATABASE] PostgreSQL (Supabase & Prisma ORM)`);
-  console.log(`======================================================\n`);
+import { fileURLToPath } from 'url';
+import path from 'path';
 
-  // Start background reminder scheduler
-  startReminderScheduler(30);
-});
+// Start server when run directly (local / container), not when imported by Vercel serverless
+const isDirectRun = Boolean(
+  process.argv[1] &&
+  path.resolve(process.argv[1]) === path.resolve(fileURLToPath(import.meta.url))
+);
+
+if (isDirectRun && !process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`\n======================================================`);
+    console.log(`[START] Dine@Bennett REST API Server running on port ${PORT}`);
+    console.log(`[URL] http://localhost:${PORT}`);
+    console.log(`[RBAC] Active & Enforced Server-Side`);
+    console.log(`[DATABASE] PostgreSQL (Supabase & Prisma ORM)`);
+    console.log(`======================================================\n`);
+
+    // Start background reminder scheduler
+    startReminderScheduler(30);
+  });
+}
+
+export default app;
