@@ -679,23 +679,123 @@ body {
   background: linear-gradient(135deg, #84C853 0%, #6FAF3D 100%);
 }
 
-.btn-outline {
-  background: #FFFFFF;
-  border: 1.5px solid var(--border);
-  color: #000000;
-  font-weight: 700;
+/* ── Universal White Background Buttons: Always Black Text & Black Icons ── */
+.btn-outline,
+.btn-white,
+.btn-light,
+button.btn-outline,
+button.btn-white,
+button.btn-light,
+button[style*="background: #FFFFFF"],
+button[style*="background: #ffffff"],
+button[style*="background: #fff"],
+button[style*="background: white"],
+button[style*="background:#FFFFFF"],
+button[style*="background:#ffffff"],
+button[style*="background:#fff"],
+button[style*="background:white"],
+.btn[style*="background: #FFFFFF"],
+.btn[style*="background: #ffffff"],
+.btn[style*="background: #fff"],
+.btn[style*="background: white"],
+.btn[style*="background:#FFFFFF"],
+.btn[style*="background:#ffffff"],
+.btn[style*="background:#fff"],
+.btn[style*="background:white"] {
+  background-color: #FFFFFF !important;
+  color: #000000 !important;
+  font-weight: 700 !important;
 }
 
-.btn-outline svg {
-  color: #000000;
+.btn-outline *,
+.btn-white *,
+.btn-light *,
+button.btn-outline *,
+button.btn-white *,
+button.btn-light *,
+button[style*="background: #FFFFFF"] *,
+button[style*="background: #ffffff"] *,
+button[style*="background: #fff"] *,
+button[style*="background: white"] *,
+button[style*="background:#FFFFFF"] *,
+button[style*="background:#ffffff"] *,
+button[style*="background:#fff"] *,
+button[style*="background:white"] *,
+.btn[style*="background: #FFFFFF"] *,
+.btn[style*="background: #ffffff"] *,
+.btn[style*="background: #fff"] *,
+.btn[style*="background: white"] *,
+.btn[style*="background:#FFFFFF"] *,
+.btn[style*="background:#ffffff"] *,
+.btn[style*="background:#fff"] *,
+.btn[style*="background:white"] * {
+  color: #000000 !important;
 }
 
-.btn-outline:hover {
-  background: #F8FAF7;
-  border-color: var(--primary);
-  color: #000000;
+.btn-outline svg,
+.btn-white svg,
+.btn-light svg,
+button.btn-outline svg,
+button.btn-white svg,
+button.btn-light svg,
+button[style*="background: #FFFFFF"] svg,
+button[style*="background: #ffffff"] svg,
+button[style*="background: #fff"] svg,
+button[style*="background: white"] svg,
+button[style*="background:#FFFFFF"] svg,
+button[style*="background:#ffffff"] svg,
+button[style*="background:#fff"] svg,
+button[style*="background:white"] svg,
+.btn[style*="background: #FFFFFF"] svg,
+.btn[style*="background: #ffffff"] svg,
+.btn[style*="background: #fff"] svg,
+.btn[style*="background: white"] svg,
+.btn[style*="background:#FFFFFF"] svg,
+.btn[style*="background:#ffffff"] svg,
+.btn[style*="background:#fff"] svg,
+.btn[style*="background:white"] svg {
+  color: #000000 !important;
+  stroke: #000000 !important;
+}
+
+.btn-outline:hover,
+.btn-white:hover,
+.btn-light:hover,
+button.btn-outline:hover,
+button.btn-white:hover,
+button.btn-light:hover,
+button[style*="background: #FFFFFF"]:hover,
+button[style*="background: #ffffff"]:hover,
+button[style*="background: #fff"]:hover,
+button[style*="background: white"]:hover,
+.btn[style*="background: #FFFFFF"]:hover,
+.btn[style*="background: #ffffff"]:hover,
+.btn[style*="background: #fff"]:hover,
+.btn[style*="background: white"]:hover {
+  background-color: #F4F6F3 !important;
+  color: #000000 !important;
+  border-color: #000000 !important;
   transform: translateY(-1px);
-  box-shadow: 0 3px 10px rgba(47, 94, 49, 0.12);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
+}
+
+.btn-outline:hover *,
+.btn-white:hover *,
+.btn-light:hover *,
+button.btn-outline:hover *,
+button.btn-white:hover *,
+button.btn-light:hover * {
+  color: #000000 !important;
+}
+
+.btn-outline:hover svg,
+.btn-white:hover svg,
+.btn-light:hover svg,
+button.btn-outline:hover svg,
+button.btn-white:hover svg,
+button.btn-light:hover svg {
+  color: #000000 !important;
+  stroke: #000000 !important;
 }
 
 .btn-ghost {

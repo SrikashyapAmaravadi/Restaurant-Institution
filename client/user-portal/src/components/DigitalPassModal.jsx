@@ -91,10 +91,11 @@ export default function DigitalPassModal({ booking, onClose }) {
           <div style={{ display: 'flex', gap: 10, marginBottom: 10 }}>
             <button
               className="btn btn-outline btn-md"
-              style={{ flex: 1 }}
+              style={{ flex: 1, background: '#FFFFFF', color: '#000000', fontWeight: 700 }}
               onClick={() => alert('Booking Pass saved to device downloads!')}
             >
-              <Download size={14} /> Save Pass
+              <Download size={14} style={{ color: '#000000' }} />
+              <span style={{ color: '#000000', fontWeight: 700 }}>Save Pass</span>
             </button>
             <button
               className="btn btn-primary btn-md"
@@ -114,9 +115,10 @@ export default function DigitalPassModal({ booking, onClose }) {
               alignItems: 'center',
               justifyContent: 'center',
               gap: 6,
-              color: 'var(--primary)',
-              borderColor: 'var(--primary)',
-              background: 'rgba(111, 175, 61, 0.08)'
+              color: '#000000',
+              fontWeight: 700,
+              background: '#FFFFFF',
+              border: '1.5px solid var(--border)'
             }}
             onClick={() => {
               onClose();
@@ -124,7 +126,8 @@ export default function DigitalPassModal({ booking, onClose }) {
             }}
             title="Open camera to scan this digital pass"
           >
-            <Camera size={14} /> Scan Digital Pass with Camera
+            <Camera size={14} style={{ color: '#000000' }} />
+            <span style={{ color: '#000000', fontWeight: 700 }}>Scan Digital Pass with Camera</span>
           </button>
         </div>
       </div>
