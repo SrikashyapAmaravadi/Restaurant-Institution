@@ -1,0 +1,8 @@
+/* Card gradient backgrounds */
+.bg-sage  { background: linear-gradient(140deg, #5B7B6F 0%, #2C4A40 100%); }
+.bg-amber { background: linear-gradient(140deg, #C8906A 0%, #8A5A30 100%); }
+.bg-slate { background: linear-gradient(140deg, #6888A8 0%, #3A5878 100%); }
+.bg-mauve { background: linear-gradient(140deg, #8878A8 0%, #584878 100%); }
+.bg-dusty { background: linear-gradient(140deg, #A89870 0%, #786840 100%); }
+.bg-green { background: linear-gradient(140deg, #6A9E78 0%, #3A6E48 100%); }
+.bg-rose  { background: linear-gradient(140deg, #A87878 0%, #784848 100%); }

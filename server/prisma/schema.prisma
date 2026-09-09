@@ -1,0 +1,235 @@
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id            String   @id @default(uuid())
+  email         String   @unique
+  passwordHash  String
+  name          String
+  role          String   @default("STUDENT") // STUDENT | RESTAURANT_STAFF | RESTAURANT_ADMIN | SUPER_ADMIN
+  roleLabel     String?
+  department    String?
+  rollNumber    String?
+  institution   String?  @default("Bennett University")
+  avatar        String?
+  verified      Boolean  @default(false)
+  homePath      String?  @default("/dashboard")
+  restaurantId  Int?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  bookings      Booking[]
+  notifications Notification[]
+  verifications VerificationRequest[]
+  reviews       Review[]
+}
+
+model Institution {
+  id                 String   @id @default(uuid())
+  name               String
+  domain             String   @unique
+  location           String
+  activeUsers        Int      @default(0)
+  partnerRestaurants Int      @default(0)
+  status             String   @default("ACTIVE") // ACTIVE | PILOT | INACTIVE
+  isPrimary          Boolean  @default(false)
+  createdAt          DateTime @default(now())
+}
+
+model VerificationRequest {
+  id               String   @id @default(uuid())
+  userId           String?
+  name             String
+  email            String
+  role             String
+  idProof          String
+  submitted        String   @default("Just now")
+  status           String   @default("PENDING") // PENDING | CODE_SENT | VERIFIED
+  verificationCode String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  user             User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Restaurant {
+  id                Int               @id @default(autoincrement())
+  name              String
+  tagline           String?
+  cuisine           String
+  price             String            @default("₹₹")
+  rating            Float             @default(4.5)
+  reviews           Int               @default(0)
+  distance          Float             @default(1.0)
+  lat               Float?
+  lng               Float?
+  isOpen            Boolean           @default(true)
+  hasOffer          Boolean           @default(false)
+  offerLabel        String?
+  address           String
+  phone             String
+  hours             String
+  capacity          Int               @default(40)
+  image             String
+  heroImage         String?
+  galleryJson       String?           // JSON array of strings
+  description       String
+  tagsJson          String?           // JSON array of strings
+  featuresJson      String?           // JSON array of strings
+  popularDishesJson String?           // JSON array of strings
+  createdAt         DateTime          @default(now())
+
+  tables            RestaurantTable[]
+  menuItems         MenuItem[]
+  bookings          Booking[]
+  offers            Offer[]
+  studentReviews    Review[]
+}
+
+model RestaurantTable {
+  id               String      @id // e.g. "T-01"
+  restaurantId     Int
+  capacity         Int         @default(4)
+  type             String      @default("Standard Booth")
+  isOccupied       Boolean     @default(false)
+  currentGuest     String?
+  currentBookingId String?
+  createdAt        DateTime    @default(now())
+
+  restaurant       Restaurant  @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+}
+
+model MenuItem {
+  id           String      @id // e.g. "sg1"
+  restaurantId Int
+  category     String
+  name         String
+  desc         String?
+  price        Float
+  isVeg        Boolean     @default(true)
+  isAvailable  Boolean     @default(true)
+  badge        String?
+  calories     String?
+  image        String?
+
+  restaurant   Restaurant  @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+}
+
+model Booking {
+  id              String         @id // e.g. "DB-4821"
+  restaurantId    Int
+  restaurantName  String
+  restaurantImage String?
+  userId          String?
+  guestName       String
+  guestEmail      String
+  date            String
+  time            String
+  guests          Int            @default(2)
+  status          String         @default("CONFIRMED") // CONFIRMED | SEATED | PAYMENT_PENDING | COMPLETED | CANCELLED
+  specialRequest  String?
+  tableAssigned   String?
+  qrCode          String?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  user            User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
+  restaurant      Restaurant     @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  orders          BookingOrder[]
+  payment         Payment?
+}
+
+model BookingOrder {
+  id        String   @id @default(uuid())
+  bookingId String
+  name      String
+  price     Float
+  quantity  Int      @default(1)
+
+  booking   Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+}
+
+model Payment {
+  id            String   @id @default(uuid())
+  bookingId     String   @unique
+  method        String   // UPI | CASH | CARD
+  transactionId String   @unique
+  subtotal      Float
+  discount      Float    @default(0)
+  tax           Float    @default(0)
+  totalAmount   Float
+  detailsJson   String?  // JSON for upi/cash/card meta
+  paidAt        DateTime @default(now())
+  status        String   @default("PAID")
+
+  booking       Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String?
+  type      String   @default("info")
+  title     String
+  body      String
+  code      String?
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Offer {
+  id              String      @id @default(uuid())
+  restaurantId    Int
+  title           String
+  description     String?
+  discountPercent Int
+  promoCode       String      @unique
+  startDate       String?
+  endDate         String?
+  minOrderAmount  Float       @default(0)
+  status          String      @default("ACTIVE") // ACTIVE | INACTIVE | EXPIRED
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  restaurant      Restaurant  @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+}
+
+model AuditLog {
+  id          String   @id @default(uuid())
+  userId      String?
+  userName    String?
+  userRole    String?
+  action      String   // e.g. "USER_APPROVED", "RESTAURANT_ONBOARDED", "OFFER_CREATED", "STATUS_TOGGLED"
+  entityType  String   // "USER" | "RESTAURANT" | "INSTITUTION" | "MENU_ITEM" | "OFFER" | "BOOKING"
+  entityId    String?
+  detailsJson String?  // JSON string
+  ipAddress   String?
+  createdAt   DateTime @default(now())
+}
+
+model Review {
+  id           String     @id @default(uuid())
+  restaurantId Int
+  userId       String
+  userName     String
+  userRole     String     @default("STUDENT")
+  userDept     String?
+  rating       Float      @default(5.0)
+  dishTried    String?
+  comment      String
+  status       String     @default("APPROVED") // APPROVED | HIDDEN | UNDER_REVIEW
+  helpfulCount Int        @default(0)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+}

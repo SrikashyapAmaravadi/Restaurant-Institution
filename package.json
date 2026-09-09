@@ -1,0 +1,12 @@
+{
+  "name": "institution-restaurant-platform",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Institutional Restaurant Discovery & Pre-Booking Platform",
+  "scripts": {
+    "dev": "npm --prefix client/user-portal run dev",
+    "dev:client": "npm --prefix client/user-portal run dev",
+    "dev:server": "npm --prefix server run dev",
+    "build:client": "npm --prefix client/user-portal run build"
+  }
+}
