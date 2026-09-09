@@ -415,15 +415,15 @@ export default function RestaurantDetail() {
                   Pure Veg Only
                 </label>
 
-                {/* View Switcher: Serpentine vs Grid */}
+                {/* View Switcher: Explore Road vs Grid */}
                 <div style={{ display: 'inline-flex', background: 'rgba(255,255,255,0.05)', borderRadius: 'var(--r-full)', padding: 3, border: '1px solid var(--border)' }}>
                   <button
                     className={`btn btn-xs ${menuViewMode === 'serpentine' ? 'btn-primary' : 'btn-ghost'}`}
                     style={{ borderRadius: 'var(--r-full)', fontSize: 11, padding: '4px 10px', gap: 4 }}
                     onClick={() => setMenuViewMode('serpentine')}
-                    title="Retro Winding Road View (Inspired by reference poster)"
+                    title="Explore Road Menu View (Retro Winding Road)"
                   >
-                    <Sparkles size={12} /> Serpentine Road
+                    <Sparkles size={12} /> Explore Road
                   </button>
                   <button
                     className={`btn btn-xs ${menuViewMode === 'grid' ? 'btn-primary' : 'btn-ghost'}`}
@@ -437,7 +437,7 @@ export default function RestaurantDetail() {
               </div>
             </div>
 
-            {/* VIEW 1: SERPENTINE WINDING ROAD (REFERENCE POSTER DESIGN) */}
+            {/* VIEW 1: SERPENTINE WINDING ROAD (EXPLORE ROAD) */}
             {menuViewMode === 'serpentine' && (() => {
               const allDishes = Object.entries(menu).flatMap(([cat, items]) =>
                 items.map(i => ({ ...i, category: cat }))
@@ -454,17 +454,17 @@ export default function RestaurantDetail() {
                 <div className="winding-menu-wrapper">
                   <div className="winding-menu-bg-text">FOOD</div>
 
-                  {/* Header in Retro Paytone Font & Lora Botanical Identity */}
+                  {/* Header in Retro Paytone Font & Restaurant Identity */}
                   <div className="winding-header">
                     <div className="winding-subtag">
-                      <span>@lora.sustainable</span>
+                      <span>@{restaurant.name?.toLowerCase().replace(/\s+/g, '') || 'lora'}.dining</span>
                       <span>•</span>
-                      <span>natural · pure · sustainable</span>
+                      <span>verified campus partner</span>
                     </div>
                     <div className="winding-cloud-icon"><Leaf size={22} style={{ color: '#E7F1E1' }} /></div>
-                    <h2 className="winding-main-title">OUR MENU</h2>
+                    <h2 className="winding-main-title">{restaurant.name ? `${restaurant.name.toUpperCase()} MENU` : 'OUR MENU'}</h2>
                     <div style={{ fontSize: 11.5, color: '#A9C5A2', marginTop: 4, letterSpacing: '0.03em' }}>
-                      From Our Fields To Your Table · Fresh Food, Directly From Farm To Table
+                      From Kitchen To Table · Fresh Dishes &amp; Chef Recommendations
                     </div>
                   </div>
 

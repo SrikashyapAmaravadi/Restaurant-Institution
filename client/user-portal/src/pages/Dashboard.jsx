@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import RestaurantCard from '../components/RestaurantCard';
 import BookingModal from '../components/BookingModal';
@@ -15,8 +15,6 @@ import {
   MapPin,
   Clock,
   ChevronRight,
-  ChevronUp,
-  ChevronDown,
   Flame,
   ShieldCheck,
   Star,
@@ -42,41 +40,9 @@ export default function Dashboard() {
   const [selectedOffer, setSelectedOffer] = useState(null);
   const [activeFilter, setActiveFilter] = useState('All');
   const [activeMood, setActiveMood] = useState(null);
-  const [showMenuRoad, setShowMenuRoad] = useState(true);
 
   const safeReservations = Array.isArray(reservations) ? reservations : [];
   const safeRestaurants = Array.isArray(restaurants) ? restaurants : [];
-
-  // Dynamically derive chef signature specialties from real database restaurants
-  const signatureDishes = useMemo(() => {
-    if (!safeRestaurants.length) return [];
-    const dishes = [];
-    safeRestaurants.forEach((rest, rIdx) => {
-      const popular = Array.isArray(rest.popularDishes) && rest.popularDishes.length > 0
-        ? rest.popularDishes
-        : [`Signature ${rest.cuisine} Selection`];
-
-      popular.forEach((dishName, dIdx) => {
-        if (dishes.length < 8) {
-          const isVeg = !dishName.toLowerCase().includes('chicken') &&
-                        !dishName.toLowerCase().includes('mutton') &&
-                        !dishName.toLowerCase().includes('fish') &&
-                        !dishName.toLowerCase().includes('meat');
-          dishes.push({
-            id: `rest-${rest.id}-dish-${dIdx}`,
-            name: dishName,
-            desc: `House specialty prepared fresh daily at ${rest.name}. Verified Bennett dining partner.`,
-            price: 180 + ((rIdx * 45 + dIdx * 35) % 220),
-            veg: isVeg,
-            image: rest.image || rest.heroImage,
-            restaurantId: rest.id,
-            restaurantName: rest.name
-          });
-        }
-      });
-    });
-    return dishes;
-  }, [safeRestaurants]);
 
   // Active confirmed or seated booking from Supabase DB
   const upcoming = safeReservations.find(b => b?.status === 'CONFIRMED' || b?.status === 'SEATED');
@@ -358,111 +324,6 @@ export default function Dashboard() {
           </button>
         </div>
       )}
-
-      {/* Signature Dishes Road Section */}
-      <div className="anim-fade-up">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-          <div>
-            <div style={{ fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--primary)' }}>
-              Campus Specialties
-            </div>
-            <h3 className="font-display" style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--t1)', margin: '2px 0 0' }}>
-              Chef's Signature Menu
-            </h3>
-          </div>
-          <button
-            type="button"
-            className="btn btn-ghost btn-sm cursor-pointer"
-            onClick={() => setShowMenuRoad(!showMenuRoad)}
-            style={{ fontSize: 12, color: 'var(--primary)', padding: '4px 10px', display: 'flex', alignItems: 'center', gap: 4 }}
-          >
-            <span>{showMenuRoad ? 'Collapse' : 'Explore Road'}</span>
-            {showMenuRoad ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-          </button>
-        </div>
-
-        {showMenuRoad && (
-          <div className="winding-menu-wrapper" style={{ marginBottom: 10 }}>
-            {/* Ghost Watermark Background Text from Photo 2 */}
-            <div className="winding-menu-bg-text">FOOD</div>
-
-            {/* Header in Retro Paytone Font & Lora Botanical Identity */}
-            <div className="winding-header">
-              <div className="winding-subtag">
-                <span>@lora.sustainable</span>
-                <span>•</span>
-                <span>natural · pure · sustainable</span>
-              </div>
-              <div className="winding-cloud-icon">
-                <Leaf size={22} style={{ color: '#E7F1E1' }} />
-              </div>
-              <h2 className="winding-main-title">OUR MENU</h2>
-              <div style={{ fontSize: 12, color: '#A9C5A2', marginTop: 5, letterSpacing: '0.03em' }}>
-                From Our Fields To Your Table · Fresh Food, Directly From Farm To Table
-              </div>
-            </div>
-
-            {/* Central Continuous Cream Spine & Dishes */}
-            <div className="winding-track-container">
-              <div className="winding-track-spine" />
-
-              {signatureDishes.map((dish, index) => {
-                const isLeft = index % 2 === 0;
-                return (
-                  <div key={dish.id} className={`winding-row ${isLeft ? 'left-dish' : 'right-dish'}`}>
-                    {/* Circular Popping Food Plate with Wooden Charger Rim */}
-                    <div
-                      className="winding-dish-orb"
-                      onClick={() => {
-                        const targetRest = safeRestaurants.find(r => r.id === dish.restaurantId) || safeRestaurants[0];
-                        if (targetRest) setSelectedRestaurant(targetRest);
-                      }}
-                      title={`Book table at ${dish.restaurantName}`}
-                    >
-                      <img src={dish.image} alt={dish.name} loading="lazy" />
-                    </div>
-
-                    {/* Forest Moss Rounded Pill Card */}
-                    <div className="winding-pill">
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, justifyContent: isLeft ? 'flex-start' : 'flex-end' }}>
-                        <span style={{ width: 8, height: 8, borderRadius: '50%', background: dish.veg ? '#10B981' : '#EF4444', flexShrink: 0 }} />
-                        <div className="winding-pill-title">{dish.name}</div>
-                      </div>
-                      <p className="winding-pill-desc">{dish.desc}</p>
-                      <div className="winding-pill-footer">
-                        <span className="winding-price">₹{dish.price}</span>
-                        <button
-                          type="button"
-                          className="winding-add-btn"
-                          onClick={() => {
-                            const targetRest = safeRestaurants.find(r => r.id === dish.restaurantId) || safeRestaurants[0];
-                            if (targetRest) setSelectedRestaurant(targetRest);
-                          }}
-                        >
-                          + Reserve Table
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Poster Footer Note with Contact Info */}
-            <div className="winding-footer-note">
-              <span style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#E7F1E1' }}>
-                <Leaf size={14} style={{ color: '#6FAF3D' }} /> +91 Bennett Dining Desk · 100% Farm-To-Table Certified
-              </span>
-              <span style={{ color: '#A9C5A2' }}>Natural · Pure · Sustainable</span>
-            </div>
-
-            {/* Side Contact Watermark */}
-            <div className="winding-side-watermark">
-              lora.dining@bennett.edu.in
-            </div>
-          </div>
-        )}
-      </div>
 
       {/* Filter Chips Strip */}
       <div className="anim-fade-up">

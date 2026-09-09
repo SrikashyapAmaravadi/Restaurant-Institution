@@ -386,35 +386,61 @@ export default function RestaurantCard({ restaurant, onQuickReserve, onViewOffer
           </div>
         )}
 
-        {/* Card Footer: Reviews & One-Tap Book CTA */}
+        {/* Card Footer: Reviews & One-Tap Book / Explore CTA */}
         <div style={{
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
           paddingTop: 10,
-          borderTop: '1px solid var(--border)'
+          borderTop: '1px solid var(--border)',
+          gap: 8,
+          flexWrap: 'wrap'
         }}>
           <span style={{ fontSize: 11.5, color: 'var(--t4)' }}>
             {reviews} Bennett reviews
           </span>
 
-          <button
-            type="button"
-            className="btn btn-primary btn-sm cursor-pointer"
-            onClick={handleBookClick}
-            style={{
-              padding: '6px 14px',
-              fontSize: 12,
-              fontWeight: 700,
-              borderRadius: 'var(--r-full)',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6
-            }}
-          >
-            <span>Book Table</span>
-            <ArrowRight size={13} />
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <button
+              type="button"
+              className="btn btn-outline btn-sm cursor-pointer"
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate(`/restaurant/${id}`);
+              }}
+              style={{
+                padding: '5px 12px',
+                fontSize: 12,
+                fontWeight: 700,
+                borderRadius: 'var(--r-full)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 4
+              }}
+              title={`Explore ${name} menu road & specialties`}
+            >
+              <span>Explore</span>
+              <ChevronRight size={13} />
+            </button>
+
+            <button
+              type="button"
+              className="btn btn-primary btn-sm cursor-pointer"
+              onClick={handleBookClick}
+              style={{
+                padding: '5px 13px',
+                fontSize: 12,
+                fontWeight: 700,
+                borderRadius: 'var(--r-full)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 5
+              }}
+            >
+              <span>Book Table</span>
+              <ArrowRight size={13} />
+            </button>
+          </div>
         </div>
       </div>
     </div>
