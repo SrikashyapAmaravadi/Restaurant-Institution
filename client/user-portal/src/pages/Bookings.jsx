@@ -25,7 +25,7 @@ const TABS = ['Upcoming Reservations', 'Past Visits', 'Cancelled'];
 
 export default function Bookings() {
   const navigate = useNavigate();
-  const { restaurants = [], reservations = [], setReservations, cancelBooking, staffCompletePayment } = useDining();
+  const { restaurants = [], reservations = [], setReservations, cancelBooking, staffCompletePayment, openScanner } = useDining();
   const [activeTab, setActiveTab] = useState('Upcoming Reservations');
   const [passModalBooking, setPassModalBooking] = useState(null);
   const [reviewModalRestaurant, setReviewModalRestaurant] = useState(null);
@@ -56,13 +56,24 @@ export default function Bookings() {
   return (
     <div className="page-pad">
       {/* Header */}
-      <div className="anim-fade-up" style={{ marginBottom: 24 }}>
-        <h2 className="font-display" style={{ fontSize: 'clamp(1.4rem, 4.5vw, 1.8rem)', fontWeight: 800, color: 'var(--t1)' }}>
-          My Dining Reservations
-        </h2>
-        <p style={{ fontSize: 13, color: 'var(--t3)' }}>
-          Manage your Bennett University partner restaurant bookings, access QR entry passes, and settle table payments with UPI, Cash, or Card.
-        </p>
+      <div className="anim-fade-up" style={{ marginBottom: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12 }}>
+        <div>
+          <h2 className="font-display" style={{ fontSize: 'clamp(1.4rem, 4.5vw, 1.8rem)', fontWeight: 800, color: 'var(--t1)' }}>
+            My Dining Reservations
+          </h2>
+          <p style={{ fontSize: 13, color: 'var(--t3)' }}>
+            Manage your Bennett University partner restaurant bookings, access QR entry passes, and settle table payments with UPI, Cash, or Card.
+          </p>
+        </div>
+        <button
+          type="button"
+          className="btn btn-outline btn-sm"
+          onClick={openScanner}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
+          title="Open camera to scan dining pass"
+        >
+          <QrCode size={15} /> Scan Digital Pass
+        </button>
       </div>
 
       {/* Tabs */}

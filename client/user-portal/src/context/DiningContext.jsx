@@ -15,6 +15,10 @@ export function DiningProvider({ children }) {
   const [offers, setOffers] = useState([]);
   const [institutions, setInstitutions] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [scannerModalOpen, setScannerModalOpen] = useState(false);
+
+  const openScanner = () => setScannerModalOpen(true);
+  const closeScanner = () => setScannerModalOpen(false);
 
   // 1. Fetch initial data from backend API
   const refreshAllData = async () => {
@@ -458,7 +462,11 @@ export function DiningProvider({ children }) {
     deleteMenuItem,
     createOffer,
     toggleOfferStatus,
-    deleteOffer
+    deleteOffer,
+    scannerModalOpen,
+    setScannerModalOpen,
+    openScanner,
+    closeScanner
   };
 
   return (

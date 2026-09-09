@@ -13,7 +13,9 @@ import {
   ChefHat,
   ConciergeBell,
   GraduationCap,
-  Leaf
+  Leaf,
+  Camera,
+  QrCode
 } from 'lucide-react';
 
 const PAGE_TITLES = {
@@ -32,7 +34,7 @@ export default function Topbar({ onOpenMobileDrawer }) {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { notifications = [] } = useDining() || {};
+  const { notifications = [], openScanner } = useDining() || {};
 
   const unreadNotifs = Array.isArray(notifications) ? notifications.filter(n => !n.read).length : 0;
   const title = Object.entries(PAGE_TITLES).find(([k]) => pathname.startsWith(k))?.[1] ?? 'lora';
@@ -134,6 +136,17 @@ export default function Topbar({ onOpenMobileDrawer }) {
             </button>
           </>
         )}
+
+        {/* Quick Camera Scanner for Digital Pass */}
+        <button
+          type="button"
+          className="icon-btn"
+          onClick={openScanner}
+          title="Scan Digital Pass (Live Camera)"
+          style={{ color: '#54C030', background: 'rgba(111, 175, 61, 0.12)', border: '1px solid rgba(111, 175, 61, 0.3)' }}
+        >
+          <Camera size={16} />
+        </button>
 
         {/* User Pill / Hologram Avatar */}
         <button

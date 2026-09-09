@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useDining } from '../context/DiningContext';
 import Sidebar from './Sidebar';
 import Topbar from './Topbar';
+import CameraScannerModal from './CameraScannerModal';
 import {
   LayoutDashboard,
   Compass,
@@ -23,7 +24,13 @@ import {
 
 export default function AppLayout() {
   const { user, logout } = useAuth();
-  const { reservations = [], notifications = [] } = useDining() || {};
+  const {
+    reservations = [],
+    notifications = [],
+    scannerModalOpen,
+    closeScanner,
+    staffCheckInGuest
+  } = useDining() || {};
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -226,6 +233,18 @@ export default function AppLayout() {
           </div>
         </div>
       )}
+
+      {/* Global Camera Scanner Modal accessible across entire app */}
+      <CameraScannerModal
+        isOpen={Boolean(scannerModalOpen)}
+        onClose={closeScanner}
+        reservations={safeReservations}
+        onScanSuccess={(code, matched) => {
+          if (matched && matched.status === 'CONFIRMED' && staffCheckInGuest) {
+            staffCheckInGuest(matched.id, matched.tableAssigned || 'T-01');
+          }
+        }}
+      />
     </div>
   );
 }

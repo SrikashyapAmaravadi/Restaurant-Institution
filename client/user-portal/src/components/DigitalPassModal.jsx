@@ -1,6 +1,8 @@
-import { X, Calendar, Clock, MapPin, Users, CheckCircle2, Download, Share2, GraduationCap } from 'lucide-react';
+import { X, Calendar, Clock, MapPin, Users, CheckCircle2, Download, Share2, GraduationCap, Camera, QrCode } from 'lucide-react';
+import { useDining } from '../context/DiningContext';
 
 export default function DigitalPassModal({ booking, onClose }) {
+  const { openScanner } = useDining() || {};
   if (!booking) return null;
 
   return (
@@ -86,7 +88,7 @@ export default function DigitalPassModal({ booking, onClose }) {
           </div>
 
           {/* Action buttons */}
-          <div style={{ display: 'flex', gap: 10 }}>
+          <div style={{ display: 'flex', gap: 10, marginBottom: 10 }}>
             <button
               className="btn btn-outline btn-md"
               style={{ flex: 1 }}
@@ -102,6 +104,28 @@ export default function DigitalPassModal({ booking, onClose }) {
               <MapPin size={14} /> Directions
             </button>
           </div>
+
+          <button
+            type="button"
+            className="btn btn-outline btn-sm"
+            style={{
+              width: '100%',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 6,
+              color: 'var(--primary)',
+              borderColor: 'var(--primary)',
+              background: 'rgba(111, 175, 61, 0.08)'
+            }}
+            onClick={() => {
+              onClose();
+              if (openScanner) openScanner();
+            }}
+            title="Open camera to scan this digital pass"
+          >
+            <Camera size={14} /> Scan Digital Pass with Camera
+          </button>
         </div>
       </div>
     </div>
