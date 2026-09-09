@@ -19,6 +19,17 @@ import { startReminderScheduler } from './services/reminder.service.js';
 
 dotenv.config();
 
+// Fallback configurations for cloud preview environments (e.g. v0 / Vercel preview)
+if (!process.env.DATABASE_URL) {
+  process.env.DATABASE_URL = "postgresql://postgres.nhcdgjeygsazqjxpaomz:DIstRiCt%40%231757@aws-0-ap-south-1.pooler.supabase.com:6543/postgres?pgbouncer=true&connection_limit=10&connect_timeout=15&pool_timeout=20";
+}
+if (!process.env.DIRECT_URL) {
+  process.env.DIRECT_URL = "postgresql://postgres.nhcdgjeygsazqjxpaomz:DIstRiCt%40%231757@aws-0-ap-south-1.pooler.supabase.com:5432/postgres?connect_timeout=15";
+}
+if (!process.env.JWT_SECRET) {
+  process.env.JWT_SECRET = "dine_bennett_super_secret_jwt_key_2026_rbac";
+}
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 

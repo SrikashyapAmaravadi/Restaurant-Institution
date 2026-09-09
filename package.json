@@ -8,29 +8,38 @@
     "server"
   ],
   "scripts": {
-    "dev": "npm --prefix client/user-portal install && npm --prefix client/user-portal run dev",
+    "dev": "concurrently -k -n \"SERVER,CLIENT\" -c \"blue,green\" \"npm --prefix server start\" \"npm --prefix client/user-portal run dev\"",
     "dev:client": "npm --prefix client/user-portal run dev",
-    "dev:server": "npm --prefix server run dev",
-    "build": "npm --prefix client/user-portal install && npm --prefix client/user-portal run build",
+    "dev:server": "npm --prefix server start",
+    "build": "npm --prefix client/user-portal run build",
     "build:client": "npm --prefix client/user-portal run build",
-    "start": "npm --prefix client/user-portal run preview",
-    "start:server": "node server/src/server.js",
-    "postinstall": "npm --prefix client/user-portal install"
+    "start": "npm --prefix server start",
+    "postinstall": "npx prisma generate --schema=server/prisma/schema.prisma"
   },
   "dependencies": {
+    "@prisma/client": "^6.4.1",
     "@tailwindcss/vite": "^4.3.3",
     "@vitejs/plugin-react": "^6.1.0",
+    "bcryptjs": "^3.0.2",
     "canvas-confetti": "^1.9.4",
+    "concurrently": "^9.1.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-rate-limit": "^8.7.0",
+    "jsonwebtoken": "^9.0.2",
     "lucide-react": "^1.39.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-router-dom": "^7.18.3",
     "tailwindcss": "^4.3.3",
-    "vite": "^8.2.2"
+    "vite": "^8.2.2",
+    "zod": "^4.5.4"
   },
   "devDependencies": {
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.4",
-    "oxlint": "^1.79.0"
+    "oxlint": "^1.79.0",
+    "prisma": "^6.4.1"
   }
 }
