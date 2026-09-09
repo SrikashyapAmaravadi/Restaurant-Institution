@@ -503,7 +503,7 @@ export default function SuperAdmin() {
             }}
             onClick={() => setActiveTab('Bookings')}
           >
-            <CalendarCheck size={14} /> Bookings ({reservations.length})
+            <Calendar size={14} /> Bookings ({reservations.length})
           </button>
           <button
             className={`btn btn-sm ${activeTab === 'Analytics' ? 'btn-primary' : 'btn-outline'}`}
