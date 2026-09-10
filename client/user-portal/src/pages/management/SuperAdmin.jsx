@@ -443,7 +443,7 @@ export default function SuperAdmin() {
           <button
             className={`btn btn-sm tab-pill-interactive ${activeTab === 'Restaurants' ? 'btn-primary' : 'btn-outline'}`}
             style={{
-              color: activeTab === 'Restaurants' ? '#FFFFFF' : '#000000',
+              color: activeTab === 'Restaurants' ? '#FFFFFF' : 'var(--t1)',
               backgroundColor: activeTab === 'Restaurants' ? undefined : '#FFFFFF',
               borderColor: activeTab === 'Restaurants' ? 'rgba(255,255,255,0.3)' : '#C8DEC3',
               fontWeight: 700,
@@ -456,7 +456,7 @@ export default function SuperAdmin() {
           <button
             className={`btn btn-sm tab-pill-interactive ${activeTab === 'Users' ? 'btn-primary' : 'btn-outline'}`}
             style={{
-              color: activeTab === 'Users' ? '#FFFFFF' : '#000000',
+              color: activeTab === 'Users' ? '#FFFFFF' : 'var(--t1)',
               backgroundColor: activeTab === 'Users' ? undefined : '#FFFFFF',
               borderColor: activeTab === 'Users' ? 'rgba(255,255,255,0.3)' : '#C8DEC3',
               fontWeight: 700,
@@ -469,7 +469,7 @@ export default function SuperAdmin() {
           <button
             className={`btn btn-sm tab-pill-interactive ${activeTab === 'Verifications' ? 'btn-primary' : 'btn-outline'}`}
             style={{
-              color: activeTab === 'Verifications' ? '#FFFFFF' : '#000000',
+              color: activeTab === 'Verifications' ? '#FFFFFF' : 'var(--t1)',
               backgroundColor: activeTab === 'Verifications' ? undefined : '#FFFFFF',
               borderColor: activeTab === 'Verifications' ? 'rgba(255,255,255,0.3)' : '#C8DEC3',
               fontWeight: 700,
@@ -482,7 +482,7 @@ export default function SuperAdmin() {
           <button
             className={`btn btn-sm tab-pill-interactive ${activeTab === 'Institutions' ? 'btn-primary' : 'btn-outline'}`}
             style={{
-              color: activeTab === 'Institutions' ? '#FFFFFF' : '#000000',
+              color: activeTab === 'Institutions' ? '#FFFFFF' : 'var(--t1)',
               backgroundColor: activeTab === 'Institutions' ? undefined : '#FFFFFF',
               borderColor: activeTab === 'Institutions' ? 'rgba(255,255,255,0.3)' : '#C8DEC3',
               fontWeight: 700,
@@ -495,7 +495,7 @@ export default function SuperAdmin() {
           <button
             className={`btn btn-sm tab-pill-interactive ${activeTab === 'Bookings' ? 'btn-primary' : 'btn-outline'}`}
             style={{
-              color: activeTab === 'Bookings' ? '#FFFFFF' : '#000000',
+              color: activeTab === 'Bookings' ? '#FFFFFF' : 'var(--t1)',
               backgroundColor: activeTab === 'Bookings' ? undefined : '#FFFFFF',
               borderColor: activeTab === 'Bookings' ? 'rgba(255,255,255,0.3)' : '#C8DEC3',
               fontWeight: 700,
@@ -508,7 +508,7 @@ export default function SuperAdmin() {
           <button
             className={`btn btn-sm tab-pill-interactive ${activeTab === 'Analytics' ? 'btn-primary' : 'btn-outline'}`}
             style={{
-              color: activeTab === 'Analytics' ? '#FFFFFF' : '#000000',
+              color: activeTab === 'Analytics' ? '#FFFFFF' : 'var(--t1)',
               backgroundColor: activeTab === 'Analytics' ? undefined : '#FFFFFF',
               borderColor: activeTab === 'Analytics' ? 'rgba(255,255,255,0.3)' : '#C8DEC3',
               fontWeight: 700,
@@ -521,7 +521,7 @@ export default function SuperAdmin() {
           <button
             className={`btn btn-sm tab-pill-interactive ${activeTab === 'Moderation' ? 'btn-primary' : 'btn-outline'}`}
             style={{
-              color: activeTab === 'Moderation' ? '#FFFFFF' : '#000000',
+              color: activeTab === 'Moderation' ? '#FFFFFF' : 'var(--t1)',
               backgroundColor: activeTab === 'Moderation' ? undefined : '#FFFFFF',
               borderColor: activeTab === 'Moderation' ? 'rgba(255,255,255,0.3)' : '#C8DEC3',
               fontWeight: 700,
@@ -534,7 +534,7 @@ export default function SuperAdmin() {
           <button
             className={`btn btn-sm tab-pill-interactive ${activeTab === 'Audit' ? 'btn-primary' : 'btn-outline'}`}
             style={{
-              color: activeTab === 'Audit' ? '#FFFFFF' : '#000000',
+              color: activeTab === 'Audit' ? '#FFFFFF' : 'var(--t1)',
               backgroundColor: activeTab === 'Audit' ? undefined : '#FFFFFF',
               borderColor: activeTab === 'Audit' ? 'rgba(255,255,255,0.3)' : '#C8DEC3',
               fontWeight: 700,

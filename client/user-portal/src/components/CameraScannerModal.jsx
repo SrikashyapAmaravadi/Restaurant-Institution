@@ -631,10 +631,10 @@ export default function CameraScannerModal({
                 type="button"
                 className="btn btn-outline btn-xs"
                 onClick={() => startCamera(facingMode)}
-                style={{ background: '#FFFFFF', color: '#000000', fontWeight: 700, borderColor: 'rgba(0,0,0,0.15)' }}
+                style={{ background: '#FFFFFF', color: 'var(--t1)', fontWeight: 700, borderColor: 'var(--border)' }}
               >
-                <RefreshCw size={12} style={{ marginRight: 4, color: '#000000' }} />
-                <span style={{ color: '#000000', fontWeight: 700 }}>Try Camera Again</span>
+                <RefreshCw size={12} style={{ marginRight: 4, color: 'var(--t1)' }} />
+                <span style={{ color: 'var(--t1)', fontWeight: 700 }}>Try Camera Again</span>
               </button>
             </div>
           )}
@@ -785,11 +785,11 @@ export default function CameraScannerModal({
                 <button
                   type="button"
                   className="btn btn-outline btn-sm"
-                  style={{ flex: 1, background: '#FFFFFF', color: '#000000', fontWeight: 700 }}
+                  style={{ flex: 1, background: '#FFFFFF', color: 'var(--t1)', fontWeight: 700 }}
                   onClick={() => setScannedResult(null)}
                 >
-                  <RotateCcw size={13} style={{ marginRight: 4, color: '#000000' }} />
-                  <span style={{ color: '#000000', fontWeight: 700 }}>Scan Next</span>
+                  <RotateCcw size={13} style={{ marginRight: 4, color: 'var(--t1)' }} />
+                  <span style={{ color: 'var(--t1)', fontWeight: 700 }}>Scan Next</span>
                 </button>
               </div>
             </div>
@@ -814,16 +814,16 @@ export default function CameraScannerModal({
                     justifyContent: 'center',
                     gap: 6,
                     background: '#FFFFFF',
-                    color: '#000000',
+                    color: 'var(--t1)',
                     fontWeight: 700,
-                    borderColor: 'rgba(0,0,0,0.2)',
+                    borderColor: 'var(--border)',
                     fontSize: 12
                   }}
                   onClick={() => fileInputRef.current?.click()}
                   disabled={isProcessingUpload}
                 >
-                  <UploadCloud size={15} style={{ color: '#000000', stroke: '#000000' }} />
-                  <span style={{ color: '#000000', fontWeight: 700 }}>
+                  <UploadCloud size={15} style={{ color: 'var(--t1)' }} />
+                  <span style={{ color: 'var(--t1)', fontWeight: 700 }}>
                     {isProcessingUpload ? 'Scanning Image...' : 'Upload Pass QR'}
                   </span>
                 </button>

@@ -128,12 +128,12 @@ export default function DigitalPassModal({ booking, onClose }) {
           <div style={{ display: 'flex', gap: 10, marginBottom: 10 }}>
             <button
               className="btn btn-outline btn-md"
-              style={{ flex: 1, background: '#FFFFFF', color: '#000000', fontWeight: 700 }}
+              style={{ flex: 1, background: '#FFFFFF', color: 'var(--t1)', fontWeight: 700 }}
               onClick={handleSavePass}
               disabled={downloading}
             >
-              <Download size={14} style={{ color: '#000000' }} />
-              <span style={{ color: '#000000', fontWeight: 700 }}>
+              <Download size={14} style={{ color: 'var(--t1)' }} />
+              <span style={{ color: 'var(--t1)', fontWeight: 700 }}>
                 {downloading ? 'Saving...' : 'Save Pass'}
               </span>
             </button>
@@ -155,7 +155,7 @@ export default function DigitalPassModal({ booking, onClose }) {
               alignItems: 'center',
               justifyContent: 'center',
               gap: 6,
-              color: '#000000',
+              color: 'var(--t1)',
               fontWeight: 700,
               background: '#FFFFFF',
               border: '1.5px solid var(--border)'
@@ -163,8 +163,8 @@ export default function DigitalPassModal({ booking, onClose }) {
             onClick={handleScanPass}
             title="Open camera to scan this digital pass"
           >
-            <Camera size={14} style={{ color: '#000000' }} />
-            <span style={{ color: '#000000', fontWeight: 700 }}>Scan Digital Pass with Camera</span>
+            <Camera size={14} style={{ color: 'var(--t1)' }} />
+            <span style={{ color: 'var(--t1)', fontWeight: 700 }}>Scan Digital Pass with Camera</span>
           </button>
         </div>
       </div>

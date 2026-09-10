@@ -429,7 +429,7 @@ export default function RestaurantDetail() {
                       border: 'none',
                       outline: 'none',
                       background: 'transparent',
-                      color: '#000000',
+                      color: 'var(--t1)',
                       fontSize: 12,
                       fontWeight: 700,
                       cursor: 'pointer'

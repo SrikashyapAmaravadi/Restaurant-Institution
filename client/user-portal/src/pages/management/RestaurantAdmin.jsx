@@ -637,7 +637,7 @@ export default function RestaurantAdmin() {
           <button
             className={`btn btn-sm ${activeTab === 'Reservations' ? 'btn-primary' : 'btn-outline'}`}
             style={{
-              color: activeTab === 'Reservations' ? '#FFFFFF' : '#000000',
+              color: activeTab === 'Reservations' ? '#FFFFFF' : 'var(--t1)',
               backgroundColor: activeTab === 'Reservations' ? undefined : '#FFFFFF',
               borderColor: activeTab === 'Reservations' ? 'rgba(255,255,255,0.3)' : '#C8DEC3',
               fontWeight: 700,
@@ -650,7 +650,7 @@ export default function RestaurantAdmin() {
           <button
             className={`btn btn-sm ${activeTab === 'Menu' ? 'btn-primary' : 'btn-outline'}`}
             style={{
-              color: activeTab === 'Menu' ? '#FFFFFF' : '#000000',
+              color: activeTab === 'Menu' ? '#FFFFFF' : 'var(--t1)',
               backgroundColor: activeTab === 'Menu' ? undefined : '#FFFFFF',
               borderColor: activeTab === 'Menu' ? 'rgba(255,255,255,0.3)' : '#C8DEC3',
               fontWeight: 700,
@@ -663,7 +663,7 @@ export default function RestaurantAdmin() {
           <button
             className={`btn btn-sm ${activeTab === 'PaymentQRs' ? 'btn-primary' : 'btn-outline'}`}
             style={{
-              color: activeTab === 'PaymentQRs' ? '#FFFFFF' : '#000000',
+              color: activeTab === 'PaymentQRs' ? '#FFFFFF' : 'var(--t1)',
               backgroundColor: activeTab === 'PaymentQRs' ? undefined : '#FFFFFF',
               borderColor: activeTab === 'PaymentQRs' ? 'rgba(255,255,255,0.3)' : '#C8DEC3',
               fontWeight: 700,
@@ -676,7 +676,7 @@ export default function RestaurantAdmin() {
           <button
             className={`btn btn-sm ${activeTab === 'Offers' ? 'btn-primary' : 'btn-outline'}`}
             style={{
-              color: activeTab === 'Offers' ? '#FFFFFF' : '#000000',
+              color: activeTab === 'Offers' ? '#FFFFFF' : 'var(--t1)',
               backgroundColor: activeTab === 'Offers' ? undefined : '#FFFFFF',
               borderColor: activeTab === 'Offers' ? 'rgba(255,255,255,0.3)' : '#C8DEC3',
               fontWeight: 700,
@@ -689,7 +689,7 @@ export default function RestaurantAdmin() {
           <button
             className={`btn btn-sm ${activeTab === 'Staff' ? 'btn-primary' : 'btn-outline'}`}
             style={{
-              color: activeTab === 'Staff' ? '#FFFFFF' : '#000000',
+              color: activeTab === 'Staff' ? '#FFFFFF' : 'var(--t1)',
               backgroundColor: activeTab === 'Staff' ? undefined : '#FFFFFF',
               borderColor: activeTab === 'Staff' ? 'rgba(255,255,255,0.3)' : '#C8DEC3',
               fontWeight: 700,
@@ -702,7 +702,7 @@ export default function RestaurantAdmin() {
           <button
             className={`btn btn-sm ${activeTab === 'Analytics' ? 'btn-primary' : 'btn-outline'}`}
             style={{
-              color: activeTab === 'Analytics' ? '#FFFFFF' : '#000000',
+              color: activeTab === 'Analytics' ? '#FFFFFF' : 'var(--t1)',
               backgroundColor: activeTab === 'Analytics' ? undefined : '#FFFFFF',
               borderColor: activeTab === 'Analytics' ? 'rgba(255,255,255,0.3)' : '#C8DEC3',
               fontWeight: 700,
@@ -892,7 +892,7 @@ export default function RestaurantAdmin() {
                   borderRadius: 'var(--r-xs)',
                   border: '1px solid var(--border)',
                   background: '#FFFFFF',
-                  color: '#000000',
+                  color: 'var(--t1)',
                   fontSize: 13,
                   outline: 'none'
                 }}
@@ -913,7 +913,7 @@ export default function RestaurantAdmin() {
                     border: '1px solid',
                     cursor: 'pointer',
                     background: menuCategory === cat ? 'var(--primary)' : '#FFFFFF',
-                    color: menuCategory === cat ? '#FFFFFF' : '#000000',
+                    color: menuCategory === cat ? '#FFFFFF' : 'var(--t1)',
                     borderColor: menuCategory === cat ? 'var(--primary)' : 'var(--border)'
                   }}
                 >
@@ -932,7 +932,7 @@ export default function RestaurantAdmin() {
                   borderRadius: 'var(--r-xs)',
                   border: '1px solid var(--border)',
                   background: '#FFFFFF',
-                  color: '#000000',
+                  color: 'var(--t1)',
                   fontSize: 12.5,
                   fontWeight: 600,
                   cursor: 'pointer'
@@ -1005,7 +1005,7 @@ export default function RestaurantAdmin() {
 
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 6 }}>
-                        <span style={{ fontWeight: 700, fontSize: 13.5, color: '#000000', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+                        <span style={{ fontWeight: 700, fontSize: 13.5, color: 'var(--t1)', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
                           {item.name}
                         </span>
                         <span style={{ fontWeight: 800, fontSize: 13.5, color: 'var(--primary)', flexShrink: 0 }}>
@@ -1189,7 +1189,7 @@ export default function RestaurantAdmin() {
                     )}
                   </div>
 
-                  <h4 style={{ fontWeight: 800, fontSize: 15, color: '#000000', marginBottom: 2 }}>{qr.label}</h4>
+                  <h4 style={{ fontWeight: 800, fontSize: 15, color: 'var(--t1)', marginBottom: 2 }}>{qr.label}</h4>
                   <div style={{
                     fontSize: 12,
                     fontWeight: 700,

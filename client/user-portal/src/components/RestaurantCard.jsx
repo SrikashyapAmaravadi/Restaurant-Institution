@@ -181,7 +181,7 @@ export default function RestaurantCard({ restaurant, onQuickReserve, onViewOffer
             gap: 4,
             backdropFilter: 'blur(6px)'
           }}>
-            <Zap size={11} style={{ color: '#60A5FA' }} /> Instant Seating
+            <Zap size={11} style={{ color: '#60A5FA' }} /> Instant Pass
           </span>
 
           <span style={{
@@ -407,7 +407,7 @@ export default function RestaurantCard({ restaurant, onQuickReserve, onViewOffer
                 gap: 5
               }}
             >
-              <span>Book Table</span>
+              <span>Book Pass</span>
               <ArrowRight size={13} />
             </button>
           </div>
