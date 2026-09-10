@@ -106,7 +106,7 @@ export default function Dashboard() {
 
       {/* District Mobile Search Bar Trigger */}
       <div
-        className="anim-fade-up"
+        className="anim-fade-up dashboard-search-trigger"
         onClick={() => navigate('/discover')}
         style={{
           display: 'flex',
@@ -117,8 +117,7 @@ export default function Dashboard() {
           background: '#FFFFFF',
           border: '1px solid var(--border)',
           cursor: 'pointer',
-          boxShadow: 'var(--shadow-sm)',
-          transition: 'all 0.18s ease'
+          boxShadow: 'var(--shadow-sm)'
         }}
       >
         <Search size={18} style={{ color: 'var(--primary)' }} />
@@ -335,6 +334,7 @@ export default function Dashboard() {
               <button
                 key={f.id}
                 type="button"
+                className={`dashboard-filter-btn ${isSelected ? 'active' : ''}`}
                 onClick={() => {
                   setActiveFilter(f.id);
                   setActiveMood(null);
@@ -352,8 +352,7 @@ export default function Dashboard() {
                   boxShadow: isSelected ? '0 2px 8px var(--primary-glow)' : 'var(--shadow-sm)',
                   display: 'inline-flex',
                   alignItems: 'center',
-                  gap: 6,
-                  transition: 'all 0.18s ease'
+                  gap: 6
                 }}
               >
                 <FilterIcon size={13} />

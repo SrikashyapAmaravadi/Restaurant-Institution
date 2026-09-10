@@ -44,16 +44,19 @@ export default function OfferDrawer({ offer, onClose, onApplyOffer }) {
             <p style={{ fontSize: 13, color: 'var(--t3)' }}>{offer.description}</p>
 
             {/* Coupon Box */}
-            <div style={{
-              marginTop: 18,
-              background: '#FFFFFF',
-              border: '2px dashed var(--accent)',
-              borderRadius: 'var(--r-sm)',
-              padding: '12px 18px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between'
-            }}>
+            <div
+              className="promo-code-box"
+              style={{
+                marginTop: 18,
+                background: '#FFFFFF',
+                border: '2px dashed var(--accent)',
+                borderRadius: 'var(--r-sm)',
+                padding: '12px 18px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between'
+              }}
+            >
               <div>
                 <div style={{ fontSize: 10, color: 'var(--t3)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.08em' }}>
                   PROMO CODE

@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import DigitalPassModal from '../components/DigitalPassModal';
 import ReviewModal from '../components/ReviewModal';
 import PaymentModal from '../components/PaymentModal';
@@ -18,7 +19,10 @@ import {
   Receipt,
   Utensils,
   Check,
-  X
+  X,
+  Search,
+  SlidersHorizontal,
+  ArrowUpDown
 } from 'lucide-react';
 
 const TABS = ['Upcoming Reservations', 'Past Visits', 'Cancelled'];
@@ -30,6 +34,10 @@ export default function Bookings() {
   const [passModalBooking, setPassModalBooking] = useState(null);
   const [reviewModalRestaurant, setReviewModalRestaurant] = useState(null);
   const [paymentModalBooking, setPaymentModalBooking] = useState(null);
+
+  // Search & Sort filters
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortBy, setSortBy] = useState('newest'); // 'newest' | 'oldest' | 'guests-high' | 'guests-low'
 
   const upcomingList = reservations.filter(b => b.status === 'CONFIRMED' || b.status === 'SEATED');
   const pastList = reservations.filter(b => b.status === 'COMPLETED');
@@ -45,13 +53,34 @@ export default function Bookings() {
     }
   };
 
-  const getList = () => {
-    if (activeTab === 'Upcoming Reservations') return upcomingList;
-    if (activeTab === 'Past Visits') return pastList;
-    return cancelledList;
-  };
+  const currentList = useMemo(() => {
+    let list = [];
+    if (activeTab === 'Upcoming Reservations') list = upcomingList;
+    else if (activeTab === 'Past Visits') list = pastList;
+    else list = cancelledList;
 
-  const currentList = getList();
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase().trim();
+      list = list.filter(b =>
+        b.id.toLowerCase().includes(q) ||
+        (b.restaurantName && b.restaurantName.toLowerCase().includes(q)) ||
+        (b.date && b.date.toLowerCase().includes(q)) ||
+        (b.specialRequest && b.specialRequest.toLowerCase().includes(q))
+      );
+    }
+
+    const sorted = [...list];
+    if (sortBy === 'newest') {
+      sorted.sort((a, b) => (b.id > a.id ? 1 : -1));
+    } else if (sortBy === 'oldest') {
+      sorted.sort((a, b) => (a.id > b.id ? 1 : -1));
+    } else if (sortBy === 'guests-high') {
+      sorted.sort((a, b) => (b.guests || 2) - (a.guests || 2));
+    } else if (sortBy === 'guests-low') {
+      sorted.sort((a, b) => (a.guests || 2) - (b.guests || 2));
+    }
+    return sorted;
+  }, [activeTab, upcomingList, pastList, cancelledList, searchQuery, sortBy]);
 
   return (
     <div className="page-pad">
@@ -99,6 +128,35 @@ export default function Bookings() {
         ))}
       </div>
 
+      {/* Search & Sort Toolbar */}
+      <div className="anim-fade-up delay-1" style={{ display: 'flex', gap: 12, marginBottom: 20, flexWrap: 'wrap', alignItems: 'center' }}>
+        <div style={{ flex: 1, minWidth: 240, position: 'relative' }}>
+          <Search size={16} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--t4)' }} />
+          <input
+            className="form-input"
+            style={{ paddingLeft: 40, width: '100%' }}
+            placeholder="Search by ID (e.g. DB-4821), venue name, or notes..."
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+          />
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <ArrowUpDown size={15} style={{ color: 'var(--t4)' }} />
+          <select
+            className="form-input"
+            style={{ minWidth: 170, padding: '9px 12px', fontSize: 13 }}
+            value={sortBy}
+            onChange={e => setSortBy(e.target.value)}
+          >
+            <option value="newest">Latest Bookings</option>
+            <option value="oldest">Earliest Bookings</option>
+            <option value="guests-high">Party Size (High to Low)</option>
+            <option value="guests-low">Party Size (Low to High)</option>
+          </select>
+        </div>
+      </div>
+
       {/* Bookings List */}
       <div className="anim-fade-up delay-2" style={{ maxWidth: 880, display: 'flex', flexDirection: 'column', gap: 16 }}>
         {currentList.length === 0 ? (
@@ -123,7 +181,7 @@ export default function Bookings() {
             <p style={{ fontSize: 13, color: 'var(--t3)', maxWidth: 360, margin: '0 auto 20px' }}>
               Reserve a table at top partner restaurants near Bennett campus with instant confirmation.
             </p>
-            <button className="btn btn-primary btn-md" onClick={() => navigate('/discover')}>
+            <button className="btn-primary" onClick={() => navigate('/discover')}>
               Discover Restaurants →
             </button>
           </div>
@@ -135,28 +193,34 @@ export default function Bookings() {
             const isCancelled = b.status === 'CANCELLED';
 
             return (
-              <div
+              <motion.div
                 key={b.id}
-                className="card card-hover"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.2 }}
+                className="card card-hover booking-card"
                 style={{ padding: 20, display: 'flex', gap: 20, alignItems: 'center', flexWrap: 'wrap' }}
               >
-                {/* Restaurant Thumbnail */}
-                <img
-                  src={b.restaurantImage || 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=300&q=80'}
-                  alt={b.restaurantName}
-                  style={{ width: 84, height: 84, borderRadius: 'var(--r-sm)', objectFit: 'cover', flexShrink: 0, border: '1px solid var(--border)' }}
-                />
+                {/* Restaurant Thumbnail with smooth zoom container */}
+                <div style={{ width: 84, height: 84, borderRadius: 'var(--r-sm)', overflow: 'hidden', flexShrink: 0, border: '1px solid var(--border)' }}>
+                  <img
+                    src={b.restaurantImage || 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=300&q=80'}
+                    alt={b.restaurantName}
+                    className="booking-thumb"
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                </div>
 
                 {/* Details */}
                 <div style={{ flex: 1, minWidth: 'min(100%, 200px)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
-                    <span style={{ fontSize: 12, fontWeight: 800, color: 'var(--accent)', letterSpacing: '0.05em' }}>
+                    <span style={{ fontSize: 12, fontWeight: 800, color: 'var(--primary)', letterSpacing: '0.05em' }}>
                       {b.id}
                     </span>
                     {isConfirmed && <span className="badge badge-success">● Confirmed</span>}
                     {isSeated    && (
                       <span className="badge badge-info" style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-                        <Utensils size={11} /> Seated at Table {b.tableAssigned || 'T-04'}
+                        <Utensils size={11} /> Checked-In &amp; Dining
                       </span>
                     )}
                     {isCompleted && (
@@ -185,11 +249,6 @@ export default function Bookings() {
                     <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
                       <Users size={13} className="text-emerald-400" /> {b.guests} Guests
                     </span>
-                    {b.tableAssigned && (
-                      <span style={{ color: 'var(--accent)', fontWeight: 700 }}>
-                        Table: {b.tableAssigned}
-                      </span>
-                    )}
                   </div>
 
                   {b.specialRequest && (
@@ -212,13 +271,13 @@ export default function Bookings() {
                   {isConfirmed && (
                     <>
                       <button
-                        className="btn btn-outline btn-sm"
+                        className="btn-secondary"
                         onClick={() => setPassModalBooking(b)}
                       >
                         <QrCode size={14} /> Digital Pass
                       </button>
                       <button
-                        className="btn btn-danger btn-sm"
+                        className="btn-danger"
                         onClick={() => handleCancel(b.id)}
                       >
                         Cancel
@@ -229,13 +288,13 @@ export default function Bookings() {
                   {isSeated && (
                     <>
                       <button
-                        className="btn btn-accent btn-sm"
+                        className="btn-accent"
                         onClick={() => setPaymentModalBooking(b)}
                       >
                         <Receipt size={14} /> Pay Bill (UPI/Cash/Card)
                       </button>
                       <button
-                        className="btn btn-outline btn-sm"
+                        className="btn-secondary"
                         onClick={() => setPassModalBooking(b)}
                       >
                         <QrCode size={14} /> View Pass
@@ -246,13 +305,15 @@ export default function Bookings() {
                   {isCompleted && (
                     <>
                       <button
-                        className="btn btn-outline btn-sm"
+                        className="btn-secondary"
+                        style={{ padding: '6px 12px', fontSize: 12 }}
                         onClick={() => setPaymentModalBooking(b)}
                       >
                         <Receipt size={13} /> View Invoice
                       </button>
                       <button
-                        className="btn btn-outline btn-sm"
+                        className="btn-secondary"
+                        style={{ padding: '6px 12px', fontSize: 12 }}
                         onClick={() => {
                           const rest = restaurants.find(r => r.name === b.restaurantName || r.id === b.restaurantId) || restaurants[0];
                           if (rest) navigate(`/restaurant/${rest.id}`);
@@ -262,7 +323,8 @@ export default function Bookings() {
                       </button>
                       {!b.reviewed ? (
                         <button
-                          className="btn btn-accent btn-sm"
+                          className="btn-accent"
+                          style={{ padding: '6px 12px', fontSize: 12 }}
                           onClick={() => {
                             const rest = restaurants.find(r => r.name === b.restaurantName || r.id === b.restaurantId) || restaurants[0] || { id: b.restaurantId, name: b.restaurantName };
                             setReviewModalRestaurant(rest);
@@ -278,7 +340,7 @@ export default function Bookings() {
                     </>
                   )}
                 </div>
-              </div>
+              </motion.div>
             );
           })
         )}

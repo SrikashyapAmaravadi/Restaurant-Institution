@@ -5,6 +5,52 @@ import { authenticateToken, requireRole, recordAuditLog } from '../middleware/au
 const router = express.Router();
 
 /**
+ * PATCH /api/users/profile
+ * Authenticated user: Update own profile details (name, avatar, department, rollNumber)
+ */
+router.patch('/profile', authenticateToken, async (req, res) => {
+  try {
+    const { name, avatar, department, rollNumber } = req.body;
+    const userId = req.user.id;
+
+    const updateData = {};
+    if (name !== undefined) updateData.name = name.trim();
+    if (avatar !== undefined) updateData.avatar = avatar;
+    if (department !== undefined) updateData.department = department;
+    if (rollNumber !== undefined) updateData.rollNumber = rollNumber;
+
+    const updated = await prisma.user.update({
+      where: { id: userId },
+      data: updateData,
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        roleLabel: true,
+        department: true,
+        rollNumber: true,
+        institution: true,
+        avatar: true,
+        verified: true,
+        homePath: true,
+        restaurantId: true
+      }
+    });
+
+    res.json({
+      success: true,
+      data: updated,
+      message: 'Profile updated successfully'
+    });
+  } catch (err) {
+    console.error('Error updating profile:', err);
+    res.status(500).json({ success: false, error: 'Internal server error updating profile' });
+  }
+});
+
+
+/**
  * GET /api/users
  * Super Admin: List all platform users with filtering & search
  */

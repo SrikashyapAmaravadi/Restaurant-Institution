@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import confetti from 'canvas-confetti';
+import api from '../services/api';
 import {
   QrCode,
   Banknote,
@@ -21,6 +22,24 @@ import {
 export default function PaymentModal({ booking, onClose, onPaymentComplete }) {
   const [method, setMethod] = useState('UPI'); // 'UPI' | 'CASH' | 'CARD'
   const [step, setStep] = useState('SELECT'); // 'SELECT' | 'PROCESSING' | 'SUCCESS'
+  const [activePaymentQr, setActivePaymentQr] = useState(null);
+
+  // Fetch active uploaded QR for restaurant
+  useEffect(() => {
+    const fetchActiveQr = async () => {
+      const restId = booking?.restaurantId || 1;
+      try {
+        const res = await api.paymentQrs.getByRestaurant(restId);
+        if (res?.success && Array.isArray(res.data)) {
+          const active = res.data.find(q => q.isActive) || res.data[0];
+          if (active) setActivePaymentQr(active);
+        }
+      } catch (err) {
+        console.warn('Could not fetch active payment QR for checkout:', err);
+      }
+    };
+    fetchActiveQr();
+  }, [booking?.restaurantId]);
 
   // Food items & bill calculations
   const orders = booking?.orders && booking.orders.length > 0 ? booking.orders : [
@@ -138,7 +157,7 @@ export default function PaymentModal({ booking, onClose, onPaymentComplete }) {
                 {step === 'SUCCESS' ? 'Payment Completed & Settled' : 'Bill Payment & Settlement'}
               </div>
               <div className="modal-sub">
-                {booking?.restaurantName || 'Dining Outlet'} · Table {booking?.tableAssigned || 'T-01'} · {booking?.guestName || 'Campus Diner'}
+                {booking?.restaurantName || 'Dining Outlet'} · {booking?.guests || 2} Diners · {booking?.guestName || 'Campus Diner'}
               </div>
             </div>
           </div>
@@ -226,6 +245,7 @@ export default function PaymentModal({ booking, onClose, onPaymentComplete }) {
                       <button
                         key={opt.id}
                         type="button"
+                        className={`payment-card-pill ${isActive ? 'active' : ''}`}
                         onClick={() => setMethod(opt.id)}
                         style={{
                           padding: '14px 12px',
@@ -239,11 +259,12 @@ export default function PaymentModal({ booking, onClose, onPaymentComplete }) {
                           flexDirection: 'column',
                           alignItems: 'center',
                           gap: 6,
-                          boxShadow: isActive ? '0 2px 8px rgba(30, 58, 138, 0.1)' : 'none',
-                          transition: 'all 0.2s ease'
+                          boxShadow: isActive ? '0 2px 8px rgba(30, 58, 138, 0.1)' : 'none'
                         }}
                       >
-                        <div style={{
+                        <div
+                          className="payment-card-icon"
+                          style={{
                           width: 38,
                           height: 38,
                           borderRadius: '50%',
@@ -293,16 +314,30 @@ export default function PaymentModal({ booking, onClose, onPaymentComplete }) {
                       display: 'flex',
                       flexDirection: 'column',
                       alignItems: 'center',
-                      boxShadow: 'var(--shadow-md)'
+                      boxShadow: 'var(--shadow-md)',
+                      minWidth: 164
                     }}>
-                      <img
-                        src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=dinebennett@okhdfcbank%26pn=TheSpiceGarden%26am=${grandTotal}%26cu=INR`}
-                        alt="UPI Payment QR"
-                        style={{ width: 140, height: 140, display: 'block' }}
-                      />
-                      <span style={{ fontSize: 10, fontWeight: 800, color: '#000', marginTop: 4, letterSpacing: '0.05em' }}>
-                        BHIM UPI · VERIFIED
+                      {activePaymentQr?.image ? (
+                        <img
+                          src={activePaymentQr.image}
+                          alt={activePaymentQr.label || "UPI Payment QR"}
+                          style={{ width: 140, height: 140, objectFit: 'contain', display: 'block' }}
+                        />
+                      ) : (
+                        <img
+                          src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(`upi://pay?pa=${activePaymentQr?.upiId || 'dinebennett@okhdfcbank'}&pn=${encodeURIComponent(booking?.restaurantName || 'Campus Dining')}&am=${grandTotal}&cu=INR`)}`}
+                          alt="UPI Payment QR"
+                          style={{ width: 140, height: 140, display: 'block' }}
+                        />
+                      )}
+                      <span style={{ fontSize: 10, fontWeight: 800, color: '#000', marginTop: 6, letterSpacing: '0.05em' }}>
+                        {activePaymentQr?.label ? activePaymentQr.label.toUpperCase() : 'BHIM UPI · VERIFIED'}
                       </span>
+                      {activePaymentQr?.upiId && (
+                        <span style={{ fontSize: 9.5, color: 'var(--primary)', fontWeight: 700, fontFamily: 'monospace' }}>
+                          {activePaymentQr.upiId}
+                        </span>
+                      )}
                     </div>
 
                     {/* UPI App Options & VPA */}
@@ -567,7 +602,7 @@ export default function PaymentModal({ booking, onClose, onPaymentComplete }) {
                   Payment Settled Successfully!
                 </h3>
                 <div style={{ fontSize: 13, color: 'var(--t3)' }}>
-                  Table released &amp; session closed · Paid via <strong>{paymentResult.method}</strong>
+                  Dining pass completed &amp; session settled · Paid via <strong>{paymentResult.method}</strong>
                 </div>
               </div>
 
@@ -598,7 +633,7 @@ export default function PaymentModal({ booking, onClose, onPaymentComplete }) {
                   <div><span style={{ color: '#64748B' }}>Invoice No:</span> <strong>{paymentResult.transactionId}</strong></div>
                   <div style={{ textAlign: 'right' }}><span style={{ color: '#64748B' }}>Date:</span> <strong>{paymentResult.date} {paymentResult.time}</strong></div>
                   <div><span style={{ color: '#64748B' }}>Guest Name:</span> <strong>{booking?.guestName || 'Priya Sharma'}</strong></div>
-                  <div style={{ textAlign: 'right' }}><span style={{ color: '#64748B' }}>Table:</span> <strong>{booking?.tableAssigned || 'T-04'}</strong></div>
+                  <div style={{ textAlign: 'right' }}><span style={{ color: '#64748B' }}>Party Size:</span> <strong>{booking?.guests || 2} Guests</strong></div>
                 </div>
 
                 {/* Items Table */}

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useDining } from '../../context/DiningContext';
 import { useAuth } from '../../context/AuthContext';
 import PaymentModal from '../../components/PaymentModal';
@@ -61,7 +62,7 @@ export default function StaffPortal() {
     name: '',
     email: '',
     guests: 2,
-    table: tables[0]?.id || 'T-01'
+    notes: 'Walk-In Student Dining'
   });
 
   const popularAddOns = liveMenu.length > 0
@@ -73,8 +74,8 @@ export default function StaffPortal() {
       }))
     : [];
 
-  const handleCheckIn = (bookingId, tableId) => {
-    staffCheckInGuest(bookingId, tableId);
+  const handleCheckIn = (bookingId) => {
+    staffCheckInGuest(bookingId, null);
   };
 
   const handleWalkinSubmit = async (e) => {
@@ -86,19 +87,19 @@ export default function StaffPortal() {
         guestName: walkinForm.name,
         guestEmail: walkinForm.email,
         guests: Number(walkinForm.guests),
-        tableAssigned: walkinForm.table || tables[0]?.id || 'T-01',
+        tableAssigned: null,
         restaurantId: user?.restaurantId || 1,
-        specialRequest: 'Walk-In Student Dining'
+        specialRequest: walkinForm.notes || 'Walk-In Dining'
       });
 
       // Directly seat walk-in
       if (newBooking?.id) {
-        await staffCheckInGuest(newBooking.id, walkinForm.table || tables[0]?.id || 'T-01');
+        await staffCheckInGuest(newBooking.id, null);
       }
       setShowWalkinModal(false);
-      setWalkinForm({ name: '', email: '', guests: 2, table: tables[0]?.id || 'T-01' });
+      setWalkinForm({ name: '', email: '', guests: 2, notes: 'Walk-In Student Dining' });
     } catch (err) {
-      alert('Could not seat walk-in guest: ' + err.message);
+      alert('Could not check in walk-in guest: ' + err.message);
     }
   };
 
@@ -151,88 +152,47 @@ export default function StaffPortal() {
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
           <div style={{ textAlign: 'right' }}>
-            <div style={{ fontSize: 11, color: 'var(--t4)', textTransform: 'uppercase', fontWeight: 700 }}>Tables Occupied</div>
-            <div className="font-display" style={{ fontSize: '1.5rem', fontWeight: 800, color: '#38BDF8' }}>
-              {tables.filter(t => t.occupied).length} / {tables.length}
+            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.75)', textTransform: 'uppercase', fontWeight: 700 }}>Active Diners</div>
+            <div className="font-display" style={{ fontSize: '1.6rem', fontWeight: 800, color: '#84C853' }}>
+              {seatedCount} Parties
             </div>
           </div>
-          <button className="btn btn-primary btn-md" onClick={() => setShowWalkinModal(true)}>
-            <Plus size={16} /> Seat Walk-In Student
+          <button className="btn-accent" onClick={() => setShowWalkinModal(true)}>
+            <Plus size={16} /> Check-In Walk-In Guest
           </button>
         </div>
       </div>
 
-      {/* Floor Table Map Quick View */}
-      <div className="anim-fade-up delay-1" style={{ marginBottom: 28 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-          <div>
-            <h3 className="font-display" style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--t1)' }}>
-              Interactive Floor Table Layout
-            </h3>
-            <div style={{ fontSize: 12, color: 'var(--t3)' }}>
-              Click any seated table to add order items or trigger bill payment settlement.
-            </div>
+      {/* Front Desk Live Pulse Overview */}
+      <div className="anim-fade-up delay-1" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 14, marginBottom: 24 }}>
+        <div style={{ padding: '16px 20px', borderRadius: 'var(--r)', background: '#FFFFFF', border: '1px solid var(--border)', boxShadow: 'var(--shadow-sm)', display: 'flex', alignItems: 'center', gap: 14 }}>
+          <div style={{ width: 44, height: 44, borderRadius: 'var(--r-sm)', background: '#FEF3C7', color: '#D97706', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Clock size={22} />
           </div>
-          <span style={{ fontSize: 12, color: 'var(--t3)' }}>
-            {tables.filter(t => !t.occupied).length} tables free right now
-          </span>
+          <div>
+            <div style={{ fontSize: 11.5, color: 'var(--t4)', textTransform: 'uppercase', fontWeight: 700 }}>Awaiting Check-In</div>
+            <div className="font-display" style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--t1)' }}>{pendingCount}</div>
+          </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: 12 }}>
-          {tables.map(table => {
-            const tableBooking = reservations.find(b => b.tableAssigned === table.id && b.status === 'SEATED');
+        <div style={{ padding: '16px 20px', borderRadius: 'var(--r)', background: '#FFFFFF', border: '1px solid var(--border)', boxShadow: 'var(--shadow-sm)', display: 'flex', alignItems: 'center', gap: 14 }}>
+          <div style={{ width: 44, height: 44, borderRadius: 'var(--r-sm)', background: 'var(--bg-subtle)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Utensils size={22} />
+          </div>
+          <div>
+            <div style={{ fontSize: 11.5, color: 'var(--t4)', textTransform: 'uppercase', fontWeight: 700 }}>Currently Dining</div>
+            <div className="font-display" style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--t1)' }}>{seatedCount}</div>
+          </div>
+        </div>
 
-            return (
-              <div
-                key={table.id}
-                onClick={() => {
-                  if (tableBooking) {
-                    setSelectedTableForOrder(tableBooking);
-                  }
-                }}
-                style={{
-                  padding: '12px 14px',
-                  borderRadius: 'var(--r-sm)',
-                  background: table.occupied
-                    ? 'rgba(16, 185, 129, 0.14)'
-                    : 'rgba(255, 255, 255, 0.03)',
-                  border: table.occupied
-                    ? '1.5px solid rgba(16, 185, 129, 0.45)'
-                    : '1px solid var(--border)',
-                  cursor: table.occupied ? 'pointer' : 'default',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 4,
-                  transition: 'all 0.2s ease',
-                  boxShadow: table.occupied ? '0 0 14px rgba(16, 185, 129, 0.15)' : 'none'
-                }}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: 14, fontWeight: 800, color: table.occupied ? '#10B981' : 'var(--t1)' }}>
-                    {table.id}
-                  </span>
-                  <span style={{ fontSize: 10.5, color: 'var(--t4)', fontWeight: 600 }}>{table.cap}P</span>
-                </div>
-                <div style={{ fontSize: 11, color: 'var(--t3)' }}>{table.type}</div>
-                <div style={{
-                  fontSize: 11,
-                  fontWeight: 700,
-                  color: table.occupied ? '#34D399' : 'var(--t4)',
-                  overflow: 'hidden',
-                  whiteSpace: 'nowrap',
-                  textOverflow: 'ellipsis',
-                  marginTop: 2
-                }}>
-                  {table.occupied ? `● ${table.guest || 'Seated'}` : 'Available'}
-                </div>
-                {table.occupied && (
-                  <div style={{ fontSize: 10, color: 'var(--primary)', fontWeight: 700, marginTop: 2 }}>
-                    Active Dining
-                  </div>
-                )}
-              </div>
-            );
-          })}
+        <div style={{ padding: '16px 20px', borderRadius: 'var(--r)', background: '#FFFFFF', border: '1px solid var(--border)', boxShadow: 'var(--shadow-sm)', display: 'flex', alignItems: 'center', gap: 14 }}>
+          <div style={{ width: 44, height: 44, borderRadius: 'var(--r-sm)', background: '#EFF6FF', color: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <CheckCircle2 size={22} />
+          </div>
+          <div>
+            <div style={{ fontSize: 11.5, color: 'var(--t4)', textTransform: 'uppercase', fontWeight: 700 }}>Completed Today</div>
+            <div className="font-display" style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--t1)' }}>{completedCount}</div>
+          </div>
         </div>
       </div>
 
@@ -328,40 +288,40 @@ export default function StaffPortal() {
                     : '4px solid var(--accent)'
                 }}
               >
-                {/* Left: Table badge & Guest info */}
+                {/* Left: Party badge & Guest info */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: 18, flexWrap: 'wrap', minWidth: 0, flex: 1 }}>
                   <div style={{
-                    width: 56,
-                    height: 56,
+                    width: 52,
+                    height: 52,
                     borderRadius: 'var(--r-sm)',
                     background: isSeated
-                      ? 'rgba(16, 185, 129, 0.15)'
+                      ? 'var(--bg-subtle)'
                       : isCompleted
-                      ? 'rgba(79, 70, 229, 0.15)'
-                      : 'rgba(245, 158, 11, 0.15)',
+                      ? '#EFF6FF'
+                      : '#FEF3C7',
                     border: '1px solid var(--border)',
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
                     fontWeight: 800,
-                    fontSize: 14,
-                    color: isSeated ? '#10B981' : isCompleted ? 'var(--primary-light)' : 'var(--accent)'
+                    fontSize: 13,
+                    color: isSeated ? 'var(--primary)' : isCompleted ? '#2563EB' : '#D97706'
                   }}>
-                    <span>{item.tableAssigned || 'T-04'}</span>
-                    <span style={{ fontSize: 9.5, opacity: 0.8 }}>TABLE</span>
+                    <Users size={18} />
+                    <span style={{ fontSize: 10, fontWeight: 700 }}>{item.guests}P</span>
                   </div>
 
                   <div style={{ minWidth: 0, flex: 1 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4, flexWrap: 'wrap' }}>
                       <span style={{ fontSize: 15, fontWeight: 800, color: 'var(--t1)' }}>
-                        {item.guestName || item.name || 'Priya Sharma'}
+                        {item.guestName || item.name || 'Student Diner'}
                       </span>
-                      <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--accent)', letterSpacing: '0.05em' }}>
+                      <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--primary)', letterSpacing: '0.05em' }}>
                         {item.id}
                       </span>
                       {isConfirmed && <span className="badge badge-warning">Awaiting Check-In</span>}
-                      {isSeated && <span className="badge badge-success">● Currently Seated</span>}
+                      {isSeated && <span className="badge badge-success">● Currently Dining</span>}
                       {isCompleted && (
                         <span className="badge badge-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                           <Check size={11} /> Completed &amp; Paid
@@ -372,11 +332,11 @@ export default function StaffPortal() {
                     <div style={{ fontSize: 12.5, color: 'var(--t3)', display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
                       <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><Clock size={13} /> {item.time}</span>
                       <span>·</span>
-                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><Users size={13} /> {item.guests} Guests</span>
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><Users size={13} /> {item.guests} Diners</span>
                       <span>·</span>
                       <span style={{ color: 'var(--primary)' }}>{item.guestEmail || 'Student'}</span>
                       <span>·</span>
-                      <span>{item.specialRequest || 'Table Reservation'}</span>
+                      <span>{item.specialRequest || 'Dining Reservation'}</span>
                     </div>
 
                     {/* Order summary pill if items exist */}
@@ -393,7 +353,7 @@ export default function StaffPortal() {
                         {item.orders.length > 3 && (
                           <span style={{ fontSize: 11, color: 'var(--t4)' }}>+{item.orders.length - 3} more</span>
                         )}
-                        <span style={{ fontSize: 12, fontWeight: 800, color: 'var(--accent)', marginLeft: 4 }}>
+                        <span style={{ fontSize: 12, fontWeight: 800, color: 'var(--primary)', marginLeft: 4 }}>
                           Est. Bill: ₹{netPayable}
                         </span>
                       </div>
@@ -406,10 +366,10 @@ export default function StaffPortal() {
                   {/* STAGE 1: Check in guest */}
                   {isConfirmed && (
                     <button
-                      className="btn btn-primary btn-md"
-                      onClick={() => handleCheckIn(item.id, item.tableAssigned)}
+                      className="btn-primary"
+                      onClick={() => handleCheckIn(item.id)}
                     >
-                      <UserCheck size={16} /> Check-In &amp; Seat Guest
+                      <UserCheck size={16} /> 1-Click Check-In
                     </button>
                   )}
 
@@ -417,14 +377,14 @@ export default function StaffPortal() {
                   {isSeated && (
                     <>
                       <button
-                        className="btn btn-outline btn-md"
+                        className="btn-secondary"
                         onClick={() => setSelectedTableForOrder(item)}
                       >
                         <Utensils size={15} /> Add Dishes / View Tab
                       </button>
 
                       <button
-                        className="btn btn-accent btn-md"
+                        className="btn-accent"
                         onClick={() => setPaymentModalBooking(item)}
                       >
                         <Receipt size={16} /> Settle Bill (₹{netPayable})
@@ -439,7 +399,8 @@ export default function StaffPortal() {
                         Paid via {item.payment?.method || 'UPI'} (₹{item.payment?.amount || netPayable})
                       </span>
                       <button
-                        className="btn btn-outline btn-sm"
+                        className="btn-secondary"
+                        style={{ padding: '6px 12px', fontSize: 12 }}
                         onClick={() => setPaymentModalBooking(item)}
                       >
                         <Receipt size={13} /> View Invoice
@@ -453,17 +414,17 @@ export default function StaffPortal() {
         )}
       </div>
 
-      {/* MODAL: ADD ORDER ITEMS TO TABLE */}
+      {/* MODAL: ADD ORDER ITEMS TO GUEST TAB */}
       {selectedTableForOrder && (
         <div className="modal-overlay" onClick={() => setSelectedTableForOrder(null)}>
-          <div className="modal-card anim-scale-in" onClick={e => e.stopPropagation()} style={{ maxWidth: 540 }}>
+          <div className="modal-card modal-bottom-sheet anim-scale-in" onClick={e => e.stopPropagation()} style={{ maxWidth: 540 }}>
             <div className="modal-hd">
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <div style={{ width: 38, height: 38, borderRadius: 'var(--r-xs)', background: 'rgba(16, 185, 129, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#10B981', fontWeight: 800 }}>
-                  {selectedTableForOrder.tableAssigned || 'T-04'}
+                <div style={{ width: 38, height: 38, borderRadius: 'var(--r-xs)', background: 'var(--bg-subtle)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)', fontWeight: 800 }}>
+                  <Utensils size={18} />
                 </div>
                 <div>
-                  <h3 className="modal-title font-display">Manage Table Order</h3>
+                  <h3 className="modal-title font-display">Manage Guest Dining Tab</h3>
                   <div className="modal-sub">{selectedTableForOrder.guestName} · Active Dining Session</div>
                 </div>
               </div>
@@ -579,26 +540,23 @@ export default function StaffPortal() {
                     />
                   </div>
                   <div>
-                    <label className="form-label">Select Table</label>
-                    <select
+                    <label className="form-label">Notes / Occasion</label>
+                    <input
                       className="form-input"
-                      value={walkinForm.table}
-                      onChange={e => setWalkinForm({ ...walkinForm, table: e.target.value })}
-                    >
-                      {tables.filter(t => !t.occupied).map(t => (
-                        <option key={t.id} value={t.id}>{t.id} ({t.type} · {t.cap}P)</option>
-                      ))}
-                    </select>
+                      placeholder="e.g. Walk-in Lunch"
+                      value={walkinForm.notes}
+                      onChange={e => setWalkinForm({ ...walkinForm, notes: e.target.value })}
+                    />
                   </div>
                 </div>
               </div>
 
               <div className="modal-ft">
-                <button type="button" className="btn btn-ghost btn-sm" onClick={() => setShowWalkinModal(false)}>
+                <button type="button" className="btn-secondary" onClick={() => setShowWalkinModal(false)}>
                   Cancel
                 </button>
-                <button type="submit" className="btn btn-primary btn-md">
-                  <Check size={14} /> Confirm &amp; Seat Diner
+                <button type="submit" className="btn-primary">
+                  <Check size={14} /> 1-Click Check-In Diner
                 </button>
               </div>
             </form>
@@ -625,7 +583,7 @@ export default function StaffPortal() {
         onScanSuccess={(code, matchedReservation) => {
           setSearchCode(code);
           if (matchedReservation) {
-            handleCheckIn(matchedReservation.id, matchedReservation.tableAssigned || 'T-01');
+            handleCheckIn(matchedReservation.id);
           }
         }}
       />

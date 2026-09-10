@@ -187,7 +187,7 @@ export default function Sidebar() {
       {/* Footer / Sign Out */}
       <div className="sidebar-footer">
         <button
-          className="nav-item"
+          className="nav-item sidebar-logout-btn"
           style={{ width: '100%', border: 'none', background: 'none', textAlign: 'left', color: 'var(--t4)' }}
           onClick={handleLogout}
         >

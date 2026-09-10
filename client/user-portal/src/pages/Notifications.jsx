@@ -97,7 +97,7 @@ export default function Notifications() {
           filtered.map(n => (
             <div
               key={n.id}
-              className="card"
+              className="card notification-card"
               style={{
                 padding: '16px 20px',
                 display: 'flex',
@@ -139,7 +139,7 @@ export default function Notifications() {
                   {n.type === 'booking' && (
                     <button
                       className="btn btn-ghost btn-sm"
-                      style={{ padding: 0, fontSize: 12, color: 'var(--primary-light)', fontWeight: 600 }}
+                      style={{ padding: 0, fontSize: 12, color: 'var(--primary)', fontWeight: 600 }}
                       onClick={() => navigate('/bookings')}
                     >
                       View Reservation <ExternalLink size={12} style={{ marginLeft: 3 }} />
@@ -158,12 +158,11 @@ export default function Notifications() {
               </div>
 
               <button
-                className="icon-btn"
-                style={{ width: 32, height: 32, flexShrink: 0, border: 'none' }}
+                className="notification-dismiss-btn"
                 onClick={() => removeNotification(n.id)}
                 title="Dismiss"
               >
-                <Trash2 size={14} className="text-slate-400 hover:text-red-400" />
+                <Trash2 size={15} />
               </button>
             </div>
           ))

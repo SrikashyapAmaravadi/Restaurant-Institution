@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { X, Calendar, Clock, MapPin, Users, CheckCircle2, Download, Share2, GraduationCap, Camera, QrCode } from 'lucide-react';
 import { useDining } from '../context/DiningContext';
 
@@ -43,7 +44,7 @@ export default function DigitalPassModal({ booking, onClose }) {
 
   return (
     <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
-      <div className="modal-card anim-scale-in" style={{ maxWidth: 440, background: '#FFFFFF', border: '1px solid var(--border)', boxShadow: 'var(--shadow-xl)' }}>
+      <div className="modal-card modal-bottom-sheet anim-scale-in" style={{ maxWidth: 440, background: '#FFFFFF', border: '1px solid var(--border)', boxShadow: 'var(--shadow-xl)' }}>
         <div className="modal-hd" style={{ borderBottom: 'none', paddingBottom: 0 }}>
           <span className="badge badge-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
             <GraduationCap size={13} /> Bennett Dining Pass

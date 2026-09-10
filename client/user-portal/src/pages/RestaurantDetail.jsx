@@ -26,7 +26,8 @@ import {
   Tag,
   Leaf,
   Zap,
-  Award
+  Award,
+  ArrowUpDown
 } from 'lucide-react';
 
 const TABS = ['Menu Catalog', 'Active Offers', 'Student Reviews', 'About & Location'];
@@ -44,6 +45,7 @@ export default function RestaurantDetail() {
   const [selectedOffer, setSelectedOffer] = useState(null);
   const [dishSearch, setDishSearch] = useState('');
   const [vegOnly, setVegOnly] = useState(false);
+  const [dishSort, setDishSort] = useState('default');
   const [isFavorited, setIsFavorited] = useState(false);
   const [menuViewMode, setMenuViewMode] = useState('serpentine');
   const [selectedCategory, setSelectedCategory] = useState('ALL');
@@ -272,7 +274,7 @@ export default function RestaurantDetail() {
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <button
-            className="icon-btn"
+            className="icon-btn icon-btn-favorite"
             onClick={() => setIsFavorited(!isFavorited)}
             title="Save to favorites"
             style={{ color: isFavorited ? '#EF4444' : 'var(--t3)' }}
@@ -373,7 +375,7 @@ export default function RestaurantDetail() {
                 className="btn btn-accent btn-lg"
                 onClick={() => setShowBookingModal(true)}
               >
-                <Calendar size={18} /> Reserve a Table
+                <Sparkles size={18} /> Book Dining Pass
               </button>
             </div>
           </div>
@@ -417,7 +419,31 @@ export default function RestaurantDetail() {
               </div>
 
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-                <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'var(--t2)', cursor: 'pointer', background: 'rgba(255,255,255,0.03)', padding: '6px 14px', borderRadius: 'var(--r-full)', border: '1px solid var(--border)' }}>
+                {/* Dish Sort Selector */}
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#FFFFFF', padding: '5px 12px', borderRadius: 'var(--r-full)', border: '1px solid var(--border)' }}>
+                  <ArrowUpDown size={13} style={{ color: 'var(--primary)' }} />
+                  <select
+                    value={dishSort}
+                    onChange={e => setDishSort(e.target.value)}
+                    style={{
+                      border: 'none',
+                      outline: 'none',
+                      background: 'transparent',
+                      color: '#000000',
+                      fontSize: 12,
+                      fontWeight: 700,
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <option value="default">Sort: Default</option>
+                    <option value="veg-first">Vegetarian First</option>
+                    <option value="price-low">Price: Low to High</option>
+                    <option value="price-high">Price: High to Low</option>
+                    <option value="name-az">Dish Name (A - Z)</option>
+                  </select>
+                </div>
+
+                <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'var(--t2)', cursor: 'pointer', background: '#FFFFFF', padding: '6px 14px', borderRadius: 'var(--r-full)', border: '1px solid var(--border)' }}>
                   <input
                     type="checkbox"
                     checked={vegOnly}
@@ -428,7 +454,7 @@ export default function RestaurantDetail() {
                 </label>
 
                 {/* View Switcher: Explore Road vs Grid */}
-                <div style={{ display: 'inline-flex', background: 'rgba(255,255,255,0.05)', borderRadius: 'var(--r-full)', padding: 3, border: '1px solid var(--border)' }}>
+                <div style={{ display: 'inline-flex', background: '#FFFFFF', borderRadius: 'var(--r-full)', padding: 3, border: '1px solid var(--border)' }}>
                   <button
                     className={`btn btn-xs ${menuViewMode === 'serpentine' ? 'btn-primary' : 'btn-ghost'}`}
                     style={{ borderRadius: 'var(--r-full)', fontSize: 11, padding: '4px 10px', gap: 4 }}
@@ -454,12 +480,22 @@ export default function RestaurantDetail() {
               const allDishes = Object.entries(menu).flatMap(([cat, items]) =>
                 items.map(i => ({ ...i, category: cat }))
               );
-              const filteredDishes = allDishes.filter(item => {
+              let filteredDishes = allDishes.filter(item => {
                 if (selectedCategory !== 'ALL' && item.category !== selectedCategory) return false;
                 if (vegOnly && !item.veg) return false;
                 if (dishSearch && !item.name.toLowerCase().includes(dishSearch.toLowerCase()) && !item.desc.toLowerCase().includes(dishSearch.toLowerCase())) return false;
                 return true;
               });
+
+              if (dishSort === 'veg-first') {
+                filteredDishes.sort((a, b) => (b.veg ? 1 : 0) - (a.veg ? 1 : 0));
+              } else if (dishSort === 'price-low') {
+                filteredDishes.sort((a, b) => (a.price || 0) - (b.price || 0));
+              } else if (dishSort === 'price-high') {
+                filteredDishes.sort((a, b) => (b.price || 0) - (a.price || 0));
+              } else if (dishSort === 'name-az') {
+                filteredDishes.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+              }
               const categories = ['ALL', ...Object.keys(menu)];
 
               return (
@@ -514,7 +550,7 @@ export default function RestaurantDetail() {
                             <div
                               className="winding-dish-orb"
                               onClick={() => setShowBookingModal(true)}
-                              title={`Reserve a table for ${item.name}`}
+                              title={`Book dining pass for ${item.name}`}
                             >
                               <img src={item.image} alt={item.name} loading="lazy" />
                             </div>
@@ -542,7 +578,7 @@ export default function RestaurantDetail() {
                                   className="winding-add-btn"
                                   onClick={() => setShowBookingModal(true)}
                                 >
-                                  + Reserve Table
+                                  + Pre-Book
                                 </button>
                               </div>
                             </div>
@@ -572,13 +608,23 @@ export default function RestaurantDetail() {
             {menuViewMode === 'grid' && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
                 {Object.entries(menu).map(([category, items]) => {
-                  const filteredItems = items.filter(item => {
+                  let sortedItems = items.filter(item => {
                     if (vegOnly && !item.veg) return false;
                     if (dishSearch && !item.name.toLowerCase().includes(dishSearch.toLowerCase()) && !item.desc.toLowerCase().includes(dishSearch.toLowerCase())) return false;
                     return true;
                   });
 
-                  if (filteredItems.length === 0) return null;
+                  if (dishSort === 'veg-first') {
+                    sortedItems.sort((a, b) => (b.veg ? 1 : 0) - (a.veg ? 1 : 0));
+                  } else if (dishSort === 'price-low') {
+                    sortedItems.sort((a, b) => (a.price || 0) - (b.price || 0));
+                  } else if (dishSort === 'price-high') {
+                    sortedItems.sort((a, b) => (b.price || 0) - (a.price || 0));
+                  } else if (dishSort === 'name-az') {
+                    sortedItems.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+                  }
+
+                  if (sortedItems.length === 0) return null;
 
                   return (
                     <div key={category}>
@@ -586,11 +632,11 @@ export default function RestaurantDetail() {
                         <h3 className="font-display" style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--t1)' }}>
                           {category}
                         </h3>
-                        <span style={{ fontSize: 12, color: 'var(--t4)' }}>({filteredItems.length} items)</span>
+                        <span style={{ fontSize: 12, color: 'var(--t4)' }}>({sortedItems.length} items)</span>
                       </div>
 
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 280px), 1fr))', gap: 'clamp(12px, 2vw, 18px)' }}>
-                        {filteredItems.map(item => (
+                        {sortedItems.map(item => (
                           <div
                             key={item.id || item.name}
                             className="card card-hover"
@@ -694,16 +740,19 @@ export default function RestaurantDetail() {
                       {offer.description}
                     </p>
 
-                    <div style={{
-                      padding: '12px 16px',
-                      borderRadius: 'var(--r-sm)',
-                      background: '#FFFBEB',
-                      border: '1.5px dashed #F59E0B',
-                      marginBottom: 18,
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center'
-                    }}>
+                    <div
+                      className="promo-code-box"
+                      style={{
+                        padding: '12px 16px',
+                        borderRadius: 'var(--r-sm)',
+                        background: '#FFFBEB',
+                        border: '1.5px dashed #F59E0B',
+                        marginBottom: 18,
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center'
+                      }}
+                    >
                       <div>
                         <div style={{ fontSize: 10, fontWeight: 700, color: '#92400E', textTransform: 'uppercase', letterSpacing: '0.06em' }}>PROMO CODE</div>
                         <span style={{ fontSize: '1.15rem', fontWeight: 800, color: '#B45309', letterSpacing: '0.08em' }}>

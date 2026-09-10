@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import RestaurantCard from '../components/RestaurantCard';
 import InteractiveMap from '../components/InteractiveMap';
 import BookingModal from '../components/BookingModal';
@@ -17,7 +18,8 @@ import {
   MapPin,
   Star,
   Tag,
-  UtensilsCrossed
+  UtensilsCrossed,
+  ArrowUpDown
 } from 'lucide-react';
 
 const CUISINES = ['North Indian', 'Continental', 'Mediterranean', 'Pan-Asian', 'Vegan'];
@@ -36,30 +38,51 @@ export default function Discover() {
   const [maxDist, setDist]        = useState(5);
   const [openOnly, setOpen]       = useState(false);
   const [offersOnly, setOffers]   = useState(false);
+  const [sortBy, setSortBy]       = useState('recommended');
   const [selectedForBooking, setSelectedForBooking] = useState(null);
   const [selectedOffer, setSelectedOffer] = useState(null);
   const [showMobileFilters, setShowMobileFilters] = useState(false);
 
   const toggle = (arr, set, v) => set(a => a.includes(v) ? a.filter(x => x !== v) : [...a, v]);
 
-  const filtered = restaurantList.filter(r => {
-    if (search) {
-      const q = search.toLowerCase();
-      const matchName = r.name?.toLowerCase().includes(q);
-      const matchCuisine = r.cuisine?.toLowerCase().includes(q);
-      const matchTag = r.tags?.some(t => t.toLowerCase().includes(q));
-      const matchDish = r.popularDishes?.some(d => d.toLowerCase().includes(q));
-      if (!matchName && !matchCuisine && !matchTag && !matchDish) return false;
+  const filtered = useMemo(() => {
+    return restaurantList.filter(r => {
+      if (search) {
+        const q = search.toLowerCase();
+        const matchName = r.name?.toLowerCase().includes(q);
+        const matchCuisine = r.cuisine?.toLowerCase().includes(q);
+        const matchTag = r.tags?.some(t => t.toLowerCase().includes(q));
+        const matchDish = r.popularDishes?.some(d => d.toLowerCase().includes(q));
+        if (!matchName && !matchCuisine && !matchTag && !matchDish) return false;
+      }
+      if (cuisines.length && !cuisines.includes(r.cuisine)) return false;
+      if (prices.length && !prices.includes(r.price)) return false;
+      if (minRating === '4.0+' && (r.rating || 0) < 4.0) return false;
+      if (minRating === '4.5+' && (r.rating || 0) < 4.5) return false;
+      if ((r.distance || 0) > maxDist) return false;
+      if (openOnly && !r.isOpen) return false;
+      if (offersOnly && !r.hasOffer) return false;
+      return true;
+    });
+  }, [restaurantList, search, cuisines, prices, minRating, maxDist, openOnly, offersOnly]);
+
+  const sortedAndFiltered = useMemo(() => {
+    let list = [...filtered];
+    if (sortBy === 'rating-desc') {
+      list.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+    } else if (sortBy === 'distance-asc') {
+      list.sort((a, b) => (a.distance || 0) - (b.distance || 0));
+    } else if (sortBy === 'price-asc') {
+      const pVal = p => (p === '₹' ? 1 : p === '₹₹' ? 2 : 3);
+      list.sort((a, b) => pVal(a.price) - pVal(b.price));
+    } else if (sortBy === 'price-desc') {
+      const pVal = p => (p === '₹' ? 1 : p === '₹₹' ? 2 : 3);
+      list.sort((a, b) => pVal(b.price) - pVal(a.price));
+    } else if (sortBy === 'reviews-desc') {
+      list.sort((a, b) => (b.reviews || 0) - (a.reviews || 0));
     }
-    if (cuisines.length && !cuisines.includes(r.cuisine)) return false;
-    if (prices.length && !prices.includes(r.price)) return false;
-    if (minRating === '4.0+' && (r.rating || 0) < 4.0) return false;
-    if (minRating === '4.5+' && (r.rating || 0) < 4.5) return false;
-    if ((r.distance || 0) > maxDist) return false;
-    if (openOnly && !r.isOpen) return false;
-    if (offersOnly && !r.hasOffer) return false;
-    return true;
-  });
+    return list;
+  }, [filtered, sortBy]);
 
   const clearAll = () => {
     setSearch('');
@@ -69,6 +92,7 @@ export default function Discover() {
     setDist(5);
     setOpen(false);
     setOffers(false);
+    setSortBy('recommended');
   };
 
   const activeFiltersCount = cuisines.length + prices.length + (minRating !== 'Any' ? 1 : 0) + (openOnly ? 1 : 0) + (offersOnly ? 1 : 0);
@@ -76,33 +100,64 @@ export default function Discover() {
   return (
     <div className="page-pad" style={{ paddingBottom: 100 }}>
       {/* Header & Controls */}
-      <div className="anim-fade-up" style={{ marginBottom: 20, display: 'flex', flexDirection: 'column', gap: 14 }}>
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+        style={{ marginBottom: 20, display: 'flex', flexDirection: 'column', gap: 14 }}
+      >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
           <div>
             <h2 className="font-display" style={{ fontSize: 'clamp(1.35rem, 4vw, 1.75rem)', fontWeight: 800, color: 'var(--t1)' }}>
               District Radar &amp; Discovery
             </h2>
             <p style={{ fontSize: 13, color: 'var(--t3)' }}>
-              Explore <strong>{filtered.length}</strong> partner dining spots around Bennett University
+              Explore <strong>{sortedAndFiltered.length}</strong> partner dining spots around Bennett University
             </p>
           </div>
 
-          {/* View Mode Switcher */}
-          <div style={{ display: 'inline-flex', padding: 4, background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border)', borderRadius: 'var(--r-full)', gap: 4 }}>
-            <button
-              className={`btn btn-xs ${viewMode === 'grid' ? 'btn-primary' : 'btn-ghost'}`}
-              onClick={() => setViewMode('grid')}
-              style={{ borderRadius: 'var(--r-full)', padding: '6px 14px', fontSize: 12 }}
-            >
-              <Grid size={14} /> Grid View
-            </button>
-            <button
-              className={`btn btn-xs ${viewMode === 'map' ? 'btn-primary' : 'btn-ghost'}`}
-              onClick={() => setViewMode('map')}
-              style={{ borderRadius: 'var(--r-full)', padding: '6px 14px', fontSize: 12 }}
-            >
-              <Map size={14} /> Campus Map
-            </button>
+          {/* Sort & View Mode Switcher */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#FFFFFF', border: '1px solid var(--border)', borderRadius: 'var(--r-full)', padding: '4px 10px' }}>
+              <ArrowUpDown size={13} style={{ color: 'var(--primary)' }} />
+              <select
+                value={sortBy}
+                onChange={e => setSortBy(e.target.value)}
+                style={{
+                  border: 'none',
+                  outline: 'none',
+                  background: 'transparent',
+                  color: '#000000',
+                  fontSize: 12,
+                  fontWeight: 700,
+                  cursor: 'pointer'
+                }}
+              >
+                <option value="recommended">Featured / Recommended</option>
+                <option value="rating-desc">Top Rated (4.8★+)</option>
+                <option value="distance-asc">Nearest to Campus</option>
+                <option value="price-asc">Price: Low to High</option>
+                <option value="price-desc">Price: High to Low</option>
+                <option value="reviews-desc">Most Popular</option>
+              </select>
+            </div>
+
+            <div style={{ display: 'inline-flex', padding: 4, background: '#FFFFFF', border: '1px solid var(--border)', borderRadius: 'var(--r-full)', gap: 4 }}>
+              <button
+                className={`btn btn-xs ${viewMode === 'grid' ? 'btn-primary' : 'btn-ghost'}`}
+                onClick={() => setViewMode('grid')}
+                style={{ borderRadius: 'var(--r-full)', padding: '6px 14px', fontSize: 12 }}
+              >
+                <Grid size={14} /> Grid
+              </button>
+              <button
+                className={`btn btn-xs ${viewMode === 'map' ? 'btn-primary' : 'btn-ghost'}`}
+                onClick={() => setViewMode('map')}
+                style={{ borderRadius: 'var(--r-full)', padding: '6px 14px', fontSize: 12 }}
+              >
+                <Map size={14} /> Map
+              </button>
+            </div>
           </div>
         </div>
 
@@ -194,18 +249,18 @@ export default function Discover() {
             );
           })}
         </div>
-      </div>
+      </motion.div>
 
       {/* Main Discover Layout */}
       <div>
         {viewMode === 'map' ? (
           <InteractiveMap
-            restaurants={filtered}
+            restaurants={sortedAndFiltered}
             onSelectRestaurant={(rest) => setSelectedForBooking(rest)}
           />
         ) : (
           <div>
-            {filtered.length === 0 ? (
+            {sortedAndFiltered.length === 0 ? (
               <div className="card anim-fade-up" style={{ textAlign: 'center', padding: '64px 20px', borderRadius: 'var(--r-lg)' }}>
                 <div style={{
                   width: 56,
@@ -237,14 +292,24 @@ export default function Discover() {
                 gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 280px), 1fr))',
                 gap: 'clamp(14px, 2.5vw, 20px)'
               }}>
-                {filtered.map(r => (
-                  <RestaurantCard
-                    key={r.id}
-                    restaurant={r}
-                    onQuickReserve={(rest) => setSelectedForBooking(rest)}
-                    onViewOffer={(offer) => setSelectedOffer(offer)}
-                  />
-                ))}
+                <AnimatePresence mode="popLayout">
+                  {sortedAndFiltered.map((r, idx) => (
+                    <motion.div
+                      key={r.id}
+                      layout
+                      initial={{ opacity: 0, y: 18 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      transition={{ duration: 0.25, delay: Math.min(idx * 0.04, 0.25) }}
+                    >
+                      <RestaurantCard
+                        restaurant={r}
+                        onQuickReserve={(rest) => setSelectedForBooking(rest)}
+                        onViewOffer={(offer) => setSelectedOffer(offer)}
+                      />
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
               </div>
             )}
           </div>

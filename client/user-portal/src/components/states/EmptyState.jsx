@@ -17,7 +17,7 @@ export default function EmptyState({
 }) {
   return (
     <div
-      className={`card anim-fade-in ${className}`}
+      className={`card empty-state-card anim-fade-in ${className}`}
       style={{
         padding: '48px 24px',
         textAlign: 'center',
@@ -34,6 +34,7 @@ export default function EmptyState({
     >
       {/* Icon Circle */}
       <div
+        className="empty-state-icon-circle"
         style={{
           width: 64,
           height: 64,

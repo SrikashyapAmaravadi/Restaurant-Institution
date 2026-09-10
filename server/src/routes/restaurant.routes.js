@@ -310,7 +310,7 @@ router.patch(
     try {
       const restaurantId = parseInt(req.params.id, 10);
       const { itemId } = req.params;
-      const { name, category, desc, price, isVeg, isAvailable, badge, calories } = req.body;
+      const { name, category, desc, price, isVeg, isAvailable, badge, calories, image } = req.body;
 
       const existing = await prisma.menuItem.findUnique({ where: { id: itemId } });
       if (!existing || existing.restaurantId !== restaurantId) {
@@ -326,6 +326,7 @@ router.patch(
       if (isAvailable !== undefined) updateData.isAvailable = Boolean(isAvailable);
       if (badge !== undefined) updateData.badge = badge;
       if (calories !== undefined) updateData.calories = calories;
+      if (image !== undefined) updateData.image = image;
 
       const updatedItem = await prisma.menuItem.update({
         where: { id: itemId },
@@ -392,5 +393,199 @@ router.delete(
   }
 );
 
+// ── Payment QR Codes CRUD ──────────────────────────────────────────────────
+const restaurantPaymentQrs = new Map();
+restaurantPaymentQrs.set(1, [
+  {
+    id: 'qr-spicegarden-1',
+    label: 'Primary Counter UPI (GPay / PhonePe / Paytm)',
+    upiId: 'spicegarden.dining@icici',
+    image: 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=upi://pay?pa=spicegarden.dining@icici&pn=The%20Spice%20Garden',
+    isActive: true,
+    createdAt: new Date().toISOString()
+  }
+]);
+
+/**
+ * GET /api/restaurants/:id/payment-qrs
+ * Fetch active or all payment QRs for restaurant
+ */
+router.get('/:id/payment-qrs', async (req, res) => {
+  try {
+    const restaurantId = parseInt(req.params.id, 10);
+    const qrs = restaurantPaymentQrs.get(restaurantId) || [];
+    res.json({ success: true, data: qrs });
+  } catch (err) {
+    console.error('Error fetching payment QRs:', err);
+    res.status(500).json({ success: false, error: 'Failed to fetch payment QR codes' });
+  }
+});
+
+/**
+ * POST /api/restaurants/:id/payment-qrs
+ * Add new payment QR code
+ */
+router.post(
+  '/:id/payment-qrs',
+  authenticateToken,
+  requireRole('SUPER_ADMIN', 'RESTAURANT_ADMIN'),
+  requireRestaurantScope('id'),
+  async (req, res) => {
+    try {
+      const restaurantId = parseInt(req.params.id, 10);
+      const { label, upiId, image, isActive } = req.body;
+
+      if (!label || !upiId) {
+        return res.status(400).json({ success: false, error: 'Label and UPI ID are required' });
+      }
+
+      const qrs = restaurantPaymentQrs.get(restaurantId) || [];
+      const isFirst = qrs.length === 0;
+      const makeActive = isActive !== undefined ? Boolean(isActive) : isFirst;
+
+      if (makeActive) {
+        qrs.forEach((q) => (q.isActive = false));
+      }
+
+      const newQr = {
+        id: `qr-${restaurantId}-${Date.now().toString(36)}-${Math.random().toString(36).substring(2, 5)}`,
+        label: label.trim(),
+        upiId: upiId.trim(),
+        image: image || `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=upi://pay?pa=${encodeURIComponent(upiId)}`,
+        isActive: makeActive,
+        createdAt: new Date().toISOString()
+      };
+
+      qrs.unshift(newQr);
+      restaurantPaymentQrs.set(restaurantId, qrs);
+
+      await recordAuditLog(req, {
+        action: 'PAYMENT_QR_CREATED',
+        entityType: 'RESTAURANT',
+        entityId: String(restaurantId),
+        details: { qrId: newQr.id, label: newQr.label, upiId: newQr.upiId }
+      });
+
+      res.status(201).json({ success: true, message: 'Payment QR added successfully', data: newQr });
+    } catch (err) {
+      console.error('Error adding payment QR:', err);
+      res.status(500).json({ success: false, error: 'Failed to add payment QR code' });
+    }
+  }
+);
+
+/**
+ * PATCH /api/restaurants/:id/payment-qrs/:qrId
+ * Edit a payment QR code
+ */
+router.patch(
+  '/:id/payment-qrs/:qrId',
+  authenticateToken,
+  requireRole('SUPER_ADMIN', 'RESTAURANT_ADMIN'),
+  requireRestaurantScope('id'),
+  async (req, res) => {
+    try {
+      const restaurantId = parseInt(req.params.id, 10);
+      const { qrId } = req.params;
+      const { label, upiId, image, isActive } = req.body;
+
+      const qrs = restaurantPaymentQrs.get(restaurantId) || [];
+      const index = qrs.findIndex((q) => q.id === qrId);
+
+      if (index === -1) {
+        return res.status(404).json({ success: false, error: 'Payment QR not found' });
+      }
+
+      if (isActive) {
+        qrs.forEach((q) => (q.isActive = false));
+      }
+
+      const target = qrs[index];
+      if (label !== undefined) target.label = label.trim();
+      if (upiId !== undefined) {
+        target.upiId = upiId.trim();
+        if (!image) {
+          target.image = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=upi://pay?pa=${encodeURIComponent(upiId)}`;
+        }
+      }
+      if (image !== undefined) target.image = image;
+      if (isActive !== undefined) target.isActive = Boolean(isActive);
+
+      restaurantPaymentQrs.set(restaurantId, qrs);
+
+      res.json({ success: true, message: 'Payment QR updated successfully', data: target });
+    } catch (err) {
+      console.error('Error updating payment QR:', err);
+      res.status(500).json({ success: false, error: 'Failed to update payment QR' });
+    }
+  }
+);
+
+/**
+ * POST /api/restaurants/:id/payment-qrs/:qrId/set-active
+ * Set a specific QR as the active payment QR
+ */
+router.post(
+  '/:id/payment-qrs/:qrId/set-active',
+  authenticateToken,
+  requireRole('SUPER_ADMIN', 'RESTAURANT_ADMIN'),
+  requireRestaurantScope('id'),
+  async (req, res) => {
+    try {
+      const restaurantId = parseInt(req.params.id, 10);
+      const { qrId } = req.params;
+
+      const qrs = restaurantPaymentQrs.get(restaurantId) || [];
+      const target = qrs.find((q) => q.id === qrId);
+
+      if (!target) {
+        return res.status(404).json({ success: false, error: 'Payment QR not found' });
+      }
+
+      qrs.forEach((q) => (q.isActive = q.id === qrId));
+      restaurantPaymentQrs.set(restaurantId, qrs);
+
+      res.json({ success: true, message: `"${target.label}" is now the active payment QR`, data: target });
+    } catch (err) {
+      console.error('Error activating payment QR:', err);
+      res.status(500).json({ success: false, error: 'Failed to set active payment QR' });
+    }
+  }
+);
+
+/**
+ * DELETE /api/restaurants/:id/payment-qrs/:qrId
+ * Remove a payment QR code
+ */
+router.delete(
+  '/:id/payment-qrs/:qrId',
+  authenticateToken,
+  requireRole('SUPER_ADMIN', 'RESTAURANT_ADMIN'),
+  requireRestaurantScope('id'),
+  async (req, res) => {
+    try {
+      const restaurantId = parseInt(req.params.id, 10);
+      const { qrId } = req.params;
+
+      let qrs = restaurantPaymentQrs.get(restaurantId) || [];
+      const wasActive = qrs.find((q) => q.id === qrId)?.isActive;
+      qrs = qrs.filter((q) => q.id !== qrId);
+
+      // If we deleted the active one and have others, make the first one active
+      if (wasActive && qrs.length > 0) {
+        qrs[0].isActive = true;
+      }
+
+      restaurantPaymentQrs.set(restaurantId, qrs);
+
+      res.json({ success: true, message: 'Payment QR deleted successfully' });
+    } catch (err) {
+      console.error('Error deleting payment QR:', err);
+      res.status(500).json({ success: false, error: 'Failed to delete payment QR' });
+    }
+  }
+);
+
 export default router;
+
 

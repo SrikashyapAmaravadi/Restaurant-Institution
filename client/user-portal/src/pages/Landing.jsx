@@ -168,18 +168,27 @@ export default function Landing() {
           }
         }
         .touch-action-card {
-          transition: transform 0.18s ease, box-shadow 0.18s ease;
+          transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.24s ease;
           cursor: pointer;
           -webkit-tap-highlight-color: transparent;
           max-width: 100%;
           box-sizing: border-box;
         }
         .touch-action-card:hover {
-          transform: translateY(-3px);
-          box-shadow: 0 10px 24px rgba(30, 58, 138, 0.08);
+          transform: translateY(-5px);
+          box-shadow: 0 20px 40px -10px rgba(15, 45, 30, 0.14), 0 4px 12px rgba(15, 45, 30, 0.05), 0 0 0 1px rgba(111, 175, 61, 0.25) !important;
+          border-color: #9EC99B !important;
+        }
+        .touch-action-card:hover svg {
+          transform: scale(1.14);
+          transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .touch-action-card:hover img {
+          transform: scale(1.05);
+          transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .touch-action-card:active {
-          transform: scale(0.99);
+          transform: scale(0.98);
         }
       `}</style>
 

@@ -70,26 +70,7 @@ export default function RestaurantCard({ restaurant, onQuickReserve, onViewOffer
     <div
       className="rc anim-fade-up"
       onClick={handleCardClick}
-      style={{
-        background: '#FFFFFF',
-        borderRadius: 'var(--r-lg)',
-        border: '1px solid var(--border)',
-        overflow: 'hidden',
-        cursor: 'pointer',
-        transition: 'all 0.22s cubic-bezier(0.16, 1, 0.3, 1)',
-        boxShadow: 'var(--shadow-sm)',
-        position: 'relative'
-      }}
-      onMouseEnter={e => {
-        e.currentTarget.style.transform = 'translateY(-3px)';
-        e.currentTarget.style.borderColor = '#CBD5E1';
-        e.currentTarget.style.boxShadow = 'var(--shadow-md)';
-      }}
-      onMouseLeave={e => {
-        e.currentTarget.style.transform = 'translateY(0)';
-        e.currentTarget.style.borderColor = 'var(--border)';
-        e.currentTarget.style.boxShadow = 'var(--shadow-sm)';
-      }}
+      style={{ position: 'relative' }}
     >
       {/* 16:9 Full-Bleed Image Container */}
       <div style={{ position: 'relative', width: '100%', paddingTop: '56.25%', overflow: 'hidden' }}>
@@ -97,16 +78,14 @@ export default function RestaurantCard({ restaurant, onQuickReserve, onViewOffer
           src={image || 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80'}
           alt={name}
           loading="lazy"
+          className="rc-image"
           style={{
             position: 'absolute',
             inset: 0,
             width: '100%',
             height: '100%',
-            objectFit: 'cover',
-            transition: 'transform 0.4s ease'
+            objectFit: 'cover'
           }}
-          onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
-          onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
         />
 
         {/* Ambient Gradient Vignette */}
@@ -222,7 +201,7 @@ export default function RestaurantCard({ restaurant, onQuickReserve, onViewOffer
       <div style={{ padding: '14px 16px 16px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10, marginBottom: 4 }}>
           <div>
-            <h3 className="font-display" style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--t1)', lineHeight: 1.25 }}>
+            <h3 className="rc-title font-display" style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--t1)', lineHeight: 1.25 }}>
               {name}
             </h3>
             <p style={{ fontSize: 12, color: 'var(--t3)', marginTop: 3, display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
@@ -309,16 +288,7 @@ export default function RestaurantCard({ restaurant, onQuickReserve, onViewOffer
               alignItems: 'center',
               justifyContent: 'space-between',
               gap: 8,
-              cursor: 'pointer',
-              transition: 'all 0.18s ease'
-            }}
-            onMouseEnter={e => {
-              e.currentTarget.style.background = '#FEF3C7';
-              e.currentTarget.style.borderColor = '#D97706';
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.background = '#FFFBEB';
-              e.currentTarget.style.borderColor = '#F59E0B';
+              cursor: 'pointer'
             }}
             title="Click to view offer details & voucher terms"
           >

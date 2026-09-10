@@ -555,7 +555,7 @@ function handleOfflineFallback(endpoint, options = {}) {
         id: body.id || randomCode,
         status: body.status || 'CONFIRMED',
         createdAt: new Date().toISOString(),
-        tableAssigned: body.tableAssigned || 'T-01',
+        tableAssigned: null,
         orders: (body.orders || []).map(o => ({ ...o, qty: o.quantity || o.qty || 1 })),
         qrCode: body.qrCode || `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${body.id || randomCode}-BENNETT-VERIFIED`
       };
@@ -572,7 +572,7 @@ function handleOfflineFallback(endpoint, options = {}) {
       let matched = null;
       const updated = current.map(b => {
         if (b.id === targetId) {
-          matched = { ...b, status: body.status || 'SEATED', tableAssigned: body.tableAssigned || b.tableAssigned || 'T-01' };
+          matched = { ...b, status: body.status || 'SEATED', tableAssigned: null };
           return matched;
         }
         return b;
@@ -596,6 +596,144 @@ function handleOfflineFallback(endpoint, options = {}) {
       success: true,
       data: getStoredBookings()
     };
+  }
+
+  // 7. Profile Updates Fallback
+  if (endpoint === '/users/profile') {
+    try {
+      const rawUser = localStorage.getItem('dine_bennett_user');
+      const currentUser = rawUser ? JSON.parse(rawUser) : {};
+      const updatedUser = {
+        ...currentUser,
+        ...(body.name ? { name: body.name } : {}),
+        ...(body.avatar !== undefined ? { avatar: body.avatar } : {}),
+        ...(body.department !== undefined ? { department: body.department } : {}),
+        ...(body.rollNumber !== undefined ? { rollNumber: body.rollNumber } : {})
+      };
+      localStorage.setItem('dine_bennett_user', JSON.stringify(updatedUser));
+      window.dispatchEvent(new Event('storage'));
+      return { success: true, data: updatedUser, message: 'Profile updated successfully' };
+    } catch {
+      return { success: true, data: body, message: 'Profile updated' };
+    }
+  }
+
+  // 8. Payment QRs Fallback
+  if (endpoint.includes('/payment-qrs')) {
+    const restMatch = endpoint.match(/\/restaurants\/(\d+)\/payment-qrs/);
+    const restId = restMatch ? restMatch[1] : '1';
+    const storageKey = `dine_bennett_payment_qrs_${restId}`;
+
+    const getDefaultQrs = () => [
+      {
+        id: 'qr-spicegarden-1',
+        label: 'Primary Counter UPI (GPay / PhonePe / Paytm)',
+        upiId: 'spicegarden.dining@icici',
+        image: 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=upi://pay?pa=spicegarden.dining@icici&pn=The%20Spice%20Garden',
+        isActive: true,
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: 'qr-spicegarden-2',
+        label: 'Express Self-Kiosk UPI',
+        upiId: 'spicegarden.kiosk@icici',
+        image: 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=upi://pay?pa=spicegarden.kiosk@icici&pn=Spice%20Garden%20Express',
+        isActive: false,
+        createdAt: new Date().toISOString()
+      }
+    ];
+
+    const getStoredQrs = () => {
+      try {
+        const stored = localStorage.getItem(storageKey);
+        if (stored) return JSON.parse(stored);
+      } catch {
+        // ignore
+      }
+      return getDefaultQrs();
+    };
+
+    const saveQrs = (list) => {
+      try {
+        localStorage.setItem(storageKey, JSON.stringify(list));
+      } catch {
+        // ignore
+      }
+    };
+
+    // GET /restaurants/:id/payment-qrs
+    if (!options.method || options.method === 'GET') {
+      return { success: true, data: getStoredQrs() };
+    }
+
+    // POST .../set-active
+    const setActiveMatch = endpoint.match(/\/payment-qrs\/([^/]+)\/set-active/);
+    if (setActiveMatch) {
+      const qrId = setActiveMatch[1];
+      const qrs = getStoredQrs().map(q => ({ ...q, isActive: q.id === qrId }));
+      saveQrs(qrs);
+      return { success: true, message: 'Active payment QR updated', data: qrs.find(q => q.id === qrId) };
+    }
+
+    // POST /restaurants/:id/payment-qrs (create)
+    if (options.method === 'POST') {
+      const current = getStoredQrs();
+      const isFirst = current.length === 0;
+      const makeActive = body.isActive !== undefined ? Boolean(body.isActive) : isFirst;
+      if (makeActive) {
+        current.forEach(q => q.isActive = false);
+      }
+      const newQr = {
+        id: `qr-${restId}-${Date.now().toString(36)}`,
+        label: body.label || 'Dining Counter QR',
+        upiId: body.upiId || 'dining@upi',
+        image: body.image || `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=upi://pay?pa=${encodeURIComponent(body.upiId || 'dining@upi')}`,
+        isActive: makeActive,
+        createdAt: new Date().toISOString()
+      };
+      const updated = [newQr, ...current];
+      saveQrs(updated);
+      return { success: true, message: 'Payment QR added successfully', data: newQr };
+    }
+
+    // PATCH /restaurants/:id/payment-qrs/:qrId
+    const editMatch = endpoint.match(/\/payment-qrs\/([^/]+)$/);
+    if (options.method === 'PATCH' && editMatch) {
+      const qrId = editMatch[1];
+      const current = getStoredQrs();
+      let edited = null;
+      if (body.isActive) {
+        current.forEach(q => q.isActive = false);
+      }
+      const updated = current.map(q => {
+        if (q.id === qrId) {
+          edited = {
+            ...q,
+            ...(body.label ? { label: body.label } : {}),
+            ...(body.upiId ? { upiId: body.upiId } : {}),
+            ...(body.image ? { image: body.image } : {}),
+            ...(body.isActive !== undefined ? { isActive: Boolean(body.isActive) } : {})
+          };
+          return edited;
+        }
+        return q;
+      });
+      saveQrs(updated);
+      return { success: true, message: 'Payment QR updated successfully', data: edited };
+    }
+
+    // DELETE /restaurants/:id/payment-qrs/:qrId
+    if (options.method === 'DELETE' && editMatch) {
+      const qrId = editMatch[1];
+      let current = getStoredQrs();
+      const wasActive = current.find(q => q.id === qrId)?.isActive;
+      current = current.filter(q => q.id !== qrId);
+      if (wasActive && current.length > 0) {
+        current[0].isActive = true;
+      }
+      saveQrs(current);
+      return { success: true, message: 'Payment QR deleted successfully' };
+    }
   }
 
   return null;
@@ -710,6 +848,8 @@ export const api = {
       request(`/users/${id}/verify`, { method: 'PATCH', body: JSON.stringify({ verified }) }),
     updateRole: (id, role, restaurantId = null) =>
       request(`/users/${id}/role`, { method: 'PATCH', body: JSON.stringify({ role, restaurantId }) }),
+    updateProfile: (data) =>
+      request('/users/profile', { method: 'PATCH', body: JSON.stringify(data) }),
     delete: (id) =>
       request(`/users/${id}`, { method: 'DELETE' })
   },
@@ -824,6 +964,20 @@ export const api = {
       request(`/payments/${bookingId}/settle`, { method: 'POST', body: JSON.stringify(paymentData) }),
     getReceipt: (bookingId) =>
       request(`/payments/${bookingId}`)
+  },
+
+  // Payment QRs (UPI Counter Codes)
+  paymentQrs: {
+    getByRestaurant: (restaurantId = 1) =>
+      request(`/restaurants/${restaurantId}/payment-qrs`),
+    create: (restaurantId, data) =>
+      request(`/restaurants/${restaurantId}/payment-qrs`, { method: 'POST', body: JSON.stringify(data) }),
+    update: (restaurantId, qrId, data) =>
+      request(`/restaurants/${restaurantId}/payment-qrs/${qrId}`, { method: 'PATCH', body: JSON.stringify(data) }),
+    setActive: (restaurantId, qrId) =>
+      request(`/restaurants/${restaurantId}/payment-qrs/${qrId}/set-active`, { method: 'POST' }),
+    delete: (restaurantId, qrId) =>
+      request(`/restaurants/${restaurantId}/payment-qrs/${qrId}`, { method: 'DELETE' })
   },
 
   // Notifications

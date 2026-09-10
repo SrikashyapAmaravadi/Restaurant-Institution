@@ -119,6 +119,7 @@ export default function InteractiveMap({ restaurants, onSelectRestaurant }) {
           return (
             <div
               key={rest.id}
+              className="map-marker-pin"
               onClick={() => {
                 setSelectedId(rest.id);
                 if (onSelectRestaurant) onSelectRestaurant(rest);
@@ -129,8 +130,7 @@ export default function InteractiveMap({ restaurants, onSelectRestaurant }) {
                 left: pos.left,
                 transform: 'translate(-50%, -50%)',
                 zIndex: isSelected ? 25 : 15,
-                cursor: 'pointer',
-                transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)'
+                cursor: 'pointer'
               }}
             >
               <div style={{
