@@ -769,15 +769,6 @@ export default function RestaurantAdmin() {
               </p>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <button
-                type="button"
-                className="btn btn-outline btn-sm"
-                onClick={() => setShowScannerModal(true)}
-                style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
-                title="Open camera to scan student digital pass"
-              >
-                <QrCode size={15} /> Scan Digital Pass
-              </button>
               <span className="badge badge-info">{bookings.length} Bookings</span>
             </div>
           </div>

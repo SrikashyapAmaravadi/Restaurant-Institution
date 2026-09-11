@@ -241,16 +241,6 @@ export default function StaffPortal() {
               onChange={e => setSearchCode(e.target.value)}
             />
           </div>
-
-          <button
-            type="button"
-            className="btn btn-outline btn-md"
-            onClick={() => setShowScannerModal(true)}
-            title="Open camera to scan student digital pass"
-            style={{ display: 'inline-flex', alignItems: 'center', gap: 7 }}
-          >
-            <QrCode size={16} /> Scan Digital Pass
-          </button>
         </div>
       </div>
 
