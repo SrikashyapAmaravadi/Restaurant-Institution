@@ -298,19 +298,46 @@ export function DiningProvider({ children }) {
       console.warn('API add order failed:', err.message);
     }
 
-    setReservations(prev => prev.map(b => {
-      if (b.id === bookingId) {
-        const existing = (b.orders || []).find(o => o.name === item.name);
-        let updatedOrders;
-        if (existing) {
-          updatedOrders = b.orders.map(o => o.name === item.name ? { ...o, qty: o.qty + 1 } : o);
-        } else {
-          updatedOrders = [...(b.orders || []), { id: `ord-${Date.now()}`, ...item, qty: 1 }];
+    setReservations(prev => {
+      const next = prev.map(b => {
+        if (b.id === bookingId) {
+          const existing = (b.orders || []).find(o => o.name === item.name);
+          let updatedOrders;
+          if (existing) {
+            updatedOrders = b.orders.map(o => o.name === item.name ? { ...o, qty: o.qty + 1 } : o);
+          } else {
+            updatedOrders = [...(b.orders || []), { id: `ord-${Date.now()}`, ...item, qty: 1 }];
+          }
+          return { ...b, orders: updatedOrders };
         }
-        return { ...b, orders: updatedOrders };
+        return b;
+      });
+      try {
+        localStorage.setItem('dine_bennett_reservations', JSON.stringify(next));
+        window.dispatchEvent(new Event('dining_reservations_updated'));
+      } catch {
+        // ignore
       }
-      return b;
-    }));
+      return next;
+    });
+  };
+
+  /**
+   * Sync complete orders array for a booking tab (used during bill settlement & tab updates)
+   */
+  const syncBookingOrders = async (bookingId, updatedOrders) => {
+    setReservations(prev => {
+      const next = prev.map(b => 
+        b.id === bookingId ? { ...b, orders: updatedOrders } : b
+      );
+      try {
+        localStorage.setItem('dine_bennett_reservations', JSON.stringify(next));
+        window.dispatchEvent(new Event('dining_reservations_updated'));
+      } catch {
+        // ignore
+      }
+      return next;
+    });
   };
 
   /**
@@ -541,6 +568,7 @@ export function DiningProvider({ children }) {
     submitReview,
     staffCheckInGuest,
     staffAddOrderItem,
+    syncBookingOrders,
     staffCompletePayment,
     setReservations,
     onboardRestaurant,

@@ -16,8 +16,14 @@ router.post('/:bookingId/settle', async (req, res) => {
       discount = 0,
       tax = 0,
       totalAmount,
+      billedBy,
       details = {}
     } = req.body;
+
+    const finalDetails = {
+      ...details,
+      ...(billedBy ? { billedBy } : {})
+    };
 
     if (!['UPI', 'CASH', 'CARD'].includes(method)) {
       return res.status(400).json({
@@ -57,7 +63,7 @@ router.post('/:bookingId/settle', async (req, res) => {
         discount: calculatedDiscount,
         tax: calculatedTax,
         totalAmount: finalAmount,
-        detailsJson: JSON.stringify(details),
+        detailsJson: JSON.stringify(finalDetails),
         status: 'PAID'
       },
       update: {
@@ -67,7 +73,7 @@ router.post('/:bookingId/settle', async (req, res) => {
         discount: calculatedDiscount,
         tax: calculatedTax,
         totalAmount: finalAmount,
-        detailsJson: JSON.stringify(details),
+        detailsJson: JSON.stringify(finalDetails),
         status: 'PAID'
       }
     });
@@ -122,7 +128,8 @@ router.post('/:bookingId/settle', async (req, res) => {
           tax: calculatedTax,
           grandTotal: finalAmount,
           method,
-          details
+          details: finalDetails,
+          billedBy: finalDetails.billedBy
         }
       }
     });

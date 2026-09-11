@@ -591,11 +591,86 @@ function handleOfflineFallback(endpoint, options = {}) {
       return { success: true, data: { id: targetId, status: 'CANCELLED' } };
     }
 
+    // POST /bookings/:id/orders
+    const ordersMatch = endpoint.match(/\/bookings\/([^/]+)\/orders/);
+    if (ordersMatch) {
+      const targetId = ordersMatch[1];
+      const current = getStoredBookings();
+      let matched = null;
+      const updated = current.map(b => {
+        if (b.id === targetId) {
+          const existing = (b.orders || []).find(o => o.name === body.name);
+          let updatedOrders;
+          if (existing) {
+            updatedOrders = b.orders.map(o => o.name === body.name ? { ...o, qty: (o.qty || o.quantity || 1) + (body.quantity || 1) } : o);
+          } else {
+            updatedOrders = [...(b.orders || []), { id: `ord-${Date.now()}`, name: body.name, price: Number(body.price), qty: Number(body.quantity || 1) }];
+          }
+          matched = { ...b, orders: updatedOrders };
+          return matched;
+        }
+        return b;
+      });
+      saveStoredBookings(updated);
+      return { success: true, data: matched || { id: targetId } };
+    }
+
     // GET /bookings or GET /bookings/my
     return {
       success: true,
       data: getStoredBookings()
     };
+  }
+
+  // 7b. Payments Settle Fallback
+  if (endpoint.startsWith('/payments/')) {
+    const settleMatch = endpoint.match(/\/payments\/([^/]+)\/settle/);
+    if (settleMatch) {
+      const bookingId = settleMatch[1];
+      const raw = localStorage.getItem('dine_bennett_reservations');
+      let bookings = [];
+      try {
+        if (raw) bookings = JSON.parse(raw);
+      } catch {
+        // ignore
+      }
+      const txnId = `TXN-${body?.method || 'UPI'}-${Math.floor(100000 + Math.random() * 900000)}`;
+      const updatedBookings = bookings.map(b => {
+        if (b.id === bookingId) {
+          return {
+            ...b,
+            status: 'COMPLETED',
+            payment: {
+              method: body?.method || 'UPI',
+              amount: body?.totalAmount,
+              transactionId: txnId,
+              billedBy: body?.billedBy
+            }
+          };
+        }
+        return b;
+      });
+      try {
+        localStorage.setItem('dine_bennett_reservations', JSON.stringify(updatedBookings));
+        window.dispatchEvent(new Event('dining_reservations_updated'));
+      } catch {
+        // ignore
+      }
+      return {
+        success: true,
+        message: 'Payment settled successfully',
+        data: {
+          payment: {
+            bookingId,
+            method: body?.method || 'UPI',
+            transactionId: txnId,
+            status: 'PAID',
+            totalAmount: body?.totalAmount,
+            billedBy: body?.billedBy
+          }
+        }
+      };
+    }
   }
 
   // 7. Profile Updates Fallback

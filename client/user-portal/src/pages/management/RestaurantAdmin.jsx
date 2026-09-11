@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useDining } from '../../context/DiningContext';
 import api from '../../services/api';
 import CameraScannerModal from '../../components/CameraScannerModal';
+import PaymentModal from '../../components/PaymentModal';
 import {
   ChefHat,
   Calendar,
@@ -34,7 +35,9 @@ import {
   ArrowUpDown,
   Search,
   CheckCircle,
-  ExternalLink
+  ExternalLink,
+  Receipt,
+  Utensils
 } from 'lucide-react';
 
 export default function RestaurantAdmin() {
@@ -43,6 +46,8 @@ export default function RestaurantAdmin() {
     restaurants = [],
     reservations = [],
     staffCheckInGuest,
+    staffCompletePayment,
+    syncBookingOrders,
     addMenuItem,
     updateMenuItem,
     deleteMenuItem
@@ -59,6 +64,7 @@ export default function RestaurantAdmin() {
 
   const [activeTab, setActiveTab] = useState('Reservations');
   const [showScannerModal, setShowScannerModal] = useState(false);
+  const [paymentModalBooking, setPaymentModalBooking] = useState(null);
 
   // Bookings list from live reservations
   const [bookings, setBookings] = useState(
@@ -837,9 +843,43 @@ export default function RestaurantAdmin() {
                             </button>
                           )}
                           {b.status === 'SEATED' && (
-                            <span className="badge badge-success" style={{ fontSize: 11, padding: '4px 8px' }}>
-                              ● Admitted &amp; Dining
-                            </span>
+                            <>
+                              <button
+                                className="btn btn-xs btn-outline"
+                                style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontWeight: 700 }}
+                                onClick={() => {
+                                  const fullRes = reservations.find(r => r.id === b.id) || b;
+                                  setPaymentModalBooking(fullRes);
+                                }}
+                                title="Add dishes to table tab"
+                              >
+                                <Utensils size={12} /> Add Dishes
+                              </button>
+                              <button
+                                className="btn btn-xs btn-accent"
+                                style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontWeight: 700 }}
+                                onClick={() => {
+                                  const fullRes = reservations.find(r => r.id === b.id) || b;
+                                  setPaymentModalBooking(fullRes);
+                                }}
+                                title="Generate bill & settle payment"
+                              >
+                                <Receipt size={12} /> Settle Bill
+                              </button>
+                            </>
+                          )}
+                          {b.status === 'COMPLETED' && (
+                            <button
+                              className="btn btn-xs btn-secondary"
+                              style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontWeight: 700 }}
+                              onClick={() => {
+                                const fullRes = reservations.find(r => r.id === b.id) || b;
+                                setPaymentModalBooking(fullRes);
+                              }}
+                              title="View settled invoice"
+                            >
+                              <Receipt size={12} /> View Bill
+                            </button>
                           )}
                           {b.status !== 'CANCELLED' && b.status !== 'COMPLETED' && b.status !== 'SEATED' && (
                             <button
@@ -1898,6 +1938,29 @@ export default function RestaurantAdmin() {
           }
         }}
       />
+
+      {/* Bill Settlement & Order Management Modal (Owner View) */}
+      {paymentModalBooking && (
+        <PaymentModal
+          booking={paymentModalBooking}
+          onClose={() => setPaymentModalBooking(null)}
+          initialBilledBy={{
+            role: 'OWNER',
+            name: user?.name ? `${user.name} (Restaurant Owner)` : 'Vikram Singhania (Restaurant Owner)'
+          }}
+          menuItems={menuItems}
+          onOrdersUpdated={(updatedOrders) => {
+            if (syncBookingOrders && paymentModalBooking) {
+              syncBookingOrders(paymentModalBooking.id, updatedOrders);
+            }
+          }}
+          onPaymentComplete={(paymentResult) => {
+            if (staffCompletePayment && paymentModalBooking) {
+              staffCompletePayment(paymentModalBooking.id, paymentResult);
+            }
+          }}
+        />
+      )}
     </div>
   );
 }

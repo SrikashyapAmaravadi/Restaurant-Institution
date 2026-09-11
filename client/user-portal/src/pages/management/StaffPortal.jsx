@@ -33,6 +33,7 @@ export default function StaffPortal() {
     tables,
     staffCheckInGuest,
     staffAddOrderItem,
+    syncBookingOrders,
     staffCompletePayment,
     createReservation
   } = useDining();
@@ -569,6 +570,16 @@ export default function StaffPortal() {
         <PaymentModal
           booking={paymentModalBooking}
           onClose={() => setPaymentModalBooking(null)}
+          initialBilledBy={{
+            role: 'STAFF',
+            name: user?.name ? `${user.name} (Front Desk Staff)` : 'Rajesh Kumar (Front Desk Staff)'
+          }}
+          menuItems={liveMenu}
+          onOrdersUpdated={(updatedOrders) => {
+            if (syncBookingOrders && paymentModalBooking) {
+              syncBookingOrders(paymentModalBooking.id, updatedOrders);
+            }
+          }}
           onPaymentComplete={(paymentResult) => {
             staffCompletePayment(paymentModalBooking.id, paymentResult);
           }}
