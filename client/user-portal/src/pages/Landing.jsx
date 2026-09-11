@@ -537,7 +537,7 @@ export default function Landing() {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: 12, marginBottom: 24 }}>
             <div>
               <div style={{ fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--primary)' }}>
-                Greater Noida District Radar
+                Greater Noida Campus Radar
               </div>
               <h2 className="font-display" style={{ fontSize: 'clamp(1.5rem, 4vw, 1.85rem)', fontWeight: 800, color: 'var(--t1)', margin: '4px 0 0' }}>
                 Partner Dining Venues

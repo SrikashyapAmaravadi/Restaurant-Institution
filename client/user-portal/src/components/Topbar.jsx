@@ -77,9 +77,9 @@ export default function Topbar({ onOpenMobileDrawer }) {
         </button>
 
         <div>
-          {/* District Location Switcher Bar */}
+          {/* Campus Location Switcher Bar */}
           <div
-            className="district-location-bar"
+            className="campus-location-bar"
             onClick={() => navigate('/discover')}
             title="Switch dining zone"
           >
@@ -167,7 +167,7 @@ export default function Topbar({ onOpenMobileDrawer }) {
           <img
             src={user?.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80'}
             alt={user?.name || 'User'}
-            style={{ width: 26, height: 26, borderRadius: '50%', objectFit: 'cover', border: '1.5px solid var(--district-pink)' }}
+            style={{ width: 26, height: 26, borderRadius: '50%', objectFit: 'cover', border: '1.5px solid var(--campus-accent)' }}
           />
           <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--t1)' }}>
             {(user?.name || 'Scholar').split(' ')[0]}

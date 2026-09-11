@@ -157,7 +157,7 @@ export default function RestaurantCard({ restaurant, onQuickReserve, onViewOffer
           </div>
         )}
 
-        {/* District Live Booking Pill on image bottom */}
+        {/* Campus Live Booking Pill on image bottom */}
         <div style={{
           position: 'absolute',
           bottom: 10,

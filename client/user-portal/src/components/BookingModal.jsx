@@ -206,7 +206,7 @@ export default function BookingModal({ restaurant, onClose, onBookingSuccess }) 
         {/* Mobile Sheet Drag Handle */}
         <div style={{ width: 40, height: 4, borderRadius: 2, background: 'rgba(0,0,0,0.15)', margin: '8px auto 2px', display: 'none' }} className="mobile-only-block" />
 
-        {/* District Style Header */}
+        {/* Campus Modal Header */}
         <div className="modal-hd" style={{ borderBottom: '1px solid var(--border)', paddingBottom: 14 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
             <img
@@ -291,7 +291,7 @@ export default function BookingModal({ restaurant, onClose, onBookingSuccess }) 
               transition={{ duration: 0.2 }}
               style={{ display: 'flex', flexDirection: 'column', gap: 24 }}
             >
-              {/* 1. Date Selector (District Style Chips) */}
+              {/* 1. Date Selector (Campus Style Chips) */}
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
                   <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: 6, margin: 0 }}>
@@ -358,7 +358,7 @@ export default function BookingModal({ restaurant, onClose, onBookingSuccess }) 
                 </div>
               </div>
 
-              {/* 2. Number of Diners (District Horizontal Pill Bar) */}
+              {/* 2. Number of Diners (Horizontal Pill Bar) */}
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
                   <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: 6, margin: 0 }}>
@@ -524,7 +524,7 @@ export default function BookingModal({ restaurant, onClose, onBookingSuccess }) 
                 </div>
               </div>
 
-              {/* District Guarantee Banner */}
+              {/* Assurance Guarantee Banner */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: 12, borderRadius: 'var(--r-sm)', background: 'var(--bg-subtle)', border: '1px solid var(--border)' }}>
                 <ShieldCheck size={18} style={{ color: 'var(--primary)' }} className="flex-shrink-0" />
                 <div style={{ fontSize: 12, color: 'var(--t2)' }}>
@@ -722,7 +722,7 @@ export default function BookingModal({ restaurant, onClose, onBookingSuccess }) 
             </motion.div>
           )}
 
-          {/* STEP 3: CONFIRMED DISTRICT DIGITAL PASS */}
+          {/* STEP 3: CONFIRMED DIGITAL PASS */}
           {step === 3 && confirmedBooking && (
             <motion.div
               key="step-3"

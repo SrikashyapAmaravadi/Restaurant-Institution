@@ -586,19 +586,7 @@ export default function RestaurantAdmin() {
   return (
     <div className="page-pad">
       {/* Restaurant Admin Header */}
-      <div className="anim-fade-up" style={{
-        padding: '24px 28px',
-        borderRadius: 'var(--r-lg)',
-        background: 'linear-gradient(135deg, #2F5E31 0%, #1E4624 60%, #0F2D1E 100%)',
-        border: '1px solid rgba(255, 255, 255, 0.15)',
-        marginBottom: 28,
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        flexWrap: 'wrap',
-        gap: 20,
-        boxShadow: 'var(--shadow-md)'
-      }}>
+      <div className="anim-fade-up dashboard-hero-banner">
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
           <div style={{ width: 56, height: 56, borderRadius: 'var(--r-sm)', background: 'rgba(255, 255, 255, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
             <ChefHat size={28} />
@@ -773,7 +761,8 @@ export default function RestaurantAdmin() {
             </div>
           </div>
 
-          <div className="table-responsive">
+          {/* Desktop Table View */}
+          <div className="table-responsive desktop-only-block">
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, textAlign: 'left' }}>
               <thead>
                 <tr style={{ borderBottom: '2px solid var(--border)', color: 'var(--t4)', textTransform: 'uppercase', fontSize: 11 }}>
@@ -887,6 +876,101 @@ export default function RestaurantAdmin() {
                 )}
               </tbody>
             </table>
+          </div>
+
+          {/* Mobile Sleek Card View (< 768px) */}
+          <div className="mobile-only-flex" style={{ display: 'none', flexDirection: 'column', gap: 12 }}>
+            {bookings.length === 0 ? (
+              <div style={{ padding: 24, textAlign: 'center', color: 'var(--t3)', background: 'var(--bg-subtle)', borderRadius: 'var(--r-sm)' }}>
+                No active reservations currently in queue.
+              </div>
+            ) : (
+              bookings.map(b => (
+                <div key={b.id} className="mobile-reservation-card">
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
+                    <div>
+                      <div style={{ fontWeight: 800, fontSize: 14, color: 'var(--t1)' }}>{b.guest}</div>
+                      <div style={{ fontSize: 11.5, color: 'var(--t3)' }}>{b.email}</div>
+                    </div>
+                    <span className={`badge ${
+                      b.status === 'CONFIRMED' || b.status === 'SEATED' ? 'badge-success' :
+                      b.status === 'COMPLETED' ? 'badge-primary' : 'badge-neutral'
+                    }`}>
+                      {b.status}
+                    </span>
+                  </div>
+
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 12, color: 'var(--t2)', flexWrap: 'wrap' }}>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><Clock size={12} /> {b.time} · {b.date}</span>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><Users size={12} /> {b.guests} Guests</span>
+                  </div>
+
+                  <div className="mobile-full-btn" style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 4 }}>
+                    {b.status === 'PENDING' && (
+                      <button
+                        className="btn btn-xs btn-success"
+                        onClick={() => handleStatusUpdate(b.id, 'CONFIRMED')}
+                      >
+                        <CheckCircle2 size={12} /> Confirm
+                      </button>
+                    )}
+                    {(b.status === 'CONFIRMED' || b.status === 'PENDING') && (
+                      <button
+                        className="btn btn-xs btn-primary"
+                        style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontWeight: 700 }}
+                        onClick={() => handleStatusUpdate(b.id, 'SEATED')}
+                      >
+                        <CheckCircle2 size={12} /> 1-Click Admit
+                      </button>
+                    )}
+                    {b.status === 'SEATED' && (
+                      <>
+                        <button
+                          className="btn btn-xs btn-outline"
+                          style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontWeight: 700 }}
+                          onClick={() => {
+                            const fullRes = reservations.find(r => r.id === b.id) || b;
+                            setPaymentModalBooking(fullRes);
+                          }}
+                        >
+                          <Utensils size={12} /> Add Dishes
+                        </button>
+                        <button
+                          className="btn btn-xs btn-accent"
+                          style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontWeight: 700 }}
+                          onClick={() => {
+                            const fullRes = reservations.find(r => r.id === b.id) || b;
+                            setPaymentModalBooking(fullRes);
+                          }}
+                        >
+                          <Receipt size={12} /> Settle Bill
+                        </button>
+                      </>
+                    )}
+                    {b.status === 'COMPLETED' && (
+                      <button
+                        className="btn btn-xs btn-secondary"
+                        style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontWeight: 700 }}
+                        onClick={() => {
+                          const fullRes = reservations.find(r => r.id === b.id) || b;
+                          setPaymentModalBooking(fullRes);
+                        }}
+                      >
+                        <Receipt size={12} /> View Bill
+                      </button>
+                    )}
+                    {b.status !== 'CANCELLED' && b.status !== 'COMPLETED' && b.status !== 'SEATED' && (
+                      <button
+                        className="btn btn-xs btn-outline"
+                        onClick={() => handleStatusUpdate(b.id, 'CANCELLED')}
+                      >
+                        <XCircle size={12} /> Cancel
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
       )}

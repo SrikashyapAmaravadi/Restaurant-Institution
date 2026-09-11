@@ -998,7 +998,7 @@ export default function RestaurantDetail() {
       </div>
 
       {/* Mobile Sticky Booking Bar */}
-      <div className="district-sticky-footer mobile-only-flex" style={{ display: 'none' }}>
+      <div className="campus-sticky-footer mobile-only-flex" style={{ display: 'none' }}>
         <div>
           <div style={{ fontSize: 11, color: '#10B981', fontWeight: 800, display: 'flex', alignItems: 'center', gap: 4 }}>
             <Zap size={12} /> Instant Seating Available

@@ -47,7 +47,7 @@ export default function Dashboard() {
   // Active confirmed or seated booking from Supabase DB
   const upcoming = safeReservations.find(b => b?.status === 'CONFIRMED' || b?.status === 'SEATED');
 
-  // District & Lora Botanical Mood Categories (Story Circles) with Lucide Icons
+  // Campus Botanical Mood Categories (Story Circles) with Lucide Icons
   const MOOD_STORIES = [
     { id: 'farm', label: 'Farm to Table', icon: Leaf, tag: 'Organic' },
     { id: 'cafes', label: 'Study Cafes', icon: Coffee, cuisine: 'Continental' },
@@ -102,9 +102,9 @@ export default function Dashboard() {
   });
 
   return (
-    <div className="page-pad" style={{ display: 'flex', flexDirection: 'column', gap: 26, paddingBottom: 100 }}>
+    <div className="page-pad" style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(18px, 3vw, 24px)', paddingBottom: 100 }}>
 
-      {/* District Mobile Search Bar Trigger */}
+      {/* Campus Mobile Search Bar Trigger */}
       <div
         className="anim-fade-up dashboard-search-trigger"
         onClick={() => navigate('/discover')}
@@ -112,7 +112,7 @@ export default function Dashboard() {
           display: 'flex',
           alignItems: 'center',
           gap: 12,
-          padding: '12px 18px',
+          padding: '10px 16px',
           borderRadius: 'var(--r-full)',
           background: '#FFFFFF',
           border: '1px solid var(--border)',
@@ -121,23 +121,23 @@ export default function Dashboard() {
         }}
       >
         <Search size={18} style={{ color: 'var(--primary)' }} />
-        <span style={{ fontSize: 13.5, color: 'var(--t3)', flex: 1 }}>
-          Search "pizza", "study cafe", or dining spots near Bennett...
+        <span style={{ fontSize: 13, color: 'var(--t3)', flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          Search dishes or dining spots near Bennett...
         </span>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+          <span className="mobile-hide" style={{
             display: 'inline-flex',
             alignItems: 'center',
             gap: 5,
             fontSize: 11,
             fontWeight: 700,
-            padding: '4px 10px',
+            padding: '3px 8px',
             borderRadius: 'var(--r-full)',
             background: '#ECFDF5',
             color: '#059669',
             border: '1px solid #A7F3D0'
           }}>
-            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#059669' }} />
+            <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#059669' }} />
             Live Network
           </span>
           <span style={{
@@ -166,32 +166,32 @@ export default function Dashboard() {
           <span style={{ fontSize: 11.5, color: 'var(--t3)' }}>Swipe for vibes &rarr;</span>
         </div>
 
-        <div className="district-scroll-x" style={{ padding: '4px 2px 8px' }}>
+        <div className="campus-scroll-x" style={{ padding: '4px 2px 8px' }}>
           {MOOD_STORIES.map(mood => {
             const Icon = mood.icon;
             const isSelected = activeMood === mood.id;
             return (
               <div
                 key={mood.id}
-                className="district-story-item"
+                className="campus-story-item"
                 onClick={() => handleMoodSelect(mood)}
               >
                 <div
-                  className="district-story-ring"
+                  className="campus-story-ring"
                   style={{
-                    borderColor: isSelected ? 'var(--primary)' : 'var(--border)',
-                    background: isSelected ? 'var(--primary)' : '#FFFFFF'
+                    background: isSelected ? 'var(--primary)' : undefined,
+                    boxShadow: isSelected ? '0 0 0 2px #fff, 0 4px 12px var(--primary-glow)' : undefined
                   }}
                 >
-                  <div className="district-story-inner">
-                    <Icon size={20} style={{ color: isSelected ? 'var(--primary)' : 'var(--t2)' }} />
+                  <div className="campus-story-inner">
+                    <Icon size={22} style={{ color: isSelected ? 'var(--primary)' : undefined }} />
                   </div>
                 </div>
                 <span
-                  className="district-story-label"
+                  className="campus-story-label"
                   style={{
-                    color: isSelected ? 'var(--primary)' : 'var(--t2)',
-                    fontWeight: isSelected ? 800 : 600
+                    fontWeight: isSelected ? 800 : 600,
+                    color: isSelected ? 'var(--primary)' : undefined
                   }}
                 >
                   {mood.label}
@@ -202,9 +202,9 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* District Spotlight Banner: Semester Promo */}
+      {/* Campus Spotlight Banner: Semester Promo */}
       <div
-        className="district-banner anim-fade-up"
+        className="campus-promo-banner anim-fade-up"
         style={{
           display: 'flex',
           justifyContent: 'space-between',
@@ -225,14 +225,14 @@ export default function Dashboard() {
             color: '#FFFFFF',
             fontSize: 11.5,
             fontWeight: 800,
-            marginBottom: 10
+            marginBottom: 8
           }}>
-            <Flame size={13} /> DISTRICT EXCLUSIVE · 20% OFF
+            <Flame size={13} /> CAMPUS EXCLUSIVE · 20% OFF
           </div>
-          <h3 className="font-display" style={{ fontSize: '1.45rem', fontWeight: 800, color: '#FFFFFF', lineHeight: 1.25, marginBottom: 6 }}>
+          <h3 className="font-display" style={{ fontSize: 'clamp(1.2rem, 3.5vw, 1.45rem)', fontWeight: 800, color: '#FFFFFF', lineHeight: 1.25, marginBottom: 6 }}>
             Campus Dining Passes Live Across Greater Noida
           </h3>
-          <p style={{ fontSize: 13, color: '#E2E8F0', lineHeight: 1.5 }}>
+          <p style={{ fontSize: 12.5, color: '#E2E8F0', lineHeight: 1.45 }}>
             Instant table reservations with zero waiting line. Verified for Bennett students, faculty, and staff.
           </p>
         </div>
@@ -326,7 +326,7 @@ export default function Dashboard() {
 
       {/* Filter Chips Strip */}
       <div className="anim-fade-up">
-        <div className="district-scroll-x" style={{ gap: 8, paddingBottom: 2 }}>
+        <div className="campus-scroll-x" style={{ gap: 8, paddingBottom: 2 }}>
           {FILTERS.map(f => {
             const FilterIcon = f.icon;
             const isSelected = activeFilter === f.id;
@@ -363,7 +363,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* District Restaurant Cards Feed */}
+      {/* Campus Restaurant Cards Feed */}
       <div className="anim-fade-up">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
           <div>
@@ -377,7 +377,7 @@ export default function Dashboard() {
           <button
             className="btn btn-ghost btn-xs"
             onClick={() => navigate('/discover')}
-            style={{ color: 'var(--district-pink)', fontWeight: 700, fontSize: 12 }}
+            style={{ color: 'var(--campus-accent)', fontWeight: 700, fontSize: 12 }}
           >
             View Map →
           </button>
@@ -410,7 +410,7 @@ export default function Dashboard() {
         )}
       </div>
 
-      {/* Booking Modal / District Mobile Bottom Sheet */}
+      {/* Booking Modal / Campus Mobile Bottom Sheet */}
       {selectedRestaurantForBooking && (
         <BookingModal
           restaurant={selectedRestaurantForBooking}

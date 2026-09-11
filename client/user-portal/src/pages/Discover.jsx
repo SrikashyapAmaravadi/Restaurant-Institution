@@ -109,7 +109,7 @@ export default function Discover() {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
           <div>
             <h2 className="font-display" style={{ fontSize: 'clamp(1.35rem, 4vw, 1.75rem)', fontWeight: 800, color: 'var(--t1)' }}>
-              District Radar &amp; Discovery
+              Campus Radar &amp; Discovery
             </h2>
             <p style={{ fontSize: 13, color: 'var(--t3)' }}>
               Explore <strong>{sortedAndFiltered.length}</strong> partner dining spots around Bennett University
@@ -206,7 +206,7 @@ export default function Discover() {
         </div>
 
         {/* Horizontal Quick Filter Pills */}
-        <div className="district-scroll-x">
+        <div className="campus-scroll-x">
           <button
             type="button"
             className={`chip ${!openOnly && !offersOnly && cuisines.length === 0 ? 'on' : ''}`}
@@ -322,7 +322,7 @@ export default function Discover() {
           <div className="modal-card" onClick={e => e.stopPropagation()} style={{ maxWidth: 460 }}>
             <div className="modal-hd">
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <SlidersHorizontal size={18} style={{ color: 'var(--district-pink)' }} />
+                <SlidersHorizontal size={18} style={{ color: 'var(--campus-accent)' }} />
                 <h3 className="modal-title font-display">Filters &amp; Radius</h3>
               </div>
               <button className="modal-close" onClick={() => setShowMobileFilters(false)}>
@@ -335,7 +335,7 @@ export default function Discover() {
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
                   <span className="form-label" style={{ margin: 0 }}>Max Radius from Campus</span>
-                  <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--district-pink)' }}>{maxDist} km</span>
+                  <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--campus-accent)' }}>{maxDist} km</span>
                 </div>
                 <input
                   type="range"
@@ -344,7 +344,7 @@ export default function Discover() {
                   step={0.5}
                   value={maxDist}
                   onChange={e => setDist(parseFloat(e.target.value))}
-                  style={{ width: '100%', accentColor: 'var(--district-pink)' }}
+                  style={{ width: '100%', accentColor: 'var(--campus-accent)' }}
                 />
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'var(--t4)', marginTop: 4 }}>
                   <span>0.5 km (Walking)</span>
@@ -398,7 +398,7 @@ export default function Discover() {
                         type="checkbox"
                         checked={cuisines.includes(c)}
                         onChange={() => toggle(cuisines, setCuisines, c)}
-                        style={{ accentColor: 'var(--district-pink)', width: 16, height: 16 }}
+                        style={{ accentColor: 'var(--campus-accent)', width: 16, height: 16 }}
                       />
                       {c}
                     </label>

@@ -126,18 +126,7 @@ export default function StaffPortal() {
   return (
     <div className="page-pad">
       {/* Front Desk Terminal Header */}
-      <div className="anim-fade-up" style={{
-        padding: '22px 26px',
-        borderRadius: 'var(--r-lg)',
-        background: 'linear-gradient(135deg, #2F5E31 0%, #1E4624 60%, #0F2D1E 100%)',
-        border: '1px solid rgba(111, 175, 61, 0.3)',
-        marginBottom: 24,
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        flexWrap: 'wrap',
-        gap: 14
-      }}>
+      <div className="anim-fade-up dashboard-hero-banner">
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
             <span className="badge badge-info">Front Desk Host Terminal</span>
@@ -165,8 +154,8 @@ export default function StaffPortal() {
       </div>
 
       {/* Front Desk Live Pulse Overview */}
-      <div className="anim-fade-up delay-1" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 14, marginBottom: 24 }}>
-        <div style={{ padding: '16px 20px', borderRadius: 'var(--r)', background: '#FFFFFF', border: '1px solid var(--border)', boxShadow: 'var(--shadow-sm)', display: 'flex', alignItems: 'center', gap: 14 }}>
+      <div className="anim-fade-up delay-1 dashboard-pulse-grid" style={{ marginBottom: 24 }}>
+        <div className="dashboard-pulse-card">
           <div style={{ width: 44, height: 44, borderRadius: 'var(--r-sm)', background: '#FEF3C7', color: '#D97706', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Clock size={22} />
           </div>
@@ -176,7 +165,7 @@ export default function StaffPortal() {
           </div>
         </div>
 
-        <div style={{ padding: '16px 20px', borderRadius: 'var(--r)', background: '#FFFFFF', border: '1px solid var(--border)', boxShadow: 'var(--shadow-sm)', display: 'flex', alignItems: 'center', gap: 14 }}>
+        <div className="dashboard-pulse-card">
           <div style={{ width: 44, height: 44, borderRadius: 'var(--r-sm)', background: 'var(--bg-subtle)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Utensils size={22} />
           </div>
@@ -186,7 +175,7 @@ export default function StaffPortal() {
           </div>
         </div>
 
-        <div style={{ padding: '16px 20px', borderRadius: 'var(--r)', background: '#FFFFFF', border: '1px solid var(--border)', boxShadow: 'var(--shadow-sm)', display: 'flex', alignItems: 'center', gap: 14 }}>
+        <div className="dashboard-pulse-card">
           <div style={{ width: 44, height: 44, borderRadius: 'var(--r-sm)', background: '#EFF6FF', color: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <CheckCircle2 size={22} />
           </div>
@@ -264,7 +253,7 @@ export default function StaffPortal() {
             return (
               <div
                 key={item.id}
-                className="card"
+                className="card mobile-reservation-card"
                 style={{
                   padding: '20px 24px',
                   display: 'flex',

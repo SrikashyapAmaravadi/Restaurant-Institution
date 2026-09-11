@@ -22,15 +22,16 @@
   --primary-light:   #3E7841; /* Brighter Foliage Green */
   --primary-subtle:  rgba(47, 94, 49, 0.10);
 
-  /* District Palette — Unified organic botanical accents */
-  --district-pink:        #2F5E31;
-  --district-pink-glow:   rgba(47, 94, 49, 0.20);
-  --district-pink-subtle: rgba(47, 94, 49, 0.10);
-  --district-purple:      #2A5436;
-  --district-purple-glow: rgba(42, 84, 54, 0.20);
-  --district-cyan:        #38B2AC;
-  --district-gold:        #D97706;
-  --district-gold-glow:   rgba(217, 119, 6, 0.20);
+  /* Campus Institutional Palette — Unified organic botanical accents */
+  --campus-accent:        #2F5E31;
+  --campus-accent-glow:   rgba(47, 94, 49, 0.20);
+  --campus-accent-subtle: rgba(47, 94, 49, 0.10);
+  --campus-secondary:     #2A5436;
+  --campus-secondary-glow:rgba(42, 84, 54, 0.20);
+  --campus-cyan:          #38B2AC;
+  --campus-gold:          #D97706;
+  --campus-gold-glow:     rgba(217, 119, 6, 0.20);
+
 
   /* Lora Farm-To-Table Dedicated Palette (Photos 1 & 2) */
   --lora-dark:       #0F2D1E; /* Deep Pine (#0F2D1E) */
@@ -346,11 +347,131 @@ h1, h2, h3, h4, h5, h6, .font-display {
 @media (max-width: 640px) {
   .mobile-full-btn {
     width: 100% !important;
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    margin-top: 8px !important;
   }
   .mobile-full-btn button,
   .mobile-full-btn .btn {
+    flex: 1 1 calc(50% - 4px) !important;
+    width: auto !important;
+    min-width: 110px !important;
+    padding: 8px 12px !important;
+    font-size: 11.5px !important;
+    font-weight: 700 !important;
+    justify-content: center !important;
+    white-space: nowrap !important;
+  }
+}
+
+/* ── Professional Mobile Responsive Dashboard Utilities ──────────────────── */
+.dashboard-hero-banner {
+  padding: 22px 26px;
+  border-radius: var(--r-lg);
+  background: linear-gradient(135deg, #2F5E31 0%, #1E4624 60%, #0F2D1E 100%);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 18px;
+  box-shadow: var(--shadow-md);
+}
+
+.dashboard-pulse-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.dashboard-pulse-card {
+  padding: 16px 18px;
+  border-radius: var(--r);
+  background: #FFFFFF;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+@media (max-width: 640px) {
+  .dashboard-hero-banner {
+    padding: 16px 16px !important;
+    border-radius: var(--r-md) !important;
+    margin-bottom: 16px !important;
+    gap: 12px !important;
+  }
+  .dashboard-hero-banner h2 {
+    font-size: 1.35rem !important;
+    line-height: 1.25 !important;
+  }
+  .dashboard-hero-banner .hero-header-actions {
     width: 100% !important;
-    justify-content: center;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-top: 4px !important;
+    gap: 10px !important;
+  }
+  .dashboard-hero-banner .hero-header-actions .btn {
+    flex: 1 !important;
+    justify-content: center !important;
+    font-size: 12px !important;
+    padding: 8px 12px !important;
+  }
+
+  /* Compact 3-metric KPI bar on mobile */
+  .dashboard-pulse-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 8px !important;
+    margin-bottom: 16px !important;
+  }
+  .dashboard-pulse-card {
+    padding: 10px 8px !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    gap: 6px !important;
+    border-radius: var(--r-sm) !important;
+  }
+  .dashboard-pulse-card .pulse-icon-box {
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: var(--r-xs) !important;
+  }
+  .dashboard-pulse-card .pulse-icon-box svg {
+    width: 16px !important;
+    height: 16px !important;
+  }
+  .dashboard-pulse-card .pulse-count {
+    font-size: 1.25rem !important;
+    font-weight: 800 !important;
+    line-height: 1.1 !important;
+  }
+  .dashboard-pulse-card .pulse-label {
+    font-size: 9.5px !important;
+    letter-spacing: 0.02em !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    max-width: 85px !important;
+  }
+
+  /* Mobile reservation cards on small screens */
+  .mobile-reservation-card {
+    background: #FFFFFF;
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    padding: 14px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    box-shadow: var(--shadow-sm);
   }
 }
 
@@ -596,7 +717,7 @@ h1, h2, h3, h4, h5, h6, .font-display {
   100% { transform: rotate(0); }
 }
 
-.district-location-bar {
+.campus-location-bar {
   display: flex;
   align-items: center;
   gap: 7px;
@@ -611,22 +732,22 @@ h1, h2, h3, h4, h5, h6, .font-display {
   transition: transform .22s cubic-bezier(.16,1,.3,1), box-shadow .22s cubic-bezier(.16,1,.3,1), border-color .2s ease, background-color .2s ease;
 }
 
-.district-location-bar:hover {
+.campus-location-bar:hover {
   background: var(--bg-card-hover);
   border-color: var(--primary);
   box-shadow: 0 4px 14px rgba(47, 94, 49, 0.12);
   transform: translateY(-1.5px);
 }
 
-.district-location-bar svg {
+.campus-location-bar svg {
   transition: transform .2s cubic-bezier(.16,1,.3,1);
 }
 
-.district-location-bar:hover svg:first-child {
+.campus-location-bar:hover svg:first-child {
   transform: scale(1.15);
 }
 
-.district-location-bar:hover svg:last-child {
+.campus-location-bar:hover svg:last-child {
   transform: translateY(2px);
 }
 
@@ -1353,7 +1474,7 @@ button.btn-light:hover svg {
 }
 
 /* ── Horizontal Scroll Utilities ────────────────────────────────────────── */
-.district-scroll-x {
+.campus-scroll-x {
   display: flex;
   gap: 10px;
   overflow-x: auto;
@@ -1363,10 +1484,10 @@ button.btn-light:hover svg {
   -ms-overflow-style: none;
   padding-bottom: 4px;
 }
-.district-scroll-x::-webkit-scrollbar { display: none; }
+.campus-scroll-x::-webkit-scrollbar { display: none; }
 
-/* ── Mood Story Circle ──────────────────────────────────────────────────── */
-.district-story-item {
+/* ── Campus Mood Story Circle ───────────────────────────────────────────── */
+.campus-story-item {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1378,7 +1499,7 @@ button.btn-light:hover svg {
   transition: transform .22s cubic-bezier(.16,1,.3,1);
 }
 
-.district-story-ring {
+.campus-story-ring {
   width: 60px;
   height: 60px;
   border-radius: 50%;
@@ -1390,7 +1511,7 @@ button.btn-light:hover svg {
   transition: transform .24s cubic-bezier(.16,1,.3,1), background .2s ease, box-shadow .24s cubic-bezier(.16,1,.3,1), border-color .2s ease;
 }
 
-.district-story-inner {
+.campus-story-inner {
   width: 100%;
   height: 100%;
   border-radius: 50%;
@@ -1402,11 +1523,11 @@ button.btn-light:hover svg {
   transition: background-color .2s ease;
 }
 
-.district-story-inner svg {
+.campus-story-inner svg {
   transition: transform .24s cubic-bezier(.16,1,.3,1), color .2s ease;
 }
 
-.district-story-label {
+.campus-story-label {
   font-size: 11px;
   font-weight: 600;
   color: var(--t2);
@@ -1419,28 +1540,28 @@ button.btn-light:hover svg {
   transition: color .2s ease, transform .2s ease;
 }
 
-.district-story-item:hover {
+.campus-story-item:hover {
   transform: translateY(-2px);
 }
 
-.district-story-item:hover .district-story-ring {
+.campus-story-item:hover .campus-story-ring {
   background: var(--primary);
   transform: scale(1.08);
   box-shadow: 0 8px 20px var(--primary-glow);
 }
 
-.district-story-item:hover .district-story-inner svg {
+.campus-story-item:hover .campus-story-inner svg {
   transform: scale(1.16) rotate(5deg);
   color: var(--primary);
 }
 
-.district-story-item:hover .district-story-label {
+.campus-story-item:hover .campus-story-label {
   color: var(--primary);
   font-weight: 700;
 }
 
-/* ── District Promotional Banner ────────────────────────────────────────── */
-.district-banner {
+/* ── Campus Promotional Banner ─────────────────────────────────────────── */
+.campus-promo-banner {
   border-radius: var(--r-lg);
   position: relative;
   overflow: hidden;
@@ -1448,6 +1569,27 @@ button.btn-light:hover svg {
   color: #FFFFFF;
   padding: 24px 28px;
   box-shadow: 0 8px 24px rgba(15, 45, 30, 0.15);
+}
+
+@media (max-width: 640px) {
+  .campus-promo-banner {
+    padding: 16px 18px !important;
+    border-radius: var(--r-md) !important;
+  }
+}
+
+.campus-sticky-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #FFFFFF;
+  border-top: 1px solid var(--border);
+  padding: 12px 18px;
+  z-index: 40;
+  box-shadow: 0 -4px 18px rgba(0, 0, 0, 0.08);
+  justify-content: space-between;
+  align-items: center;
 }
 
 /* ── Login Split Layout ─────────────────────────────────────────────────── */
@@ -2575,5 +2717,149 @@ button.btn-light:hover svg {
 .winding-add-btn:active {
   transform: translateY(0) scale(0.96);
 }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   PROFESSIONAL MOBILE RESPONSIVE DASHBOARD & MANAGEMENT SUITE
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* Visibility Breakpoint Helpers */
+.desktop-only-block { display: block; }
+.mobile-only-block  { display: none !important; }
+.mobile-only-flex   { display: none !important; }
+.mobile-hide        { display: inline-flex; }
+
+@media (max-width: 768px) {
+  .desktop-only-block { display: none !important; }
+  .mobile-only-block  { display: block !important; }
+  .mobile-only-flex   { display: flex !important; }
+  .mobile-hide        { display: none !important; }
+}
+
+/* ── Hero Banner ────────────────────────────────────────────────────────── */
+.dashboard-hero-banner {
+  padding: 22px 26px;
+  border-radius: var(--r-lg);
+  background: linear-gradient(135deg, #2F5E31 0%, #1E4624 60%, #0F2D1E 100%);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 18px;
+  box-shadow: var(--shadow-md);
+}
+
+/* ── Dashboard Pulse Stats Grid ─────────────────────────────────────────── */
+.dashboard-pulse-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.dashboard-pulse-card {
+  padding: 16px 18px;
+  border-radius: var(--r);
+  background: #FFFFFF;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dashboard-pulse-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+/* ── Mobile Button Layout Refinement (Eliminates clumsy giant stacked buttons) ── */
+.mobile-full-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 640px) {
+  .dashboard-hero-banner {
+    padding: 16px 16px !important;
+    border-radius: var(--r-md) !important;
+    margin-bottom: 16px !important;
+    gap: 14px !important;
+  }
+  .dashboard-hero-banner h2 {
+    font-size: 1.35rem !important;
+    line-height: 1.25 !important;
+  }
+
+  /* Compact 3-card metric pill row on mobile */
+  .dashboard-pulse-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 8px !important;
+    margin-bottom: 16px !important;
+  }
+  .dashboard-pulse-card {
+    padding: 10px 6px !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    gap: 6px !important;
+    border-radius: var(--r-sm) !important;
+  }
+  .dashboard-pulse-card > div:first-child {
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: var(--r-xs) !important;
+  }
+  .dashboard-pulse-card > div:first-child svg {
+    width: 16px !important;
+    height: 16px !important;
+  }
+  .dashboard-pulse-card .font-display {
+    font-size: 1.2rem !important;
+    line-height: 1.1 !important;
+  }
+  .dashboard-pulse-card div > div:first-child {
+    font-size: 9.5px !important;
+    letter-spacing: 0.02em !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    max-width: 82px !important;
+  }
+
+  /* Clean, non-clumsy button distribution: 2 buttons per row or balanced flex */
+  .mobile-full-btn {
+    width: 100% !important;
+    display: flex !important;
+    gap: 8px !important;
+  }
+  .mobile-full-btn button,
+  .mobile-full-btn a,
+  .mobile-full-btn .btn {
+    flex: 1 1 calc(50% - 4px) !important;
+    padding: 8px 10px !important;
+    font-size: 11.5px !important;
+    font-weight: 700 !important;
+    justify-content: center !important;
+    white-space: nowrap !important;
+  }
+
+  /* Sleek Reservation Cards for Mobile */
+  .mobile-reservation-card {
+    background: #FFFFFF;
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    padding: 14px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    box-shadow: var(--shadow-sm);
+  }
+}
+
 
 
