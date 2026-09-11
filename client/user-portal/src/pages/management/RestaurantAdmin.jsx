@@ -192,15 +192,30 @@ export default function RestaurantAdmin() {
   const [editingDishId, setEditingDishId] = useState(null);
   const [dishSaving, setDishSaving] = useState(false);
   const dishFileInputRef = useRef(null);
+  // Dynamic categories customized by owner & derived from existing menu
+  const [customCategories, setCustomCategories] = useState([]);
   const [dishForm, setDishForm] = useState({
     name: '',
-    category: 'Starters',
+    category: '',
     price: '',
     desc: '',
     veg: true,
     calories: '320 kcal',
     image: ''
   });
+
+  // Extract all unique categories dynamically
+  const availableCategories = useMemo(() => {
+    const cats = new Set();
+    (menuItems || []).forEach(item => {
+      const c = (item.category || '').trim();
+      if (c) cats.add(c);
+    });
+    customCategories.forEach(c => {
+      if (c && c.trim()) cats.add(c.trim());
+    });
+    return Array.from(cats);
+  }, [menuItems, customCategories]);
 
   // Menu search, category, and sort state
   const [menuSearch, setMenuSearch] = useState('');
@@ -272,7 +287,7 @@ export default function RestaurantAdmin() {
     setEditingDishId(null);
     setDishForm({
       name: '',
-      category: 'Starters',
+      category: availableCategories[0] || '',
       price: '',
       desc: '',
       veg: true,
@@ -286,7 +301,7 @@ export default function RestaurantAdmin() {
     setEditingDishId(item.id);
     setDishForm({
       name: item.name || '',
-      category: item.category || 'Starters',
+      category: item.category || '',
       price: item.price !== undefined ? String(item.price) : '',
       desc: item.desc || item.description || '',
       veg: item.isVeg !== undefined ? item.isVeg : true,
@@ -453,15 +468,20 @@ export default function RestaurantAdmin() {
     if (!dishForm.name || !dishForm.price) return;
     setDishSaving(true);
     try {
+      const cleanCategory = (dishForm.category || 'General').trim();
       const dishPayload = {
-        name: dishForm.name,
-        category: dishForm.category,
+        name: dishForm.name.trim(),
+        category: cleanCategory,
         desc: dishForm.desc || '',
         price: parseFloat(dishForm.price),
         isVeg: Boolean(dishForm.veg),
         calories: dishForm.calories || '320 kcal',
         image: dishForm.image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=400&q=80'
       };
+
+      if (cleanCategory && !customCategories.includes(cleanCategory)) {
+        setCustomCategories(prev => [...prev, cleanCategory]);
+      }
 
       if (editingDishId) {
         if (updateMenuItem) {
@@ -479,7 +499,7 @@ export default function RestaurantAdmin() {
       setEditingDishId(null);
       setDishForm({
         name: '',
-        category: 'Starters',
+        category: cleanCategory,
         price: '',
         desc: '',
         veg: true,
@@ -1015,7 +1035,7 @@ export default function RestaurantAdmin() {
             </div>
 
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
-              {['All', 'Starters', 'Main Course', 'Artisan Breads', 'Desserts', 'Beverages'].map(cat => (
+              {['All', ...availableCategories].map(cat => (
                 <button
                   key={cat}
                   type="button"
@@ -1027,9 +1047,9 @@ export default function RestaurantAdmin() {
                     fontWeight: 700,
                     border: '1px solid',
                     cursor: 'pointer',
-                    background: menuCategory === cat ? 'var(--primary)' : '#FFFFFF',
-                    color: menuCategory === cat ? '#FFFFFF' : 'var(--t1)',
-                    borderColor: menuCategory === cat ? 'var(--primary)' : 'var(--border)'
+                    background: menuCategory.toLowerCase() === cat.toLowerCase() ? 'var(--primary)' : '#FFFFFF',
+                    color: menuCategory.toLowerCase() === cat.toLowerCase() ? '#FFFFFF' : 'var(--t1)',
+                    borderColor: menuCategory.toLowerCase() === cat.toLowerCase() ? 'var(--primary)' : 'var(--border)'
                   }}
                 >
                   {cat}
@@ -1624,20 +1644,48 @@ export default function RestaurantAdmin() {
                   />
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 140px), 1fr))', gap: 12 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 180px), 1fr))', gap: 12 }}>
                   <div>
-                    <label className="form-label">Category</label>
-                    <select
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+                      <label className="form-label" style={{ margin: 0 }}>Category *</label>
+                      <span style={{ fontSize: 11, color: 'var(--primary)', fontWeight: 600 }}>Customizable</span>
+                    </div>
+                    <input
+                      list="dynamic-category-suggestions"
                       className="form-input"
+                      type="text"
+                      required
+                      placeholder="Type or select custom category..."
                       value={dishForm.category}
                       onChange={e => setDishForm({ ...dishForm, category: e.target.value })}
-                    >
-                      <option value="Starters">Starters / Appetizers</option>
-                      <option value="Main Course">Main Course</option>
-                      <option value="Artisan Breads">Artisan Breads</option>
-                      <option value="Desserts">Desserts</option>
-                      <option value="Beverages">Beverages</option>
-                    </select>
+                    />
+                    <datalist id="dynamic-category-suggestions">
+                      {availableCategories.map(cat => (
+                        <option key={cat} value={cat} />
+                      ))}
+                    </datalist>
+
+                    {/* Quick Selection Pills from Owner's Categories */}
+                    {availableCategories.length > 0 && (
+                      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 8 }}>
+                        {availableCategories.map(cat => (
+                          <button
+                            key={cat}
+                            type="button"
+                            onClick={() => setDishForm({ ...dishForm, category: cat })}
+                            className={`chip ${dishForm.category && dishForm.category.toLowerCase() === cat.toLowerCase() ? 'on' : ''}`}
+                            style={{
+                              padding: '2px 8px',
+                              fontSize: 11,
+                              borderRadius: 'var(--r-full)',
+                              cursor: 'pointer'
+                            }}
+                          >
+                            {cat}
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
                   <div>
                     <label className="form-label">Price (₹) *</label>
