@@ -43,39 +43,38 @@ export default function Sidebar() {
 
   return (
     <aside className="sidebar">
-      {/* Brand Header — Lora Farm-To-Table Identity */}
+      {/* Brand Header */}
       <div className="sidebar-logo">
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div className="sidebar-brand-icon">
-            <Leaf size={22} color="#6FAF3D" />
+          <div className="sidebar-brand-icon" style={{ background: 'var(--primary)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', width: 38, height: 38 }}>
+            <UtensilsCrossed size={20} color="#FFFFFF" />
           </div>
           <div>
-            <div className="sidebar-brand-name font-display" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-              <span>lora</span>
-              <span style={{ fontSize: 10, fontWeight: 700, padding: '1px 6px', borderRadius: 99, background: 'var(--primary-subtle)', color: 'var(--primary)' }}>campus</span>
+            <div className="sidebar-brand-name font-display" style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '1.1rem', fontWeight: 800 }}>
+              <span>Dine@Bennett</span>
             </div>
-            <div className="sidebar-brand-sub">Natural · Pure · Sustainable</div>
+            <div className="sidebar-brand-sub" style={{ fontSize: '11px', color: 'var(--t3)', fontWeight: 500 }}>Campus Dining Network</div>
           </div>
         </div>
       </div>
 
-      {/* Authenticated User & RBAC Role Chip */}
+      {/* Authenticated User & Role Chip */}
       <div className="sidebar-user">
-        <div className="sidebar-user-inner">
+        <div className="sidebar-user-inner" style={{ border: '1px solid var(--border)', background: 'var(--bg-main)' }}>
           <img
             src={user?.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80'}
             alt={user?.name || 'User'}
-            style={{ width: 40, height: 40, borderRadius: '50%', objectFit: 'cover', border: '1.5px solid var(--accent)' }}
+            style={{ width: 38, height: 38, borderRadius: '50%', objectFit: 'cover', border: '1.5px solid var(--primary)' }}
           />
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--t1)', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+            <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--t1)', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
               {user?.name || 'Scholar'}
             </div>
-            <div style={{ fontSize: '11px', color: 'var(--accent)', fontWeight: 600 }}>
+            <div style={{ fontSize: '11px', color: 'var(--primary)', fontWeight: 600 }}>
               {user?.roleLabel?.split('(')[0] || user?.role || 'STUDENT'}
             </div>
           </div>
-          <div className="verified-dot" title="Authenticated & Verified" />
+          <div className="verified-dot" title="Authenticated & Verified" style={{ background: 'var(--primary)' }} />
         </div>
       </div>
 

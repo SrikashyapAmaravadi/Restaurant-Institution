@@ -3,86 +3,85 @@
    Simultaneous Web & Mobile Responsive Layout
    ══════════════════════════════════════════════════════════════════════════ */
 :root {
-  /* Surfaces — Light Botanical Linen & Soft Sage (Monochromatic Theme) */
-  --bg-main:         #F1F7EC; /* Canvas: Light Linen Botanical Cream (#F1F7EC) */
-  --bg-surface:      #FFFFFF; /* Clean Pure White Surface */
+  /* Surfaces — Clean High-End Editorial Palette */
+  --bg-main:         #F8FAFC; /* Crisp, clean neutral canvas */
+  --bg-surface:      #FFFFFF; /* Pure White Surface */
   --bg-card:         #FFFFFF; /* Elevated Card Surface */
-  --bg-card-hover:   #EAF4E7; /* Gentle Soft Sage Hover Wash */
-  --bg-subtle:       #E7F1E1; /* Alternating Section Tint: Soft Sage (#E7F1E1) */
-  --bg-dark:         #0F2D1E; /* Deep Pine Accent Base (#0F2D1E) */
-  --bg-dark-surface: #163E28;
-  --bg-glass:        rgba(241, 247, 236, 0.94);
-  --bg-glass-card:   rgba(255, 255, 255, 0.96);
+  --bg-card-hover:   #F1F5F9; /* Subtle Neutral Hover */
+  --bg-subtle:       #F1F5F9; /* Subtle section tint */
+  --bg-dark:         #0F172A; /* Slate 900 base */
+  --bg-dark-surface: #1E293B; /* Slate 800 */
+  --bg-glass:        rgba(255, 255, 255, 0.88);
+  --bg-glass-card:   rgba(255, 255, 255, 0.95);
   --bg-glass-input:  #FFFFFF;
 
-  /* Brand – Monochromatic Foliage & Mid Moss Green (#2F5E31) */
-  --primary:         #2F5E31; /* Mid Moss / Forest Green (Primary Brand) */
-  --primary-glow:    rgba(47, 94, 49, 0.22);
-  --primary-dark:    #0F2D1E; /* Deep Pine (#0F2D1E) */
-  --primary-light:   #3E7841; /* Brighter Foliage Green */
-  --primary-subtle:  rgba(47, 94, 49, 0.10);
+  /* Brand – Prestigious Emerald Forest */
+  --primary:         #15803D; /* Deep Forest Emerald */
+  --primary-glow:    rgba(21, 128, 61, 0.18);
+  --primary-dark:    #0F3A2A; /* Deep Pine */
+  --primary-light:   #16A34A; /* Crisp Vibrant Green */
+  --primary-subtle:  #ECFDF5; /* Soft Mint Background */
 
-  /* Campus Institutional Palette — Unified organic botanical accents */
-  --campus-accent:        #2F5E31;
-  --campus-accent-glow:   rgba(47, 94, 49, 0.20);
-  --campus-accent-subtle: rgba(47, 94, 49, 0.10);
-  --campus-secondary:     #2A5436;
-  --campus-secondary-glow:rgba(42, 84, 54, 0.20);
-  --campus-cyan:          #38B2AC;
+  /* Campus Institutional Palette */
+  --campus-accent:        #15803D;
+  --campus-accent-glow:   rgba(21, 128, 61, 0.16);
+  --campus-accent-subtle: #ECFDF5;
+  --campus-secondary:     #0F3A2A;
+  --campus-secondary-glow:rgba(15, 58, 42, 0.16);
+  --campus-cyan:          #0D9488;
   --campus-gold:          #D97706;
-  --campus-gold-glow:     rgba(217, 119, 6, 0.20);
+  --campus-gold-glow:     rgba(217, 119, 6, 0.18);
 
+  /* Dining Brand Palette */
+  --lora-dark:       #0F172A;
+  --lora-forest:     #1E293B;
+  --lora-moss:       #15803D;
+  --lora-leaf:       #16A34A;
+  --lora-leaf-glow:  rgba(22, 163, 74, 0.20);
+  --lora-leaf-subtle:#ECFDF5;
+  --lora-sage:       #F1F5F9;
+  --lora-cream:      #F8FAFC;
+  --lora-track:      #E2E8F0;
+  --lora-track-edge: #CBD5E1;
 
-  /* Lora Farm-To-Table Dedicated Palette (Photos 1 & 2) */
-  --lora-dark:       #0F2D1E; /* Deep Pine (#0F2D1E) */
-  --lora-forest:     #163E28;
-  --lora-moss:       #2F5E31; /* Mid Moss (#2F5E31) */
-  --lora-leaf:       #6FAF3D; /* Vibrant Sprout (#6FAF3D) */
-  --lora-leaf-glow:  rgba(111, 175, 61, 0.28);
-  --lora-leaf-subtle:rgba(111, 175, 61, 0.12);
-  --lora-sage:       #E7F1E1; /* Soft Sage (#E7F1E1) */
-  --lora-cream:      #F1F7EC; /* Canvas Cream (#F1F7EC) */
-  --lora-track:      #D6CCA9;
-  --lora-track-edge: #C5BA93;
-
-  /* Accent – Lora Vibrant Sprout Green (#6FAF3D) */
-  --accent:         #6FAF3D; /* Vibrant Sprout Accent */
-  --accent-glow:    rgba(111, 175, 61, 0.28);
-  --accent-dark:    #2F5E31;
-  --accent-light:   #84C853;
-  --accent-subtle:  rgba(111, 175, 61, 0.12);
+  /* Accent – Warm Amber for Deals & Highlights */
+  --accent:         #D97706; /* Warm Amber */
+  --accent-glow:    rgba(217, 119, 6, 0.20);
+  --accent-dark:    #B45309;
+  --accent-light:   #F59E0B;
+  --accent-subtle:  #FFFBEB;
 
   /* Semantics */
-  --success:        #2F5E31;
-  --success-glow:   rgba(47, 94, 49, 0.20);
-  --success-subtle: #E7F1E1;
+  --success:        #15803D;
+  --success-glow:   rgba(21, 128, 61, 0.18);
+  --success-subtle: #ECFDF5;
   --warning:        #D97706;
   --warning-subtle: #FEF3C7;
   --error:          #DC2626;
-  --error-glow:     rgba(220, 38, 38, 0.20);
+  --error-glow:     rgba(220, 38, 38, 0.18);
   --error-subtle:   #FEE2E2;
   --info:           #2563EB;
   --info-subtle:    #EFF6FF;
 
-  /* Text — Refined Luxury Hierarchy (Deep Pine & Forest Charcoal) */
-  --t1: #0F2D1E; /* Deep Pine Luxury Dark (Headings & Primary Text) */
-  --t2: #163E28; /* Rich Forest Dark Charcoal (Body Text) */
-  --t3: #425E4D; /* Elegant Sage Gray (Subtitles, Meta & Supporting) */
-  --t4: #6E8E7A; /* Muted Leaf Tone (Captions, Placeholders, Subtle Lines) */
-  --t5: #98B8A3; /* Delicate Border & Disabled Accents */
+  /* Text — High-Contrast Slate Hierarchy (Crisp & Readable) */
+  --t1: #0F172A; /* Slate 900: Primary Headings & Critical Labels */
+  --t2: #334155; /* Slate 700: Body Text & Titles */
+  --t3: #64748B; /* Slate 500: Subtitles, Meta & Helpers */
+  --t4: #94A3B8; /* Slate 400: Captions, Placeholders, Subtle Dividers */
+  --t5: #CBD5E1; /* Slate 300: Disabled & Faint Borders */
 
-  /* Borders — Soft Organic Moss Line */
-  --border:        #C8DEC3; /* Clean Soft Sage/Moss Border */
-  --border-light:  #DAEAD6;
-  --border-focus:  #6FAF3D; /* Vibrant Sprout Highlight */
-  --border-accent: #2F5E31;
+  /* Borders — Clean Neutral Slate */
+  --border:        #E2E8F0; /* Slate 200: Crisp & Clean */
+  --border-light:  #F1F5F9; /* Slate 100 */
+  --border-focus:  #15803D; /* Primary Focus Ring */
+  --border-accent: #15803D;
 
-  /* Shadows — Soft Botanical Depth */
-  --shadow-sm: 0 2px 6px rgba(15, 45, 30, 0.06);
-  --shadow-md: 0 8px 20px rgba(15, 45, 30, 0.08);
-  --shadow-lg: 0 16px 32px rgba(15, 45, 30, 0.10);
-  --shadow-xl: 0 24px 48px rgba(15, 45, 30, 0.14);
-  --shadow-glow: 0 0 20px rgba(111, 175, 61, 0.22);
+  /* Shadows — Soft Depth */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+  --shadow-glow: 0 0 24px rgba(21, 128, 61, 0.15);
 
   /* Radii */
   --r-xs:  6px;
@@ -1404,20 +1403,20 @@ button.btn-light:hover svg {
 }
 
 .mobile-nav-item.active {
-  color: var(--accent);
-  font-weight: 800;
+  color: var(--primary);
+  font-weight: 700;
 }
 
 .mobile-nav-item.active .mobile-nav-icon-wrap {
-  transform: translateY(-2px);
-  color: var(--accent);
+  transform: translateY(-1px);
+  color: var(--primary);
 }
 
 .mobile-nav-active-bg {
   position: absolute;
   inset: 2px;
-  background: rgba(111, 175, 61, 0.16);
-  border: 1px solid rgba(111, 175, 61, 0.35);
+  background: var(--primary-subtle);
+  border: 1px solid rgba(21, 128, 61, 0.20);
   border-radius: 12px;
   z-index: 0;
 }

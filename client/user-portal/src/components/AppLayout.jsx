@@ -153,48 +153,48 @@ export default function AppLayout() {
       {/* Mobile Slide-out Drawer Sheet */}
       {mobileDrawerOpen && (
         <div className="mobile-drawer-overlay" onClick={() => setMobileDrawerOpen(false)}>
-          <div className="mobile-drawer-sheet" onClick={(e) => e.stopPropagation()}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <div className="sidebar-brand-icon" style={{ width: 36, height: 36 }}>
-                  <UtensilsCrossed size={18} color="#FFFFFF" />
+          <div className="mobile-drawer-sheet flex flex-col h-full bg-white p-5" onClick={(e) => e.stopPropagation()}>
+            <div className="flex justify-between items-center mb-5 pb-4 border-b border-slate-100">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-emerald-700 text-white flex items-center justify-center font-bold shadow-xs">
+                  <UtensilsCrossed size={18} />
                 </div>
                 <div>
-                  <div className="font-display" style={{ fontSize: 16, fontWeight: 800, color: 'var(--t1)' }}>Dine@Bennett</div>
-                  <div style={{ fontSize: 10, color: 'var(--accent)', fontWeight: 700, textTransform: 'uppercase' }}>Bennett University</div>
+                  <div className="font-bold text-base text-slate-900 leading-tight">Dine@Bennett</div>
+                  <div className="text-[11px] font-semibold text-emerald-700 uppercase tracking-wider">Bennett University</div>
                 </div>
               </div>
               <button
-                className="icon-btn"
-                style={{ width: 32, height: 32 }}
+                className="w-8 h-8 rounded-lg border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-slate-100 cursor-pointer transition-colors"
                 onClick={() => setMobileDrawerOpen(false)}
+                aria-label="Close menu"
               >
                 <X size={16} />
               </button>
             </div>
 
             {/* Current User Card */}
-            <div style={{ padding: 12, borderRadius: 'var(--r-sm)', background: '#F8FAFC', border: '1px solid var(--border)', marginBottom: 20 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/80 mb-5">
+              <div className="flex items-center gap-3">
                 <img
-                  src={user.avatar}
+                  src={user.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80'}
                   alt={user.name}
-                  style={{ width: 38, height: 38, borderRadius: '50%', objectFit: 'cover', border: '1.5px solid var(--accent)' }}
+                  className="w-10 h-10 rounded-full object-cover border-2 border-emerald-600/30"
                 />
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 13.5, fontWeight: 700, color: 'var(--t1)', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-bold text-slate-900 truncate">
                     {user.name}
                   </div>
-                  <div style={{ fontSize: 11, color: 'var(--accent)' }}>
+                  <div className="text-xs font-semibold text-emerald-700 truncate">
                     {user.roleLabel?.split('(')[0] || user.role}
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Drawer Navigation Links - strictly scoped to user role */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6, flex: 1, overflowY: 'auto' }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--t4)', textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: 4, marginBottom: 4 }}>
+            {/* Drawer Navigation Links */}
+            <div className="flex flex-col gap-1.5 flex-1 overflow-y-auto">
+              <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1 px-1">
                 Navigation
               </div>
               {navItems.map((item) => {
@@ -203,12 +203,19 @@ export default function AppLayout() {
                   <NavLink
                     key={item.to}
                     to={item.to}
-                    className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+                    className={({ isActive }) =>
+                      `flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+                        isActive
+                          ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                          : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 border border-transparent'
+                      }`
+                    }
                     onClick={() => setMobileDrawerOpen(false)}
                   >
-                    <Icon size={16} /> {item.label}
+                    <Icon size={18} />
+                    <span>{item.label}</span>
                     {item.badge > 0 && (
-                      <span className="nav-badge" style={{ marginLeft: 'auto' }}>
+                      <span className="ml-auto px-2 py-0.5 rounded-full text-xs font-bold bg-amber-500 text-white">
                         {item.badge}
                       </span>
                     )}
@@ -218,16 +225,15 @@ export default function AppLayout() {
             </div>
 
             {/* Logout Footer */}
-            <div style={{ borderTop: '1px solid var(--border)', paddingTop: 14, marginTop: 'auto' }}>
+            <div className="border-t border-slate-100 pt-4 mt-auto">
               <button
-                className="btn btn-outline btn-sm btn-fw"
-                style={{ color: '#F87171', borderColor: 'rgba(239, 68, 68, 0.3)' }}
+                className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl border border-red-200 text-red-600 hover:bg-red-50 text-sm font-semibold cursor-pointer transition-colors"
                 onClick={() => {
                   logout();
                   navigate('/login');
                 }}
               >
-                <LogOut size={14} /> Sign Out
+                <LogOut size={16} /> Sign Out
               </button>
             </div>
           </div>
