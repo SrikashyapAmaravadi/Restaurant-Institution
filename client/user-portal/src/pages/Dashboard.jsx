@@ -12,11 +12,7 @@ import {
   QrCode,
   ArrowRight,
   Zap,
-  MapPin,
-  Clock,
-  ChevronRight,
-  Flame,
-  ShieldCheck,
+  Tag,
   Star,
   Leaf,
   Coffee,
@@ -25,9 +21,8 @@ import {
   Soup,
   Trees,
   UtensilsCrossed,
-  Tag,
   Compass,
-  Activity
+  ChevronRight
 } from 'lucide-react';
 
 export default function Dashboard() {
@@ -44,35 +39,35 @@ export default function Dashboard() {
   const safeReservations = Array.isArray(reservations) ? reservations : [];
   const safeRestaurants = Array.isArray(restaurants) ? restaurants : [];
 
-  // Active confirmed or seated booking from Supabase DB
-  const upcoming = safeReservations.find(b => b?.status === 'CONFIRMED' || b?.status === 'SEATED');
+  // Active confirmed or seated booking
+  const upcoming = safeReservations.find(
+    b => b?.status === 'CONFIRMED' || b?.status === 'SEATED'
+  );
 
-  // Campus Botanical Mood Categories (Story Circles) with Lucide Icons
+  // Campus Dining Mood Categories
   const MOOD_STORIES = [
     { id: 'farm', label: 'Farm to Table', icon: Leaf, tag: 'Organic' },
     { id: 'cafes', label: 'Study Cafes', icon: Coffee, cuisine: 'Continental' },
     { id: 'pizza', label: 'Pizza & Brews', icon: Pizza, cuisine: 'Continental' },
-    { id: 'mughlai', label: 'Mughlai & Tandoor', icon: Utensils, cuisine: 'North Indian' },
+    { id: 'mughlai', label: 'Tandoor & Curry', icon: Utensils, cuisine: 'North Indian' },
     { id: 'asian', label: 'Asian & Ramen', icon: Soup, cuisine: 'Pan-Asian' },
-    { id: 'patio', label: 'Open-Air Patio', icon: Trees, tag: 'Outdoor Patio' },
+    { id: 'patio', label: 'Open Patio', icon: Trees, tag: 'Outdoor Patio' },
     { id: 'quick', label: 'Quick Bites', icon: UtensilsCrossed, tag: 'Fast Casual' },
     { id: 'dessert', label: 'Boba & Sweets', icon: Sparkles, tag: 'Boba Tea Bar' },
-    { id: 'banquet', label: 'Group Hangouts', icon: Star, tag: 'Instant Reservation' }
   ];
 
-  // Filter Pills with Lucide Icons
+  // Filter Chips
   const FILTERS = [
     { id: 'All', label: 'All Spots', icon: Compass },
-    { id: 'FarmFresh', label: 'Farm to Table', icon: Leaf },
-    { id: 'Instant', label: 'Instant Confirm', icon: Zap },
-    { id: 'Offers', label: 'Campus Discounts', icon: Tag },
+    { id: 'Offers', label: 'Campus Deals', icon: Tag },
     { id: 'TopRated', label: 'Top Rated (4.5+)', icon: Star },
+    { id: 'Instant', label: 'Instant Pass', icon: Zap },
     { id: 'NorthIndian', label: 'North Indian', icon: Utensils },
     { id: 'Continental', label: 'Continental', icon: Pizza },
-    { id: 'PanAsian', label: 'Pan-Asian', icon: Soup }
+    { id: 'PanAsian', label: 'Pan-Asian', icon: Soup },
   ];
 
-  const handleMoodSelect = (mood) => {
+  const handleMoodSelect = mood => {
     if (activeMood === mood.id) {
       setActiveMood(null);
       setActiveFilter('All');
@@ -102,231 +97,136 @@ export default function Dashboard() {
   });
 
   return (
-    <div className="page-pad" style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(18px, 3vw, 24px)', paddingBottom: 100 }}>
-
-      {/* Campus Mobile Search Bar Trigger */}
+    <div className="page-pad pb-28 flex flex-col gap-6">
+      {/* Search Header Trigger */}
       <div
-        className="anim-fade-up dashboard-search-trigger"
         onClick={() => navigate('/discover')}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 12,
-          padding: '10px 16px',
-          borderRadius: 'var(--r-full)',
-          background: '#FFFFFF',
-          border: '1px solid var(--border)',
-          cursor: 'pointer',
-          boxShadow: 'var(--shadow-sm)'
-        }}
+        className="flex items-center gap-3 p-3 sm:px-4 sm:py-3 rounded-2xl bg-white border border-slate-200 hover:border-slate-300 shadow-xs cursor-pointer transition-all"
       >
-        <Search size={18} style={{ color: 'var(--primary)' }} />
-        <span style={{ fontSize: 13, color: 'var(--t3)', flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-          Search dishes or dining spots near Bennett...
+        <Search size={18} className="text-emerald-700 shrink-0" />
+        <span className="text-xs sm:text-sm text-slate-400 font-medium flex-1 truncate">
+          Search dishes, dining spots, or offers near Bennett...
         </span>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-          <span className="mobile-hide" style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 5,
-            fontSize: 11,
-            fontWeight: 700,
-            padding: '3px 8px',
-            borderRadius: 'var(--r-full)',
-            background: '#ECFDF5',
-            color: '#059669',
-            border: '1px solid #A7F3D0'
-          }}>
-            <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#059669' }} />
+        <div className="hidden sm:flex items-center gap-2 shrink-0">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-semibold">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
             Live Network
           </span>
-          <span style={{
-            fontSize: 11,
-            fontWeight: 700,
-            padding: '4px 10px',
-            borderRadius: 'var(--r-full)',
-            background: '#EFF6FF',
-            color: 'var(--primary)',
-            border: '1px solid #BFDBFE'
-          }}>
+          <span className="px-3 py-1 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold">
             Search
           </span>
         </div>
       </div>
 
-      {/* Horizontal "Going Out Vibes" Story Carousel */}
-      <div className="anim-fade-up" style={{ marginTop: -4 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <Zap size={15} style={{ color: 'var(--primary)' }} />
-            <span style={{ fontSize: 13, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--t1)' }}>
+      {/* Going Out Vibes Horizontal Stories */}
+      <div>
+        <div className="flex justify-between items-center mb-3">
+          <div className="flex items-center gap-2">
+            <Zap size={15} className="text-emerald-700" />
+            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-700">
               Going Out Vibes
-            </span>
+            </h2>
           </div>
-          <span style={{ fontSize: 11.5, color: 'var(--t3)' }}>Swipe for vibes &rarr;</span>
+          <span className="text-xs text-slate-400 font-medium">Swipe to filter &rarr;</span>
         </div>
 
-        <div className="campus-scroll-x" style={{ padding: '4px 2px 8px' }}>
+        <div className="flex items-center gap-4 overflow-x-auto pb-2 scrollbar-none">
           {MOOD_STORIES.map(mood => {
             const Icon = mood.icon;
             const isSelected = activeMood === mood.id;
             return (
-              <div
+              <button
                 key={mood.id}
-                className="campus-story-item"
+                type="button"
                 onClick={() => handleMoodSelect(mood)}
+                className="flex flex-col items-center gap-1.5 shrink-0 group cursor-pointer"
               >
                 <div
-                  className="campus-story-ring"
-                  style={{
-                    background: isSelected ? 'var(--primary)' : undefined,
-                    boxShadow: isSelected ? '0 0 0 2px #fff, 0 4px 12px var(--primary-glow)' : undefined
-                  }}
+                  className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all ${
+                    isSelected
+                      ? 'bg-emerald-700 text-white ring-3 ring-emerald-600/30 scale-105 shadow-sm'
+                      : 'bg-white text-slate-600 border border-slate-200 group-hover:border-slate-300 group-hover:bg-slate-50'
+                  }`}
                 >
-                  <div className="campus-story-inner">
-                    <Icon size={22} style={{ color: isSelected ? 'var(--primary)' : undefined }} />
-                  </div>
+                  <Icon size={22} />
                 </div>
                 <span
-                  className="campus-story-label"
-                  style={{
-                    fontWeight: isSelected ? 800 : 600,
-                    color: isSelected ? 'var(--primary)' : undefined
-                  }}
+                  className={`text-[11px] max-w-[68px] text-center truncate leading-tight font-medium ${
+                    isSelected ? 'font-bold text-emerald-800' : 'text-slate-600'
+                  }`}
                 >
                   {mood.label}
                 </span>
-              </div>
+              </button>
             );
           })}
         </div>
       </div>
 
-      {/* Campus Spotlight Banner: Semester Promo */}
-      <div
-        className="campus-promo-banner anim-fade-up"
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: 16
-        }}
-      >
-        <div style={{ maxWidth: 480 }}>
-          <div style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 6,
-            padding: '3px 10px',
-            borderRadius: 'var(--r-full)',
-            background: 'rgba(255, 255, 255, 0.2)',
-            border: '1px solid rgba(255, 255, 255, 0.35)',
-            color: '#FFFFFF',
-            fontSize: 11.5,
-            fontWeight: 800,
-            marginBottom: 8
-          }}>
-            <Flame size={13} /> CAMPUS EXCLUSIVE · 20% OFF
+      {/* Active Upcoming Reservation Banner (If Any) */}
+      {upcoming && (
+        <div className="bg-white border border-emerald-200 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 flex items-center justify-center shrink-0">
+              <QrCode size={24} />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800">
+                  Confirmed Table
+                </span>
+                <span className="text-xs text-slate-500 font-medium">
+                  {upcoming.date} • {upcoming.time}
+                </span>
+              </div>
+              <h3 className="text-base sm:text-lg font-bold text-slate-900 mt-1">
+                {upcoming.restaurantName}
+              </h3>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Table {upcoming.tableAssigned || 'T-01'} • {upcoming.partySize || 2} Guests
+              </p>
+            </div>
           </div>
-          <h3 className="font-display" style={{ fontSize: 'clamp(1.2rem, 3.5vw, 1.45rem)', fontWeight: 800, color: '#FFFFFF', lineHeight: 1.25, marginBottom: 6 }}>
-            Campus Dining Passes Live Across Greater Noida
-          </h3>
-          <p style={{ fontSize: 12.5, color: '#E2E8F0', lineHeight: 1.45 }}>
-            Instant table reservations with zero waiting line. Verified for Bennett students, faculty, and staff.
+
+          <button
+            type="button"
+            className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs sm:text-sm font-semibold shadow-xs cursor-pointer transition-colors shrink-0"
+            onClick={() => setSelectedBookingForPass(upcoming)}
+          >
+            <QrCode size={15} />
+            <span>View Digital Pass</span>
+          </button>
+        </div>
+      )}
+
+      {/* Campus Spotlight Banner */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-900 via-emerald-950 to-slate-950 p-5 sm:p-7 text-white shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+        <div className="max-w-md">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-200 text-xs font-bold mb-3">
+            <Sparkles size={12} />
+            <span>CAMPUS EXCLUSIVE • VERIFIED PASS</span>
+          </div>
+          <h2 className="text-lg sm:text-2xl font-bold tracking-tight text-white leading-snug">
+            Partner Dining Network Live Across Bennett TechZone
+          </h2>
+          <p className="text-xs sm:text-sm text-slate-300 mt-2 leading-relaxed">
+            Direct pre-booking with instant table hold, student discount settlement, and zero wait lines.
           </p>
         </div>
 
         <button
           type="button"
-          className="btn btn-outline btn-md cursor-pointer"
           onClick={() => navigate('/discover')}
-          style={{
-            padding: '10px 20px',
-            fontSize: 13,
-            fontWeight: 800,
-            borderRadius: 'var(--r-full)',
-            background: '#FFFFFF',
-            color: 'var(--primary)',
-            border: 'none',
-            boxShadow: '0 4px 14px rgba(0, 0, 0, 0.1)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8
-          }}
+          className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-white text-slate-950 hover:bg-slate-100 font-bold text-xs sm:text-sm cursor-pointer shadow-sm transition-all shrink-0"
         >
           <span>Explore All Spots</span>
           <ArrowRight size={15} />
         </button>
       </div>
 
-      {/* Active Upcoming Reservation Card (If Any) */}
-      {upcoming && (
-        <div
-          className="card anim-fade-up"
-          style={{
-            padding: 18,
-            borderRadius: 'var(--r-lg)',
-            background: '#FFFFFF',
-            border: '1px solid #A7F3D0',
-            boxShadow: 'var(--shadow-sm)',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            flexWrap: 'wrap',
-            gap: 16
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-            <div style={{
-              width: 48,
-              height: 48,
-              borderRadius: 'var(--r-sm)',
-              background: '#ECFDF5',
-              border: '1px solid #A7F3D0',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#059669'
-            }}>
-              <QrCode size={24} />
-            </div>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <span className="badge badge-success" style={{ fontSize: 10.5 }}>Confirmed Table</span>
-                <span style={{ fontSize: 11, color: 'var(--t3)' }}>{upcoming.date} · {upcoming.time}</span>
-              </div>
-              <h4 className="font-display" style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--t1)', marginTop: 3 }}>
-                {upcoming.restaurantName}
-              </h4>
-              <div style={{ fontSize: 11.5, color: 'var(--t3)' }}>
-                Party of {upcoming.guests} diners · Pass Ref: <strong style={{ color: 'var(--t1)' }}>{upcoming.bookingRef}</strong>
-              </div>
-            </div>
-          </div>
-
-          <button
-            type="button"
-            className="btn btn-outline btn-sm cursor-pointer"
-            onClick={() => setSelectedBookingForPass(upcoming)}
-            style={{
-              borderColor: '#059669',
-              color: '#059669',
-              background: '#ECFDF5',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6
-            }}
-          >
-            <QrCode size={14} />
-            <span>Show QR Pass</span>
-          </button>
-        </div>
-      )}
-
-      {/* Filter Chips Strip */}
-      <div className="anim-fade-up">
-        <div className="campus-scroll-x" style={{ gap: 8, paddingBottom: 2 }}>
+      {/* Filter Chips Stream */}
+      <div>
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
           {FILTERS.map(f => {
             const FilterIcon = f.icon;
             const isSelected = activeFilter === f.id;
@@ -334,26 +234,15 @@ export default function Dashboard() {
               <button
                 key={f.id}
                 type="button"
-                className={`dashboard-filter-btn ${isSelected ? 'active' : ''}`}
                 onClick={() => {
                   setActiveFilter(f.id);
                   setActiveMood(null);
                 }}
-                style={{
-                  padding: '7px 14px',
-                  borderRadius: 'var(--r-full)',
-                  background: isSelected ? 'var(--primary)' : '#FFFFFF',
-                  border: `1px solid ${isSelected ? 'var(--primary)' : 'var(--border)'}`,
-                  color: isSelected ? '#FFFFFF' : 'var(--t2)',
-                  fontSize: 12,
-                  fontWeight: 700,
-                  whiteSpace: 'nowrap',
-                  cursor: 'pointer',
-                  boxShadow: isSelected ? '0 2px 8px var(--primary-glow)' : 'var(--shadow-sm)',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 6
-                }}
+                className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-semibold shrink-0 cursor-pointer transition-colors ${
+                  isSelected
+                    ? 'bg-emerald-700 text-white shadow-xs'
+                    : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'
+                }`}
               >
                 <FilterIcon size={13} />
                 <span>{f.label}</span>
@@ -363,60 +252,63 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Campus Restaurant Cards Feed */}
-      <div className="anim-fade-up">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+      {/* Top Dining Spots Section */}
+      <div>
+        <div className="flex justify-between items-end mb-4">
           <div>
-            <h3 className="font-display" style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--t1)' }}>
+            <h2 className="text-lg sm:text-xl font-bold tracking-tight text-slate-900">
               Top Dining Spots Near Campus
-            </h3>
-            <p style={{ fontSize: 12.5, color: 'var(--t3)' }}>
-              {filteredRestaurants.length} verified partner restaurants open for reservation
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
+              {filteredRestaurants.length} verified partner restaurants available
             </p>
           </div>
           <button
-            className="btn btn-ghost btn-xs"
+            type="button"
             onClick={() => navigate('/discover')}
-            style={{ color: 'var(--campus-accent)', fontWeight: 700, fontSize: 12 }}
+            className="text-xs sm:text-sm font-semibold text-emerald-700 hover:text-emerald-800 flex items-center gap-1 cursor-pointer"
           >
-            View Map →
+            <span>View Map</span>
+            <ChevronRight size={14} />
           </button>
         </div>
 
         {filteredRestaurants.length === 0 ? (
-          <div className="card" style={{ padding: '40px 20px', textAlign: 'center', color: 'var(--t3)' }}>
-            <p style={{ fontSize: 15, fontWeight: 700, color: 'var(--t1)', marginBottom: 6 }}>No venues found for this filter</p>
-            <p style={{ fontSize: 13 }}>Try tapping "All Spots" to see all partner spots near Bennett.</p>
+          <div className="bg-white border border-slate-200 rounded-2xl p-10 text-center shadow-xs">
+            <p className="text-sm font-bold text-slate-900 mb-1">No venues found for this filter</p>
+            <p className="text-xs text-slate-500 mb-4">Tap "All Spots" to see all spots near Bennett.</p>
             <button
               type="button"
-              className="btn btn-primary btn-sm"
-              onClick={() => { setActiveFilter('All'); setActiveMood(null); }}
-              style={{ marginTop: 14 }}
+              className="px-4 py-2 text-xs font-semibold rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 cursor-pointer"
+              onClick={() => {
+                setActiveFilter('All');
+                setActiveMood(null);
+              }}
             >
               Reset Filters
             </button>
           </div>
         ) : (
-          <div className="restaurant-grid">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {filteredRestaurants.map(restaurant => (
               <RestaurantCard
                 key={restaurant.id}
                 restaurant={restaurant}
-                onQuickReserve={(r) => setSelectedRestaurant(r)}
-                onViewOffer={(offer) => setSelectedOffer(offer)}
+                onQuickReserve={r => setSelectedRestaurant(r)}
+                onViewOffer={offer => setSelectedOffer(offer)}
               />
             ))}
           </div>
         )}
       </div>
 
-      {/* Booking Modal / Campus Mobile Bottom Sheet */}
+      {/* Booking Modal */}
       {selectedRestaurantForBooking && (
         <BookingModal
           restaurant={selectedRestaurantForBooking}
           isOpen={!!selectedRestaurantForBooking}
           onClose={() => setSelectedRestaurant(null)}
-          onSuccess={(newBooking) => {
+          onSuccess={newBooking => {
             setSelectedRestaurant(null);
             setSelectedBookingForPass(newBooking);
           }}

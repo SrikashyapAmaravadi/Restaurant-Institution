@@ -15,7 +15,6 @@ import {
   Zap,
   Filter,
   X,
-  MapPin,
   Star,
   Tag,
   UtensilsCrossed,
@@ -43,7 +42,7 @@ export default function Discover() {
   const [selectedOffer, setSelectedOffer] = useState(null);
   const [showMobileFilters, setShowMobileFilters] = useState(false);
 
-  const toggle = (arr, set, v) => set(a => a.includes(v) ? a.filter(x => x !== v) : [...a, v]);
+  const toggle = (arr, set, v) => set(a => (a.includes(v) ? a.filter(x => x !== v) : [...a, v]));
 
   const filtered = useMemo(() => {
     return restaurantList.filter(r => {
@@ -95,43 +94,37 @@ export default function Discover() {
     setSortBy('recommended');
   };
 
-  const activeFiltersCount = cuisines.length + prices.length + (minRating !== 'Any' ? 1 : 0) + (openOnly ? 1 : 0) + (offersOnly ? 1 : 0);
+  const activeFiltersCount =
+    cuisines.length +
+    prices.length +
+    (minRating !== 'Any' ? 1 : 0) +
+    (openOnly ? 1 : 0) +
+    (offersOnly ? 1 : 0);
 
   return (
-    <div className="page-pad" style={{ paddingBottom: 100 }}>
-      {/* Header & Controls */}
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-        style={{ marginBottom: 20, display: 'flex', flexDirection: 'column', gap: 14 }}
-      >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
+    <div className="page-pad pb-24">
+      {/* Header & Controls Section */}
+      <div className="flex flex-col gap-4 mb-6">
+        {/* Title & View Switcher */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h2 className="font-display" style={{ fontSize: 'clamp(1.35rem, 4vw, 1.75rem)', fontWeight: 800, color: 'var(--t1)' }}>
+            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">
               Campus Radar &amp; Discovery
-            </h2>
-            <p style={{ fontSize: 13, color: 'var(--t3)' }}>
+            </h1>
+            <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
               Explore <strong>{sortedAndFiltered.length}</strong> partner dining spots around Bennett University
             </p>
           </div>
 
-          {/* Sort & View Mode Switcher */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#FFFFFF', border: '1px solid var(--border)', borderRadius: 'var(--r-full)', padding: '4px 10px' }}>
-              <ArrowUpDown size={13} style={{ color: 'var(--primary)' }} />
+          {/* Sort & Segmented View Toggle */}
+          <div className="flex items-center gap-2.5 flex-wrap">
+            {/* Sort Selector */}
+            <div className="inline-flex items-center gap-1.5 bg-white border border-slate-200 rounded-xl px-3 py-1.5 shadow-xs">
+              <ArrowUpDown size={13} className="text-emerald-700 shrink-0" />
               <select
                 value={sortBy}
                 onChange={e => setSortBy(e.target.value)}
-                style={{
-                  border: 'none',
-                  outline: 'none',
-                  background: 'transparent',
-                  color: 'var(--t1)',
-                  fontSize: 12,
-                  fontWeight: 700,
-                  cursor: 'pointer'
-                }}
+                className="border-none outline-none bg-transparent text-slate-800 text-xs font-semibold cursor-pointer"
               >
                 <option value="recommended">Featured / Recommended</option>
                 <option value="rating-desc">Top Rated (4.8★+)</option>
@@ -142,96 +135,111 @@ export default function Discover() {
               </select>
             </div>
 
-            <div style={{ display: 'inline-flex', padding: 4, background: '#FFFFFF', border: '1px solid var(--border)', borderRadius: 'var(--r-full)', gap: 4 }}>
+            {/* Segmented Grid / Map Control */}
+            <div className="inline-flex p-1 bg-slate-100 border border-slate-200 rounded-xl gap-1">
               <button
-                className={`btn btn-xs ${viewMode === 'grid' ? 'btn-primary' : 'btn-ghost'}`}
+                type="button"
+                className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold cursor-pointer transition-colors ${
+                  viewMode === 'grid'
+                    ? 'bg-white text-slate-900 shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
                 onClick={() => setViewMode('grid')}
-                style={{ borderRadius: 'var(--r-full)', padding: '6px 14px', fontSize: 12 }}
               >
-                <Grid size={14} /> Grid
+                <Grid size={13} />
+                <span>Grid</span>
               </button>
               <button
-                className={`btn btn-xs ${viewMode === 'map' ? 'btn-primary' : 'btn-ghost'}`}
+                type="button"
+                className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold cursor-pointer transition-colors ${
+                  viewMode === 'map'
+                    ? 'bg-white text-slate-900 shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
                 onClick={() => setViewMode('map')}
-                style={{ borderRadius: 'var(--r-full)', padding: '6px 14px', fontSize: 12 }}
               >
-                <Map size={14} /> Map
+                <Map size={13} />
+                <span>Map</span>
               </button>
             </div>
           </div>
         </div>
 
-        {/* Global Search Bar */}
-        <div style={{ display: 'flex', gap: 10 }}>
-          <div className="form-input-wrap" style={{ flex: 1 }}>
-            <Search size={18} className="form-input-icon text-indigo-400" />
+        {/* Search Bar & Mobile Filter Trigger */}
+        <div className="flex items-center gap-2.5">
+          <div className="relative flex-1 flex items-center">
+            <Search size={17} className="absolute left-3.5 text-slate-400 pointer-events-none" />
             <input
-              className="form-input"
-              style={{ padding: '12px 18px 12px 44px', fontSize: 14, borderRadius: 'var(--r-full)' }}
+              className="w-full pl-10 pr-9 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 outline-none transition-all focus:border-emerald-600 focus:ring-3 focus:ring-emerald-500/15 shadow-xs"
               value={search}
               onChange={e => setSearch(e.target.value)}
-              placeholder="Search by restaurant, dish, or cuisine..."
+              placeholder="Search by restaurant name, cuisine, or popular dish..."
             />
             {search && (
               <button
                 onClick={() => setSearch('')}
-                style={{ position: 'absolute', right: 14, background: 'none', border: 'none', color: 'var(--t4)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                className="absolute right-3 text-slate-400 hover:text-slate-600 cursor-pointer"
               >
                 <X size={15} />
               </button>
             )}
           </div>
 
-          {/* Mobile Filter Toggle Button */}
+          {/* Filter Modal Trigger */}
           <button
             type="button"
-            className="btn btn-outline btn-md"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2.5 min-h-[42px] rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs sm:text-sm font-semibold shadow-xs cursor-pointer transition-colors shrink-0"
             onClick={() => setShowMobileFilters(true)}
-            style={{
-              borderRadius: 'var(--r-full)',
-              padding: '0 16px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6
-            }}
           >
             <Filter size={15} />
             <span>Filters</span>
             {activeFiltersCount > 0 && (
-              <span className="badge badge-primary" style={{ padding: '2px 6px', fontSize: 10 }}>
+              <span className="ml-1 px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-700 text-white">
                 {activeFiltersCount}
               </span>
             )}
           </button>
         </div>
 
-        {/* Horizontal Quick Filter Pills */}
-        <div className="campus-scroll-x">
+        {/* Quick Filter Horizontal Scroll Stream */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
           <button
             type="button"
-            className={`chip ${!openOnly && !offersOnly && cuisines.length === 0 ? 'on' : ''}`}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold shrink-0 cursor-pointer transition-colors ${
+              !openOnly && !offersOnly && cuisines.length === 0
+                ? 'bg-emerald-700 text-white shadow-xs'
+                : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'
+            }`}
             onClick={clearAll}
-            style={{ borderRadius: 'var(--r-full)', display: 'inline-flex', alignItems: 'center', gap: 6 }}
           >
-            <Sparkles size={13} /> All ({restaurantList.length})
+            <Sparkles size={12} />
+            <span>All ({restaurantList.length})</span>
           </button>
 
           <button
             type="button"
-            className={`chip ${openOnly ? 'on' : ''}`}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold shrink-0 cursor-pointer transition-colors ${
+              openOnly
+                ? 'bg-emerald-700 text-white shadow-xs'
+                : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'
+            }`}
             onClick={() => setOpen(!openOnly)}
-            style={{ borderRadius: 'var(--r-full)', display: 'inline-flex', alignItems: 'center', gap: 6 }}
           >
-            <Zap size={13} /> Open Now
+            <Zap size={12} />
+            <span>Open Now</span>
           </button>
 
           <button
             type="button"
-            className={`chip ${offersOnly ? 'on' : ''}`}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold shrink-0 cursor-pointer transition-colors ${
+              offersOnly
+                ? 'bg-amber-600 text-white shadow-xs'
+                : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'
+            }`}
             onClick={() => setOffers(!offersOnly)}
-            style={{ borderRadius: 'var(--r-full)', display: 'inline-flex', alignItems: 'center', gap: 6 }}
           >
-            <Tag size={13} /> Student Deals
+            <Tag size={12} />
+            <span>Student Deals</span>
           </button>
 
           {CUISINES.map(c => {
@@ -240,72 +248,64 @@ export default function Discover() {
               <button
                 key={c}
                 type="button"
-                className={`chip ${active ? 'on' : ''}`}
+                className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold shrink-0 cursor-pointer transition-colors ${
+                  active
+                    ? 'bg-emerald-700 text-white shadow-xs'
+                    : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'
+                }`}
                 onClick={() => toggle(cuisines, setCuisines, c)}
-                style={{ borderRadius: 'var(--r-full)' }}
               >
-                {c}
+                <span>{c}</span>
               </button>
             );
           })}
         </div>
-      </motion.div>
+      </div>
 
-      {/* Main Discover Layout */}
+      {/* Main Discover Layout (Grid or Map) */}
       <div>
         {viewMode === 'map' ? (
           <InteractiveMap
             restaurants={sortedAndFiltered}
-            onSelectRestaurant={(rest) => setSelectedForBooking(rest)}
+            onSelectRestaurant={rest => setSelectedForBooking(rest)}
           />
         ) : (
           <div>
             {sortedAndFiltered.length === 0 ? (
-              <div className="card anim-fade-up" style={{ textAlign: 'center', padding: '64px 20px', borderRadius: 'var(--r-lg)' }}>
-                <div style={{
-                  width: 56,
-                  height: 56,
-                  borderRadius: '50%',
-                  background: '#EFF6FF',
-                  border: '1.5px solid var(--border)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  margin: '0 auto 16px',
-                  color: 'var(--primary)'
-                }}>
-                  <UtensilsCrossed size={26} />
+              <div className="bg-white border border-slate-200 rounded-2xl p-12 text-center shadow-xs">
+                <div className="w-12 h-12 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center mx-auto mb-4 text-slate-500">
+                  <UtensilsCrossed size={22} />
                 </div>
-                <h3 className="font-display" style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--t1)', marginBottom: 6 }}>
+                <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-1">
                   No Restaurants Found
                 </h3>
-                <p style={{ fontSize: 13, color: 'var(--t3)', maxWidth: 360, margin: '0 auto 18px' }}>
-                  Try widening your distance radius, removing some filters, or clearing your search term.
+                <p className="text-xs sm:text-sm text-slate-500 max-w-sm mx-auto mb-5">
+                  Try adjusting your radius slider, clearing search keywords, or selecting different cuisines.
                 </p>
-                <button className="btn btn-outline btn-md" onClick={clearAll} style={{ borderRadius: 'var(--r-full)' }}>
+                <button
+                  type="button"
+                  className="px-4 py-2 text-xs sm:text-sm font-semibold rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 transition-colors cursor-pointer"
+                  onClick={clearAll}
+                >
                   Reset All Filters
                 </button>
               </div>
             ) : (
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 280px), 1fr))',
-                gap: 'clamp(14px, 2.5vw, 20px)'
-              }}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                 <AnimatePresence mode="popLayout">
                   {sortedAndFiltered.map((r, idx) => (
                     <motion.div
                       key={r.id}
                       layout
-                      initial={{ opacity: 0, y: 18 }}
+                      initial={{ opacity: 0, y: 14 }}
                       animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, scale: 0.95 }}
-                      transition={{ duration: 0.25, delay: Math.min(idx * 0.04, 0.25) }}
+                      exit={{ opacity: 0, scale: 0.96 }}
+                      transition={{ duration: 0.2, delay: Math.min(idx * 0.03, 0.2) }}
                     >
                       <RestaurantCard
                         restaurant={r}
-                        onQuickReserve={(rest) => setSelectedForBooking(rest)}
-                        onViewOffer={(offer) => setSelectedOffer(offer)}
+                        onQuickReserve={rest => setSelectedForBooking(rest)}
+                        onViewOffer={offer => setSelectedOffer(offer)}
                       />
                     </motion.div>
                   ))}
@@ -316,26 +316,39 @@ export default function Discover() {
         )}
       </div>
 
-      {/* Mobile Filter Bottom Sheet / Modal */}
+      {/* Mobile Filter Sheet Modal */}
       {showMobileFilters && (
-        <div className="modal-overlay" onClick={() => setShowMobileFilters(false)}>
-          <div className="modal-card" onClick={e => e.stopPropagation()} style={{ maxWidth: 460 }}>
-            <div className="modal-hd">
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <SlidersHorizontal size={18} style={{ color: 'var(--campus-accent)' }} />
-                <h3 className="modal-title font-display">Filters &amp; Radius</h3>
+        <div
+          className="fixed inset-0 z-50 bg-slate-950/40 backdrop-blur-xs flex items-center justify-center p-4"
+          onClick={() => setShowMobileFilters(false)}
+        >
+          <div
+            className="bg-white rounded-2xl w-full max-w-md p-5 shadow-xl border border-slate-200"
+            onClick={e => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="flex justify-between items-center pb-4 border-b border-slate-100 mb-5">
+              <div className="flex items-center gap-2">
+                <SlidersHorizontal size={18} className="text-emerald-700" />
+                <h3 className="font-bold text-base text-slate-900">Filters &amp; Radius</h3>
               </div>
-              <button className="modal-close" onClick={() => setShowMobileFilters(false)}>
+              <button
+                className="w-8 h-8 rounded-lg border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-slate-100 cursor-pointer"
+                onClick={() => setShowMobileFilters(false)}
+              >
                 <X size={16} />
               </button>
             </div>
 
-            <div className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+            {/* Modal Body */}
+            <div className="space-y-5">
               {/* Distance Slider */}
               <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-                  <span className="form-label" style={{ margin: 0 }}>Max Radius from Campus</span>
-                  <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--campus-accent)' }}>{maxDist} km</span>
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                    Radius from Campus
+                  </span>
+                  <span className="text-xs font-bold text-emerald-700">{maxDist} km</span>
                 </div>
                 <input
                   type="range"
@@ -344,25 +357,30 @@ export default function Discover() {
                   step={0.5}
                   value={maxDist}
                   onChange={e => setDist(parseFloat(e.target.value))}
-                  style={{ width: '100%', accentColor: 'var(--campus-accent)' }}
+                  className="w-full accent-emerald-700 cursor-pointer"
                 />
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'var(--t4)', marginTop: 4 }}>
-                  <span>0.5 km (Walking)</span>
-                  <span>10 km (Car / Auto)</span>
+                <div className="flex justify-between text-[11px] text-slate-400 mt-1 font-medium">
+                  <span>0.5 km (Walk)</span>
+                  <span>10 km (Cab / Auto)</span>
                 </div>
               </div>
 
               {/* Price Bracket */}
               <div>
-                <span className="form-label">Price Bracket</span>
-                <div style={{ display: 'flex', gap: 8 }}>
+                <span className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                  Price Category
+                </span>
+                <div className="flex gap-2">
                   {PRICES.map(p => (
                     <button
                       key={p}
                       type="button"
                       onClick={() => toggle(prices, setPrices, p)}
-                      className={`chip ${prices.includes(p) ? 'on' : ''}`}
-                      style={{ flex: 1, textAlign: 'center', borderRadius: 'var(--r-sm)' }}
+                      className={`flex-1 py-2 rounded-xl text-xs font-bold border transition-colors cursor-pointer ${
+                        prices.includes(p)
+                          ? 'bg-emerald-700 text-white border-emerald-700'
+                          : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                      }`}
                     >
                       {p}
                     </button>
@@ -372,15 +390,20 @@ export default function Discover() {
 
               {/* Rating */}
               <div>
-                <span className="form-label">Minimum Rating</span>
-                <div style={{ display: 'flex', gap: 8 }}>
+                <span className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                  Minimum Rating
+                </span>
+                <div className="flex gap-2">
                   {RATINGS.map(r => (
                     <button
                       key={r}
                       type="button"
                       onClick={() => setRating(r)}
-                      className={`chip ${minRating === r ? 'on' : ''}`}
-                      style={{ flex: 1, textAlign: 'center', borderRadius: 'var(--r-sm)' }}
+                      className={`flex-1 py-2 rounded-xl text-xs font-bold border transition-colors cursor-pointer ${
+                        minRating === r
+                          ? 'bg-emerald-700 text-white border-emerald-700'
+                          : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                      }`}
                     >
                       {r}
                     </button>
@@ -388,38 +411,44 @@ export default function Discover() {
                 </div>
               </div>
 
-              {/* Cuisines Checkboxes */}
+              {/* Cuisines Grid */}
               <div>
-                <span className="form-label">Cuisines</span>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                <span className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                  Cuisines
+                </span>
+                <div className="grid grid-cols-2 gap-2.5">
                   {CUISINES.map(c => (
-                    <label key={c} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'var(--t2)', cursor: 'pointer' }}>
+                    <label
+                      key={c}
+                      className="flex items-center gap-2 text-xs font-medium text-slate-700 cursor-pointer select-none"
+                    >
                       <input
                         type="checkbox"
                         checked={cuisines.includes(c)}
                         onChange={() => toggle(cuisines, setCuisines, c)}
-                        style={{ accentColor: 'var(--campus-accent)', width: 16, height: 16 }}
+                        className="accent-emerald-700 w-4 h-4 rounded"
                       />
-                      {c}
+                      <span>{c}</span>
                     </label>
                   ))}
                 </div>
               </div>
             </div>
 
-            <div className="modal-ft" style={{ justifyContent: 'space-between' }}>
+            {/* Modal Footer */}
+            <div className="flex items-center justify-between gap-3 pt-5 border-t border-slate-100 mt-6">
               <button
                 type="button"
-                className="btn btn-ghost btn-sm"
+                className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-slate-600 hover:text-slate-900 cursor-pointer"
                 onClick={clearAll}
               >
-                <RotateCcw size={13} /> Reset Filters
+                <RotateCcw size={13} />
+                <span>Reset</span>
               </button>
               <button
                 type="button"
-                className="btn btn-primary btn-md"
+                className="px-5 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs sm:text-sm font-semibold cursor-pointer shadow-xs transition-colors"
                 onClick={() => setShowMobileFilters(false)}
-                style={{ borderRadius: 'var(--r-full)', padding: '8px 24px' }}
               >
                 Apply ({filtered.length} spots)
               </button>
@@ -442,8 +471,9 @@ export default function Discover() {
         <OfferDrawer
           offer={selectedOffer}
           onClose={() => setSelectedOffer(null)}
-          onApplyOffer={(offer) => {
-            const target = restaurantList.find(r => r.id === offer.restaurantId) || restaurantList[0];
+          onApplyOffer={offer => {
+            const target =
+              restaurantList.find(r => r.id === offer.restaurantId) || restaurantList[0];
             if (target) setSelectedForBooking(target);
           }}
         />

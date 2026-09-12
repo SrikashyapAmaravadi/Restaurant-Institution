@@ -74,7 +74,7 @@ export default function NoSearchResultsState({
       >
         {query ? (
           <>
-            No matches for <span style={{ color: 'var(--primary-light)' }}>&ldquo;{query}&rdquo;</span>
+            No matches for <span style={{ color: 'var(--primary)' }}>&ldquo;{query}&rdquo;</span>
           </>
         ) : (
           'No items match your active filters'
@@ -114,9 +114,9 @@ export default function NoSearchResultsState({
                 gap: 5,
                 padding: '4px 10px',
                 borderRadius: 'var(--r-full)',
-                background: 'rgba(200, 109, 81, 0.12)',
-                border: '1px solid rgba(200, 109, 81, 0.3)',
-                color: 'var(--primary-light)',
+                background: '#ECFDF5',
+                border: '1px solid #A7F3D0',
+                color: '#065F46',
                 fontSize: 11.5,
                 fontWeight: 600
               }}
