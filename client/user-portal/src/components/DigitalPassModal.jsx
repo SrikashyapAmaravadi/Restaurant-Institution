@@ -298,7 +298,7 @@ export default function DigitalPassModal({ booking, onClose }) {
           </div>
 
           {/* ── Action Buttons ── */}
-          <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+          <div style={{ display: 'flex', gap: 10, marginBottom: 8 }}>
             <button
               type="button"
               className="btn btn-outline btn-sm"
@@ -306,9 +306,10 @@ export default function DigitalPassModal({ booking, onClose }) {
               disabled={downloading}
               style={{
                 flex: 1,
-                padding: '9px 12px',
+                padding: '11px 18px',
+                minHeight: 42,
                 borderRadius: 12,
-                fontSize: 12,
+                fontSize: 12.5,
                 fontWeight: 700,
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -326,9 +327,10 @@ export default function DigitalPassModal({ booking, onClose }) {
               onClick={handleDirections}
               style={{
                 flex: 1,
-                padding: '9px 12px',
+                padding: '11px 18px',
+                minHeight: 42,
                 borderRadius: 12,
-                fontSize: 12,
+                fontSize: 12.5,
                 fontWeight: 700,
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -347,14 +349,15 @@ export default function DigitalPassModal({ booking, onClose }) {
             onClick={handleScanPass}
             style={{
               width: '100%',
-              fontSize: 11.5,
+              fontSize: 12,
               fontWeight: 600,
               color: '#64748B',
               display: 'inline-flex',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: 5,
-              padding: '6px 0'
+              gap: 6,
+              padding: '8px 14px',
+              borderRadius: 8
             }}
           >
             <Camera size={13} />

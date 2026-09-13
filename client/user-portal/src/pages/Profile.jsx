@@ -289,11 +289,11 @@ export default function Profile() {
                   />
                   <button
                     type="button"
-                    className="btn-primary"
-                    style={{ padding: '6px 14px', fontSize: 12 }}
+                    className="btn btn-primary btn-sm"
+                    style={{ borderRadius: 10 }}
                     onClick={() => fileInputRef.current?.click()}
                   >
-                    <Upload size={13} /> Upload Photo
+                    <Upload size={14} /> Upload Photo
                   </button>
                 </div>
               </div>
@@ -408,12 +408,13 @@ export default function Profile() {
             )}
 
             <div style={{ display: 'flex', gap: 12, marginTop: 10, flexWrap: 'wrap' }}>
-              <button type="submit" className="btn-primary" disabled={isSaving}>
-                <Save size={15} /> {isSaving ? 'Saving Changes...' : 'Save Profile Changes'}
+              <button type="submit" className="btn btn-primary btn-md" style={{ borderRadius: 12 }} disabled={isSaving}>
+                <Save size={16} /> {isSaving ? 'Saving Changes...' : 'Save Profile Changes'}
               </button>
               <button
                 type="button"
-                className="btn-secondary"
+                className="btn btn-secondary btn-md"
+                style={{ borderRadius: 12 }}
                 onClick={() => alert(`Password reset verification link sent to ${user?.email || 'your email'}`)}
               >
                 Reset Password

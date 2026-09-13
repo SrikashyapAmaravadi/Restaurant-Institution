@@ -152,16 +152,16 @@ export default function RestaurantCard({ restaurant, onQuickReserve, onViewOffer
             <button
               type="button"
               onClick={handleOfferClick}
-              className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-800 bg-amber-50 hover:bg-amber-100 px-2.5 py-1.5 rounded-lg border border-amber-200 transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-800 bg-amber-50 hover:bg-amber-100 px-3 py-2 min-h-[38px] rounded-xl border border-amber-200 transition-colors cursor-pointer"
               title="Click to view campus voucher"
             >
-              <Tag size={11} className="text-amber-600" />
+              <Tag size={12} className="text-amber-600" />
               <span>{activeOffer.promoCode || 'BENNETT20'}</span>
-              <ChevronRight size={11} className="text-amber-500" />
+              <ChevronRight size={12} className="text-amber-500" />
             </button>
           ) : (
-            <span className="text-[11px] font-medium text-slate-400 flex items-center gap-1">
-              <MapPin size={11} /> Bennett Partner
+            <span className="text-xs font-medium text-slate-400 flex items-center gap-1.5 px-1">
+              <MapPin size={12} /> Bennett Partner
             </span>
           )}
 
@@ -169,9 +169,9 @@ export default function RestaurantCard({ restaurant, onQuickReserve, onViewOffer
           <button
             type="button"
             onClick={handleBookClick}
-            className="inline-flex items-center justify-center gap-1.5 px-4 py-1.5 min-h-[36px] rounded-xl bg-emerald-700 hover:bg-emerald-800 active:scale-[0.98] text-white text-xs font-bold shadow-xs transition-all cursor-pointer"
+            className="inline-flex items-center justify-center gap-1.5 px-4 py-2 min-h-[38px] rounded-xl bg-emerald-700 hover:bg-emerald-800 active:scale-[0.98] text-white text-xs font-bold shadow-xs transition-all cursor-pointer"
           >
-            <CalendarDays size={13} />
+            <CalendarDays size={14} />
             <span>Book Table</span>
           </button>
         </div>

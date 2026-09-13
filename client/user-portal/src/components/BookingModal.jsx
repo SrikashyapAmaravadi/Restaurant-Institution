@@ -586,13 +586,14 @@ export default function BookingModal({ restaurant, onClose, onBookingSuccess }) 
                       value={menuSearch}
                       onChange={e => setMenuSearch(e.target.value)}
                     />
-                    <div style={{ display: 'flex', gap: 4 }}>
+                    <div style={{ display: 'flex', gap: 6 }}>
                       <button
                         type="button"
                         onClick={() => setMenuFilter('all')}
                         style={{
-                          padding: '6px 12px',
-                          borderRadius: 8,
+                          padding: '7px 16px',
+                          minHeight: 34,
+                          borderRadius: 10,
                           fontSize: 12,
                           fontWeight: 700,
                           border: `1px solid ${menuFilter === 'all' ? '#15803D' : '#E2E8F0'}`,
@@ -607,8 +608,9 @@ export default function BookingModal({ restaurant, onClose, onBookingSuccess }) 
                         type="button"
                         onClick={() => setMenuFilter('veg')}
                         style={{
-                          padding: '6px 12px',
-                          borderRadius: 8,
+                          padding: '7px 16px',
+                          minHeight: 34,
+                          borderRadius: 10,
                           fontSize: 12,
                           fontWeight: 700,
                           border: `1px solid ${menuFilter === 'veg' ? '#15803D' : '#E2E8F0'}`,
@@ -715,7 +717,8 @@ export default function BookingModal({ restaurant, onClose, onBookingSuccess }) 
                                 type="button"
                                 onClick={() => handlePreOrderChange(item, 1)}
                                 style={{
-                                  padding: '5px 12px',
+                                  padding: '6px 14px',
+                                  minHeight: 32,
                                   borderRadius: 8,
                                   border: '1px solid #E2E8F0',
                                   background: '#FFFFFF',
@@ -916,7 +919,7 @@ export default function BookingModal({ restaurant, onClose, onBookingSuccess }) 
                   type="button"
                   className="btn btn-primary btn-sm"
                   onClick={() => setStep(2)}
-                  style={{ borderRadius: 10, padding: '8px 18px', fontWeight: 700 }}
+                  style={{ borderRadius: 10, padding: '9px 20px', minHeight: 38, fontWeight: 700 }}
                 >
                   Next: Pre-Order <ChevronRight size={14} />
                 </button>
@@ -945,7 +948,7 @@ export default function BookingModal({ restaurant, onClose, onBookingSuccess }) 
                   type="button"
                   className="btn btn-primary btn-sm"
                   onClick={() => setStep(3)}
-                  style={{ borderRadius: 10, padding: '8px 18px', fontWeight: 700 }}
+                  style={{ borderRadius: 10, padding: '9px 20px', minHeight: 38, fontWeight: 700 }}
                 >
                   Next: Occasion <ChevronRight size={14} />
                 </button>
@@ -967,7 +970,7 @@ export default function BookingModal({ restaurant, onClose, onBookingSuccess }) 
                 className="btn btn-primary btn-sm"
                 disabled={isSubmitting}
                 onClick={handleConfirmReservation}
-                style={{ borderRadius: 10, padding: '9px 20px', fontWeight: 800, gap: 6 }}
+                style={{ borderRadius: 10, padding: '10px 22px', minHeight: 40, fontWeight: 800, gap: 6 }}
               >
                 {isSubmitting ? (
                   'Confirming Table...'

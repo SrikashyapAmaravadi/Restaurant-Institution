@@ -337,7 +337,8 @@ export default function Login() {
               }}
               style={{
                 flex: 1,
-                padding: '8px 12px',
+                padding: '10px 16px',
+                minHeight: 40,
                 borderRadius: 'var(--r-xs)',
                 border: 'none',
                 background: authMode === 'OTP' ? '#FFFFFF' : 'transparent',
@@ -365,7 +366,8 @@ export default function Login() {
               }}
               style={{
                 flex: 1,
-                padding: '8px 12px',
+                padding: '10px 16px',
+                minHeight: 40,
                 borderRadius: 'var(--r-xs)',
                 border: 'none',
                 background: authMode === 'PASSWORD' ? '#FFFFFF' : 'transparent',
@@ -449,7 +451,7 @@ export default function Login() {
                     <button
                       type="submit"
                       className="btn btn-primary btn-lg btn-fw cursor-pointer"
-                      style={{ marginTop: 4 }}
+                      style={{ marginTop: 6, borderRadius: 14, padding: '13px 24px', minHeight: 48 }}
                       disabled={submitting}
                     >
                       {submitting ? (
@@ -521,7 +523,7 @@ export default function Login() {
                         type="button"
                         className="btn btn-outline btn-xs"
                         onClick={handleAutoFillOtp}
-                        style={{ fontSize: 11, padding: '4px 10px' }}
+                        style={{ fontSize: 12, padding: '6px 14px', borderRadius: 8, minHeight: 32 }}
                       >
                         <Zap size={12} /> Auto Fill
                       </button>
@@ -564,6 +566,7 @@ export default function Login() {
                     <button
                       type="submit"
                       className="btn btn-primary btn-lg btn-fw cursor-pointer"
+                      style={{ borderRadius: 14, padding: '13px 24px', minHeight: 48 }}
                       disabled={submitting}
                     >
                       {submitting ? (
@@ -667,7 +670,7 @@ export default function Login() {
                 <button
                   type="submit"
                   className="btn btn-primary btn-lg btn-fw cursor-pointer"
-                  style={{ marginTop: 4 }}
+                  style={{ marginTop: 6, borderRadius: 14, padding: '13px 24px', minHeight: 48 }}
                   disabled={submitting}
                 >
                   {submitting ? (

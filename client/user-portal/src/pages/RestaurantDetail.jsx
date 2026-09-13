@@ -422,7 +422,17 @@ export default function RestaurantDetail() {
         <button
           onClick={() => navigate(-1)}
           className="btn btn-ghost btn-sm"
-          style={{ paddingLeft: 0, fontWeight: 700, color: 'var(--t2)', display: 'inline-flex', alignItems: 'center', gap: 6 }}
+          style={{
+            borderRadius: 99,
+            padding: '8px 16px',
+            fontWeight: 700,
+            color: 'var(--t2)',
+            background: '#FFFFFF',
+            border: '1px solid var(--border)',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6
+          }}
         >
           <ArrowLeft size={16} /> Back to Discover
         </button>
@@ -616,13 +626,14 @@ export default function RestaurantDetail() {
                 onClick={() => setShowBookingModal(true)}
                 style={{
                   borderRadius: 14,
-                  padding: '12px 28px',
-                  fontSize: 14,
+                  padding: '13px 28px',
+                  fontSize: 14.5,
                   fontWeight: 800,
                   boxShadow: '0 8px 20px rgba(21, 128, 61, 0.4)',
                   display: 'inline-flex',
                   alignItems: 'center',
-                  gap: 8
+                  gap: 8,
+                  minHeight: 48
                 }}
               >
                 <Sparkles size={18} /> Book Table Pass
@@ -646,7 +657,8 @@ export default function RestaurantDetail() {
                 style={{
                   borderRadius: 10,
                   fontWeight: 700,
-                  padding: '9px 18px'
+                  padding: '10px 20px',
+                  minHeight: 38
                 }}
               >
                 {tab}
@@ -759,12 +771,13 @@ export default function RestaurantDetail() {
                         background: viewMode === 'grid' ? '#FFFFFF' : 'transparent',
                         color: viewMode === 'grid' ? 'var(--t1)' : 'var(--t3)',
                         borderRadius: 99,
-                        padding: '5px 10px',
+                        padding: '6px 14px',
+                        minHeight: 32,
                         cursor: 'pointer',
                         display: 'flex',
                         alignItems: 'center',
-                        gap: 4,
-                        fontSize: 11.5,
+                        gap: 5,
+                        fontSize: 12,
                         fontWeight: 700,
                         boxShadow: viewMode === 'grid' ? 'var(--shadow-sm)' : 'none'
                       }}
@@ -779,12 +792,13 @@ export default function RestaurantDetail() {
                         background: viewMode === 'list' ? '#FFFFFF' : 'transparent',
                         color: viewMode === 'list' ? 'var(--t1)' : 'var(--t3)',
                         borderRadius: 99,
-                        padding: '5px 10px',
+                        padding: '6px 14px',
+                        minHeight: 32,
                         cursor: 'pointer',
                         display: 'flex',
                         alignItems: 'center',
-                        gap: 4,
-                        fontSize: 11.5,
+                        gap: 5,
+                        fontSize: 12,
                         fontWeight: 700,
                         boxShadow: viewMode === 'list' ? 'var(--shadow-sm)' : 'none'
                       }}
@@ -900,12 +914,13 @@ export default function RestaurantDetail() {
                             className="btn btn-outline btn-xs"
                             onClick={() => setShowBookingModal(true)}
                             style={{
-                              borderRadius: 8,
-                              padding: '4px 10px',
-                              fontSize: 11,
+                              borderRadius: 10,
+                              padding: '7px 14px',
+                              fontSize: 12,
                               fontWeight: 700,
                               borderColor: '#15803D',
-                              color: '#15803D'
+                              color: '#15803D',
+                              minHeight: 32
                             }}
                           >
                             + Pre-Book
@@ -965,12 +980,13 @@ export default function RestaurantDetail() {
                           className="btn btn-outline btn-xs"
                           onClick={() => setShowBookingModal(true)}
                           style={{
-                            borderRadius: 8,
-                            padding: '4px 10px',
-                            fontSize: 11,
+                            borderRadius: 10,
+                            padding: '7px 14px',
+                            fontSize: 12,
                             fontWeight: 700,
                             borderColor: '#15803D',
-                            color: '#15803D'
+                            color: '#15803D',
+                            minHeight: 32
                           }}
                         >
                           + Pre-Book
@@ -1057,10 +1073,11 @@ export default function RestaurantDetail() {
                           border: 'none',
                           color: '#92400E',
                           borderRadius: 8,
-                          padding: '5px 10px',
-                          fontSize: 11,
-                          fontWeight: 700,
-                          cursor: 'pointer'
+                          padding: '7px 14px',
+                          fontSize: 12,
+                          fontWeight: 800,
+                          cursor: 'pointer',
+                          minHeight: 30
                         }}
                       >
                         Copy Code
@@ -1074,7 +1091,7 @@ export default function RestaurantDetail() {
                       setSelectedOffer(offer);
                       setShowBookingModal(true);
                     }}
-                    style={{ borderRadius: 12, fontWeight: 700, width: '100%', justifyContent: 'center' }}
+                    style={{ borderRadius: 12, fontWeight: 700, width: '100%', justifyContent: 'center', padding: '12px 20px', minHeight: 44 }}
                   >
                     <Sparkles size={15} /> Claim Voucher &amp; Reserve
                   </button>
@@ -1141,7 +1158,7 @@ export default function RestaurantDetail() {
                 <button
                   className="btn btn-outline btn-md"
                   onClick={() => setShowReviewModal(true)}
-                  style={{ borderRadius: 12, fontWeight: 700, borderColor: '#15803D', color: '#15803D' }}
+                  style={{ borderRadius: 12, fontWeight: 700, borderColor: '#15803D', color: '#15803D', padding: '10px 22px' }}
                 >
                   <MessageSquarePlus size={16} /> Write a Review
                 </button>
@@ -1162,7 +1179,7 @@ export default function RestaurantDetail() {
                   <button
                     className="btn btn-primary btn-sm"
                     onClick={() => setShowReviewModal(true)}
-                    style={{ borderRadius: 10, fontWeight: 700 }}
+                    style={{ borderRadius: 10, fontWeight: 700, padding: '9px 20px' }}
                   >
                     Write First Review
                   </button>
@@ -1243,15 +1260,16 @@ export default function RestaurantDetail() {
                           style={{
                             display: 'inline-flex',
                             alignItems: 'center',
-                            gap: 5,
+                            gap: 6,
                             background: isUpvoted ? '#ECFDF5' : '#F8FAFC',
                             color: isUpvoted ? '#065F46' : 'var(--t3)',
                             border: `1px solid ${isUpvoted ? '#A7F3D0' : 'var(--border)'}`,
                             borderRadius: 8,
-                            padding: '4px 10px',
-                            fontSize: 11.5,
+                            padding: '6px 14px',
+                            fontSize: 12,
                             cursor: 'pointer',
-                            fontWeight: isUpvoted ? 700 : 500
+                            fontWeight: isUpvoted ? 700 : 500,
+                            minHeight: 32
                           }}
                         >
                           <ThumbsUp size={12} fill={isUpvoted ? '#065F46' : 'none'} />
@@ -1330,7 +1348,7 @@ export default function RestaurantDetail() {
                     const query = encodeURIComponent(`${restaurant.name}, Bennett University, Greater Noida`);
                     window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, '_blank');
                   }}
-                  style={{ borderRadius: 10, fontWeight: 700, gap: 6 }}
+                  style={{ borderRadius: 10, fontWeight: 700, gap: 6, padding: '9px 18px' }}
                 >
                   <ExternalLink size={14} /> Open Route Map
                 </button>
@@ -1400,7 +1418,8 @@ export default function RestaurantDetail() {
               fontWeight: 800,
               fontSize: 14,
               boxShadow: '0 8px 18px rgba(21, 128, 61, 0.3)',
-              padding: '12px 18px',
+              padding: '13px 20px',
+              minHeight: 46,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -1445,9 +1464,10 @@ export default function RestaurantDetail() {
           onClick={() => setShowBookingModal(true)}
           style={{
             borderRadius: 12,
-            padding: '10px 22px',
-            fontSize: 13,
-            fontWeight: 800
+            padding: '11px 24px',
+            fontSize: 13.5,
+            fontWeight: 800,
+            minHeight: 40
           }}
         >
           Book Table
