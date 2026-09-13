@@ -147,7 +147,20 @@ export default function StaffPortal() {
               {seatedCount} Parties
             </div>
           </div>
-          <button className="btn-accent" onClick={() => setShowWalkinModal(true)}>
+          <button
+            className="btn-accent"
+            onClick={() => setShowWalkinModal(true)}
+            style={{
+              padding: '10px 20px',
+              minHeight: 42,
+              borderRadius: 12,
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8,
+              fontWeight: 700,
+              boxSizing: 'border-box'
+            }}
+          >
             <Plus size={16} /> Check-In Walk-In Guest
           </button>
         </div>
@@ -180,39 +193,71 @@ export default function StaffPortal() {
             <CheckCircle2 size={22} />
           </div>
           <div>
-            <div style={{ fontSize: 11.5, color: 'var(--t4)', textTransform: 'uppercase', fontWeight: 700 }}>Completed Today</div>
+            <div style={{ fontSize: 11.5, color: 'var(--t4)', textTransform: 'uppercase', fontWeight: 700 }}>Settled &amp; Paid</div>
             <div className="font-display" style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--t1)' }}>{completedCount}</div>
           </div>
         </div>
       </div>
 
-      {/* Filter Tabs & Search Bar */}
-      <div className="anim-fade-up delay-2" style={{ display: 'flex', flexDirection: 'column', gap: 14, marginBottom: 20 }}>
+      {/* Filter Tabs & Quick Search */}
+      <div className="anim-fade-up delay-2" style={{ display: 'flex', flexDirection: 'column', gap: 14, marginBottom: 18 }}>
         <div className="tabs-scroll-x">
           <button
             className={`btn btn-sm ${activeFilter === 'ALL' ? 'btn-primary' : 'btn-outline'}`}
-            style={{ flexShrink: 0 }}
+            style={{
+              flexShrink: 0,
+              padding: '9px 18px',
+              minHeight: 38,
+              borderRadius: 10,
+              fontWeight: 600,
+              fontSize: 13,
+              boxSizing: 'border-box'
+            }}
             onClick={() => setActiveFilter('ALL')}
           >
             All Reservations ({reservations.length})
           </button>
           <button
             className={`btn btn-sm ${activeFilter === 'PENDING_CHECKIN' ? 'btn-primary' : 'btn-outline'}`}
-            style={{ flexShrink: 0 }}
+            style={{
+              flexShrink: 0,
+              padding: '9px 18px',
+              minHeight: 38,
+              borderRadius: 10,
+              fontWeight: 600,
+              fontSize: 13,
+              boxSizing: 'border-box'
+            }}
             onClick={() => setActiveFilter('PENDING_CHECKIN')}
           >
             Awaiting Check-In ({pendingCount})
           </button>
           <button
             className={`btn btn-sm ${activeFilter === 'SEATED' ? 'btn-primary' : 'btn-outline'}`}
-            style={{ flexShrink: 0 }}
+            style={{
+              flexShrink: 0,
+              padding: '9px 18px',
+              minHeight: 38,
+              borderRadius: 10,
+              fontWeight: 600,
+              fontSize: 13,
+              boxSizing: 'border-box'
+            }}
             onClick={() => setActiveFilter('SEATED')}
           >
             Seated Diners ({seatedCount})
           </button>
           <button
             className={`btn btn-sm ${activeFilter === 'COMPLETED' ? 'btn-primary' : 'btn-outline'}`}
-            style={{ flexShrink: 0 }}
+            style={{
+              flexShrink: 0,
+              padding: '9px 18px',
+              minHeight: 38,
+              borderRadius: 10,
+              fontWeight: 600,
+              fontSize: 13,
+              boxSizing: 'border-box'
+            }}
             onClick={() => setActiveFilter('COMPLETED')}
           >
             Completed Sessions ({completedCount})
@@ -348,6 +393,17 @@ export default function StaffPortal() {
                     <button
                       className="btn-primary"
                       onClick={() => handleCheckIn(item.id)}
+                      style={{
+                        padding: '9px 18px',
+                        minHeight: 38,
+                        borderRadius: 10,
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 6,
+                        fontWeight: 600,
+                        fontSize: 13,
+                        boxSizing: 'border-box'
+                      }}
                     >
                       <UserCheck size={16} /> 1-Click Check-In
                     </button>
@@ -359,6 +415,17 @@ export default function StaffPortal() {
                       <button
                         className="btn-secondary"
                         onClick={() => setSelectedTableForOrder(item)}
+                        style={{
+                          padding: '9px 18px',
+                          minHeight: 38,
+                          borderRadius: 10,
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 6,
+                          fontWeight: 600,
+                          fontSize: 13,
+                          boxSizing: 'border-box'
+                        }}
                       >
                         <Utensils size={15} /> Add Dishes / View Tab
                       </button>
@@ -366,6 +433,17 @@ export default function StaffPortal() {
                       <button
                         className="btn-accent"
                         onClick={() => setPaymentModalBooking(item)}
+                        style={{
+                          padding: '9px 18px',
+                          minHeight: 38,
+                          borderRadius: 10,
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 6,
+                          fontWeight: 700,
+                          fontSize: 13,
+                          boxSizing: 'border-box'
+                        }}
                       >
                         <Receipt size={16} /> Settle Bill (₹{netPayable})
                       </button>
@@ -380,7 +458,17 @@ export default function StaffPortal() {
                       </span>
                       <button
                         className="btn-secondary"
-                        style={{ padding: '6px 12px', fontSize: 12 }}
+                        style={{
+                          padding: '8px 16px',
+                          minHeight: 36,
+                          borderRadius: 10,
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 6,
+                          fontWeight: 600,
+                          fontSize: 12.5,
+                          boxSizing: 'border-box'
+                        }}
                         onClick={() => setPaymentModalBooking(item)}
                       >
                         <Receipt size={13} /> View Invoice
@@ -532,10 +620,34 @@ export default function StaffPortal() {
               </div>
 
               <div className="modal-ft">
-                <button type="button" className="btn-secondary" onClick={() => setShowWalkinModal(false)}>
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  onClick={() => setShowWalkinModal(false)}
+                  style={{
+                    padding: '10px 20px',
+                    minHeight: 42,
+                    borderRadius: 12,
+                    fontWeight: 600,
+                    boxSizing: 'border-box'
+                  }}
+                >
                   Cancel
                 </button>
-                <button type="submit" className="btn-primary">
+                <button
+                  type="submit"
+                  className="btn-primary"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    padding: '10px 22px',
+                    minHeight: 42,
+                    borderRadius: 12,
+                    fontWeight: 700,
+                    boxSizing: 'border-box'
+                  }}
+                >
                   <Check size={14} /> 1-Click Check-In Diner
                 </button>
               </div>

@@ -117,7 +117,14 @@ export default function ReviewModal({ restaurant, onClose, onReviewSubmitted }) 
                     type="button"
                     onClick={() => setDish(d)}
                     className={`btn btn-xs ${dish === d ? 'btn-primary' : 'btn-outline'}`}
-                    style={{ borderRadius: 'var(--r-full)' }}
+                    style={{
+                      padding: '7px 16px',
+                      minHeight: 34,
+                      borderRadius: 99,
+                      fontSize: 12.5,
+                      fontWeight: 600,
+                      boxSizing: 'border-box'
+                    }}
                   >
                     {d}
                   </button>
@@ -145,8 +152,36 @@ export default function ReviewModal({ restaurant, onClose, onReviewSubmitted }) 
           </div>
 
           <div className="modal-ft">
-            <button type="button" className="btn btn-ghost btn-md" onClick={onClose} disabled={isSubmitting}>Cancel</button>
-            <button type="submit" className="btn btn-primary btn-md" disabled={isSubmitting}>
+            <button
+              type="button"
+              className="btn btn-ghost btn-md"
+              onClick={onClose}
+              disabled={isSubmitting}
+              style={{
+                padding: '10px 20px',
+                minHeight: 42,
+                borderRadius: 12,
+                fontWeight: 600,
+                boxSizing: 'border-box'
+              }}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="btn btn-primary btn-md"
+              disabled={isSubmitting}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 8,
+                padding: '10px 22px',
+                minHeight: 42,
+                borderRadius: 12,
+                fontWeight: 700,
+                boxSizing: 'border-box'
+              }}
+            >
               <ThumbsUp size={15} /> {isSubmitting ? 'Publishing...' : 'Publish Verified Review'}
             </button>
           </div>

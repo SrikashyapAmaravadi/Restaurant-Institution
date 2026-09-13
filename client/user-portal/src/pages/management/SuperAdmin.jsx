@@ -429,8 +429,11 @@ export default function SuperAdmin() {
               display: 'inline-flex',
               alignItems: 'center',
               gap: 8,
-              padding: '10px 20px',
-              fontSize: '0.95rem'
+              padding: '11px 22px',
+              minHeight: 44,
+              borderRadius: 12,
+              fontSize: '0.95rem',
+              boxSizing: 'border-box'
             }}
             onClick={() => setShowAddRestModal(true)}
           >
@@ -439,7 +442,7 @@ export default function SuperAdmin() {
         </div>
 
         {/* Tab Switcher Pills */}
-        <div className="tabs-scroll-x" style={{ borderTop: '1px solid rgba(255,255,255,0.15)', paddingTop: 16, width: '100%' }}>
+        <div className="tabs-scroll-x" style={{ borderTop: '1px solid rgba(255,255,255,0.15)', paddingTop: 16, width: '100%', gap: 8 }}>
           <button
             className={`btn btn-sm tab-pill-interactive ${activeTab === 'Restaurants' ? 'btn-primary' : 'btn-outline'}`}
             style={{
@@ -447,7 +450,11 @@ export default function SuperAdmin() {
               backgroundColor: activeTab === 'Restaurants' ? undefined : '#FFFFFF',
               borderColor: activeTab === 'Restaurants' ? 'rgba(255,255,255,0.3)' : '#C8DEC3',
               fontWeight: 700,
-              flexShrink: 0
+              flexShrink: 0,
+              padding: '9px 18px',
+              minHeight: 38,
+              borderRadius: 10,
+              boxSizing: 'border-box'
             }}
             onClick={() => setActiveTab('Restaurants')}
           >
@@ -460,7 +467,11 @@ export default function SuperAdmin() {
               backgroundColor: activeTab === 'Users' ? undefined : '#FFFFFF',
               borderColor: activeTab === 'Users' ? 'rgba(255,255,255,0.3)' : '#C8DEC3',
               fontWeight: 700,
-              flexShrink: 0
+              flexShrink: 0,
+              padding: '9px 18px',
+              minHeight: 38,
+              borderRadius: 10,
+              boxSizing: 'border-box'
             }}
             onClick={() => setActiveTab('Users')}
           >
@@ -473,7 +484,11 @@ export default function SuperAdmin() {
               backgroundColor: activeTab === 'Verifications' ? undefined : '#FFFFFF',
               borderColor: activeTab === 'Verifications' ? 'rgba(255,255,255,0.3)' : '#C8DEC3',
               fontWeight: 700,
-              flexShrink: 0
+              flexShrink: 0,
+              padding: '9px 18px',
+              minHeight: 38,
+              borderRadius: 10,
+              boxSizing: 'border-box'
             }}
             onClick={() => setActiveTab('Verifications')}
           >
@@ -486,7 +501,11 @@ export default function SuperAdmin() {
               backgroundColor: activeTab === 'Institutions' ? undefined : '#FFFFFF',
               borderColor: activeTab === 'Institutions' ? 'rgba(255,255,255,0.3)' : '#C8DEC3',
               fontWeight: 700,
-              flexShrink: 0
+              flexShrink: 0,
+              padding: '9px 18px',
+              minHeight: 38,
+              borderRadius: 10,
+              boxSizing: 'border-box'
             }}
             onClick={() => setActiveTab('Institutions')}
           >
@@ -499,7 +518,11 @@ export default function SuperAdmin() {
               backgroundColor: activeTab === 'Bookings' ? undefined : '#FFFFFF',
               borderColor: activeTab === 'Bookings' ? 'rgba(255,255,255,0.3)' : '#C8DEC3',
               fontWeight: 700,
-              flexShrink: 0
+              flexShrink: 0,
+              padding: '9px 18px',
+              minHeight: 38,
+              borderRadius: 10,
+              boxSizing: 'border-box'
             }}
             onClick={() => setActiveTab('Bookings')}
           >
@@ -512,7 +535,11 @@ export default function SuperAdmin() {
               backgroundColor: activeTab === 'Analytics' ? undefined : '#FFFFFF',
               borderColor: activeTab === 'Analytics' ? 'rgba(255,255,255,0.3)' : '#C8DEC3',
               fontWeight: 700,
-              flexShrink: 0
+              flexShrink: 0,
+              padding: '9px 18px',
+              minHeight: 38,
+              borderRadius: 10,
+              boxSizing: 'border-box'
             }}
             onClick={() => setActiveTab('Analytics')}
           >
@@ -525,7 +552,11 @@ export default function SuperAdmin() {
               backgroundColor: activeTab === 'Moderation' ? undefined : '#FFFFFF',
               borderColor: activeTab === 'Moderation' ? 'rgba(255,255,255,0.3)' : '#C8DEC3',
               fontWeight: 700,
-              flexShrink: 0
+              flexShrink: 0,
+              padding: '9px 18px',
+              minHeight: 38,
+              borderRadius: 10,
+              boxSizing: 'border-box'
             }}
             onClick={() => setActiveTab('Moderation')}
           >
@@ -538,11 +569,15 @@ export default function SuperAdmin() {
               backgroundColor: activeTab === 'Audit' ? undefined : '#FFFFFF',
               borderColor: activeTab === 'Audit' ? 'rgba(255,255,255,0.3)' : '#C8DEC3',
               fontWeight: 700,
-              flexShrink: 0
+              flexShrink: 0,
+              padding: '9px 18px',
+              minHeight: 38,
+              borderRadius: 10,
+              boxSizing: 'border-box'
             }}
             onClick={() => setActiveTab('Audit')}
           >
-            <Activity size={14} /> Audit Log
+            <Activity size={14} /> Security Audit
           </button>
         </div>
       </div>

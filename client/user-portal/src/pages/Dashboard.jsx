@@ -112,7 +112,7 @@ export default function Dashboard() {
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
             Live Network
           </span>
-          <span className="px-3 py-1 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold">
+          <span style={{ padding: '6px 16px', borderRadius: 10, background: '#F1F5F9', color: '#334155', fontSize: 12, fontWeight: 700 }}>
             Search
           </span>
         </div>
@@ -190,8 +190,24 @@ export default function Dashboard() {
 
           <button
             type="button"
-            className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs sm:text-sm font-semibold shadow-xs cursor-pointer transition-colors shrink-0"
             onClick={() => setSelectedBookingForPass(upcoming)}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 7,
+              padding: '10px 20px',
+              minHeight: 40,
+              borderRadius: 12,
+              background: 'linear-gradient(135deg, #15803D 0%, #064E3B 100%)',
+              color: '#FFFFFF',
+              fontSize: 13,
+              fontWeight: 700,
+              boxShadow: '0 4px 12px rgba(21, 128, 61, 0.25)',
+              cursor: 'pointer',
+              border: 'none',
+              whiteSpace: 'nowrap'
+            }}
           >
             <QrCode size={15} />
             <span>View Digital Pass</span>
@@ -299,11 +315,23 @@ export default function Dashboard() {
                   setActiveFilter(f.id);
                   setActiveMood(null);
                 }}
-                className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-semibold shrink-0 cursor-pointer transition-colors ${
-                  isSelected
-                    ? 'bg-emerald-700 text-white shadow-xs'
-                    : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'
-                }`}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 7,
+                  padding: '8px 18px',
+                  minHeight: 36,
+                  borderRadius: 99,
+                  fontSize: 12.5,
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  flexShrink: 0,
+                  transition: 'all 0.15s ease',
+                  background: isSelected ? '#15803D' : '#FFFFFF',
+                  color: isSelected ? '#FFFFFF' : '#334155',
+                  border: `1.5px solid ${isSelected ? '#15803D' : '#E2E8F0'}`,
+                  boxShadow: isSelected ? '0 3px 8px rgba(21, 128, 61, 0.2)' : 'none'
+                }}
               >
                 <FilterIcon size={13} />
                 <span>{f.label}</span>
@@ -327,7 +355,19 @@ export default function Dashboard() {
           <button
             type="button"
             onClick={() => navigate('/discover')}
-            className="text-xs sm:text-sm font-semibold text-emerald-700 hover:text-emerald-800 flex items-center gap-1 cursor-pointer"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 5,
+              padding: '7px 14px',
+              borderRadius: 10,
+              background: '#ECFDF5',
+              border: '1px solid #A7F3D0',
+              color: '#065F46',
+              fontSize: 12.5,
+              fontWeight: 700,
+              cursor: 'pointer'
+            }}
           >
             <span>View Map</span>
             <ChevronRight size={14} />
@@ -340,10 +380,23 @@ export default function Dashboard() {
             <p className="text-xs text-slate-500 mb-4">Tap "All Spots" to see all spots near Bennett.</p>
             <button
               type="button"
-              className="px-4 py-2 text-xs font-semibold rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 cursor-pointer"
               onClick={() => {
                 setActiveFilter('All');
                 setActiveMood(null);
+              }}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '10px 22px',
+                minHeight: 40,
+                borderRadius: 12,
+                background: '#F1F5F9',
+                border: '1px solid #CBD5E1',
+                color: '#0F172A',
+                fontSize: 13,
+                fontWeight: 700,
+                cursor: 'pointer'
               }}
             >
               Reset Filters

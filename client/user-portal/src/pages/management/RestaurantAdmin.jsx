@@ -637,8 +637,11 @@ export default function RestaurantAdmin() {
               display: 'inline-flex',
               alignItems: 'center',
               gap: 8,
-              padding: '10px 20px',
-              fontSize: '0.95rem'
+              padding: '11px 22px',
+              minHeight: 44,
+              borderRadius: 12,
+              fontSize: '0.95rem',
+              boxSizing: 'border-box'
             }}
             onClick={handleOpenAddDish}
           >
@@ -647,7 +650,7 @@ export default function RestaurantAdmin() {
         </div>
 
         {/* Tab Switcher Pills */}
-        <div className="tabs-scroll-x" style={{ borderTop: '1px solid rgba(255,255,255,0.15)', paddingTop: 16, width: '100%' }}>
+        <div className="tabs-scroll-x" style={{ borderTop: '1px solid rgba(255,255,255,0.15)', paddingTop: 16, width: '100%', gap: 8 }}>
           <button
             className={`btn btn-sm ${activeTab === 'Reservations' ? 'btn-primary' : 'btn-outline'}`}
             style={{
@@ -655,7 +658,11 @@ export default function RestaurantAdmin() {
               backgroundColor: activeTab === 'Reservations' ? undefined : '#FFFFFF',
               borderColor: activeTab === 'Reservations' ? 'rgba(255,255,255,0.3)' : '#C8DEC3',
               fontWeight: 700,
-              flexShrink: 0
+              flexShrink: 0,
+              padding: '9px 18px',
+              minHeight: 38,
+              borderRadius: 10,
+              boxSizing: 'border-box'
             }}
             onClick={() => setActiveTab('Reservations')}
           >
@@ -668,7 +675,11 @@ export default function RestaurantAdmin() {
               backgroundColor: activeTab === 'Menu' ? undefined : '#FFFFFF',
               borderColor: activeTab === 'Menu' ? 'rgba(255,255,255,0.3)' : '#C8DEC3',
               fontWeight: 700,
-              flexShrink: 0
+              flexShrink: 0,
+              padding: '9px 18px',
+              minHeight: 38,
+              borderRadius: 10,
+              boxSizing: 'border-box'
             }}
             onClick={() => setActiveTab('Menu')}
           >
@@ -681,7 +692,11 @@ export default function RestaurantAdmin() {
               backgroundColor: activeTab === 'PaymentQRs' ? undefined : '#FFFFFF',
               borderColor: activeTab === 'PaymentQRs' ? 'rgba(255,255,255,0.3)' : '#C8DEC3',
               fontWeight: 700,
-              flexShrink: 0
+              flexShrink: 0,
+              padding: '9px 18px',
+              minHeight: 38,
+              borderRadius: 10,
+              boxSizing: 'border-box'
             }}
             onClick={() => setActiveTab('PaymentQRs')}
           >
@@ -694,7 +709,11 @@ export default function RestaurantAdmin() {
               backgroundColor: activeTab === 'Offers' ? undefined : '#FFFFFF',
               borderColor: activeTab === 'Offers' ? 'rgba(255,255,255,0.3)' : '#C8DEC3',
               fontWeight: 700,
-              flexShrink: 0
+              flexShrink: 0,
+              padding: '9px 18px',
+              minHeight: 38,
+              borderRadius: 10,
+              boxSizing: 'border-box'
             }}
             onClick={() => setActiveTab('Offers')}
           >
@@ -707,7 +726,11 @@ export default function RestaurantAdmin() {
               backgroundColor: activeTab === 'Staff' ? undefined : '#FFFFFF',
               borderColor: activeTab === 'Staff' ? 'rgba(255,255,255,0.3)' : '#C8DEC3',
               fontWeight: 700,
-              flexShrink: 0
+              flexShrink: 0,
+              padding: '9px 18px',
+              minHeight: 38,
+              borderRadius: 10,
+              boxSizing: 'border-box'
             }}
             onClick={() => setActiveTab('Staff')}
           >
@@ -720,7 +743,11 @@ export default function RestaurantAdmin() {
               backgroundColor: activeTab === 'Analytics' ? undefined : '#FFFFFF',
               borderColor: activeTab === 'Analytics' ? 'rgba(255,255,255,0.3)' : '#C8DEC3',
               fontWeight: 700,
-              flexShrink: 0
+              flexShrink: 0,
+              padding: '9px 18px',
+              minHeight: 38,
+              borderRadius: 10,
+              boxSizing: 'border-box'
             }}
             onClick={() => setActiveTab('Analytics')}
           >

@@ -101,7 +101,17 @@ export default function EmptyState({
           type="button"
           onClick={onAction}
           className="btn btn-primary btn-md cursor-pointer"
-          style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 8,
+            padding: '11px 24px',
+            minHeight: 42,
+            borderRadius: 12,
+            fontWeight: 700,
+            fontSize: 14,
+            boxSizing: 'border-box'
+          }}
         >
           <span>{actionLabel}</span>
           {ActionIcon && <ActionIcon size={15} />}

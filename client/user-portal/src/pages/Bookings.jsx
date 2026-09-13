@@ -137,9 +137,10 @@ export default function Bookings() {
               className={`tab-btn ${isActive ? 'active' : ''}`}
               onClick={() => setActiveTab(tab)}
               style={{
-                borderRadius: 10,
+                borderRadius: 12,
                 fontWeight: 700,
-                padding: '9px 18px',
+                padding: '10px 20px',
+                minHeight: 40,
                 fontSize: 13
               }}
             >
@@ -413,7 +414,7 @@ export default function Bookings() {
                         type="button"
                         className="btn btn-primary btn-sm"
                         onClick={() => setPassModalBooking(b)}
-                        style={{ borderRadius: 10, fontWeight: 700, gap: 5 }}
+                        style={{ borderRadius: 10, fontWeight: 700, gap: 6, padding: '9px 18px', minHeight: 38 }}
                       >
                         <QrCode size={14} /> Digital Pass
                       </button>
@@ -421,7 +422,7 @@ export default function Bookings() {
                         type="button"
                         className="btn btn-ghost btn-sm"
                         onClick={() => handleCancel(b.id)}
-                        style={{ borderRadius: 10, color: '#DC2626', fontWeight: 600 }}
+                        style={{ borderRadius: 10, color: '#DC2626', fontWeight: 600, padding: '9px 16px', minHeight: 38 }}
                       >
                         Cancel
                       </button>
@@ -434,7 +435,7 @@ export default function Bookings() {
                         type="button"
                         className="btn btn-primary btn-sm"
                         onClick={() => setPaymentModalBooking(b)}
-                        style={{ borderRadius: 10, fontWeight: 700, gap: 5 }}
+                        style={{ borderRadius: 10, fontWeight: 700, gap: 6, padding: '9px 18px', minHeight: 38 }}
                       >
                         <Receipt size={14} /> Settle Bill
                       </button>
@@ -442,7 +443,7 @@ export default function Bookings() {
                         type="button"
                         className="btn btn-outline btn-sm"
                         onClick={() => setPassModalBooking(b)}
-                        style={{ borderRadius: 10, fontWeight: 700, gap: 5 }}
+                        style={{ borderRadius: 10, fontWeight: 700, gap: 6, padding: '9px 18px', minHeight: 38 }}
                       >
                         <QrCode size={14} /> View Pass
                       </button>
@@ -455,7 +456,7 @@ export default function Bookings() {
                         type="button"
                         className="btn btn-outline btn-sm"
                         onClick={() => setPaymentModalBooking(b)}
-                        style={{ borderRadius: 10, fontWeight: 700, gap: 5 }}
+                        style={{ borderRadius: 10, fontWeight: 700, gap: 6, padding: '9px 18px', minHeight: 38 }}
                       >
                         <Receipt size={13} /> View Invoice
                       </button>
@@ -466,7 +467,7 @@ export default function Bookings() {
                           const rest = restaurants.find(r => r.name === b.restaurantName || r.id === b.restaurantId) || restaurants[0];
                           if (rest) navigate(`/restaurant/${rest.id}`);
                         }}
-                        style={{ borderRadius: 10, fontWeight: 700, gap: 5 }}
+                        style={{ borderRadius: 10, fontWeight: 700, gap: 6, padding: '9px 16px', minHeight: 38 }}
                       >
                         <RotateCcw size={13} /> Re-Book
                       </button>

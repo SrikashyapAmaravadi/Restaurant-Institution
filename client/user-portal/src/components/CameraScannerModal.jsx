@@ -817,7 +817,11 @@ export default function CameraScannerModal({
                     color: 'var(--t1)',
                     fontWeight: 700,
                     borderColor: 'var(--border)',
-                    fontSize: 12
+                    fontSize: 12.5,
+                    padding: '8px 16px',
+                    minHeight: 38,
+                    borderRadius: 10,
+                    boxSizing: 'border-box'
                   }}
                   onClick={() => fileInputRef.current?.click()}
                   disabled={isProcessingUpload}
@@ -828,7 +832,7 @@ export default function CameraScannerModal({
                   </span>
                 </button>
 
-                <form onSubmit={handleManualSubmit} style={{ flex: 1.5, display: 'flex', gap: 4 }}>
+                <form onSubmit={handleManualSubmit} style={{ flex: 1.5, display: 'flex', gap: 6 }}>
                   <input
                     type="text"
                     value={manualCode}
@@ -838,16 +842,25 @@ export default function CameraScannerModal({
                       flex: 1,
                       background: 'rgba(255,255,255,0.06)',
                       border: '1px solid rgba(255,255,255,0.15)',
-                      borderRadius: 8,
-                      padding: '6px 10px',
+                      borderRadius: 10,
+                      padding: '8px 12px',
                       color: '#FFFFFF',
-                      fontSize: 12
+                      fontSize: 12.5
                     }}
                   />
                   <button
                     type="submit"
-                    className="btn btn-primary btn-xs"
-                    style={{ background: '#6FAF3D', borderColor: '#6FAF3D', color: '#05120B', fontWeight: 700 }}
+                    className="btn btn-primary btn-sm"
+                    style={{
+                      background: '#6FAF3D',
+                      borderColor: '#6FAF3D',
+                      color: '#05120B',
+                      fontWeight: 700,
+                      padding: '8px 16px',
+                      minHeight: 38,
+                      borderRadius: 10,
+                      boxSizing: 'border-box'
+                    }}
                   >
                     Match
                   </button>
@@ -874,12 +887,14 @@ export default function CameraScannerModal({
                         border: '1px solid rgba(111, 175, 61, 0.35)',
                         color: '#E7F1E1',
                         borderRadius: 8,
-                        padding: '4px 8px',
+                        padding: '6px 12px',
+                        minHeight: 30,
                         fontSize: 11.5,
                         cursor: 'pointer',
                         display: 'inline-flex',
                         alignItems: 'center',
-                        gap: 4
+                        gap: 5,
+                        boxSizing: 'border-box'
                       }}
                     >
                       <QrCode size={12} style={{ color: '#54C030' }} />

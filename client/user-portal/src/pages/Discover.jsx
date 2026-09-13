@@ -136,29 +136,51 @@ export default function Discover() {
             </div>
 
             {/* Segmented Grid / Map Control */}
-            <div className="inline-flex p-1 bg-slate-100 border border-slate-200 rounded-xl gap-1">
+            <div style={{ display: 'inline-flex', padding: 4, background: '#F1F5F9', border: '1px solid var(--border)', borderRadius: 12, gap: 4 }}>
               <button
                 type="button"
-                className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold cursor-pointer transition-colors ${
-                  viewMode === 'grid'
-                    ? 'bg-white text-slate-900 shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  padding: '7px 16px',
+                  minHeight: 34,
+                  borderRadius: 10,
+                  fontSize: 12.5,
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  border: 'none',
+                  background: viewMode === 'grid' ? '#FFFFFF' : 'transparent',
+                  color: viewMode === 'grid' ? '#0F172A' : '#64748B',
+                  boxShadow: viewMode === 'grid' ? '0 1px 4px rgba(0,0,0,0.08)' : 'none',
+                  transition: 'all 0.15s ease'
+                }}
                 onClick={() => setViewMode('grid')}
               >
-                <Grid size={13} />
+                <Grid size={14} />
                 <span>Grid</span>
               </button>
               <button
                 type="button"
-                className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold cursor-pointer transition-colors ${
-                  viewMode === 'map'
-                    ? 'bg-white text-slate-900 shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  padding: '7px 16px',
+                  minHeight: 34,
+                  borderRadius: 10,
+                  fontSize: 12.5,
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  border: 'none',
+                  background: viewMode === 'map' ? '#FFFFFF' : 'transparent',
+                  color: viewMode === 'map' ? '#0F172A' : '#64748B',
+                  boxShadow: viewMode === 'map' ? '0 1px 4px rgba(0,0,0,0.08)' : 'none',
+                  transition: 'all 0.15s ease'
+                }}
                 onClick={() => setViewMode('map')}
               >
-                <Map size={13} />
+                <Map size={14} />
                 <span>Map</span>
               </button>
             </div>
@@ -188,13 +210,28 @@ export default function Discover() {
           {/* Filter Modal Trigger */}
           <button
             type="button"
-            className="inline-flex items-center gap-1.5 px-3.5 py-2.5 min-h-[42px] rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs sm:text-sm font-semibold shadow-xs cursor-pointer transition-colors shrink-0"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 7,
+              padding: '10px 18px',
+              minHeight: 42,
+              borderRadius: 12,
+              background: '#FFFFFF',
+              border: '1px solid #E2E8F0',
+              color: '#334155',
+              fontSize: 13,
+              fontWeight: 700,
+              boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+              cursor: 'pointer',
+              flexShrink: 0
+            }}
             onClick={() => setShowMobileFilters(true)}
           >
             <Filter size={15} />
             <span>Filters</span>
             {activeFiltersCount > 0 && (
-              <span className="ml-1 px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-700 text-white">
+              <span style={{ marginLeft: 4, padding: '2px 7px', borderRadius: 99, fontSize: 10.5, fontWeight: 800, background: '#15803D', color: '#FFFFFF' }}>
                 {activeFiltersCount}
               </span>
             )}
@@ -205,40 +242,70 @@ export default function Discover() {
         <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
           <button
             type="button"
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold shrink-0 cursor-pointer transition-colors ${
-              !openOnly && !offersOnly && cuisines.length === 0
-                ? 'bg-emerald-700 text-white shadow-xs'
-                : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'
-            }`}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              padding: '8px 16px',
+              minHeight: 36,
+              borderRadius: 99,
+              fontSize: 12.5,
+              fontWeight: 700,
+              cursor: 'pointer',
+              flexShrink: 0,
+              border: !openOnly && !offersOnly && cuisines.length === 0 ? '1.5px solid #15803D' : '1px solid #E2E8F0',
+              background: !openOnly && !offersOnly && cuisines.length === 0 ? '#15803D' : '#FFFFFF',
+              color: !openOnly && !offersOnly && cuisines.length === 0 ? '#FFFFFF' : '#334155'
+            }}
             onClick={clearAll}
           >
-            <Sparkles size={12} />
+            <Sparkles size={13} />
             <span>All ({restaurantList.length})</span>
           </button>
 
           <button
             type="button"
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold shrink-0 cursor-pointer transition-colors ${
-              openOnly
-                ? 'bg-emerald-700 text-white shadow-xs'
-                : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'
-            }`}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              padding: '8px 16px',
+              minHeight: 36,
+              borderRadius: 99,
+              fontSize: 12.5,
+              fontWeight: 700,
+              cursor: 'pointer',
+              flexShrink: 0,
+              border: openOnly ? '1.5px solid #15803D' : '1px solid #E2E8F0',
+              background: openOnly ? '#15803D' : '#FFFFFF',
+              color: openOnly ? '#FFFFFF' : '#334155'
+            }}
             onClick={() => setOpen(!openOnly)}
           >
-            <Zap size={12} />
+            <Zap size={13} />
             <span>Open Now</span>
           </button>
 
           <button
             type="button"
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold shrink-0 cursor-pointer transition-colors ${
-              offersOnly
-                ? 'bg-amber-600 text-white shadow-xs'
-                : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'
-            }`}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              padding: '8px 16px',
+              minHeight: 36,
+              borderRadius: 99,
+              fontSize: 12.5,
+              fontWeight: 700,
+              cursor: 'pointer',
+              flexShrink: 0,
+              border: offersOnly ? '1.5px solid #D97706' : '1px solid #E2E8F0',
+              background: offersOnly ? '#D97706' : '#FFFFFF',
+              color: offersOnly ? '#FFFFFF' : '#334155'
+            }}
             onClick={() => setOffers(!offersOnly)}
           >
-            <Tag size={12} />
+            <Tag size={13} />
             <span>Student Deals</span>
           </button>
 
@@ -248,11 +315,20 @@ export default function Discover() {
               <button
                 key={c}
                 type="button"
-                className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold shrink-0 cursor-pointer transition-colors ${
-                  active
-                    ? 'bg-emerald-700 text-white shadow-xs'
-                    : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'
-                }`}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  padding: '8px 16px',
+                  minHeight: 36,
+                  borderRadius: 99,
+                  fontSize: 12.5,
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  flexShrink: 0,
+                  border: active ? '1.5px solid #15803D' : '1px solid #E2E8F0',
+                  background: active ? '#15803D' : '#FFFFFF',
+                  color: active ? '#FFFFFF' : '#334155'
+                }}
                 onClick={() => toggle(cuisines, setCuisines, c)}
               >
                 <span>{c}</span>

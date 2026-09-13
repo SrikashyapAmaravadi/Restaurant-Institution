@@ -371,7 +371,17 @@ export default function PaymentModal({
               <button
                 type="button"
                 className={`btn btn-xs ${activeView === 'OFFICIAL_BILL' ? 'btn-primary' : 'btn-outline'}`}
-                style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 11.5 }}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  fontSize: 12,
+                  fontWeight: 600,
+                  padding: '7px 14px',
+                  minHeight: 32,
+                  borderRadius: 8,
+                  boxSizing: 'border-box'
+                }}
                 onClick={() => setActiveView(v => (v === 'OFFICIAL_BILL' ? 'SETTLEMENT' : 'OFFICIAL_BILL'))}
               >
                 {activeView === 'OFFICIAL_BILL' ? (
@@ -418,20 +428,22 @@ export default function PaymentModal({
                   <span style={{ fontSize: 11.5, fontWeight: 700, color: 'var(--primary)', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'flex', alignItems: 'center', gap: 6 }}>
                     <Award size={14} /> Bill Generating Authority
                   </span>
-                  <div style={{ display: 'flex', background: '#FFFFFF', border: '1px solid var(--border)', borderRadius: 'var(--r-xs)', padding: 2 }}>
+                  <div style={{ display: 'flex', background: '#FFFFFF', border: '1px solid var(--border)', borderRadius: 'var(--r-xs)', padding: 3, gap: 4 }}>
                     <button
                       type="button"
                       onClick={() => handleRoleChange('STAFF')}
                       style={{
-                        padding: '4px 10px',
+                        padding: '6px 14px',
+                        minHeight: 30,
                         borderRadius: 'var(--r-xs)',
-                        fontSize: 11.5,
+                        fontSize: 12,
                         fontWeight: 700,
                         border: 'none',
                         cursor: 'pointer',
                         background: billedRole === 'STAFF' ? 'var(--primary)' : 'transparent',
                         color: billedRole === 'STAFF' ? '#FFFFFF' : 'var(--t2)',
-                        transition: 'all 0.15s ease'
+                        transition: 'all 0.15s ease',
+                        boxSizing: 'border-box'
                       }}
                     >
                       👨‍🍳 Staff Member
@@ -440,15 +452,17 @@ export default function PaymentModal({
                       type="button"
                       onClick={() => handleRoleChange('OWNER')}
                       style={{
-                        padding: '4px 10px',
+                        padding: '6px 14px',
+                        minHeight: 30,
                         borderRadius: 'var(--r-xs)',
-                        fontSize: 11.5,
+                        fontSize: 12,
                         fontWeight: 700,
                         border: 'none',
                         cursor: 'pointer',
                         background: billedRole === 'OWNER' ? 'var(--accent)' : 'transparent',
                         color: billedRole === 'OWNER' ? '#000000' : 'var(--t2)',
-                        transition: 'all 0.15s ease'
+                        transition: 'all 0.15s ease',
+                        boxSizing: 'border-box'
                       }}
                     >
                       👔 Restaurant Owner
@@ -514,8 +528,13 @@ export default function PaymentModal({
                       style={{
                         display: 'inline-flex',
                         alignItems: 'center',
-                        gap: 4,
+                        gap: 6,
                         fontWeight: 700,
+                        fontSize: 12,
+                        padding: '6px 14px',
+                        minHeight: 32,
+                        borderRadius: 8,
+                        boxSizing: 'border-box',
                         backgroundColor: showAddDishPanel ? 'var(--primary)' : '#FFFFFF',
                         color: showAddDishPanel ? '#FFFFFF' : 'var(--primary)',
                         borderColor: 'var(--primary)'
@@ -555,47 +574,49 @@ export default function PaymentModal({
 
                         {/* Quantity Controls & Line Total */}
                         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: '#F1F5F9', borderRadius: 4, padding: '2px 4px' }}>
+                          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#F1F5F9', borderRadius: 6, padding: '3px 6px' }}>
                             <button
                               type="button"
                               onClick={() => handleUpdateQty(idx, -1)}
                               style={{
-                                width: 20,
-                                height: 20,
+                                width: 24,
+                                height: 24,
                                 border: 'none',
                                 background: '#FFFFFF',
-                                borderRadius: 3,
+                                borderRadius: 4,
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 cursor: 'pointer',
-                                color: 'var(--t2)'
+                                color: 'var(--t2)',
+                                boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
                               }}
                               title="Decrease quantity"
                             >
-                              <Minus size={11} />
+                              <Minus size={12} />
                             </button>
-                            <span style={{ minWidth: 20, textAlign: 'center', fontWeight: 800, fontSize: 12 }}>
+                            <span style={{ minWidth: 22, textAlign: 'center', fontWeight: 800, fontSize: 12.5 }}>
                               {item.qty || 1}
                             </span>
                             <button
                               type="button"
                               onClick={() => handleUpdateQty(idx, 1)}
                               style={{
-                                width: 20,
-                                height: 20,
+                                width: 24,
+                                height: 24,
                                 border: 'none',
                                 background: '#FFFFFF',
-                                borderRadius: 3,
+                                borderRadius: 4,
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 cursor: 'pointer',
-                                color: 'var(--t2)'
+                                color: 'var(--t2)',
+                                boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
                               }}
                               title="Increase quantity"
                             >
-                              <Plus size={11} />
+                              <Plus size={12} />
                             </button>
                           </div>
 
@@ -659,22 +680,24 @@ export default function PaymentModal({
                     </div>
 
                     {/* Category filter pills */}
-                    <div style={{ display: 'flex', gap: 4, overflowX: 'auto', paddingBottom: 4 }}>
+                    <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 6 }}>
                       {categories.map(cat => (
                         <button
                           key={cat}
                           type="button"
                           onClick={() => setSelectedCategory(cat)}
                           style={{
-                            padding: '3px 8px',
-                            borderRadius: 'var(--r-xs)',
-                            fontSize: 10.5,
+                            padding: '6px 12px',
+                            minHeight: 28,
+                            borderRadius: 6,
+                            fontSize: 11,
                             fontWeight: 700,
                             whiteSpace: 'nowrap',
                             border: `1px solid ${selectedCategory === cat ? 'var(--primary)' : 'var(--border)'}`,
                             background: selectedCategory === cat ? 'var(--primary)' : '#F8FAFC',
                             color: selectedCategory === cat ? '#FFFFFF' : 'var(--t2)',
-                            cursor: 'pointer'
+                            cursor: 'pointer',
+                            boxSizing: 'border-box'
                           }}
                         >
                           {cat}
@@ -718,7 +741,15 @@ export default function PaymentModal({
                             type="button"
                             onClick={() => handleAddDish(dish)}
                             className="btn btn-xs btn-primary"
-                            style={{ padding: '3px 8px', fontSize: 10.5, fontWeight: 800, flexShrink: 0 }}
+                            style={{
+                              padding: '5px 12px',
+                              minHeight: 28,
+                              fontSize: 11,
+                              fontWeight: 700,
+                              flexShrink: 0,
+                              borderRadius: 6,
+                              boxSizing: 'border-box'
+                            }}
                           >
                             + Add
                           </button>
@@ -766,7 +797,15 @@ export default function PaymentModal({
                       <button
                         type="submit"
                         className="btn btn-xs btn-outline"
-                        style={{ padding: '6px 10px', fontSize: 11, fontWeight: 700, whiteSpace: 'nowrap' }}
+                        style={{
+                          padding: '7px 14px',
+                          minHeight: 32,
+                          fontSize: 11.5,
+                          fontWeight: 700,
+                          whiteSpace: 'nowrap',
+                          borderRadius: 8,
+                          boxSizing: 'border-box'
+                        }}
                       >
                         + Add Custom
                       </button>
@@ -822,10 +861,14 @@ export default function PaymentModal({
                       display: 'inline-flex',
                       alignItems: 'center',
                       gap: 6,
-                      fontSize: 12,
+                      fontSize: 12.5,
                       fontWeight: 700,
                       color: 'var(--primary)',
-                      borderColor: 'var(--primary)'
+                      borderColor: 'var(--primary)',
+                      padding: '8px 18px',
+                      minHeight: 38,
+                      borderRadius: 10,
+                      boxSizing: 'border-box'
                     }}
                   >
                     <FileText size={14} /> Generate &amp; Preview Official Bill →
@@ -966,14 +1009,16 @@ export default function PaymentModal({
                             type="button"
                             onClick={() => setSelectedUpiApp(app)}
                             style={{
-                              padding: '5px 9px',
-                              borderRadius: 'var(--r-xs)',
-                              fontSize: 11,
+                              padding: '7px 14px',
+                              minHeight: 32,
+                              borderRadius: 8,
+                              fontSize: 12,
                               fontWeight: 700,
                               background: selectedUpiApp === app ? 'var(--primary)' : '#FFFFFF',
-                              border: `1px solid ${selectedUpiApp === app ? 'var(--primary)' : 'var(--border)'}`,
+                              border: `1.5px solid ${selectedUpiApp === app ? 'var(--primary)' : 'var(--border)'}`,
                               color: selectedUpiApp === app ? '#FFFFFF' : 'var(--t2)',
-                              cursor: 'pointer'
+                              cursor: 'pointer',
+                              boxSizing: 'border-box'
                             }}
                           >
                             {app}
@@ -1063,7 +1108,14 @@ export default function PaymentModal({
                           key={amt}
                           type="button"
                           className="btn btn-outline btn-sm"
-                          style={{ fontSize: 11 }}
+                          style={{
+                            fontSize: 12,
+                            fontWeight: 700,
+                            padding: '6px 14px',
+                            minHeight: 32,
+                            borderRadius: 8,
+                            boxSizing: 'border-box'
+                          }}
                           onClick={() => setCashTendered(amt)}
                         >
                           ₹{amt} {amt === grandTotal ? '(Exact)' : ''}
@@ -1341,6 +1393,13 @@ export default function PaymentModal({
                   type="button"
                   className="btn btn-outline btn-md"
                   onClick={() => setActiveView('SETTLEMENT')}
+                  style={{
+                    padding: '10px 20px',
+                    minHeight: 42,
+                    borderRadius: 12,
+                    fontWeight: 600,
+                    boxSizing: 'border-box'
+                  }}
                 >
                   ← Back to Order Editing
                 </button>
@@ -1349,7 +1408,16 @@ export default function PaymentModal({
                     type="button"
                     className="btn btn-secondary btn-md"
                     onClick={handlePrint}
-                    style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 6,
+                      padding: '10px 20px',
+                      minHeight: 42,
+                      borderRadius: 12,
+                      fontWeight: 600,
+                      boxSizing: 'border-box'
+                    }}
                   >
                     <Printer size={15} /> Print Official Bill
                   </button>
@@ -1357,7 +1425,16 @@ export default function PaymentModal({
                     type="button"
                     className="btn btn-primary btn-md"
                     onClick={() => setActiveView('SETTLEMENT')}
-                    style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 6,
+                      padding: '10px 22px',
+                      minHeight: 42,
+                      borderRadius: 12,
+                      fontWeight: 700,
+                      boxSizing: 'border-box'
+                    }}
                   >
                     Proceed to Settle Payment (₹{grandTotal}) →
                   </button>
@@ -1532,16 +1609,36 @@ export default function PaymentModal({
         {/* Modal Footer Actions */}
         <div className="modal-ft" style={{ borderTop: '1px solid var(--border)', padding: '14px 24px', flexShrink: 0 }}>
           {step === 'SELECT' && activeView === 'SETTLEMENT' && (
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-              <button type="button" className="btn btn-ghost btn-md" onClick={onClose}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', flexWrap: 'wrap', gap: 10 }}>
+              <button
+                type="button"
+                className="btn btn-ghost btn-md"
+                onClick={onClose}
+                style={{
+                  padding: '10px 20px',
+                  minHeight: 42,
+                  borderRadius: 12,
+                  fontWeight: 600,
+                  boxSizing: 'border-box'
+                }}
+              >
                 Cancel
               </button>
-              <div style={{ display: 'flex', gap: 10 }}>
+              <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
                 <button
                   type="button"
                   className="btn btn-secondary btn-md"
                   onClick={() => setActiveView('OFFICIAL_BILL')}
-                  style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    padding: '10px 20px',
+                    minHeight: 42,
+                    borderRadius: 12,
+                    fontWeight: 600,
+                    boxSizing: 'border-box'
+                  }}
                 >
                   <FileText size={15} /> Official Bill
                 </button>
@@ -1549,6 +1646,17 @@ export default function PaymentModal({
                   type="button"
                   className="btn btn-accent btn-lg"
                   onClick={handleProcessPayment}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    padding: '12px 26px',
+                    minHeight: 46,
+                    borderRadius: 12,
+                    fontWeight: 700,
+                    fontSize: 14,
+                    boxSizing: 'border-box'
+                  }}
                 >
                   <Sparkles size={16} /> Complete Payment (₹{grandTotal}) <ArrowRight size={16} />
                 </button>
@@ -1557,11 +1665,39 @@ export default function PaymentModal({
           )}
 
           {step === 'SUCCESS' && (
-            <div style={{ display: 'flex', gap: 10, width: '100%', justifyContent: 'flex-end' }}>
-              <button type="button" className="btn btn-outline btn-md" onClick={handlePrint}>
+            <div style={{ display: 'flex', gap: 10, width: '100%', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
+              <button
+                type="button"
+                className="btn btn-outline btn-md"
+                onClick={handlePrint}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  padding: '10px 20px',
+                  minHeight: 42,
+                  borderRadius: 12,
+                  fontWeight: 600,
+                  boxSizing: 'border-box'
+                }}
+              >
                 <Printer size={15} /> Print Receipt
               </button>
-              <button type="button" className="btn btn-primary btn-md" onClick={onClose}>
+              <button
+                type="button"
+                className="btn btn-primary btn-md"
+                onClick={onClose}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  padding: '10px 22px',
+                  minHeight: 42,
+                  borderRadius: 12,
+                  fontWeight: 700,
+                  boxSizing: 'border-box'
+                }}
+              >
                 <Check size={16} /> Done &amp; Close Session
               </button>
             </div>

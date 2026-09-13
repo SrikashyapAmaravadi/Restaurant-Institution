@@ -69,6 +69,17 @@ export default function OfferDrawer({ offer, onClose, onApplyOffer }) {
                 type="button"
                 className="btn btn-accent btn-sm"
                 onClick={copyCode}
+                style={{
+                  padding: '9px 18px',
+                  minHeight: 38,
+                  borderRadius: 10,
+                  fontWeight: 700,
+                  fontSize: 13,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  boxSizing: 'border-box'
+                }}
               >
                 {copied ? <><Check size={14} /> Copied</> : <><Copy size={14} /> Copy Code</>}
               </button>
@@ -98,13 +109,35 @@ export default function OfferDrawer({ offer, onClose, onApplyOffer }) {
         </div>
 
         <div className="modal-ft">
-          <button className="btn btn-ghost btn-md" onClick={onClose}>Close</button>
+          <button
+            className="btn btn-ghost btn-md"
+            onClick={onClose}
+            style={{
+              padding: '10px 20px',
+              minHeight: 42,
+              borderRadius: 12,
+              fontWeight: 600,
+              boxSizing: 'border-box'
+            }}
+          >
+            Close
+          </button>
           <button
             className="btn btn-primary btn-md"
             onClick={() => {
               if (onApplyOffer) onApplyOffer(offer);
               alert(`Offer ${offer.code} claimed and ready for pre-booking!`);
               onClose();
+            }}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              padding: '10px 22px',
+              minHeight: 42,
+              borderRadius: 12,
+              fontWeight: 700,
+              boxSizing: 'border-box'
             }}
           >
             <Sparkles size={15} /> Claim Offer
