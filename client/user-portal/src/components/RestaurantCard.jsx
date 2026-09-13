@@ -112,7 +112,7 @@ export default function RestaurantCard({ restaurant, onQuickReserve, onViewOffer
       </div>
 
       {/* ── Card Body ── */}
-      <div className="p-4 flex-1 flex flex-col justify-between">
+      <div style={{ padding: '16px 18px 18px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
         <div>
           {/* Header: Name + Rating */}
           <div className="flex items-start justify-between gap-2">
@@ -146,22 +146,54 @@ export default function RestaurantCard({ restaurant, onQuickReserve, onViewOffer
         </div>
 
         {/* ── Action Footer ── */}
-        <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+        <div style={{
+          marginTop: 16,
+          paddingTop: 14,
+          borderTop: '1px solid #F1F5F9',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 12
+        }}>
           {/* Student Coupon Tag */}
           {activeOffer ? (
             <button
               type="button"
               onClick={handleOfferClick}
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-800 bg-amber-50 hover:bg-amber-100 px-3 py-2 min-h-[38px] rounded-xl border border-amber-200 transition-colors cursor-pointer"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                padding: '10px 14px',
+                minHeight: 40,
+                borderRadius: 12,
+                background: '#FEF3C7',
+                border: '1.5px solid #FCD34D',
+                color: '#92400E',
+                fontSize: 12,
+                fontWeight: 800,
+                cursor: 'pointer',
+                boxSizing: 'border-box',
+                letterSpacing: '0.04em',
+                transition: 'all 0.15s ease'
+              }}
               title="Click to view campus voucher"
             >
-              <Tag size={12} className="text-amber-600" />
+              <Tag size={13} className="text-amber-600" />
               <span>{activeOffer.promoCode || 'BENNETT20'}</span>
-              <ChevronRight size={12} className="text-amber-500" />
+              <ChevronRight size={13} className="text-amber-500" />
             </button>
           ) : (
-            <span className="text-xs font-medium text-slate-400 flex items-center gap-1.5 px-1">
-              <MapPin size={12} /> Bennett Partner
+            <span style={{
+              fontSize: 12,
+              fontWeight: 600,
+              color: '#94A3B8',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 5,
+              paddingLeft: 4
+            }}>
+              <MapPin size={13} /> Bennett Partner
             </span>
           )}
 
@@ -169,9 +201,27 @@ export default function RestaurantCard({ restaurant, onQuickReserve, onViewOffer
           <button
             type="button"
             onClick={handleBookClick}
-            className="inline-flex items-center justify-center gap-1.5 px-4 py-2 min-h-[38px] rounded-xl bg-emerald-700 hover:bg-emerald-800 active:scale-[0.98] text-white text-xs font-bold shadow-xs transition-all cursor-pointer"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 8,
+              padding: '10px 20px',
+              minHeight: 40,
+              borderRadius: 12,
+              background: 'linear-gradient(135deg, #15803D 0%, #064E3B 100%)',
+              color: '#FFFFFF',
+              fontSize: 13,
+              fontWeight: 800,
+              cursor: 'pointer',
+              border: 'none',
+              boxShadow: '0 4px 12px rgba(21, 128, 61, 0.28)',
+              boxSizing: 'border-box',
+              whiteSpace: 'nowrap',
+              transition: 'all 0.15s ease'
+            }}
           >
-            <CalendarDays size={14} />
+            <CalendarDays size={15} />
             <span>Book Table</span>
           </button>
         </div>
