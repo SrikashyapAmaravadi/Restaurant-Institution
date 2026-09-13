@@ -1,12 +1,28 @@
 import { useState } from 'react';
-import { X, Calendar, Clock, MapPin, Users, CheckCircle2, Download, Share2, GraduationCap, Camera, QrCode } from 'lucide-react';
+import {
+  X,
+  Calendar,
+  Clock,
+  MapPin,
+  Users,
+  CheckCircle2,
+  Download,
+  Share2,
+  GraduationCap,
+  Camera,
+  QrCode,
+  ShieldCheck,
+  UtensilsCrossed,
+  Navigation
+} from 'lucide-react';
 import { useDining } from '../context/DiningContext';
 
 export default function DigitalPassModal({ booking, onClose }) {
   const { openScanner } = useDining() || {};
-  if (!booking) return null;
-
   const [downloading, setDownloading] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  if (!booking) return null;
 
   const handleSavePass = async () => {
     setDownloading(true);
@@ -30,8 +46,15 @@ export default function DigitalPassModal({ booking, onClose }) {
     }
   };
 
+  const handleCopyCode = () => {
+    navigator.clipboard.writeText(booking.id);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   const handleDirections = () => {
-    const query = encodeURIComponent(`${booking.restaurantName || 'The Spice Garden'}, Bennett University, Greater Noida`);
+    const venue = booking.restaurantName || 'The Spice Garden';
+    const query = encodeURIComponent(`${venue}, Bennett University, Greater Noida`);
     window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, '_blank');
   };
 
@@ -42,129 +65,300 @@ export default function DigitalPassModal({ booking, onClose }) {
     }
   };
 
+  const hasOrders = Array.isArray(booking.orders) && booking.orders.length > 0;
+
   return (
     <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
-      <div className="modal-card modal-bottom-sheet anim-scale-in" style={{ maxWidth: 440, background: '#FFFFFF', border: '1px solid var(--border)', boxShadow: 'var(--shadow-xl)' }}>
-        <div className="modal-hd" style={{ borderBottom: 'none', paddingBottom: 0 }}>
-          <span className="badge badge-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
-            <GraduationCap size={13} /> Bennett Dining Pass
-          </span>
-          <button className="modal-close" onClick={onClose}><X size={18} /></button>
+      <div
+        className="wallet-card modal-bottom-sheet anim-scale-in"
+        style={{
+          maxWidth: 420,
+          width: '100%',
+          margin: 'auto',
+          position: 'relative'
+        }}
+      >
+        {/* Floating Close Button */}
+        <button
+          onClick={onClose}
+          aria-label="Close Digital Pass"
+          style={{
+            position: 'absolute',
+            top: 14,
+            right: 14,
+            width: 32,
+            height: 32,
+            borderRadius: '50%',
+            background: 'rgba(0, 0, 0, 0.35)',
+            color: '#FFFFFF',
+            border: 'none',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            zIndex: 10,
+            transition: 'background 0.15s ease'
+          }}
+        >
+          <X size={16} />
+        </button>
+
+        {/* ── Apple Wallet Card Header ── */}
+        <div className="wallet-card-header">
+          {/* Institutional Top Bar */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <div style={{
+                width: 28,
+                height: 28,
+                borderRadius: 8,
+                background: 'rgba(255, 255, 255, 0.18)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <GraduationCap size={16} color="#FFFFFF" />
+              </div>
+              <div>
+                <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#A7F3D0' }}>
+                  Bennett University
+                </div>
+                <div style={{ fontSize: 9.5, color: '#D1FAE5', opacity: 0.9 }}>
+                  Official Dining Pass
+                </div>
+              </div>
+            </div>
+
+            <span style={{
+              background: 'rgba(16, 185, 129, 0.25)',
+              border: '1px solid rgba(167, 243, 208, 0.4)',
+              color: '#ECFDF5',
+              fontSize: 10.5,
+              fontWeight: 700,
+              padding: '3px 9px',
+              borderRadius: 99,
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 4
+            }}>
+              <ShieldCheck size={12} /> Tier-1 Priority
+            </span>
+          </div>
+
+          {/* Venue & Reference */}
+          <div style={{ marginTop: 6 }}>
+            <div style={{ fontSize: 11, fontWeight: 600, color: '#A7F3D0', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+              RESTAURANT PARTNER
+            </div>
+            <h2 className="font-display" style={{ fontSize: '1.45rem', fontWeight: 800, color: '#FFFFFF', lineHeight: 1.2, margin: '2px 0 6px' }}>
+              {booking.restaurantName || 'Campus Partner'}
+            </h2>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ fontSize: 12, color: '#E2E8F0', fontFamily: 'monospace', letterSpacing: '0.04em' }}>
+                REF: {booking.id}
+              </span>
+              <button
+                type="button"
+                onClick={handleCopyCode}
+                style={{
+                  background: 'rgba(255, 255, 255, 0.15)',
+                  border: 'none',
+                  color: '#FFFFFF',
+                  borderRadius: 4,
+                  padding: '2px 7px',
+                  fontSize: 10,
+                  cursor: 'pointer',
+                  fontWeight: 600
+                }}
+              >
+                {copied ? 'Copied!' : 'Copy'}
+              </button>
+            </div>
+          </div>
         </div>
 
-        <div className="modal-body" style={{ padding: '20px 28px 28px', textAlign: 'center' }}>
-          {/* Ticket Header */}
-          <div style={{ marginBottom: 16 }}>
-            <h3 className="font-display" style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--t1)', marginBottom: 4 }}>
-              {booking.restaurantName}
-            </h3>
-            <div style={{ fontSize: 13, color: 'var(--accent)', fontWeight: 700 }}>
-              Booking Reference: {booking.id}
-            </div>
-          </div>
+        {/* ── Perforated Ticket Divider with Notches ── */}
+        <div className="wallet-perforated-divider">
+          <div className="wallet-dashed-line" />
+        </div>
 
-          {/* QR Code Container */}
+        {/* ── Ticket Body ── */}
+        <div className="wallet-card-body">
+          {/* Key Metrics Grid */}
           <div style={{
-            background: '#FFFFFF',
-            padding: 16,
-            borderRadius: 'var(--r)',
-            display: 'inline-block',
-            border: '1px solid var(--border)',
-            boxShadow: 'var(--shadow-md)',
-            marginBottom: 20
-          }}>
-            <img
-              src={booking.qrCode || `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${booking.id}-BENNETT-VERIFIED`}
-              alt="Pass QR Code"
-              style={{ width: 150, height: 150, display: 'block' }}
-            />
-            <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--t1)', marginTop: 8, letterSpacing: '0.08em' }}>
-              SCAN AT RESTAURANT HOST DESK
-            </div>
-          </div>
-
-          {/* Reservation Details Grid */}
-          <div style={{
-            background: '#F8FAFC',
-            borderRadius: 'var(--r-sm)',
-            border: '1px solid var(--border)',
-            padding: 16,
             display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
+            gridTemplateColumns: 'repeat(3, 1fr)',
             gap: 12,
-            textAlign: 'left',
-            marginBottom: 20
+            paddingBottom: 16,
+            borderBottom: '1px solid #F1F5F9'
           }}>
             <div>
-              <div style={{ fontSize: 11, color: 'var(--t4)', textTransform: 'uppercase', fontWeight: 700 }}>Date</div>
-              <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--t1)', display: 'flex', alignItems: 'center', gap: 5, marginTop: 2 }}>
-                <Calendar size={13} className="text-amber-400" /> {booking.date}
+              <div style={{ fontSize: 10.5, color: '#64748B', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                Date
+              </div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#0F172A', marginTop: 2, display: 'flex', alignItems: 'center', gap: 4 }}>
+                <Calendar size={13} className="text-emerald-700" />
+                <span>{booking.date || 'Today'}</span>
               </div>
             </div>
 
             <div>
-              <div style={{ fontSize: 11, color: 'var(--t4)', textTransform: 'uppercase', fontWeight: 700 }}>Time</div>
-              <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--t1)', display: 'flex', alignItems: 'center', gap: 5, marginTop: 2 }}>
-                <Clock size={13} className="text-indigo-400" /> {booking.time}
+              <div style={{ fontSize: 10.5, color: '#64748B', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                Time Slot
+              </div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#0F172A', marginTop: 2, display: 'flex', alignItems: 'center', gap: 4 }}>
+                <Clock size={13} className="text-emerald-700" />
+                <span>{booking.time || '1:00 PM'}</span>
               </div>
             </div>
 
             <div>
-              <div style={{ fontSize: 11, color: 'var(--t4)', textTransform: 'uppercase', fontWeight: 700 }}>Party Size</div>
-              <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--t1)', display: 'flex', alignItems: 'center', gap: 5, marginTop: 2 }}>
-                <Users size={13} className="text-emerald-400" /> {booking.guests} Guests
+              <div style={{ fontSize: 10.5, color: '#64748B', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                Guests
               </div>
-            </div>
-
-            <div>
-              <div style={{ fontSize: 11, color: 'var(--t4)', textTransform: 'uppercase', fontWeight: 700 }}>Status</div>
-              <div style={{ fontSize: 13, fontWeight: 600, color: '#34D399', display: 'flex', alignItems: 'center', gap: 5, marginTop: 2 }}>
-                <CheckCircle2 size={13} /> {booking.status}
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#0F172A', marginTop: 2, display: 'flex', alignItems: 'center', gap: 4 }}>
+                <Users size={13} className="text-emerald-700" />
+                <span>{booking.guests || 2} Diners</span>
               </div>
             </div>
           </div>
 
-          {/* Action buttons */}
-          <div style={{ display: 'flex', gap: 10, marginBottom: 10 }}>
+          {/* Additional Info Row: Table & Status */}
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            padding: '12px 0',
+            borderBottom: '1px solid #F1F5F9'
+          }}>
+            <div style={{ fontSize: 12, color: '#475569' }}>
+              <span style={{ fontWeight: 600 }}>Table: </span>
+              <span style={{ fontWeight: 700, color: '#0F172A' }}>{booking.tableAssigned || 'Priority Host Seating'}</span>
+            </div>
+            <div style={{
+              fontSize: 11,
+              fontWeight: 700,
+              padding: '3px 10px',
+              borderRadius: 99,
+              background: '#ECFDF5',
+              color: '#065F46',
+              border: '1px solid #A7F3D0',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 4
+            }}>
+              <CheckCircle2 size={12} /> {booking.status || 'CONFIRMED'}
+            </div>
+          </div>
+
+          {/* Pre-Ordered Items Summary if present */}
+          {hasOrders && (
+            <div style={{
+              background: '#F8FAFC',
+              border: '1px solid #E2E8F0',
+              borderRadius: 12,
+              padding: '10px 12px',
+              margin: '12px 0',
+              fontSize: 12
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontWeight: 700, color: '#0F172A', marginBottom: 4 }}>
+                <UtensilsCrossed size={12} className="text-emerald-700" />
+                <span>Pre-Ordered Dishes ({booking.orders.length})</span>
+              </div>
+              <div style={{ color: '#475569', fontSize: 11.5 }}>
+                {booking.orders.map(o => `${o.name} (x${o.qty || 1})`).join(', ')}
+              </div>
+            </div>
+          )}
+
+          {/* ── High-Contrast Host QR Scanner Container ── */}
+          <div style={{ textAlign: 'center', margin: '16px 0 14px' }}>
+            <div className="wallet-qr-container">
+              <img
+                src={booking.qrCode || `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${booking.id}-BENNETT-VERIFIED`}
+                alt="Pass QR Code"
+                style={{
+                  width: 150,
+                  height: 150,
+                  display: 'block',
+                  borderRadius: 8
+                }}
+              />
+              <div style={{
+                marginTop: 8,
+                fontSize: 10,
+                fontWeight: 800,
+                color: '#0F172A',
+                letterSpacing: '0.08em',
+                textTransform: 'uppercase'
+              }}>
+                Scan At Front Desk For Table Entry
+              </div>
+            </div>
+          </div>
+
+          {/* ── Action Buttons ── */}
+          <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
             <button
-              className="btn btn-outline btn-md"
-              style={{ flex: 1, background: '#FFFFFF', color: 'var(--t1)', fontWeight: 700 }}
+              type="button"
+              className="btn btn-outline btn-sm"
               onClick={handleSavePass}
               disabled={downloading}
+              style={{
+                flex: 1,
+                padding: '9px 12px',
+                borderRadius: 12,
+                fontSize: 12,
+                fontWeight: 700,
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 6
+              }}
             >
-              <Download size={14} style={{ color: 'var(--t1)' }} />
-              <span style={{ color: 'var(--t1)', fontWeight: 700 }}>
-                {downloading ? 'Saving...' : 'Save Pass'}
-              </span>
+              <Download size={14} />
+              <span>{downloading ? 'Saving...' : 'Save Pass'}</span>
             </button>
+
             <button
-              className="btn btn-primary btn-md"
-              style={{ flex: 1 }}
+              type="button"
+              className="btn btn-primary btn-sm"
               onClick={handleDirections}
+              style={{
+                flex: 1,
+                padding: '9px 12px',
+                borderRadius: 12,
+                fontSize: 12,
+                fontWeight: 700,
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 6
+              }}
             >
-              <MapPin size={14} /> Directions
+              <Navigation size={14} />
+              <span>Directions</span>
             </button>
           </div>
 
           <button
             type="button"
-            className="btn btn-outline btn-sm"
+            className="btn btn-ghost btn-xs"
+            onClick={handleScanPass}
             style={{
               width: '100%',
+              fontSize: 11.5,
+              fontWeight: 600,
+              color: '#64748B',
               display: 'inline-flex',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: 6,
-              color: 'var(--t1)',
-              fontWeight: 700,
-              background: '#FFFFFF',
-              border: '1.5px solid var(--border)'
+              gap: 5,
+              padding: '6px 0'
             }}
-            onClick={handleScanPass}
-            title="Open camera to scan this digital pass"
           >
-            <Camera size={14} style={{ color: 'var(--t1)' }} />
-            <span style={{ color: 'var(--t1)', fontWeight: 700 }}>Scan Digital Pass with Camera</span>
+            <Camera size={13} />
+            <span>Host Desk Scanner Shortcut</span>
           </button>
         </div>
       </div>

@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import DigitalPassModal from '../components/DigitalPassModal';
 import ReviewModal from '../components/ReviewModal';
 import PaymentModal from '../components/PaymentModal';
@@ -10,19 +10,18 @@ import {
   Clock,
   Users,
   QrCode,
-  XCircle,
   RotateCcw,
   CheckCircle2,
   AlertCircle,
   MessageSquarePlus,
-  ArrowRight,
   Receipt,
   Utensils,
   Check,
   X,
   Search,
-  SlidersHorizontal,
-  ArrowUpDown
+  ArrowUpDown,
+  Sparkles,
+  ShieldCheck
 } from 'lucide-react';
 
 const TABS = ['Upcoming Reservations', 'Past Visits', 'Cancelled'];
@@ -44,7 +43,7 @@ export default function Bookings() {
   const cancelledList = reservations.filter(b => b.status === 'CANCELLED');
 
   const handleCancel = async (bookingId) => {
-    if (confirm('Are you sure you want to cancel this reservation? The restaurant capacity will be released.')) {
+    if (window.confirm('Are you sure you want to cancel this reservation? The restaurant capacity will be immediately released.')) {
       if (cancelBooking) {
         await cancelBooking(bookingId);
       } else {
@@ -83,69 +82,134 @@ export default function Bookings() {
   }, [activeTab, upcomingList, pastList, cancelledList, searchQuery, sortBy]);
 
   return (
-    <div className="page-pad">
+    <div className="page-pad" style={{ maxWidth: 1040, margin: '0 auto', paddingBottom: 60 }}>
       {/* Header */}
-      <div className="anim-fade-up" style={{ marginBottom: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12 }}>
+      <div className="anim-fade-up" style={{ marginBottom: 28, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16 }}>
         <div>
-          <h2 className="font-display" style={{ fontSize: 'clamp(1.4rem, 4.5vw, 1.8rem)', fontWeight: 800, color: 'var(--t1)' }}>
-            My Dining Reservations
-          </h2>
-          <p style={{ fontSize: 13, color: 'var(--t3)' }}>
-            Manage your Bennett University partner restaurant bookings, access QR entry passes, and settle table payments with UPI, Cash, or Card.
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+            <h1 className="font-display" style={{ fontSize: 'clamp(1.5rem, 4vw, 2rem)', fontWeight: 800, color: 'var(--t1)', margin: 0 }}>
+              My Dining Reservations
+            </h1>
+            <span style={{
+              background: '#ECFDF5',
+              border: '1px solid #A7F3D0',
+              color: '#065F46',
+              fontSize: 11,
+              fontWeight: 700,
+              padding: '2px 8px',
+              borderRadius: 99
+            }}>
+              Bennett Pass Network
+            </span>
+          </div>
+          <p style={{ fontSize: 13.5, color: 'var(--t3)', margin: 0 }}>
+            Manage campus partner bookings, access scannable QR passes, and settle dining checks.
           </p>
         </div>
+
         <button
           type="button"
           className="btn btn-outline btn-sm"
           onClick={openScanner}
-          style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
+            borderRadius: 12,
+            fontWeight: 700,
+            padding: '8px 16px',
+            borderColor: '#15803D',
+            color: '#15803D'
+          }}
           title="Open camera to scan dining pass"
         >
-          <QrCode size={15} /> Scan Digital Pass
+          <QrCode size={15} /> Host Scanner
         </button>
       </div>
 
       {/* Tabs */}
-      <div className="tab-bar anim-fade-up delay-1 tabs-scroll-x" style={{ marginBottom: 24 }}>
-        {TABS.map(tab => (
-          <button
-            key={tab}
-            className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
-            onClick={() => setActiveTab(tab)}
-          >
-            {tab}
-            {tab === 'Upcoming Reservations' && upcomingList.length > 0 && (
-              <span className="badge badge-primary" style={{ marginLeft: 6, fontSize: 10, padding: '1px 6px' }}>
-                {upcomingList.length}
-              </span>
-            )}
-            {tab === 'Past Visits' && pastList.length > 0 && (
-              <span className="badge badge-neutral" style={{ marginLeft: 6, fontSize: 10, padding: '1px 6px' }}>
-                {pastList.length}
-              </span>
-            )}
-          </button>
-        ))}
+      <div className="tab-bar anim-fade-up delay-1 tabs-scroll-x" style={{ marginBottom: 24, background: '#FFFFFF', padding: 4, borderRadius: 14, border: '1px solid var(--border)' }}>
+        {TABS.map(tab => {
+          const isActive = activeTab === tab;
+          return (
+            <button
+              key={tab}
+              className={`tab-btn ${isActive ? 'active' : ''}`}
+              onClick={() => setActiveTab(tab)}
+              style={{
+                borderRadius: 10,
+                fontWeight: 700,
+                padding: '9px 18px',
+                fontSize: 13
+              }}
+            >
+              {tab}
+              {tab === 'Upcoming Reservations' && upcomingList.length > 0 && (
+                <span style={{
+                  marginLeft: 6,
+                  fontSize: 10.5,
+                  fontWeight: 800,
+                  padding: '2px 7px',
+                  borderRadius: 99,
+                  background: isActive ? '#FFFFFF' : '#ECFDF5',
+                  color: '#065F46'
+                }}>
+                  {upcomingList.length}
+                </span>
+              )}
+              {tab === 'Past Visits' && pastList.length > 0 && (
+                <span style={{
+                  marginLeft: 6,
+                  fontSize: 10.5,
+                  fontWeight: 700,
+                  padding: '2px 7px',
+                  borderRadius: 99,
+                  background: isActive ? '#FFFFFF' : '#F1F5F9',
+                  color: 'var(--t3)'
+                }}>
+                  {pastList.length}
+                </span>
+              )}
+            </button>
+          );
+        })}
       </div>
 
       {/* Search & Sort Toolbar */}
-      <div className="anim-fade-up delay-1" style={{ display: 'flex', gap: 12, marginBottom: 20, flexWrap: 'wrap', alignItems: 'center' }}>
+      <div className="anim-fade-up delay-1" style={{
+        display: 'flex',
+        gap: 12,
+        marginBottom: 24,
+        flexWrap: 'wrap',
+        alignItems: 'center',
+        background: '#FFFFFF',
+        padding: '12px 16px',
+        borderRadius: 16,
+        border: '1px solid var(--border)'
+      }}>
         <div style={{ flex: 1, minWidth: 240, position: 'relative' }}>
-          <Search size={16} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--t4)' }} />
+          <Search size={15} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
           <input
             className="form-input"
-            style={{ paddingLeft: 40, width: '100%' }}
-            placeholder="Search by ID (e.g. DB-4821), venue name, or notes..."
+            style={{ paddingLeft: 36, width: '100%', fontSize: 13, height: 38 }}
+            placeholder="Search by ID (e.g. DB-4821), venue name, or special notes..."
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
           />
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <ArrowUpDown size={15} style={{ color: 'var(--t4)' }} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#F8FAFC', padding: '6px 12px', borderRadius: 99, border: '1px solid var(--border)' }}>
+          <ArrowUpDown size={13} className="text-emerald-700" />
           <select
-            className="form-input"
-            style={{ minWidth: 170, padding: '9px 12px', fontSize: 13 }}
+            style={{
+              border: 'none',
+              outline: 'none',
+              background: 'transparent',
+              color: 'var(--t1)',
+              fontSize: 12.5,
+              fontWeight: 700,
+              cursor: 'pointer'
+            }}
             value={sortBy}
             onChange={e => setSortBy(e.target.value)}
           >
@@ -158,31 +222,41 @@ export default function Bookings() {
       </div>
 
       {/* Bookings List */}
-      <div className="anim-fade-up delay-2" style={{ maxWidth: 880, display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div className="anim-fade-up delay-2" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         {currentList.length === 0 ? (
-          <div className="card" style={{ padding: '60px 20px', textAlign: 'center' }}>
+          <div style={{
+            background: '#FFFFFF',
+            border: '1px solid var(--border)',
+            borderRadius: 20,
+            padding: '60px 20px',
+            textAlign: 'center',
+            boxShadow: 'var(--shadow-sm)'
+          }}>
             <div style={{
               width: 56,
               height: 56,
               borderRadius: '50%',
-              background: '#EFF6FF',
-              border: '1.5px solid var(--border)',
+              background: '#ECFDF5',
+              color: '#15803D',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              margin: '0 auto 16px',
-              color: 'var(--primary)'
+              margin: '0 auto 16px'
             }}>
               <Calendar size={26} />
             </div>
-            <h3 className="font-display" style={{ fontSize: '1.3rem', fontWeight: 700, color: 'var(--t1)', marginBottom: 6 }}>
+            <h3 className="font-display" style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--t1)', marginBottom: 6 }}>
               No {activeTab.toLowerCase()} found
             </h3>
-            <p style={{ fontSize: 13, color: 'var(--t3)', maxWidth: 360, margin: '0 auto 20px' }}>
-              Reserve a table at top partner restaurants near Bennett campus with instant confirmation.
+            <p style={{ fontSize: 13, color: 'var(--t3)', maxWidth: 380, margin: '0 auto 20px', lineHeight: 1.5 }}>
+              Browse curated partner restaurants near Bennett campus to reserve your table with guaranteed priority seating.
             </p>
-            <button className="btn-primary" onClick={() => navigate('/discover')}>
-              Discover Restaurants →
+            <button
+              className="btn btn-primary btn-md"
+              onClick={() => navigate('/discover')}
+              style={{ borderRadius: 12, fontWeight: 700, margin: '0 auto', display: 'inline-flex', alignItems: 'center', gap: 6 }}
+            >
+              <Sparkles size={15} /> Discover Restaurants
             </button>
           </div>
         ) : (
@@ -195,90 +269,159 @@ export default function Bookings() {
             return (
               <motion.div
                 key={b.id}
-                initial={{ opacity: 0, y: 10 }}
+                initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.2 }}
-                className="card card-hover booking-card"
-                style={{ padding: 20, display: 'flex', gap: 20, alignItems: 'center', flexWrap: 'wrap' }}
+                transition={{ duration: 0.18 }}
+                style={{
+                  background: '#FFFFFF',
+                  border: '1px solid var(--border)',
+                  borderRadius: 20,
+                  padding: 20,
+                  display: 'flex',
+                  gap: 20,
+                  alignItems: 'center',
+                  flexWrap: 'wrap',
+                  boxShadow: 'var(--shadow-sm)'
+                }}
               >
-                {/* Restaurant Thumbnail with smooth zoom container */}
-                <div style={{ width: 84, height: 84, borderRadius: 'var(--r-sm)', overflow: 'hidden', flexShrink: 0, border: '1px solid var(--border)' }}>
+                {/* Restaurant Thumbnail */}
+                <div style={{
+                  width: 88,
+                  height: 88,
+                  borderRadius: 14,
+                  overflow: 'hidden',
+                  flexShrink: 0,
+                  border: '1px solid var(--border)'
+                }}>
                   <img
                     src={b.restaurantImage || 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=300&q=80'}
                     alt={b.restaurantName}
-                    className="booking-thumb"
                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                   />
                 </div>
 
                 {/* Details */}
-                <div style={{ flex: 1, minWidth: 'min(100%, 200px)' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
-                    <span style={{ fontSize: 12, fontWeight: 800, color: 'var(--primary)', letterSpacing: '0.05em' }}>
+                <div style={{ flex: 1, minWidth: 'min(100%, 240px)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                    <span style={{ fontSize: 12, fontWeight: 800, color: '#15803D', fontFamily: 'monospace', letterSpacing: '0.04em' }}>
                       {b.id}
                     </span>
-                    {isConfirmed && <span className="badge badge-success">● Confirmed</span>}
-                    {isSeated    && (
-                      <span className="badge badge-info" style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-                        <Utensils size={11} /> Checked-In &amp; Dining
+
+                    {isConfirmed && (
+                      <span style={{
+                        background: '#ECFDF5',
+                        border: '1px solid #A7F3D0',
+                        color: '#065F46',
+                        fontSize: 10.5,
+                        fontWeight: 800,
+                        padding: '2px 8px',
+                        borderRadius: 99,
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 3
+                      }}>
+                        ● Confirmed Pass
                       </span>
                     )}
+
+                    {isSeated && (
+                      <span style={{
+                        background: '#EFF6FF',
+                        border: '1px solid #BFDBFE',
+                        color: '#1E40AF',
+                        fontSize: 10.5,
+                        fontWeight: 800,
+                        padding: '2px 8px',
+                        borderRadius: 99,
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 4
+                      }}>
+                        <Utensils size={11} /> Checked-In &amp; Seated
+                      </span>
+                    )}
+
                     {isCompleted && (
-                      <span className="badge badge-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                      <span style={{
+                        background: '#F1F5F9',
+                        border: '1px solid #CBD5E1',
+                        color: '#475569',
+                        fontSize: 10.5,
+                        fontWeight: 700,
+                        padding: '2px 8px',
+                        borderRadius: 99,
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 4
+                      }}>
                         <Check size={11} /> Paid via {b.payment?.method || 'UPI'}
                       </span>
                     )}
+
                     {isCancelled && (
-                      <span className="badge badge-error" style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                      <span style={{
+                        background: '#FEF2F2',
+                        border: '1px solid #FECACA',
+                        color: '#991B1B',
+                        fontSize: 10.5,
+                        fontWeight: 700,
+                        padding: '2px 8px',
+                        borderRadius: 99,
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 3
+                      }}>
                         <X size={11} /> Cancelled
                       </span>
                     )}
                   </div>
 
-                  <h3 className="font-display" style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--t1)', marginBottom: 6 }}>
+                  <h3 className="font-display" style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--t1)', margin: '0 0 6px' }}>
                     {b.restaurantName}
                   </h3>
 
                   <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 14, fontSize: 12.5, color: 'var(--t2)' }}>
                     <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                      <Calendar size={13} className="text-amber-400" /> {b.date}
+                      <Calendar size={13} className="text-emerald-700" /> {b.date}
                     </span>
                     <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                      <Clock size={13} className="text-indigo-400" /> {b.time}
+                      <Clock size={13} className="text-emerald-700" /> {b.time}
                     </span>
                     <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                      <Users size={13} className="text-emerald-400" /> {b.guests} Guests
+                      <Users size={13} className="text-emerald-700" /> {b.guests} Diners
                     </span>
                   </div>
 
                   {b.specialRequest && (
-                    <div style={{ fontSize: 12, color: 'var(--t3)', marginTop: 6, fontStyle: 'italic' }}>
-                      Note: "{b.specialRequest}"
+                    <div style={{ fontSize: 12, color: 'var(--t3)', marginTop: 6 }}>
+                      Occasion: <em>{b.specialRequest}</em>
                     </div>
                   )}
 
-                  {/* Payment settled note */}
-                  {b.payment && (
-                    <div style={{ fontSize: 12, color: '#10B981', marginTop: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <CheckCircle2 size={13} />
-                      Invoice {b.payment.transactionId} settled for ₹{b.payment.amount}
+                  {b.orders && b.orders.length > 0 && (
+                    <div style={{ fontSize: 11.5, color: '#15803D', fontWeight: 600, marginTop: 4 }}>
+                      Pre-Ordered: {b.orders.map(o => `${o.name} (x${o.qty || o.quantity || 1})`).join(', ')}
                     </div>
                   )}
                 </div>
 
-                {/* Action Buttons */}
-                <div className="mobile-full-btn" style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                {/* Actions Row */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                   {isConfirmed && (
                     <>
                       <button
-                        className="btn-secondary"
+                        type="button"
+                        className="btn btn-primary btn-sm"
                         onClick={() => setPassModalBooking(b)}
+                        style={{ borderRadius: 10, fontWeight: 700, gap: 5 }}
                       >
                         <QrCode size={14} /> Digital Pass
                       </button>
                       <button
-                        className="btn-danger"
+                        type="button"
+                        className="btn btn-ghost btn-sm"
                         onClick={() => handleCancel(b.id)}
+                        style={{ borderRadius: 10, color: '#DC2626', fontWeight: 600 }}
                       >
                         Cancel
                       </button>
@@ -288,14 +431,18 @@ export default function Bookings() {
                   {isSeated && (
                     <>
                       <button
-                        className="btn-accent"
+                        type="button"
+                        className="btn btn-primary btn-sm"
                         onClick={() => setPaymentModalBooking(b)}
+                        style={{ borderRadius: 10, fontWeight: 700, gap: 5 }}
                       >
-                        <Receipt size={14} /> Pay Bill (UPI/Cash/Card)
+                        <Receipt size={14} /> Settle Bill
                       </button>
                       <button
-                        className="btn-secondary"
+                        type="button"
+                        className="btn btn-outline btn-sm"
                         onClick={() => setPassModalBooking(b)}
+                        style={{ borderRadius: 10, fontWeight: 700, gap: 5 }}
                       >
                         <QrCode size={14} /> View Pass
                       </button>
@@ -305,36 +452,49 @@ export default function Bookings() {
                   {isCompleted && (
                     <>
                       <button
-                        className="btn-secondary"
-                        style={{ padding: '6px 12px', fontSize: 12 }}
+                        type="button"
+                        className="btn btn-outline btn-sm"
                         onClick={() => setPaymentModalBooking(b)}
+                        style={{ borderRadius: 10, fontWeight: 700, gap: 5 }}
                       >
                         <Receipt size={13} /> View Invoice
                       </button>
                       <button
-                        className="btn-secondary"
-                        style={{ padding: '6px 12px', fontSize: 12 }}
+                        type="button"
+                        className="btn btn-ghost btn-sm"
                         onClick={() => {
                           const rest = restaurants.find(r => r.name === b.restaurantName || r.id === b.restaurantId) || restaurants[0];
                           if (rest) navigate(`/restaurant/${rest.id}`);
                         }}
+                        style={{ borderRadius: 10, fontWeight: 700, gap: 5 }}
                       >
                         <RotateCcw size={13} /> Re-Book
                       </button>
                       {!b.reviewed ? (
                         <button
-                          className="btn-accent"
-                          style={{ padding: '6px 12px', fontSize: 12 }}
+                          type="button"
+                          className="btn btn-primary btn-sm"
                           onClick={() => {
                             const rest = restaurants.find(r => r.name === b.restaurantName || r.id === b.restaurantId) || restaurants[0] || { id: b.restaurantId, name: b.restaurantName };
                             setReviewModalRestaurant(rest);
                           }}
+                          style={{ borderRadius: 10, fontWeight: 700, gap: 5 }}
                         >
                           <MessageSquarePlus size={13} /> Review
                         </button>
                       ) : (
-                        <span className="badge badge-success" style={{ fontSize: 11, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-                          <Check size={11} /> Reviewed
+                        <span style={{
+                          fontSize: 11,
+                          fontWeight: 700,
+                          color: '#065F46',
+                          background: '#ECFDF5',
+                          padding: '4px 10px',
+                          borderRadius: 99,
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 4
+                        }}>
+                          <Check size={12} /> Reviewed
                         </span>
                       )}
                     </>

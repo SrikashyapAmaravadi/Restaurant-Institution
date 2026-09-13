@@ -2860,5 +2860,130 @@ button.btn-light:hover svg {
   }
 }
 
+/* ══════════════════════════════════════════════════════════════════════════
+   APPLE WALLET DIGITAL PASS STYLES
+   ══════════════════════════════════════════════════════════════════════════ */
+.wallet-card {
+  background: #FFFFFF;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25), 0 0 0 1px rgba(15, 23, 42, 0.08);
+  position: relative;
+}
+
+.wallet-card-header {
+  background: linear-gradient(135deg, #064E3B 0%, #0F3A2A 100%);
+  color: #FFFFFF;
+  padding: 24px 28px 20px;
+  position: relative;
+}
+
+.wallet-card-header::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 140px;
+  background: radial-gradient(circle at 100% 0%, rgba(52, 211, 153, 0.15), transparent 70%);
+  pointer-events: none;
+}
+
+.wallet-perforated-divider {
+  position: relative;
+  height: 24px;
+  background: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wallet-perforated-divider::before {
+  content: '';
+  position: absolute;
+  left: -12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(15, 23, 42, 0.65);
+  box-shadow: inset -2px 0 4px rgba(0, 0, 0, 0.15);
+}
+
+.wallet-perforated-divider::after {
+  content: '';
+  position: absolute;
+  right: -12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(15, 23, 42, 0.65);
+  box-shadow: inset 2px 0 4px rgba(0, 0, 0, 0.15);
+}
+
+.wallet-dashed-line {
+  width: calc(100% - 48px);
+  border-bottom: 2px dashed #CBD5E1;
+}
+
+.wallet-card-body {
+  padding: 16px 28px 24px;
+  background: #FFFFFF;
+}
+
+.wallet-qr-container {
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 16px;
+  padding: 16px;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+/* ── Modern Dish Card in Grid ─────────────────────────────────────────── */
+.editorial-dish-card {
+  background: #FFFFFF;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  gap: 16px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: var(--shadow-sm);
+  position: relative;
+}
+
+.editorial-dish-card:hover {
+  transform: translateY(-2px);
+  border-color: #CBD5E1;
+  box-shadow: var(--shadow-md);
+}
+
+.editorial-dish-thumb {
+  width: 96px;
+  height: 96px;
+  border-radius: 12px;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+/* ── Sticky Booking Rail ────────────────────────────────────────────────── */
+.booking-rail-card {
+  background: #FFFFFF;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.06), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+  position: sticky;
+  top: calc(var(--nav-height) + 24px);
+}
+
+
 
 
