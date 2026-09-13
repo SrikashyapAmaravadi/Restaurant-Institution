@@ -200,16 +200,62 @@ export default function Dashboard() {
       )}
 
       {/* Campus Spotlight Banner */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-900 via-emerald-950 to-slate-950 p-5 sm:p-7 text-white shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-5">
-        <div className="max-w-md">
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-200 text-xs font-bold mb-3">
+      <div
+        style={{
+          position: 'relative',
+          overflow: 'hidden',
+          borderRadius: 20,
+          background: 'linear-gradient(135deg, #064E3B 0%, #065F46 50%, #0F172A 100%)',
+          padding: '24px 28px',
+          color: '#FFFFFF',
+          boxShadow: '0 8px 24px -4px rgba(6, 78, 59, 0.25)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: 20
+        }}
+      >
+        <div style={{ maxWidth: 540 }}>
+          <div
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              padding: '3px 10px',
+              borderRadius: 99,
+              background: 'rgba(255, 255, 255, 0.18)',
+              border: '1px solid rgba(255, 255, 255, 0.3)',
+              color: '#A7F3D0',
+              fontSize: 11,
+              fontWeight: 800,
+              marginBottom: 10,
+              letterSpacing: '0.04em'
+            }}
+          >
             <Sparkles size={12} />
             <span>CAMPUS EXCLUSIVE • VERIFIED PASS</span>
           </div>
-          <h2 className="text-lg sm:text-2xl font-bold tracking-tight text-white leading-snug">
+          <h2
+            style={{
+              fontSize: 'clamp(1.25rem, 3.5vw, 1.65rem)',
+              fontWeight: 800,
+              color: '#FFFFFF',
+              lineHeight: 1.25,
+              margin: '0 0 8px'
+            }}
+          >
             Partner Dining Network Live Across Bennett TechZone
           </h2>
-          <p className="text-xs sm:text-sm text-slate-300 mt-2 leading-relaxed">
+          <p
+            style={{
+              fontSize: 13,
+              color: '#D1FAE5',
+              margin: 0,
+              lineHeight: 1.5,
+              opacity: 0.95
+            }}
+          >
             Direct pre-booking with instant table hold, student discount settlement, and zero wait lines.
           </p>
         </div>
@@ -217,7 +263,22 @@ export default function Dashboard() {
         <button
           type="button"
           onClick={() => navigate('/discover')}
-          className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-white text-slate-950 hover:bg-slate-100 font-bold text-xs sm:text-sm cursor-pointer shadow-sm transition-all shrink-0"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 8,
+            padding: '11px 22px',
+            borderRadius: 14,
+            background: '#FFFFFF',
+            color: '#064E3B',
+            fontWeight: 800,
+            fontSize: 13,
+            border: 'none',
+            cursor: 'pointer',
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.12)',
+            transition: 'all 0.15s ease',
+            whiteSpace: 'nowrap'
+          }}
         >
           <span>Explore All Spots</span>
           <ArrowRight size={15} />
