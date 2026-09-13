@@ -196,22 +196,22 @@ export default function Login() {
             <div style={{
               width: 50,
               height: 50,
-              borderRadius: 'var(--r-sm)',
-              background: 'linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-light) 100%)',
+              borderRadius: 14,
+              background: 'linear-gradient(135deg, #064E3B 0%, #15803D 100%)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              boxShadow: '0 4px 16px rgba(15, 45, 30, 0.5)',
-              border: '1px solid rgba(111, 175, 61, 0.4)'
+              boxShadow: '0 8px 20px rgba(6, 78, 59, 0.4)',
+              border: '1px solid rgba(167, 243, 208, 0.3)'
             }}>
-              <Leaf size={26} color="#6FAF3D" />
+              <UtensilsCrossed size={24} color="#FFFFFF" />
             </div>
             <div>
-              <div className="font-display" style={{ fontSize: '1.6rem', fontWeight: 900, color: '#E7F1E1', letterSpacing: '-0.03em' }}>
-                lora
+              <div className="font-display" style={{ fontSize: '1.6rem', fontWeight: 900, color: '#FFFFFF', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
+                Dine@Bennett
               </div>
-              <div style={{ fontSize: 11, color: '#A9C5A2', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em' }}>
-                Natural · Pure · Sustainable
+              <div style={{ fontSize: 11, color: '#A7F3D0', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                Bennett University Dining Network
               </div>
             </div>
           </div>
@@ -223,37 +223,37 @@ export default function Login() {
               alignItems: 'center',
               gap: 6,
               padding: '5px 14px',
-              borderRadius: 'var(--r-full)',
-              background: 'rgba(231, 241, 225, 0.15)',
-              border: '1px solid rgba(111, 175, 61, 0.35)',
-              color: '#E7F1E1',
+              borderRadius: 99,
+              background: 'rgba(255, 255, 255, 0.15)',
+              border: '1px solid rgba(255, 255, 255, 0.25)',
+              color: '#A7F3D0',
               fontSize: 12,
-              fontWeight: 700,
+              fontWeight: 800,
               marginBottom: 20
             }}>
-              <Leaf size={14} style={{ color: '#6FAF3D' }} /> From Our Fields To Your Table
+              <GraduationCap size={14} /> Official Campus Dining Access
             </div>
-            <h2 className="font-display" style={{ fontSize: '2.5rem', fontWeight: 900, lineHeight: 1.15, color: '#FFFFFF', marginBottom: 16 }}>
-              Fresh Food, Directly From Farm To Table.
+            <h2 className="font-display" style={{ fontSize: '2.4rem', fontWeight: 900, lineHeight: 1.15, color: '#FFFFFF', marginBottom: 16 }}>
+              Campus Dining &amp; Table Passes, Seamlessly Connected.
             </h2>
-            <p style={{ fontSize: 15, color: '#C8DFC2', lineHeight: 1.6, marginBottom: 36 }}>
-              Log in directly with your official university email to access farm-fresh dining reservations, claim verified student privileges, and check in instantly.
+            <p style={{ fontSize: 14.5, color: '#D1FAE5', lineHeight: 1.6, marginBottom: 36, opacity: 0.95 }}>
+              Sign in with your university credentials or 6-digit passkey to access guaranteed priority reservations, student dining subsidies, and digital QR entry passes.
             </p>
 
             {/* Feature Bullets */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
               {[
-                { title: '100% Farm-To-Table Certified', desc: 'Fresh ingredients harvested and delivered straight to verified campus partner kitchens.' },
-                { title: 'Exclusive 20% Student Subsidy', desc: 'Auto-apply verified campus privileges across participating dining outlets.' },
-                { title: 'Priority Fast-Pass Seating', desc: 'One-tap digital entry passes with table allocation ready upon arrival.' }
+                { title: 'Verified Institutional Clearance', desc: 'Automatic 20% dining discount across participating Bennett TechZone partner restaurants.' },
+                { title: 'Digital Apple Wallet Entry Pass', desc: 'Instant scannable QR ticket ready on your device for rapid front-desk host entry.' },
+                { title: 'Zero Queue Priority Seating', desc: 'Advance lunch & dinner slot reservation with optional kitchen pre-order.' }
               ].map((f, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-                  <div style={{ width: 22, height: 22, borderRadius: '50%', background: '#6FAF3D', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 2 }}>
-                    <CheckCircle2 size={13} color="#0F2D1E" />
+                  <div style={{ width: 22, height: 22, borderRadius: '50%', background: '#10B981', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 2 }}>
+                    <CheckCircle2 size={13} color="#064E3B" />
                   </div>
                   <div>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: '#E7F1E1' }}>{f.title}</div>
-                    <div style={{ fontSize: 12.5, color: '#A9C5A2', marginTop: 2 }}>{f.desc}</div>
+                    <div style={{ fontSize: 14, fontWeight: 800, color: '#FFFFFF' }}>{f.title}</div>
+                    <div style={{ fontSize: 12.5, color: '#A7F3D0', marginTop: 2 }}>{f.desc}</div>
                   </div>
                 </div>
               ))}
@@ -262,8 +262,8 @@ export default function Login() {
         </div>
 
         {/* Hero Footer */}
-        <div style={{ fontSize: 11.5, color: '#7E9F8A', borderTop: '1px solid rgba(231,241,225,0.12)', paddingTop: 20, marginTop: 40 }}>
-          Bennett University TechZone II, Greater Noida · Natural · Pure · Sustainable
+        <div style={{ fontSize: 11.5, color: '#A7F3D0', borderTop: '1px solid rgba(255,255,255,0.15)', paddingTop: 20, marginTop: 40, opacity: 0.9 }}>
+          Bennett University · TechZone II, Greater Noida · Official Partner Dining System
         </div>
       </div>
 
@@ -282,29 +282,29 @@ export default function Login() {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          gap: 10,
+          gap: 8,
           marginBottom: 20,
           textAlign: 'center'
         }} className="md:hidden">
           <div style={{
-            width: 48,
-            height: 48,
-            borderRadius: 'var(--r-sm)',
-            background: 'linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%)',
+            width: 44,
+            height: 44,
+            borderRadius: 12,
+            background: 'linear-gradient(135deg, #064E3B 0%, #15803D 100%)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            boxShadow: '0 4px 14px var(--primary-glow)',
-            border: '1px solid rgba(111, 175, 61, 0.3)'
+            boxShadow: '0 4px 14px rgba(21, 128, 61, 0.25)',
+            color: '#FFFFFF'
           }}>
-            <Leaf size={24} color="#6FAF3D" />
+            <UtensilsCrossed size={22} />
           </div>
           <div>
-            <div className="font-display" style={{ fontSize: '1.5rem', fontWeight: 900, color: 'var(--t1)', letterSpacing: '-0.03em' }}>
-              lora
+            <div className="font-display" style={{ fontSize: '1.4rem', fontWeight: 900, color: 'var(--t1)', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
+              Dine@Bennett
             </div>
-            <div style={{ fontSize: 11, color: 'var(--primary-light)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-              Natural · Pure · Sustainable
+            <div style={{ fontSize: 11, color: 'var(--primary)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              Bennett University Dining Network
             </div>
           </div>
         </div>

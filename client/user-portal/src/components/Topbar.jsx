@@ -103,9 +103,9 @@ export default function Topbar({ onOpenMobileDrawer }) {
             </span>
           </div>
 
-          <h2 className="hidden sm:block text-xs text-slate-500 font-medium mt-0.5 truncate">
+          <span className="hidden sm:block text-xs text-slate-500 font-medium mt-0.5 truncate">
             {title}
-          </h2>
+          </span>
         </div>
       </div>
 
