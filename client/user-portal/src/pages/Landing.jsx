@@ -4,22 +4,12 @@ import { useAuth } from '../context/AuthContext';
 import { useDining } from '../context/DiningContext';
 import api from '../services/api';
 import {
-  GraduationCap,
-  Sparkles,
   ArrowRight,
   ShieldCheck,
   Star,
-  MapPin,
-  Clock,
   QrCode,
-  CheckCircle2,
-  Tag,
-  Compass,
+  Clock,
   UtensilsCrossed,
-  ChefHat,
-  ConciergeBell,
-  Building2,
-  Lock,
   ChevronRight
 } from 'lucide-react';
 
@@ -31,7 +21,6 @@ export default function Landing() {
   const [restaurants, setRestaurants] = useState(contextRestaurants);
   const [loadingRestaurants, setLoadingRestaurants] = useState(false);
 
-  // Automatically redirect authenticated users to their role's home path
   useEffect(() => {
     if (isAuthenticated) {
       const target = user?.homePath || (
@@ -47,7 +36,6 @@ export default function Landing() {
     }
   }, [isAuthenticated, user, navigate]);
 
-  // Fetch real restaurants from database if context is empty
   useEffect(() => {
     if (contextRestaurants.length > 0) {
       setRestaurants(contextRestaurants);
@@ -56,348 +44,234 @@ export default function Landing() {
     setLoadingRestaurants(true);
     api.restaurants.getAll()
       .then(res => {
-        if (res?.success && Array.isArray(res.data)) {
-          setRestaurants(res.data);
-        }
+        if (res?.success && Array.isArray(res.data)) setRestaurants(res.data);
       })
-      .catch(err => console.warn('Could not load live restaurants on landing page:', err))
+      .catch(() => {})
       .finally(() => setLoadingRestaurants(false));
   }, [contextRestaurants]);
 
   const displayList = restaurants.length > 0 ? restaurants.slice(0, 4) : [
-    {
-      id: 1,
-      name: 'The Spice Garden',
-      cuisine: 'North Indian & Awadhi',
-      rating: 4.8,
-      reviews: 142,
-      distance: 0.8,
-      price: '₹₹',
-      offerLabel: '20% OFF',
-      image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80',
-      description: 'Slow-smoked dal makhani, Awadhi dum biryani, and artisanal clay-oven tandoor breads.'
-    },
-    {
-      id: 2,
-      name: 'The Deli Corner',
-      cuisine: 'Artisan Cafe & Bakery',
-      rating: 4.7,
-      reviews: 215,
-      distance: 0.5,
-      price: '₹₹',
-      offerLabel: 'BOGO Offer',
-      image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80',
-      description: 'Specialty cold brews, gourmet grilled paninis, sourdough toasts, and study lounge seating.'
-    },
-    {
-      id: 3,
-      name: 'Mezze & More',
-      cuisine: 'Mediterranean Bowls',
-      rating: 4.6,
-      reviews: 98,
-      distance: 1.2,
-      price: '₹₹₹',
-      offerLabel: 'Student Deal',
-      image: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80',
-      description: 'Wood-fired pita breads, creamy garlic hummus, falafel platters, and souvlaki bowls.'
-    },
-    {
-      id: 4,
-      name: 'Wok & Roll',
-      cuisine: 'Pan-Asian & Tokyo Ramen',
-      rating: 4.4,
-      reviews: 84,
-      distance: 1.5,
-      price: '₹₹',
-      offerLabel: '15% OFF',
-      image: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=800&q=80',
-      description: 'Steaming miso and shoyu ramen, handcrafted crystal dim sums, and wok-tossed noodles.'
-    }
+    { id: 1, name: 'The Spice Garden', cuisine: 'North Indian', rating: 4.8, reviews: 142, distance: 0.8, price: '₹₹', offerLabel: '20% OFF', image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80', description: 'Slow-smoked dal makhani, Awadhi dum biryani, and artisanal tandoor breads.' },
+    { id: 2, name: 'The Deli Corner', cuisine: 'Artisan Cafe', rating: 4.7, reviews: 215, distance: 0.5, price: '₹₹', offerLabel: 'BOGO', image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80', description: 'Specialty cold brews, gourmet grilled paninis, and sourdough toasts.' },
+    { id: 3, name: 'Mezze & More', cuisine: 'Mediterranean', rating: 4.6, reviews: 98, distance: 1.2, price: '₹₹₹', offerLabel: 'Student Deal', image: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80', description: 'Wood-fired pita breads, creamy garlic hummus, and falafel platters.' },
+    { id: 4, name: 'Wok & Roll', cuisine: 'Pan-Asian', rating: 4.4, reviews: 84, distance: 1.5, price: '₹₹', offerLabel: '15% OFF', image: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=800&q=80', description: 'Steaming miso ramen, handcrafted dim sums, and wok-tossed noodles.' },
+  ];
+
+  const features = [
+    { icon: ShieldCheck, title: 'Verified Passes', desc: 'Auto-validated with your @bennett.edu.in email. Unlock 20% campus dining subsidies instantly.', color: '#22C55E', bg: '#F0FDF4' },
+    { icon: QrCode, title: 'Digital Entry', desc: 'Instant QR passes on your device. Show at the host desk for rapid seated entry.', color: '#3B82F6', bg: '#EFF6FF' },
+    { icon: Clock, title: 'Zero Wait', desc: 'Book your time slot in advance. Your table is reserved and ready when you arrive.', color: '#F59E0B', bg: '#FFFBEB' },
   ];
 
   return (
-    <div style={{ minHeight: '100vh', background: '#F8FAFC', color: '#0F172A', display: 'flex', flexDirection: 'column' }}>
-      {/* ── Top Navigation Bar ─────────────────────────────────────── */}
+    <div style={{ minHeight: '100vh', background: '#FAFAFA', color: '#111', display: 'flex', flexDirection: 'column' }}>
+
+      {/* ── Navbar ── */}
       <header style={{
-        position: 'sticky',
-        top: 0,
-        zIndex: 50,
-        background: 'rgba(255, 255, 255, 0.95)',
+        position: 'sticky', top: 0, zIndex: 50,
+        background: 'rgba(255,255,255,0.92)',
         backdropFilter: 'blur(12px)',
-        borderBottom: '1px solid #E2E8F0',
-        padding: '14px 24px'
+        borderBottom: '1px solid #EEE',
+        padding: '12px 24px',
       }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          {/* Brand Logo */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <div style={{
-              width: 38,
-              height: 38,
-              borderRadius: 10,
+              width: 34, height: 34, borderRadius: 8,
               background: '#FF5200',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#FFFFFF',
-              boxShadow: '0 2px 8px rgba(255, 82, 0, 0.28)'
+              display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFF',
             }}>
-              <UtensilsCrossed size={18} />
+              <UtensilsCrossed size={16} />
             </div>
             <div>
-              <div className="font-display" style={{ fontSize: '1.15rem', fontWeight: 800, color: '#1C1E21', letterSpacing: '-0.025em', lineHeight: 1.1 }}>
-                Dine@Bennett
-              </div>
-              <div style={{ fontSize: 11, color: '#64748B', fontWeight: 600 }}>
-                Bennett Campus Dining Network
-              </div>
+              <div style={{ fontSize: 15, fontWeight: 700, color: '#111', letterSpacing: '-0.02em' }}>Dine@Bennett</div>
+              <div style={{ fontSize: 10, color: '#999', fontWeight: 500 }}>Campus Dining</div>
             </div>
           </div>
-
-          {/* Nav Actions */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <button
-              type="button"
-              className="btn btn-ghost btn-sm"
               onClick={() => navigate('/login')}
-              style={{ fontWeight: 600, fontSize: 13 }}
+              style={{
+                padding: '7px 16px', borderRadius: 8,
+                background: 'transparent', border: 'none',
+                color: '#555', fontSize: 13, fontWeight: 500,
+                cursor: 'pointer',
+              }}
             >
-              Sign In
+              Sign in
             </button>
             <button
-              type="button"
-              className="btn btn-primary btn-sm"
               onClick={() => navigate('/login')}
-              style={{ borderRadius: 10, fontWeight: 700, fontSize: 13, gap: 6, padding: '9px 18px' }}
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 5,
+                padding: '8px 18px', borderRadius: 8,
+                background: '#111', color: '#FFF', border: 'none',
+                fontSize: 13, fontWeight: 600,
+                cursor: 'pointer',
+              }}
             >
-              <span>Get Dining Pass</span>
-              <ArrowRight size={14} />
+              Get Started <ArrowRight size={13} />
             </button>
           </div>
         </div>
       </header>
 
-      {/* ── Hero Section ────────────────────────────────────────────── */}
+      {/* ── Hero ── */}
       <section style={{
-        position: 'relative',
-        padding: 'clamp(54px, 8vw, 92px) 24px',
-        background: 'radial-gradient(ellipse at 50% 0%, #FFF5EE 0%, #F8F9FA 70%)',
-        borderBottom: '1px solid #EAECEF'
+        padding: 'clamp(48px, 8vw, 80px) 24px',
+        borderBottom: '1px solid #EEE',
       }}>
-        <div style={{ maxWidth: 960, margin: '0 auto', textAlign: 'center' }}>
-          {/* Institutional Badge */}
+        <div style={{ maxWidth: 860, margin: '0 auto', textAlign: 'center' }}>
           <div style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 6,
-            padding: '5px 14px',
-            borderRadius: 99,
-            background: '#FFF5EE',
-            border: '1px solid #FFD8CC',
-            color: '#FF5200',
-            fontSize: 11.5,
-            fontWeight: 700,
-            marginBottom: 22,
-            boxShadow: '0 1px 3px rgba(255, 82, 0, 0.08)'
+            display: 'inline-flex', alignItems: 'center', gap: 6,
+            padding: '5px 14px', borderRadius: 99,
+            background: '#FFF5EE', border: '1px solid #FFDDCC',
+            color: '#FF5200', fontSize: 11, fontWeight: 600,
+            marginBottom: 24,
           }}>
-            <GraduationCap size={14} className="text-[#FF5200]" />
-            <span>OFFICIAL CAMPUS DINING NETWORK • BENNETT UNIVERSITY</span>
+            BENNETT UNIVERSITY · CAMPUS DINING
           </div>
 
-          <h1 className="font-display" style={{
-            fontSize: 'clamp(2.2rem, 5.5vw, 3.8rem)',
-            fontWeight: 900,
-            color: '#1C1E21',
-            letterSpacing: '-0.035em',
-            lineHeight: 1.12,
-            margin: '0 auto 20px',
-            maxWidth: 820
+          <h1 style={{
+            fontSize: 'clamp(2rem, 5.5vw, 3.5rem)',
+            fontWeight: 800, color: '#111',
+            letterSpacing: '-0.03em', lineHeight: 1.1,
+            margin: '0 auto 20px', maxWidth: 700,
           }}>
-            Campus Dining &amp; Reservations, Perfected.
+            Campus dining,
+            <br />
+            <span style={{ color: '#FF5200' }}>simplified.</span>
           </h1>
 
           <p style={{
-            fontSize: 'clamp(14.5px, 2vw, 17px)',
-            color: '#475569',
-            maxWidth: 660,
-            margin: '0 auto 36px',
-            lineHeight: 1.6
+            fontSize: 'clamp(14px, 2vw, 16px)',
+            color: '#777', maxWidth: 520, margin: '0 auto 32px', lineHeight: 1.5,
           }}>
-            Guaranteed table reservations with 20% campus dining privileges, digital QR entry passes, and zero queue waiting across premier Bennett TechZone partner restaurants.
+            Reserve tables, get 20% student discounts, and skip the queue with digital passes across all Bennett campus restaurants.
           </p>
 
-          {/* Action CTAs */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 10, flexWrap: 'wrap' }}>
             <button
-              type="button"
-              className="btn btn-primary btn-lg"
               onClick={() => navigate('/login')}
               style={{
-                borderRadius: 12,
-                padding: '14px 30px',
-                fontSize: 14.5,
-                fontWeight: 700,
-                boxShadow: '0 4px 14px rgba(255, 82, 0, 0.28)',
-                gap: 8
+                display: 'inline-flex', alignItems: 'center', gap: 6,
+                padding: '12px 28px', borderRadius: 10,
+                background: '#FF5200', color: '#FFF', border: 'none',
+                fontSize: 14, fontWeight: 600, cursor: 'pointer',
+                boxShadow: '0 4px 14px rgba(255,82,0,0.25)',
               }}
             >
-              <span>Sign In with University ID</span>
-              <ArrowRight size={15} />
+              Sign in with University ID <ArrowRight size={14} />
             </button>
             <button
-              type="button"
-              className="btn btn-outline btn-lg"
               onClick={() => navigate('/login')}
               style={{
-                borderRadius: 12,
-                padding: '14px 26px',
-                fontSize: 14.5,
-                fontWeight: 600,
-                background: '#FFFFFF',
-                borderColor: '#CBD5E1'
+                padding: '12px 24px', borderRadius: 10,
+                background: '#FFF', color: '#555', border: '1px solid #DDD',
+                fontSize: 14, fontWeight: 500, cursor: 'pointer',
               }}
             >
-              <span>Explore TechZone Outlets</span>
+              Explore restaurants
             </button>
           </div>
 
-          {/* Key Metrics Bar */}
+          {/* Stats */}
           <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
-            gap: 16,
-            maxWidth: 780,
-            margin: '48px auto 0',
-            padding: '20px 24px',
-            background: '#FFFFFF',
-            borderRadius: 16,
-            border: '1px solid #EAECEF',
-            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.03)'
+            display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))',
+            gap: 16, maxWidth: 600, margin: '48px auto 0',
+            padding: '20px 24px', background: '#FFF',
+            borderRadius: 14, border: '1px solid #EEE',
           }}>
-            <div>
-              <div className="font-display" style={{ fontSize: '1.8rem', fontWeight: 800, color: '#1C1E21' }}>4</div>
-              <div style={{ fontSize: 12, fontWeight: 600, color: '#64748B' }}>Partner Venues</div>
-            </div>
-            <div>
-              <div className="font-display" style={{ fontSize: '1.8rem', fontWeight: 800, color: '#FF5200' }}>20%</div>
-              <div style={{ fontSize: 12, fontWeight: 600, color: '#64748B' }}>Verified Privilege</div>
-            </div>
-            <div>
-              <div className="font-display" style={{ fontSize: '1.8rem', fontWeight: 800, color: '#1C1E21' }}>3,400+</div>
-              <div style={{ fontSize: 12, fontWeight: 600, color: '#64748B' }}>Active Scholars</div>
-            </div>
-            <div>
-              <div className="font-display" style={{ fontSize: '1.8rem', fontWeight: 800, color: '#10B981' }}>0 min</div>
-              <div style={{ fontSize: 12, fontWeight: 600, color: '#64748B' }}>Queue Wait Time</div>
-            </div>
+            {[
+              { val: '4', label: 'Venues' },
+              { val: '20%', label: 'Discount', color: '#FF5200' },
+              { val: '3,400+', label: 'Students' },
+              { val: '0 min', label: 'Wait time', color: '#22C55E' },
+            ].map(s => (
+              <div key={s.label}>
+                <div style={{ fontSize: '1.6rem', fontWeight: 800, color: s.color || '#111' }}>{s.val}</div>
+                <div style={{ fontSize: 11, color: '#999', fontWeight: 500 }}>{s.label}</div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* ── Featured Partner Outlets ─────────────────────────────────── */}
-      <section style={{ padding: 'clamp(40px, 6vw, 64px) 24px', maxWidth: 1200, margin: '0 auto', width: '100%', boxSizing: 'border-box' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 28, flexWrap: 'wrap', gap: 12 }}>
+      {/* ── Restaurants ── */}
+      <section style={{ padding: 'clamp(36px, 5vw, 56px) 24px', maxWidth: 1100, margin: '0 auto', width: '100%' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 24, flexWrap: 'wrap', gap: 10 }}>
           <div>
-            <div style={{ fontSize: 11.5, fontWeight: 700, color: '#FF5200', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-              Campus Neighborhood Outlets
+            <div style={{ fontSize: 11, fontWeight: 600, color: '#FF5200', letterSpacing: '.05em', textTransform: 'uppercase', marginBottom: 4 }}>
+              Featured
             </div>
-            <h2 className="font-display" style={{ fontSize: 'clamp(1.5rem, 3.5vw, 2.2rem)', fontWeight: 800, color: '#1C1E21', margin: '4px 0 0' }}>
-              Premier Dining Near Bennett TechZone
+            <h2 style={{ fontSize: 'clamp(1.3rem, 3vw, 1.8rem)', fontWeight: 700, color: '#111' }}>
+              Campus dining partners
             </h2>
           </div>
           <button
-            type="button"
-            className="btn btn-ghost btn-sm"
             onClick={() => navigate('/login')}
-            style={{ fontWeight: 600, color: '#FF5200', gap: 4 }}
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 4,
+              background: 'none', border: 'none',
+              color: '#FF5200', fontSize: 13, fontWeight: 500, cursor: 'pointer',
+            }}
           >
-            <span>View All Partner Menus</span>
-            <ChevronRight size={15} />
+            View all <ChevronRight size={14} />
           </button>
         </div>
 
-        {/* Outlet Cards Grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 280px), 1fr))', gap: 20 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 260px), 1fr))', gap: 16 }}>
           {displayList.map(r => (
             <div
               key={r.id}
               onClick={() => navigate('/login')}
               style={{
-                background: '#FFFFFF',
-                borderRadius: 20,
-                overflow: 'hidden',
-                border: '1px solid #E2E8F0',
-                boxShadow: '0 2px 10px rgba(0, 0, 0, 0.04)',
-                cursor: 'pointer',
-                display: 'flex',
-                flexDirection: 'column',
-                transition: 'transform 0.2s ease, box-shadow 0.2s ease'
+                background: '#FFF', borderRadius: 14, overflow: 'hidden',
+                border: '1px solid #EEE', cursor: 'pointer',
+                display: 'flex', flexDirection: 'column',
+                transition: 'transform 0.2s ease, box-shadow 0.2s ease',
               }}
-              onMouseEnter={e => {
-                e.currentTarget.style.transform = 'translateY(-4px)';
-                e.currentTarget.style.boxShadow = '0 12px 28px rgba(0, 0, 0, 0.08)';
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.04)';
-              }}
+              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 10px 24px rgba(0,0,0,0.08)'; }}
+              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}
             >
-              <div style={{ position: 'relative', width: '100%', height: 180, overflow: 'hidden' }}>
-                <img
-                  src={r.image}
-                  alt={r.name}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                  loading="lazy"
-                />
-                <div style={{ position: 'absolute', top: 12, right: 12 }}>
+              <div style={{ position: 'relative', height: 160, overflow: 'hidden' }}>
+                <img src={r.image} alt={r.name} loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <div style={{ position: 'absolute', top: 10, right: 10 }}>
                   <span style={{
-                    background: 'rgba(255, 255, 255, 0.95)',
-                    color: '#0F172A',
-                    fontSize: 11,
-                    fontWeight: 800,
-                    padding: '3px 8px',
-                    borderRadius: 99,
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 3
+                    display: 'inline-flex', alignItems: 'center', gap: 3,
+                    padding: '3px 8px', borderRadius: 99,
+                    background: 'rgba(255,255,255,0.95)',
+                    fontSize: 11, fontWeight: 700, color: '#333',
                   }}>
-                    <Star size={12} className="fill-amber-500 text-amber-500" />
-                    <span>{r.rating}</span>
+                    <Star size={10} style={{ fill: '#F59E0B', color: '#F59E0B' }} />
+                    {r.rating}
                   </span>
                 </div>
-                <div style={{ position: 'absolute', bottom: 10, left: 12 }}>
+                <div style={{ position: 'absolute', bottom: 8, left: 10 }}>
                   <span style={{
-                    background: '#064E3B',
-                    color: '#ECFDF5',
-                    fontSize: 10.5,
-                    fontWeight: 700,
-                    padding: '2px 8px',
-                    borderRadius: 6
+                    padding: '3px 8px', borderRadius: 5,
+                    background: '#FF5200', color: '#FFF',
+                    fontSize: 10, fontWeight: 700,
                   }}>
-                    {r.offerLabel || 'Campus Discount'}
+                    {r.offerLabel}
                   </span>
                 </div>
               </div>
 
-              <div style={{ padding: 18, flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+              <div style={{ padding: 16, flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                 <div>
-                  <h3 className="font-display" style={{ fontSize: '1.2rem', fontWeight: 800, color: '#0F172A', margin: '0 0 4px' }}>
-                    {r.name}
-                  </h3>
-                  <div style={{ fontSize: 12, color: '#64748B', fontWeight: 600, marginBottom: 8 }}>
-                    {r.cuisine} · {r.distance} km from Campus · {r.price}
+                  <h3 style={{ fontSize: 15, fontWeight: 700, color: '#111', marginBottom: 4 }}>{r.name}</h3>
+                  <div style={{ fontSize: 12, color: '#999', fontWeight: 500, marginBottom: 8 }}>
+                    {r.cuisine} · {r.distance} km · {r.price}
                   </div>
-                  <p style={{ fontSize: 12.5, color: '#475569', lineHeight: 1.45, margin: 0, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                  <p style={{ fontSize: 12, color: '#AAA', lineHeight: 1.4, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
                     {r.description}
                   </p>
                 </div>
-
-                <div style={{ marginTop: 16, paddingTop: 12, borderTop: '1px solid #F1F5F9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: 11.5, fontWeight: 700, color: '#15803D' }}>
-                    Instant Table Lock
-                  </span>
-                  <span style={{ fontSize: 12, fontWeight: 700, color: '#0F172A', display: 'inline-flex', alignItems: 'center', gap: 2 }}>
-                    <span>Book Pass</span>
-                    <ArrowRight size={13} />
+                <div style={{ marginTop: 14, paddingTop: 12, borderTop: '1px solid #F5F5F5', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: 11, fontWeight: 600, color: '#22C55E' }}>Instant booking</span>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: '#111', display: 'inline-flex', alignItems: 'center', gap: 3 }}>
+                    Reserve <ArrowRight size={12} />
                   </span>
                 </div>
               </div>
@@ -406,73 +280,52 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ── Platform Pillars ─────────────────────────────────────────── */}
-      <section style={{ padding: 'clamp(40px, 6vw, 64px) 24px', background: '#FFFFFF', borderTop: '1px solid #E2E8F0', borderBottom: '1px solid #E2E8F0' }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', maxWidth: 640, margin: '0 auto 40px' }}>
-            <div style={{ fontSize: 11.5, fontWeight: 800, color: '#15803D', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-              Platform Benefits
+      {/* ── Features ── */}
+      <section style={{ padding: 'clamp(36px, 5vw, 56px) 24px', background: '#FFF', borderTop: '1px solid #EEE', borderBottom: '1px solid #EEE' }}>
+        <div style={{ maxWidth: 1000, margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', maxWidth: 500, margin: '0 auto 36px' }}>
+            <div style={{ fontSize: 11, fontWeight: 600, color: '#FF5200', letterSpacing: '.05em', textTransform: 'uppercase', marginBottom: 4 }}>
+              Why Dine@Bennett
             </div>
-            <h2 className="font-display" style={{ fontSize: 'clamp(1.5rem, 3.5vw, 2.2rem)', fontWeight: 800, color: '#0F172A', margin: '4px 0 10px' }}>
-              Why Bennett Diners Love Dine@Bennett
+            <h2 style={{ fontSize: 'clamp(1.3rem, 3vw, 1.8rem)', fontWeight: 700, color: '#111', marginBottom: 8 }}>
+              Built for campus life
             </h2>
-            <p style={{ fontSize: 14, color: '#64748B', margin: 0 }}>
-              Tailored specifically for Bennett University scholars, faculty, and partner restaurant teams.
+            <p style={{ fontSize: 13, color: '#888' }}>
+              Designed for Bennett University students, faculty, and partner restaurants.
             </p>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 24 }}>
-            <div style={{ padding: 24, borderRadius: 20, background: '#F8FAFC', border: '1px solid #E2E8F0' }}>
-              <div style={{ width: 44, height: 44, borderRadius: 12, background: '#ECFDF5', color: '#15803D', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
-                <ShieldCheck size={22} />
-              </div>
-              <h3 className="font-display" style={{ fontSize: '1.2rem', fontWeight: 800, color: '#0F172A', margin: '0 0 6px' }}>
-                Verified University Passes
-              </h3>
-              <p style={{ fontSize: 13, color: '#475569', lineHeight: 1.5, margin: 0 }}>
-                Automatic validation with your @bennett.edu.in email or 6-digit one-time passkey. Unlock 20% campus dining subsidies without showing physical cards.
-              </p>
-            </div>
-
-            <div style={{ padding: 24, borderRadius: 20, background: '#F8FAFC', border: '1px solid #E2E8F0' }}>
-              <div style={{ width: 44, height: 44, borderRadius: 12, background: '#EFF6FF', color: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
-                <QrCode size={22} />
-              </div>
-              <h3 className="font-display" style={{ fontSize: '1.2rem', fontWeight: 800, color: '#0F172A', margin: '0 0 6px' }}>
-                Apple Wallet Digital Passes
-              </h3>
-              <p style={{ fontSize: 13, color: '#475569', lineHeight: 1.5, margin: 0 }}>
-                Instant scannable QR ticket ready on your mobile device. Just show the pass at the restaurant host desk for rapid seated entry.
-              </p>
-            </div>
-
-            <div style={{ padding: 24, borderRadius: 20, background: '#F8FAFC', border: '1px solid #E2E8F0' }}>
-              <div style={{ width: 44, height: 44, borderRadius: 12, background: '#FEF3C7', color: '#D97706', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
-                <Clock size={22} />
-              </div>
-              <h3 className="font-display" style={{ fontSize: '1.2rem', fontWeight: 800, color: '#0F172A', margin: '0 0 6px' }}>
-                Zero Queue Priority Table Lock
-              </h3>
-              <p style={{ fontSize: 13, color: '#475569', lineHeight: 1.5, margin: 0 }}>
-                Select your preferred lunch or dinner time window in advance. Your table is reserved and pre-ordered dishes are prepared for your arrival.
-              </p>
-            </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 16 }}>
+            {features.map(f => {
+              const Icon = f.icon;
+              return (
+                <div key={f.title} style={{ padding: 24, borderRadius: 16, background: '#FAFAFA', border: '1px solid #F0F0F0' }}>
+                  <div style={{
+                    width: 40, height: 40, borderRadius: 10,
+                    background: f.bg, color: f.color,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    marginBottom: 14,
+                  }}>
+                    <Icon size={20} />
+                  </div>
+                  <h3 style={{ fontSize: 16, fontWeight: 700, color: '#111', marginBottom: 6 }}>{f.title}</h3>
+                  <p style={{ fontSize: 13, color: '#777', lineHeight: 1.5 }}>{f.desc}</p>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
 
-      {/* ── Footer ───────────────────────────────────────────────────── */}
-      <footer style={{ padding: '32px 24px', background: '#0F172A', color: '#94A3B8', fontSize: 12, marginTop: 'auto' }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
+      {/* ── Footer ── */}
+      <footer style={{ padding: '28px 24px', background: '#111', color: '#777', fontSize: 12, marginTop: 'auto' }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <UtensilsCrossed size={16} color="#34D399" />
-            <span style={{ color: '#FFFFFF', fontWeight: 800 }}>Dine@Bennett</span>
-            <span>· Official Institutional Dining Platform</span>
+            <UtensilsCrossed size={14} color="#FF5200" />
+            <span style={{ color: '#FFF', fontWeight: 700 }}>Dine@Bennett</span>
+            <span>· Campus Dining Platform</span>
           </div>
-
-          <div>
-            Bennett University · TechZone II, Greater Noida, UP 201310
-          </div>
+          <div>Bennett University · Greater Noida, UP 201310</div>
         </div>
       </footer>
     </div>

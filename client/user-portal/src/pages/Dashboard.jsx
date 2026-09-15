@@ -22,7 +22,11 @@ import {
   Trees,
   UtensilsCrossed,
   Compass,
-  ChevronRight
+  ChevronRight,
+  Ticket,
+  Users,
+  Percent,
+  Clock,
 } from 'lucide-react';
 
 export default function Dashboard() {
@@ -39,32 +43,29 @@ export default function Dashboard() {
   const safeReservations = Array.isArray(reservations) ? reservations : [];
   const safeRestaurants = Array.isArray(restaurants) ? restaurants : [];
 
-  // Active confirmed or seated booking
   const upcoming = safeReservations.find(
     b => b?.status === 'CONFIRMED' || b?.status === 'SEATED'
   );
 
-  // Campus Dining Mood Categories
   const MOOD_STORIES = [
-    { id: 'farm', label: 'Farm to Table', icon: Leaf, tag: 'Organic' },
-    { id: 'cafes', label: 'Study Cafes', icon: Coffee, cuisine: 'Continental' },
-    { id: 'pizza', label: 'Pizza & Brews', icon: Pizza, cuisine: 'Continental' },
-    { id: 'mughlai', label: 'Tandoor & Curry', icon: Utensils, cuisine: 'North Indian' },
-    { id: 'asian', label: 'Asian & Ramen', icon: Soup, cuisine: 'Pan-Asian' },
-    { id: 'patio', label: 'Open Patio', icon: Trees, tag: 'Outdoor Patio' },
+    { id: 'farm', label: 'Farm Fresh', icon: Leaf, tag: 'Organic' },
+    { id: 'cafes', label: 'Cafes', icon: Coffee, cuisine: 'Continental' },
+    { id: 'pizza', label: 'Pizza', icon: Pizza, cuisine: 'Continental' },
+    { id: 'mughlai', label: 'Indian', icon: Utensils, cuisine: 'North Indian' },
+    { id: 'asian', label: 'Asian', icon: Soup, cuisine: 'Pan-Asian' },
+    { id: 'patio', label: 'Outdoor', icon: Trees, tag: 'Outdoor Patio' },
     { id: 'quick', label: 'Quick Bites', icon: UtensilsCrossed, tag: 'Fast Casual' },
-    { id: 'dessert', label: 'Boba & Sweets', icon: Sparkles, tag: 'Boba Tea Bar' },
+    { id: 'dessert', label: 'Desserts', icon: Sparkles, tag: 'Boba Tea Bar' },
   ];
 
-  // Filter Chips
   const FILTERS = [
-    { id: 'All', label: 'All Spots', icon: Compass },
-    { id: 'Offers', label: 'Campus Deals', icon: Tag },
-    { id: 'TopRated', label: 'Top Rated (4.5+)', icon: Star },
-    { id: 'Instant', label: 'Instant Pass', icon: Zap },
-    { id: 'NorthIndian', label: 'North Indian', icon: Utensils },
+    { id: 'All', label: 'All', icon: Compass },
+    { id: 'Offers', label: 'Deals', icon: Tag },
+    { id: 'TopRated', label: 'Top Rated', icon: Star },
+    { id: 'Instant', label: 'Instant', icon: Zap },
+    { id: 'NorthIndian', label: 'Indian', icon: Utensils },
     { id: 'Continental', label: 'Continental', icon: Pizza },
-    { id: 'PanAsian', label: 'Pan-Asian', icon: Soup },
+    { id: 'PanAsian', label: 'Asian', icon: Soup },
   ];
 
   const handleMoodSelect = mood => {
@@ -73,13 +74,10 @@ export default function Dashboard() {
       setActiveFilter('All');
     } else {
       setActiveMood(mood.id);
-      if (mood.cuisine) {
-        setActiveFilter(mood.cuisine.replace(' ', ''));
-      }
+      if (mood.cuisine) setActiveFilter(mood.cuisine.replace(' ', ''));
     }
   };
 
-  // Filter logic
   const filteredRestaurants = safeRestaurants.filter(r => {
     if (activeFilter === 'Instant') return true;
     if (activeFilter === 'Offers') return r.hasOffer;
@@ -89,157 +87,175 @@ export default function Dashboard() {
     if (activeFilter === 'PanAsian') return r.cuisine?.toLowerCase().includes('asian');
     if (activeMood) {
       const story = MOOD_STORIES.find(m => m.id === activeMood);
-      if (story?.cuisine && !r.cuisine?.toLowerCase().includes(story.cuisine.toLowerCase())) {
-        return false;
-      }
+      if (story?.cuisine && !r.cuisine?.toLowerCase().includes(story.cuisine.toLowerCase())) return false;
     }
     return true;
   });
 
-  const firstName = user?.name ? user.name.split(' ')[0] : 'Member';
+  const firstName = user?.name ? user.name.split(' ')[0] : 'there';
+
+  /* ── Quick stat items */
+  const stats = [
+    { label: 'Active Pass', value: upcoming ? '1' : '0', sub: upcoming ? `Table ${upcoming.tableAssigned || 'T-01'}` : 'None active', icon: Ticket, accent: '#FF5200' },
+    { label: 'Outlets', value: safeRestaurants.length, sub: 'Near campus', icon: UtensilsCrossed, accent: '#111' },
+    { label: 'Discount', value: '20%', sub: 'Student rate', icon: Percent, accent: '#22C55E' },
+    { label: 'Wait Time', value: '0 min', sub: 'Priority access', icon: Clock, accent: '#3B82F6' },
+  ];
 
   return (
-    <div className="page-pad pb-28 flex flex-col gap-7">
-      {/* ── Executive Greeting & Search Bar ── */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-orange-50 text-[#FF5200] border border-orange-200/80">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#FF5200] animate-pulse" />
-              Bennett TechZone Active
-            </span>
-            <span className="text-xs text-slate-400">•</span>
-            <span className="text-xs font-medium text-slate-500">Campus Dining &amp; Passes</span>
-          </div>
-          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 mt-1">
-            Craving something good, {firstName}?
-          </h1>
-        </div>
+    <div className="page-pad" style={{ display: 'flex', flexDirection: 'column', gap: 24, paddingBottom: 100 }}>
 
-        {/* Global Search Trigger */}
-        <div
-          onClick={() => navigate('/discover')}
-          className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-white border border-slate-200 hover:border-orange-300 hover:shadow-xs cursor-pointer transition-all sm:min-w-[320px]"
-        >
-          <Search size={16} className="text-slate-400 shrink-0" />
-          <span className="text-xs text-slate-400 font-medium flex-1 truncate">
-            Search partner menus, cafes, or cuisines...
-          </span>
-          <kbd className="hidden sm:inline-block px-1.5 py-0.5 text-[10px] font-bold bg-slate-100 text-slate-500 rounded border border-slate-200">
-            ⌘K
-          </kbd>
-        </div>
+      {/* ── Greeting ── */}
+      <div>
+        <h1 style={{ fontSize: 'clamp(1.4rem, 4vw, 1.75rem)', fontWeight: 700, color: '#111', letterSpacing: '-0.02em', lineHeight: 1.2 }}>
+          Hey {firstName} 👋
+        </h1>
+        <p style={{ fontSize: 13, color: '#888', marginTop: 4, fontWeight: 400 }}>
+          What are you craving today?
+        </p>
       </div>
 
-      {/* ── Quick KPI Metrics Row ── */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className="p-3.5 rounded-xl bg-white border border-slate-200/90 shadow-xs flex flex-col justify-between">
-          <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Active Pass</span>
-          <div className="flex items-baseline gap-1.5 mt-1">
-            <span className="text-lg sm:text-xl font-extrabold text-slate-900">
-              {upcoming ? '1 Active' : '0 Active'}
-            </span>
-          </div>
-          <span className="text-[11px] text-[#FF5200] font-semibold mt-1">
-            {upcoming ? `Table ${upcoming.tableAssigned || 'T-01'} Held` : 'Instant reservation ready'}
-          </span>
-        </div>
-
-        <div className="p-3.5 rounded-xl bg-white border border-slate-200/90 shadow-xs flex flex-col justify-between">
-          <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Partner Outlets</span>
-          <div className="flex items-baseline gap-1.5 mt-1">
-            <span className="text-lg sm:text-xl font-extrabold text-slate-900">{safeRestaurants.length}</span>
-            <span className="text-xs font-semibold text-slate-500">Venues</span>
-          </div>
-          <span className="text-[11px] text-slate-500 font-medium mt-1">Around Bennett TechZone</span>
-        </div>
-
-        <div className="p-3.5 rounded-xl bg-white border border-slate-200/90 shadow-xs flex flex-col justify-between">
-          <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Member Discount</span>
-          <div className="flex items-baseline gap-1.5 mt-1">
-            <span className="text-lg sm:text-xl font-extrabold text-slate-900">20% Flat</span>
-          </div>
-          <span className="text-[11px] text-amber-600 font-semibold mt-1">Applied on bill settlement</span>
-        </div>
-
-        <div className="p-3.5 rounded-xl bg-white border border-slate-200/90 shadow-xs flex flex-col justify-between">
-          <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Queue Status</span>
-          <div className="flex items-baseline gap-1.5 mt-1">
-            <span className="text-lg sm:text-xl font-extrabold text-emerald-600">Priority</span>
-          </div>
-          <span className="text-[11px] text-slate-500 font-medium mt-1">Zero wait table guarantee</span>
-        </div>
+      {/* ── Search Bar ── */}
+      <div
+        onClick={() => navigate('/discover')}
+        style={{
+          display: 'flex', alignItems: 'center', gap: 10,
+          padding: '12px 16px',
+          borderRadius: 12,
+          background: '#F5F5F5',
+          cursor: 'pointer',
+          transition: 'background 0.15s ease',
+        }}
+        onMouseEnter={e => e.currentTarget.style.background = '#EFEFEF'}
+        onMouseLeave={e => e.currentTarget.style.background = '#F5F5F5'}
+      >
+        <Search size={16} color="#BBB" />
+        <span style={{ fontSize: 13, color: '#AAA', fontWeight: 400, flex: 1 }}>
+          Search restaurants, dishes, cuisines...
+        </span>
       </div>
 
-      {/* ── Active Reservation Digital Pass (Clean Pass Ticket) ── */}
+      {/* ── Quick Stats ── */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
+        {stats.map(s => {
+          const Icon = s.icon;
+          return (
+            <div key={s.label} style={{
+              padding: '14px 12px',
+              borderRadius: 12,
+              background: '#FFF',
+              border: '1px solid #EEEEEE',
+              display: 'flex', flexDirection: 'column', gap: 8,
+            }}>
+              <div style={{
+                width: 32, height: 32, borderRadius: 8,
+                background: `${s.accent}10`,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                <Icon size={15} color={s.accent} />
+              </div>
+              <div>
+                <div style={{ fontSize: 18, fontWeight: 700, color: '#111', lineHeight: 1 }}>{s.value}</div>
+                <div style={{ fontSize: 10, color: '#999', fontWeight: 500, marginTop: 3 }}>{s.label}</div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* ── Active Pass Ticket ── */}
       {upcoming && (
-        <div className="relative overflow-hidden rounded-2xl bg-white text-slate-900 p-5 sm:p-6 shadow-sm border border-slate-200/90 border-t-4 border-t-[#FF5200] flex flex-col md:flex-row md:items-center justify-between gap-5">
-          <div className="flex items-start gap-4">
-            <div className="w-12 h-12 rounded-xl bg-orange-50 text-[#FF5200] border border-orange-200/80 flex items-center justify-center shrink-0 shadow-xs">
-              <QrCode size={24} />
+        <div style={{
+          padding: '18px 20px',
+          borderRadius: 16,
+          background: '#FFF',
+          border: '1px solid #EEE',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          gap: 16,
+          flexWrap: 'wrap',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+            <div style={{
+              width: 44, height: 44, borderRadius: 12,
+              background: '#FFF5EE',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              flexShrink: 0,
+            }}>
+              <QrCode size={20} color="#FF5200" />
             </div>
             <div>
-              <div className="flex items-center gap-2">
-                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-200">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
-                  Confirmed Table Pass
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
+                <span style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 4,
+                  padding: '2px 8px', borderRadius: 4,
+                  background: '#F0FDF4', color: '#16A34A',
+                  fontSize: 10, fontWeight: 600,
+                }}>
+                  <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#22C55E' }} />
+                  Confirmed
                 </span>
-                <span className="text-xs text-slate-500 font-medium">
-                  {upcoming.date} • {upcoming.time}
+                <span style={{ fontSize: 11, color: '#999' }}>
+                  {upcoming.date} · {upcoming.time}
                 </span>
               </div>
-              <h3 className="text-lg sm:text-xl font-bold text-slate-900 mt-1">
+              <div style={{ fontSize: 15, fontWeight: 600, color: '#111' }}>
                 {upcoming.restaurantName}
-              </h3>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Pass ID: <span className="font-mono font-semibold text-slate-700">{upcoming.id}</span> • Table <span className="font-bold text-[#FF5200]">{upcoming.tableAssigned || 'T-01'}</span> • {upcoming.partySize || 2} Guests
-              </p>
+              </div>
+              <div style={{ fontSize: 11, color: '#999', marginTop: 2 }}>
+                Table <span style={{ fontWeight: 600, color: '#FF5200' }}>{upcoming.tableAssigned || 'T-01'}</span> · {upcoming.partySize || 2} guests
+              </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-3 self-end md:self-center">
-            <button
-              type="button"
-              onClick={() => setSelectedBookingForPass(upcoming)}
-              className="btn btn-primary btn-md"
-              style={{ borderRadius: 10, padding: '10px 22px' }}
-            >
-              <QrCode size={15} />
-              <span>Access Digital Pass</span>
-            </button>
-          </div>
+          <button
+            onClick={() => setSelectedBookingForPass(upcoming)}
+            className="btn btn-primary btn-sm"
+            style={{ borderRadius: 10 }}
+          >
+            <QrCode size={14} />
+            <span>View Pass</span>
+          </button>
         </div>
       )}
 
-      {/* ── Curated Mood Collections ── */}
+      {/* ── Mood Categories ── */}
       <div>
-        <div className="flex justify-between items-center mb-3">
-          <div className="flex items-center gap-2">
-            <Sparkles size={14} className="text-[#FF5200]" />
-            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-700">
-              Curated Dining Collections
-            </h2>
-          </div>
-          <span className="text-xs text-slate-400 font-medium">Select a vibe to filter</span>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+          <h2 style={{ fontSize: 15, fontWeight: 600, color: '#111' }}>Browse by mood</h2>
         </div>
-
-        <div className="flex items-center gap-2.5 overflow-x-auto pb-2 scrollbar-none">
+        <div style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 4 }} className="scrollbar-none">
           {MOOD_STORIES.map(mood => {
             const Icon = mood.icon;
-            const isSelected = activeMood === mood.id;
+            const sel = activeMood === mood.id;
             return (
               <button
                 key={mood.id}
-                type="button"
                 onClick={() => handleMoodSelect(mood)}
-                className={`flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl border shrink-0 text-left transition-all cursor-pointer ${
-                  isSelected
-                    ? 'bg-[#FF5200] text-white border-[#FF5200] shadow-xs'
-                    : 'bg-white text-slate-700 border-slate-200 hover:border-orange-200 hover:bg-orange-50/40'
-                }`}
+                style={{
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
+                  padding: '12px 14px',
+                  borderRadius: 12,
+                  border: sel ? '1.5px solid #FF5200' : '1px solid #EEE',
+                  background: sel ? '#FFF5EE' : '#FFF',
+                  cursor: 'pointer',
+                  flexShrink: 0,
+                  minWidth: 72,
+                  transition: 'all 0.15s ease',
+                }}
               >
-                <Icon size={16} className={isSelected ? 'text-white' : 'text-[#FF5200]'} />
-                <span className="text-xs font-semibold whitespace-nowrap">
+                <div style={{
+                  width: 36, height: 36, borderRadius: 10,
+                  background: sel ? '#FF520015' : '#F5F5F5',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  transition: 'all 0.15s ease',
+                }}>
+                  <Icon size={17} color={sel ? '#FF5200' : '#777'} />
+                </div>
+                <span style={{
+                  fontSize: 10.5, fontWeight: sel ? 600 : 500,
+                  color: sel ? '#FF5200' : '#777',
+                  whiteSpace: 'nowrap',
+                }}>
                   {mood.label}
                 </span>
               </button>
@@ -248,113 +264,140 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* ── Campus Dining Spotlight Banner ── */}
-      <div
-        className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-orange-50 via-amber-50/50 to-orange-100/60 text-slate-900 p-6 sm:p-7 shadow-xs border border-orange-200/80 flex flex-col lg:flex-row lg:items-center justify-between gap-6"
-      >
-        <div className="max-w-xl">
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white text-[#FF5200] text-[11px] font-bold tracking-wide mb-2.5 border border-orange-200/80 shadow-xs">
-            <Sparkles size={12} className="text-[#FF5200]" />
-            <span>BENNETT UNIVERSITY CAMPUS DINING</span>
-          </div>
-          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight leading-snug">
-            Curated Menus &amp; Guaranteed Priority Seating
-          </h2>
-          <p className="text-xs sm:text-sm text-slate-600 mt-1.5 leading-relaxed">
-            Reserve certified dining spots across Bennett TechZone with digital entry passes, guaranteed table holds, and 20% flat student privileges.
-          </p>
-        </div>
-
-        <div className="flex items-center gap-3 shrink-0">
-          <button
-            type="button"
-            onClick={() => navigate('/discover')}
-            className="btn btn-primary btn-md"
-            style={{ borderRadius: 10, fontWeight: 700 }}
-          >
-            <span>Explore Full Directory</span>
-            <ArrowRight size={14} />
-          </button>
-        </div>
+      {/* ── Spotlight Banner ── */}
+      <div style={{
+        padding: '24px',
+        borderRadius: 16,
+        background: 'linear-gradient(135deg, #111 0%, #1a1a2e 100%)',
+        color: '#FFF',
+        display: 'flex', flexDirection: 'column', gap: 12,
+        position: 'relative',
+        overflow: 'hidden',
+      }}>
+        <div style={{
+          position: 'absolute', top: -20, right: -20,
+          width: 120, height: 120,
+          borderRadius: '50%',
+          background: 'rgba(255,82,0,0.15)',
+        }} />
+        <span style={{
+          display: 'inline-flex', alignItems: 'center', gap: 4,
+          padding: '3px 10px',
+          borderRadius: 6,
+          background: 'rgba(255,255,255,0.1)',
+          border: '1px solid rgba(255,255,255,0.08)',
+          fontSize: 10, fontWeight: 600,
+          color: 'rgba(255,255,255,0.7)',
+          width: 'fit-content',
+        }}>
+          <Sparkles size={10} />
+          CAMPUS DINING
+        </span>
+        <h2 style={{ fontSize: 'clamp(1.1rem, 3vw, 1.35rem)', fontWeight: 700, lineHeight: 1.25, maxWidth: 300 }}>
+          Priority seating & 20% student discount
+        </h2>
+        <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', lineHeight: 1.4, maxWidth: 400 }}>
+          Reserve tables across campus dining partners. Instant digital passes with zero queue.
+        </p>
+        <button
+          onClick={() => navigate('/discover')}
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: 6,
+            padding: '9px 18px',
+            borderRadius: 8,
+            background: '#FF5200',
+            color: '#FFF',
+            border: 'none',
+            fontSize: 12.5, fontWeight: 600,
+            cursor: 'pointer',
+            width: 'fit-content',
+            marginTop: 4,
+          }}
+        >
+          Explore <ArrowRight size={13} />
+        </button>
       </div>
 
-      {/* ── Filter Chips Stream ── */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+      {/* ── Filter Chips ── */}
+      <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 2 }} className="scrollbar-none">
         {FILTERS.map(f => {
-          const FilterIcon = f.icon;
-          const isSelected = activeFilter === f.id;
+          const Icon = f.icon;
+          const sel = activeFilter === f.id;
           return (
             <button
               key={f.id}
-              type="button"
-              onClick={() => {
-                setActiveFilter(f.id);
-                setActiveMood(null);
+              onClick={() => { setActiveFilter(f.id); setActiveMood(null); }}
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 5,
+                padding: '7px 14px',
+                borderRadius: 8,
+                border: sel ? '1.5px solid #FF5200' : '1px solid #EEE',
+                background: sel ? '#FF5200' : '#FFF',
+                color: sel ? '#FFF' : '#777',
+                fontSize: 12, fontWeight: sel ? 600 : 500,
+                cursor: 'pointer',
+                flexShrink: 0,
+                transition: 'all 0.15s ease',
               }}
-              className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer shrink-0 border ${
-                isSelected
-                  ? 'bg-[#FF5200] text-white border-[#FF5200] shadow-xs'
-                  : 'bg-white text-slate-700 border-slate-200 hover:border-orange-200 hover:bg-orange-50/40'
-              }`}
             >
-              <FilterIcon size={13} className={isSelected ? 'text-white' : 'text-slate-400'} />
+              <Icon size={12} />
               <span>{f.label}</span>
             </button>
           );
         })}
       </div>
 
-      {/* ── Top Dining Spots Section ── */}
+      {/* ── Restaurant Grid ── */}
       <div>
-        <div className="flex justify-between items-center mb-4">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
           <div>
-            <h2 className="text-base sm:text-lg font-bold tracking-tight text-slate-900">
-              Verified Dining Partners
+            <h2 style={{ fontSize: 16, fontWeight: 600, color: '#111' }}>
+              Nearby restaurants
             </h2>
-            <p className="text-xs text-slate-500 mt-0.5">
-              {filteredRestaurants.length} establishments available in TechZone II
+            <p style={{ fontSize: 11, color: '#999', marginTop: 2 }}>
+              {filteredRestaurants.length} places available
             </p>
           </div>
           <button
-            type="button"
             onClick={() => navigate('/discover')}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-700 hover:text-slate-950 hover:border-slate-300 text-xs font-semibold cursor-pointer transition-colors shadow-xs"
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 4,
+              padding: '6px 12px',
+              borderRadius: 8,
+              border: '1px solid #EEE',
+              background: '#FFF',
+              color: '#555',
+              fontSize: 12, fontWeight: 500,
+              cursor: 'pointer',
+            }}
           >
-            <span>Radar Map</span>
-            <ChevronRight size={13} />
+            Map <ChevronRight size={12} />
           </button>
         </div>
 
         {filteredRestaurants.length === 0 ? (
-          <div className="bg-white border border-slate-200 rounded-2xl p-10 text-center shadow-xs">
-            <p className="text-sm font-bold text-slate-900 mb-1">No venues found for this filter</p>
-            <p className="text-xs text-slate-500 mb-4">Tap "All Spots" to see all spots near Bennett.</p>
+          <div style={{
+            padding: 40,
+            borderRadius: 16,
+            background: '#FFF',
+            border: '1px solid #EEE',
+            textAlign: 'center',
+          }}>
+            <p style={{ fontSize: 14, fontWeight: 600, color: '#111', marginBottom: 4 }}>No results</p>
+            <p style={{ fontSize: 12, color: '#999', marginBottom: 16 }}>Try a different filter</p>
             <button
-              type="button"
-              onClick={() => {
-                setActiveFilter('All');
-                setActiveMood(null);
-              }}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '10px 22px',
-                minHeight: 40,
-                borderRadius: 12,
-                background: '#FFF5EE',
-                border: '1px solid #FFD8CC',
-                color: '#FF5200',
-                fontSize: 13,
-                fontWeight: 700,
-                cursor: 'pointer'
-              }}
+              onClick={() => { setActiveFilter('All'); setActiveMood(null); }}
+              className="btn btn-outline btn-sm"
             >
-              Reset Filters
+              Reset filters
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 300px), 1fr))',
+            gap: 16,
+          }}>
             {filteredRestaurants.map(restaurant => (
               <RestaurantCard
                 key={restaurant.id}
@@ -367,20 +410,15 @@ export default function Dashboard() {
         )}
       </div>
 
-      {/* Booking Modal */}
+      {/* Modals */}
       {selectedRestaurantForBooking && (
         <BookingModal
           restaurant={selectedRestaurantForBooking}
           isOpen={!!selectedRestaurantForBooking}
           onClose={() => setSelectedRestaurant(null)}
-          onSuccess={newBooking => {
-            setSelectedRestaurant(null);
-            setSelectedBookingForPass(newBooking);
-          }}
+          onSuccess={newBooking => { setSelectedRestaurant(null); setSelectedBookingForPass(newBooking); }}
         />
       )}
-
-      {/* Digital Pass Modal */}
       {selectedBookingForPass && (
         <DigitalPassModal
           booking={selectedBookingForPass}
@@ -388,8 +426,6 @@ export default function Dashboard() {
           onClose={() => setSelectedBookingForPass(null)}
         />
       )}
-
-      {/* Offer Drawer */}
       {selectedOffer && (
         <OfferDrawer
           offer={selectedOffer}

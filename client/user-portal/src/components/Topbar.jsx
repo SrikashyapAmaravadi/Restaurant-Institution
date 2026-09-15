@@ -5,25 +5,19 @@ import {
   Bell,
   Search,
   MapPin,
-  ChevronDown,
   Menu,
-  ChefHat,
-  ConciergeBell,
-  Building2,
-  GraduationCap,
   Camera,
-  UtensilsCrossed
 } from 'lucide-react';
 
 const PAGE_TITLES = {
-  '/dashboard':             'Campus Dining',
-  '/discover':              'Explore & Radar',
-  '/bookings':              'Passes & Reservations',
-  '/notifications':         'Dining Alerts',
-  '/profile':               'Student Profile',
-  '/restaurant':            'Restaurant Details',
-  '/management/admin':      'Restaurant Admin',
-  '/management/staff':      'Staff Scanner',
+  '/dashboard':             'Home',
+  '/discover':              'Discover',
+  '/bookings':              'Reservations',
+  '/notifications':         'Notifications',
+  '/profile':               'Profile',
+  '/restaurant':            'Restaurant',
+  '/management/admin':      'Operations',
+  '/management/staff':      'Host Desk',
   '/management/superadmin': 'Governance',
 };
 
@@ -39,14 +33,11 @@ export default function Topbar({ onOpenMobileDrawer }) {
   if (!user) {
     return (
       <header className="topbar">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-[#FF5200] text-white flex items-center justify-center font-bold shadow-xs">
-            <UtensilsCrossed size={16} />
-          </div>
-          <h1 className="font-bold text-slate-900 text-base sm:text-lg tracking-tight">Dine@Bennett</h1>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span style={{ fontSize: '0.95rem', fontWeight: 700, color: '#111' }}>Dine@Bennett</span>
         </div>
         <button
-          className="px-4 py-2 text-xs sm:text-sm font-semibold rounded-xl bg-[#FF5200] text-white hover:bg-[#E64A00] transition-colors shadow-xs"
+          className="btn btn-primary btn-sm"
           onClick={() => navigate('/login')}
         >
           Sign In
@@ -55,79 +46,61 @@ export default function Topbar({ onOpenMobileDrawer }) {
     );
   }
 
-  const getRoleBadge = (role) => {
-    switch (role) {
-      case 'SUPER_ADMIN':
-        return { label: 'Governance', icon: Building2, color: 'text-slate-800 bg-slate-100 border-slate-300' };
-      case 'RESTAURANT_ADMIN':
-        return { label: 'Partner Admin', icon: ChefHat, color: 'text-slate-800 bg-slate-100 border-slate-300' };
-      case 'RESTAURANT_STAFF':
-        return { label: 'Host Desk', icon: ConciergeBell, color: 'text-slate-800 bg-slate-100 border-slate-300' };
-      case 'STUDENT':
-      default:
-        return { label: 'Verified Member', icon: GraduationCap, color: 'text-orange-800 bg-orange-50 border-orange-200' };
-    }
-  };
-
-  const roleInfo = getRoleBadge(user?.role);
-  const RoleIcon = roleInfo.icon;
-
   return (
     <header className="topbar">
-      {/* Left: Mobile Drawer Trigger + Campus Zone Indicator */}
-      <div className="flex items-center gap-3 min-w-0 flex-1">
+      {/* Left: menu + page context */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 1, minWidth: 0 }}>
         <button
-          className="mobile-menu-trigger w-9 h-9 rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 flex items-center justify-center shrink-0 cursor-pointer transition-colors"
+          className="mobile-menu-trigger"
+          style={{
+            width: 36, height: 36,
+            borderRadius: 8,
+            border: '1px solid #EEE',
+            background: '#FFF',
+            color: '#555',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            cursor: 'pointer',
+            flexShrink: 0,
+          }}
           onClick={onOpenMobileDrawer}
-          title="Open Menu"
           aria-label="Toggle mobile menu"
         >
-          <Menu size={18} />
+          <Menu size={17} />
         </button>
 
-        <div className="flex flex-col min-w-0">
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => navigate('/discover')}
-              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 hover:bg-slate-200/70 border border-slate-200/80 text-slate-800 text-xs font-semibold cursor-pointer transition-colors shrink-0"
-              title="Campus Zone"
-            >
-              <MapPin size={12} className="text-[#FF5200] shrink-0" />
-              <span className="truncate max-w-[130px] sm:max-w-none">Bennett TechZone</span>
-              <ChevronDown size={11} className="text-slate-400 shrink-0" />
-            </button>
-
-            <span className={`hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold border ${roleInfo.color}`}>
-              <RoleIcon size={11} />
-              {roleInfo.label}
-            </span>
-          </div>
-
-          <span className="hidden sm:block text-xs text-slate-500 font-medium mt-0.5 truncate">
+        <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+          <span style={{ fontSize: '0.9rem', fontWeight: 600, color: '#111', lineHeight: 1.2 }}>
             {title}
           </span>
+          <button
+            onClick={() => navigate('/discover')}
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 4,
+              fontSize: 11, color: '#888', fontWeight: 500,
+              background: 'none', border: 'none', cursor: 'pointer', padding: 0,
+              marginTop: 1,
+            }}
+          >
+            <MapPin size={10} color="#FF5200" />
+            <span>Bennett Campus</span>
+          </button>
         </div>
       </div>
 
-      {/* Right: Quick Action Controls */}
-      <div className="flex items-center gap-2 shrink-0">
-        {/* Quick Search Shortcut */}
-        {user?.role === 'STUDENT' && (
+      {/* Right: actions */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
+        {/* Search */}
+        {(user?.role === 'STUDENT' || !user?.role) && (
           <button
-            className="hidden sm:inline-flex items-center gap-2 px-3 py-1.5 h-9 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-500 hover:text-slate-900 cursor-pointer transition-colors text-xs font-medium"
-            onClick={() => navigate('/discover')}
-            title="Search restaurants & offers"
-          >
-            <Search size={14} className="text-slate-400" />
-            <span>Search dishes, restaurants...</span>
-            <kbd className="px-1.5 py-0.5 text-[10px] font-bold bg-slate-100 text-slate-500 rounded border border-slate-200">⌘K</kbd>
-          </button>
-        )}
-
-        {/* Search button on small screens */}
-        {user?.role === 'STUDENT' && (
-          <button
-            className="sm:hidden w-9 h-9 rounded-lg border border-slate-200 bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-50 flex items-center justify-center cursor-pointer transition-colors"
+            style={{
+              width: 36, height: 36,
+              borderRadius: 8,
+              border: '1px solid #EEE',
+              background: '#FFF',
+              color: '#888',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              cursor: 'pointer',
+            }}
             onClick={() => navigate('/discover')}
             title="Search"
           >
@@ -137,40 +110,70 @@ export default function Topbar({ onOpenMobileDrawer }) {
 
         {/* Notifications */}
         <button
-          className="relative w-9 h-9 rounded-lg border border-slate-200 bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-50 flex items-center justify-center cursor-pointer transition-colors"
+          style={{
+            position: 'relative',
+            width: 36, height: 36,
+            borderRadius: 8,
+            border: '1px solid #EEE',
+            background: '#FFF',
+            color: '#888',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            cursor: 'pointer',
+          }}
           onClick={() => navigate('/notifications')}
           title="Notifications"
         >
           <Bell size={16} />
           {unreadNotifs > 0 && (
-            <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#FF5200] ring-2 ring-white" />
+            <span style={{
+              position: 'absolute', top: 7, right: 7,
+              width: 6, height: 6, borderRadius: '50%',
+              background: '#FF5200', border: '1.5px solid #FFF',
+            }} />
           )}
         </button>
 
-        {/* Live Camera Scanner Button */}
+        {/* Scanner */}
         <button
-          type="button"
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 h-9 rounded-lg bg-[#FF5200] text-white hover:bg-[#E64A00] font-semibold text-xs cursor-pointer transition-colors shadow-xs"
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: 5,
+            padding: '7px 14px',
+            height: 36,
+            borderRadius: 8,
+            background: '#111',
+            color: '#FFF',
+            border: 'none',
+            fontSize: 12, fontWeight: 600,
+            cursor: 'pointer',
+          }}
           onClick={openScanner}
           title="Open QR Scanner"
         >
           <Camera size={14} />
-          <span className="hidden md:inline">Scan Pass</span>
+          <span className="mobile-hide">Scan</span>
         </button>
 
-        {/* User Avatar & Name */}
+        {/* Avatar */}
         <button
-          className="flex items-center gap-2 pl-1 pr-2.5 py-1 rounded-full border border-slate-200 bg-white hover:bg-slate-50 cursor-pointer transition-colors ml-1"
+          style={{
+            display: 'flex', alignItems: 'center', gap: 6,
+            padding: '3px 10px 3px 3px',
+            borderRadius: 99,
+            border: '1px solid #EEE',
+            background: '#FFF',
+            cursor: 'pointer',
+            marginLeft: 2,
+          }}
           onClick={() => navigate('/profile')}
-          title="View Profile"
+          title="Profile"
         >
           <img
             src={user?.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80'}
             alt={user?.name || 'User'}
-            className="w-6 h-6 rounded-full object-cover border border-slate-200"
+            style={{ width: 26, height: 26, borderRadius: '50%', objectFit: 'cover' }}
           />
-          <span className="text-xs font-semibold text-slate-800 hidden sm:inline truncate max-w-[90px]">
-            {(user?.name || 'Scholar').split(' ')[0]}
+          <span className="mobile-hide" style={{ fontSize: 12, fontWeight: 500, color: '#333', maxWidth: 80, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+            {(user?.name || 'User').split(' ')[0]}
           </span>
         </button>
       </div>

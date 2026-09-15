@@ -33,17 +33,12 @@ export default function RestaurantCard({ restaurant, onQuickReserve, onViewOffer
         }
       : null);
 
-  const handleCardClick = () => {
-    navigate(`/restaurant/${id}`);
-  };
+  const handleCardClick = () => navigate(`/restaurant/${id}`);
 
   const handleBookClick = (e) => {
     e.stopPropagation();
-    if (onQuickReserve) {
-      onQuickReserve(restaurant);
-    } else {
-      navigate(`/restaurant/${id}?reserve=true`);
-    }
+    if (onQuickReserve) onQuickReserve(restaurant);
+    else navigate(`/restaurant/${id}?reserve=true`);
   };
 
   const handleOfferClick = (e) => {
@@ -54,17 +49,12 @@ export default function RestaurantCard({ restaurant, onQuickReserve, onViewOffer
         restaurantName: name,
         restaurantId: id,
         title: activeOffer.title || `${offerLabel || '20% OFF'} Campus Exclusive`,
-        description:
-          activeOffer.description ||
-          'Special dining discount for verified Bennett University students & faculty.',
+        description: activeOffer.description || 'Special dining discount for verified students.',
         code: activeOffer.promoCode || activeOffer.code || `BENNETT${id}0`,
         validTill: activeOffer.endDate || activeOffer.validTill || 'End of Semester',
       };
-      if (onViewOffer) {
-        onViewOffer(fullOffer);
-      } else {
-        navigate(`/restaurant/${id}?tab=offers`);
-      }
+      if (onViewOffer) onViewOffer(fullOffer);
+      else navigate(`/restaurant/${id}?tab=offers`);
     }
   };
 
@@ -75,142 +65,157 @@ export default function RestaurantCard({ restaurant, onQuickReserve, onViewOffer
   return (
     <div
       onClick={handleCardClick}
-      className="group relative bg-white border border-slate-200/90 rounded-2xl overflow-hidden hover:border-slate-300 hover:shadow-md transition-all duration-200 cursor-pointer flex flex-col"
+      style={{
+        background: '#FFF',
+        borderRadius: 16,
+        border: '1px solid #EEE',
+        overflow: 'hidden',
+        cursor: 'pointer',
+        display: 'flex', flexDirection: 'column',
+        transition: 'transform 0.25s cubic-bezier(0.16,1,0.3,1), box-shadow 0.25s ease',
+      }}
+      onMouseEnter={e => {
+        e.currentTarget.style.transform = 'translateY(-4px)';
+        e.currentTarget.style.boxShadow = '0 12px 32px rgba(0,0,0,0.10)';
+      }}
+      onMouseLeave={e => {
+        e.currentTarget.style.transform = 'translateY(0)';
+        e.currentTarget.style.boxShadow = 'none';
+      }}
     >
-      {/* ── Crisp Food Photography Container ── */}
-      <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-100">
+      {/* Image */}
+      <div style={{ position: 'relative', aspectRatio: '16/10', overflow: 'hidden', background: '#F5F5F5' }}>
         <img
-          src={
-            image ||
-            'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80'
-          }
+          src={image || 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80'}
           alt={name}
           loading="lazy"
-          className="w-full h-full object-cover group-hover:scale-104 transition-transform duration-300 ease-out"
+          style={{
+            width: '100%', height: '100%', objectFit: 'cover',
+            transition: 'transform 0.4s cubic-bezier(0.16,1,0.3,1)',
+          }}
+          onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
+          onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
         />
 
-        {/* Subtle Vignette */}
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/50 via-transparent to-slate-950/10" />
+        {/* Gradient overlay */}
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.35) 0%, transparent 50%)' }} />
 
-        {/* Top-Right: Clean Live Status Pill */}
-        <div className="absolute top-3 right-3 z-10">
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/95 backdrop-blur-md text-slate-800 text-[11px] font-semibold shadow-xs border border-slate-200/50">
-            <span className={`w-2 h-2 rounded-full ${isOpen ? 'bg-emerald-600' : 'bg-rose-500'}`} />
-            <span>{isOpen ? 'Open Now' : 'Closed'}</span>
+        {/* Status pill */}
+        <div style={{ position: 'absolute', top: 10, right: 10, zIndex: 2 }}>
+          <span style={{
+            display: 'inline-flex', alignItems: 'center', gap: 5,
+            padding: '4px 10px',
+            borderRadius: 99,
+            background: 'rgba(255,255,255,0.95)',
+            backdropFilter: 'blur(8px)',
+            fontSize: 11, fontWeight: 600, color: '#333',
+          }}>
+            <span style={{
+              width: 6, height: 6, borderRadius: '50%',
+              background: isOpen ? '#22C55E' : '#EF4444',
+            }} />
+            {isOpen ? 'Open' : 'Closed'}
           </span>
         </div>
 
-        {/* Bottom-Left: Refined Campus Privilege Chip */}
+        {/* Offer badge */}
         {hasOffer && (
-          <div className="absolute bottom-2.5 left-3 z-10">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#FF5200] text-white text-[11px] font-bold shadow-xs border border-orange-400/30">
-              <Sparkles size={11} className="text-white" />
-              <span>{offerLabel || '20% OFF'} Privilege</span>
+          <div style={{ position: 'absolute', bottom: 10, left: 10, zIndex: 2 }}>
+            <span style={{
+              display: 'inline-flex', alignItems: 'center', gap: 4,
+              padding: '4px 10px',
+              borderRadius: 6,
+              background: '#FF5200',
+              fontSize: 10.5, fontWeight: 700, color: '#FFF',
+            }}>
+              {offerLabel || '20% OFF'}
             </span>
           </div>
         )}
       </div>
 
-      {/* ── Card Body ── */}
-      <div style={{ padding: '16px 18px 18px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+      {/* Body */}
+      <div style={{ padding: '14px 16px 16px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
         <div>
-          {/* Header: Name + Rating */}
-          <div className="flex items-start justify-between gap-2">
-            <h3 className="text-base sm:text-lg font-bold text-slate-900 group-hover:text-[#FF5200] transition-colors line-clamp-1 leading-snug">
+          {/* Name + Rating */}
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
+            <h3 style={{
+              fontSize: 15, fontWeight: 600, color: '#111',
+              lineHeight: 1.3,
+              overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+            }}>
               {name}
             </h3>
-
-            {/* Clean Rating Badge */}
-            <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-50 border border-emerald-200/80 text-emerald-800 text-xs font-bold shrink-0">
-              <Star size={11} className="fill-emerald-600 text-emerald-600" />
-              <span>{rating}</span>
-              <span className="text-emerald-700/70 font-medium text-[10.5px]">({displayReviewCount})</span>
-            </div>
+            <span style={{
+              display: 'inline-flex', alignItems: 'center', gap: 3,
+              padding: '2px 7px',
+              borderRadius: 6,
+              background: '#F0FDF4', border: '1px solid #DCF5DC',
+              fontSize: 11, fontWeight: 600, color: '#16A34A',
+              flexShrink: 0,
+            }}>
+              <Star size={10} style={{ fill: '#22C55E', color: '#22C55E' }} />
+              {rating}
+            </span>
           </div>
 
-          {/* Subtitle: Cuisine · Distance · Price */}
-          <div className="text-xs font-medium text-slate-500 mt-1 flex items-center gap-1.5">
-            <span className="text-slate-700 font-semibold">{cuisine}</span>
-            <span>•</span>
+          {/* Meta */}
+          <div style={{ fontSize: 12, color: '#999', marginTop: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+            <span style={{ fontWeight: 500 }}>{cuisine}</span>
+            <span>·</span>
             <span>{distance} km</span>
-            <span>•</span>
-            <span className="text-slate-800 font-bold">{price}</span>
+            <span>·</span>
+            <span style={{ fontWeight: 500 }}>{price}</span>
           </div>
 
-          {/* Tagline or Popular Dishes */}
-          <p className="text-xs text-slate-500 mt-2 line-clamp-1 leading-relaxed">
+          {/* Tagline */}
+          <p style={{
+            fontSize: 12, color: '#AAA', marginTop: 8, lineHeight: 1.4,
+            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+          }}>
             {popularDishes && popularDishes.length > 0
               ? `Popular: ${popularDishes.slice(0, 3).join(', ')}`
-              : tagline || 'Bennett University verified dining partner.'}
+              : tagline || 'Campus dining partner'}
           </p>
         </div>
 
-        {/* ── Action Footer ── */}
+        {/* Footer */}
         <div style={{
-          marginTop: 16,
-          paddingTop: 14,
-          borderTop: '1px solid #F1F5F9',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: 10
+          marginTop: 14, paddingTop: 12,
+          borderTop: '1px solid #F5F5F5',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          gap: 8,
         }}>
-          {/* Student Coupon Tag */}
           {activeOffer ? (
             <button
-              type="button"
               onClick={handleOfferClick}
               style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 5,
-                padding: '8px 12px',
-                minHeight: 38,
-                borderRadius: 10,
-                background: '#FFFBEB',
-                border: '1px solid #FDE68A',
+                display: 'inline-flex', alignItems: 'center', gap: 4,
+                padding: '6px 10px',
+                borderRadius: 6,
+                background: '#FFFBEB', border: '1px solid #FDE68A',
                 color: '#92400E',
-                fontSize: 12,
-                fontWeight: 700,
+                fontSize: 11, fontWeight: 600,
                 cursor: 'pointer',
-                boxSizing: 'border-box',
-                transition: 'all 0.15s ease'
               }}
-              title="View campus privilege code"
             >
-              <Tag size={12} className="text-amber-600" />
-              <span>{activeOffer.promoCode || 'BENNETT20'}</span>
-              <ChevronRight size={12} className="text-amber-500" />
+              <Tag size={11} />
+              {activeOffer.promoCode || 'BENNETT20'}
+              <ChevronRight size={11} style={{ color: '#D97706' }} />
             </button>
           ) : (
-            <span style={{
-              fontSize: 12,
-              fontWeight: 500,
-              color: '#94A3B8',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 5,
-              paddingLeft: 2
-            }}>
-              <MapPin size={13} className="text-slate-400" /> Partner Venue
+            <span style={{ fontSize: 11, color: '#CCC', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+              <MapPin size={11} /> Partner
             </span>
           )}
 
-          {/* Clean Book Table CTA */}
           <button
-            type="button"
             onClick={handleBookClick}
-            className="btn btn-primary btn-sm"
-            style={{
-              padding: '9px 18px',
-              minHeight: 38,
-              borderRadius: 10,
-              fontSize: 12.5,
-              fontWeight: 700
-            }}
+            className="btn btn-primary btn-xs"
+            style={{ borderRadius: 8, fontSize: 11.5, fontWeight: 600, padding: '6px 14px' }}
           >
-            <CalendarDays size={14} />
-            <span>Reserve Table</span>
+            <CalendarDays size={12} />
+            Reserve
           </button>
         </div>
       </div>
