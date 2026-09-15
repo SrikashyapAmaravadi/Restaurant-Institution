@@ -526,9 +526,10 @@ export default function RestaurantDetail() {
               {/* Badges Row */}
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 12 }}>
                 <span style={{
-                  background: '#064E3B',
-                  border: '1px solid rgba(167, 243, 208, 0.4)',
-                  color: '#ECFDF5',
+                  background: 'rgba(255, 255, 255, 0.16)',
+                  backdropFilter: 'blur(8px)',
+                  border: '1px solid rgba(255, 255, 255, 0.25)',
+                  color: '#FFFFFF',
                   fontSize: 11,
                   fontWeight: 700,
                   padding: '3px 10px',
@@ -537,11 +538,12 @@ export default function RestaurantDetail() {
                   alignItems: 'center',
                   gap: 5
                 }}>
-                  <GraduationCap size={13} /> Bennett Verified Partner
+                  <GraduationCap size={13} className="text-emerald-400" /> Bennett Verified Partner
                 </span>
 
                 <span style={{
-                  background: restaurant.isOpen ? 'rgba(16, 185, 129, 0.9)' : 'rgba(239, 68, 68, 0.9)',
+                  background: restaurant.isOpen ? 'rgba(5, 150, 105, 0.9)' : 'rgba(220, 38, 38, 0.9)',
+                  backdropFilter: 'blur(8px)',
                   color: '#FFFFFF',
                   fontSize: 11,
                   fontWeight: 700,
@@ -556,7 +558,8 @@ export default function RestaurantDetail() {
 
                 {restaurant.hasOffer && (
                   <span style={{
-                    background: '#D97706',
+                    background: 'rgba(217, 119, 6, 0.9)',
+                    backdropFilter: 'blur(8px)',
                     color: '#FFFFFF',
                     fontSize: 11,
                     fontWeight: 700,
@@ -574,7 +577,7 @@ export default function RestaurantDetail() {
                   <span
                     key={t}
                     style={{
-                      background: 'rgba(255, 255, 255, 0.2)',
+                      background: 'rgba(255, 255, 255, 0.15)',
                       backdropFilter: 'blur(8px)',
                       color: '#FFFFFF',
                       fontSize: 11,
@@ -622,21 +625,21 @@ export default function RestaurantDetail() {
             {/* Desktop Hero CTA */}
             <div style={{ flexShrink: 0 }}>
               <button
-                className="btn btn-primary btn-lg"
+                className="btn btn-emerald btn-lg"
                 onClick={() => setShowBookingModal(true)}
                 style={{
-                  borderRadius: 14,
+                  borderRadius: 12,
                   padding: '13px 28px',
                   fontSize: 14.5,
                   fontWeight: 800,
-                  boxShadow: '0 8px 20px rgba(21, 128, 61, 0.4)',
+                  boxShadow: '0 8px 24px rgba(5, 150, 105, 0.35)',
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: 8,
                   minHeight: 48
                 }}
               >
-                <Sparkles size={18} /> Book Table Pass
+                <Sparkles size={18} /> Reserve Table Pass
               </button>
             </div>
           </div>

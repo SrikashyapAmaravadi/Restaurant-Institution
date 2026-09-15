@@ -156,12 +156,12 @@ export default function AppLayout() {
           <div className="mobile-drawer-sheet flex flex-col h-full bg-white p-5" onClick={(e) => e.stopPropagation()}>
             <div className="flex justify-between items-center mb-5 pb-4 border-b border-slate-100">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-emerald-700 text-white flex items-center justify-center font-bold shadow-xs">
-                  <UtensilsCrossed size={18} />
+                <div className="w-9 h-9 rounded-xl bg-slate-900 text-white flex items-center justify-center font-bold shadow-xs">
+                  <UtensilsCrossed size={17} />
                 </div>
                 <div>
                   <div className="font-bold text-base text-slate-900 leading-tight">Dine@Bennett</div>
-                  <div className="text-[11px] font-semibold text-emerald-700 uppercase tracking-wider">Bennett University</div>
+                  <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Bennett Hospitality</div>
                 </div>
               </div>
               <button
@@ -179,7 +179,7 @@ export default function AppLayout() {
                 <img
                   src={user.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80'}
                   alt={user.name}
-                  className="w-10 h-10 rounded-full object-cover border-2 border-emerald-600/30"
+                  className="w-10 h-10 rounded-full object-cover border border-slate-200"
                 />
                 <div className="flex-1 min-w-0">
                   <div className="text-sm font-bold text-slate-900 truncate">
@@ -206,7 +206,7 @@ export default function AppLayout() {
                     className={({ isActive }) =>
                       `flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
                         isActive
-                          ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                          ? 'bg-slate-900 text-white shadow-xs'
                           : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 border border-transparent'
                       }`
                     }
@@ -215,7 +215,7 @@ export default function AppLayout() {
                     <Icon size={18} />
                     <span>{item.label}</span>
                     {item.badge > 0 && (
-                      <span className="ml-auto px-2 py-0.5 rounded-full text-xs font-bold bg-amber-500 text-white">
+                      <span className="ml-auto px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-600 text-white">
                         {item.badge}
                       </span>
                     )}

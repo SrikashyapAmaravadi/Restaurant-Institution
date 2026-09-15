@@ -46,35 +46,35 @@ export default function Sidebar() {
       {/* Brand Header */}
       <div className="sidebar-logo">
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div className="sidebar-brand-icon" style={{ background: 'var(--primary)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', width: 38, height: 38 }}>
-            <UtensilsCrossed size={20} color="#FFFFFF" />
+          <div className="sidebar-brand-icon">
+            <UtensilsCrossed size={18} color="#FFFFFF" />
           </div>
           <div>
-            <div className="sidebar-brand-name font-display" style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '1.1rem', fontWeight: 800 }}>
+            <div className="sidebar-brand-name font-display" style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '1.05rem', fontWeight: 800 }}>
               <span>Dine@Bennett</span>
             </div>
-            <div className="sidebar-brand-sub" style={{ fontSize: '11px', color: 'var(--t3)', fontWeight: 500 }}>Campus Dining Network</div>
+            <div className="sidebar-brand-sub" style={{ fontSize: '11px', color: 'var(--t3)', fontWeight: 600 }}>Hospitality &amp; Reservations</div>
           </div>
         </div>
       </div>
 
       {/* Authenticated User & Role Chip */}
       <div className="sidebar-user">
-        <div className="sidebar-user-inner" style={{ border: '1px solid var(--border)', background: 'var(--bg-main)' }}>
+        <div className="sidebar-user-inner">
           <img
             src={user?.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80'}
             alt={user?.name || 'User'}
-            style={{ width: 38, height: 38, borderRadius: '50%', objectFit: 'cover', border: '1.5px solid var(--primary)' }}
+            style={{ width: 34, height: 34, borderRadius: '50%', objectFit: 'cover', border: '1.5px solid #E2E8F0' }}
           />
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--t1)', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
               {user?.name || 'Scholar'}
             </div>
-            <div style={{ fontSize: '11px', color: 'var(--primary)', fontWeight: 600 }}>
+            <div style={{ fontSize: '11px', color: 'var(--emerald)', fontWeight: 600 }}>
               {user?.roleLabel?.split('(')[0] || user?.role || 'STUDENT'}
             </div>
           </div>
-          <div className="verified-dot" title="Authenticated & Verified" style={{ background: 'var(--primary)' }} />
+          <div className="verified-dot" title="Authenticated & Verified" />
         </div>
       </div>
 
@@ -183,17 +183,36 @@ export default function Sidebar() {
 
       </div>
 
+      {/* Institutional Network Card */}
+      <div style={{ padding: '0 14px 12px' }}>
+        <div style={{
+          padding: '12px 14px',
+          borderRadius: 12,
+          background: '#F8FAFC',
+          border: '1px solid #E2E8F0',
+          fontSize: 11.5
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontWeight: 700, color: '#0F172A', marginBottom: 2 }}>
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#059669' }} />
+            <span>TechZone II Active</span>
+          </div>
+          <div style={{ color: '#64748B', fontSize: 11, lineHeight: 1.4 }}>
+            Direct table hold &amp; 20% verified campus subsidies.
+          </div>
+        </div>
+      </div>
+
       {/* Footer / Sign Out */}
       <div className="sidebar-footer">
         <button
           className="nav-item sidebar-logout-btn"
-          style={{ width: '100%', border: 'none', background: 'none', textAlign: 'left', color: 'var(--t4)' }}
+          style={{ width: '100%', border: 'none', background: 'none', textAlign: 'left', color: 'var(--t3)', padding: '8px 12px' }}
           onClick={handleLogout}
         >
           <span className="nav-icon">
             <LogOut size={16} />
           </span>
-          <span>Sign Out</span>
+          <span style={{ fontWeight: 600 }}>Sign Out</span>
         </button>
       </div>
     </aside>

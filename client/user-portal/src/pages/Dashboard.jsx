@@ -96,41 +96,133 @@ export default function Dashboard() {
     return true;
   });
 
+  const firstName = user?.name ? user.name.split(' ')[0] : 'Member';
+
   return (
-    <div className="page-pad pb-28 flex flex-col gap-6">
-      {/* Search Header Trigger */}
-      <div
-        onClick={() => navigate('/discover')}
-        className="flex items-center gap-3 p-3 sm:px-4 sm:py-3 rounded-2xl bg-white border border-slate-200 hover:border-slate-300 shadow-xs cursor-pointer transition-all"
-      >
-        <Search size={18} className="text-emerald-700 shrink-0" />
-        <span className="text-xs sm:text-sm text-slate-400 font-medium flex-1 truncate">
-          Search dishes, dining spots, or offers near Bennett...
-        </span>
-        <div className="hidden sm:flex items-center gap-2 shrink-0">
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-semibold">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
-            Live Network
+    <div className="page-pad pb-28 flex flex-col gap-7">
+      {/* ── Executive Greeting & Search Bar ── */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <div className="flex items-center gap-2">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200/80">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
+              Bennett TechZone Active
+            </span>
+            <span className="text-xs text-slate-400">•</span>
+            <span className="text-xs font-medium text-slate-500">Official Dining Network</span>
+          </div>
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 mt-1">
+            Welcome back, {firstName}
+          </h1>
+        </div>
+
+        {/* Global Search Trigger */}
+        <div
+          onClick={() => navigate('/discover')}
+          className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-white border border-slate-200 hover:border-slate-300 hover:shadow-xs cursor-pointer transition-all sm:min-w-[320px]"
+        >
+          <Search size={16} className="text-slate-400 shrink-0" />
+          <span className="text-xs text-slate-400 font-medium flex-1 truncate">
+            Search partner menus, cafes, or cuisines...
           </span>
-          <span style={{ padding: '6px 16px', borderRadius: 10, background: '#F1F5F9', color: '#334155', fontSize: 12, fontWeight: 700 }}>
-            Search
-          </span>
+          <kbd className="hidden sm:inline-block px-1.5 py-0.5 text-[10px] font-bold bg-slate-100 text-slate-500 rounded border border-slate-200">
+            ⌘K
+          </kbd>
         </div>
       </div>
 
-      {/* Going Out Vibes Horizontal Stories */}
+      {/* ── Quick KPI Metrics Row ── */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="p-3.5 rounded-xl bg-white border border-slate-200/90 shadow-xs flex flex-col justify-between">
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Active Pass</span>
+          <div className="flex items-baseline gap-1.5 mt-1">
+            <span className="text-lg sm:text-xl font-extrabold text-slate-900">
+              {upcoming ? '1 Active' : '0 Active'}
+            </span>
+          </div>
+          <span className="text-[11px] text-emerald-700 font-medium mt-1">
+            {upcoming ? `Table ${upcoming.tableAssigned || 'T-01'} Held` : 'Instant reservation ready'}
+          </span>
+        </div>
+
+        <div className="p-3.5 rounded-xl bg-white border border-slate-200/90 shadow-xs flex flex-col justify-between">
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Partner Outlets</span>
+          <div className="flex items-baseline gap-1.5 mt-1">
+            <span className="text-lg sm:text-xl font-extrabold text-slate-900">{safeRestaurants.length}</span>
+            <span className="text-xs font-semibold text-slate-500">Venues</span>
+          </div>
+          <span className="text-[11px] text-slate-500 font-medium mt-1">Around Bennett TechZone</span>
+        </div>
+
+        <div className="p-3.5 rounded-xl bg-white border border-slate-200/90 shadow-xs flex flex-col justify-between">
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Member Discount</span>
+          <div className="flex items-baseline gap-1.5 mt-1">
+            <span className="text-lg sm:text-xl font-extrabold text-slate-900">20% Flat</span>
+          </div>
+          <span className="text-[11px] text-amber-700 font-medium mt-1">Applied on bill settlement</span>
+        </div>
+
+        <div className="p-3.5 rounded-xl bg-white border border-slate-200/90 shadow-xs flex flex-col justify-between">
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Queue Status</span>
+          <div className="flex items-baseline gap-1.5 mt-1">
+            <span className="text-lg sm:text-xl font-extrabold text-emerald-700">Priority</span>
+          </div>
+          <span className="text-[11px] text-slate-500 font-medium mt-1">Zero wait table guarantee</span>
+        </div>
+      </div>
+
+      {/* ── Active Reservation Digital Pass (Boarding Pass Ticket) ── */}
+      {upcoming && (
+        <div className="relative overflow-hidden rounded-2xl bg-slate-900 text-white p-5 sm:p-6 shadow-md border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-5">
+          <div className="flex items-start gap-4">
+            <div className="w-12 h-12 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center shrink-0">
+              <QrCode size={24} />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                  Confirmed Table Pass
+                </span>
+                <span className="text-xs text-slate-400">
+                  {upcoming.date} • {upcoming.time}
+                </span>
+              </div>
+              <h3 className="text-lg sm:text-xl font-bold text-white mt-1">
+                {upcoming.restaurantName}
+              </h3>
+              <p className="text-xs text-slate-400 mt-0.5">
+                Pass ID: <span className="font-mono text-slate-300">{upcoming.id}</span> • Table {upcoming.tableAssigned || 'T-01'} • {upcoming.partySize || 2} Guests
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 self-end md:self-center">
+            <button
+              type="button"
+              onClick={() => setSelectedBookingForPass(upcoming)}
+              className="btn btn-emerald btn-md"
+              style={{ borderRadius: 10, padding: '10px 22px' }}
+            >
+              <QrCode size={15} />
+              <span>Access Digital Pass</span>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ── Curated Mood Collections ── */}
       <div>
         <div className="flex justify-between items-center mb-3">
           <div className="flex items-center gap-2">
-            <Zap size={15} className="text-emerald-700" />
+            <Sparkles size={14} className="text-slate-900" />
             <h2 className="text-xs font-bold uppercase tracking-wider text-slate-700">
-              Going Out Vibes
+              Curated Dining Collections
             </h2>
           </div>
-          <span className="text-xs text-slate-400 font-medium">Swipe to filter &rarr;</span>
+          <span className="text-xs text-slate-400 font-medium">Select a vibe to filter</span>
         </div>
 
-        <div className="flex items-center gap-4 overflow-x-auto pb-2 scrollbar-none">
+        <div className="flex items-center gap-2.5 overflow-x-auto pb-2 scrollbar-none">
           {MOOD_STORIES.map(mood => {
             const Icon = mood.icon;
             const isSelected = activeMood === mood.id;
@@ -139,22 +231,14 @@ export default function Dashboard() {
                 key={mood.id}
                 type="button"
                 onClick={() => handleMoodSelect(mood)}
-                className="flex flex-col items-center gap-1.5 shrink-0 group cursor-pointer"
+                className={`flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl border shrink-0 text-left transition-all cursor-pointer ${
+                  isSelected
+                    ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
+                    : 'bg-white text-slate-700 border-slate-200 hover:border-slate-300 hover:bg-slate-50'
+                }`}
               >
-                <div
-                  className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all ${
-                    isSelected
-                      ? 'bg-emerald-700 text-white ring-3 ring-emerald-600/30 scale-105 shadow-sm'
-                      : 'bg-white text-slate-600 border border-slate-200 group-hover:border-slate-300 group-hover:bg-slate-50'
-                  }`}
-                >
-                  <Icon size={22} />
-                </div>
-                <span
-                  className={`text-[11px] max-w-[68px] text-center truncate leading-tight font-medium ${
-                    isSelected ? 'font-bold text-emerald-800' : 'text-slate-600'
-                  }`}
-                >
+                <Icon size={16} className={isSelected ? 'text-emerald-400' : 'text-slate-500'} />
+                <span className="text-xs font-semibold whitespace-nowrap">
                   {mood.label}
                 </span>
               </button>
@@ -163,214 +247,80 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Active Upcoming Reservation Banner (If Any) */}
-      {upcoming && (
-        <div className="bg-white border border-emerald-200 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 flex items-center justify-center shrink-0">
-              <QrCode size={24} />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800">
-                  Confirmed Table
-                </span>
-                <span className="text-xs text-slate-500 font-medium">
-                  {upcoming.date} • {upcoming.time}
-                </span>
-              </div>
-              <h3 className="text-base sm:text-lg font-bold text-slate-900 mt-1">
-                {upcoming.restaurantName}
-              </h3>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Table {upcoming.tableAssigned || 'T-01'} • {upcoming.partySize || 2} Guests
-              </p>
-            </div>
-          </div>
-
-          <button
-            type="button"
-            onClick={() => setSelectedBookingForPass(upcoming)}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 7,
-              padding: '10px 20px',
-              minHeight: 40,
-              borderRadius: 12,
-              background: 'linear-gradient(135deg, #15803D 0%, #064E3B 100%)',
-              color: '#FFFFFF',
-              fontSize: 13,
-              fontWeight: 700,
-              boxShadow: '0 4px 12px rgba(21, 128, 61, 0.25)',
-              cursor: 'pointer',
-              border: 'none',
-              whiteSpace: 'nowrap'
-            }}
-          >
-            <QrCode size={15} />
-            <span>View Digital Pass</span>
-          </button>
-        </div>
-      )}
-
-      {/* Campus Spotlight Banner */}
+      {/* ── Executive Institutional Spotlight Banner ── */}
       <div
-        style={{
-          position: 'relative',
-          overflow: 'hidden',
-          borderRadius: 20,
-          background: 'linear-gradient(135deg, #064E3B 0%, #065F46 50%, #0F172A 100%)',
-          padding: '24px 28px',
-          color: '#FFFFFF',
-          boxShadow: '0 8px 24px -4px rgba(6, 78, 59, 0.25)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          flexWrap: 'wrap',
-          gap: 20
-        }}
+        className="relative overflow-hidden rounded-2xl bg-slate-900 text-white p-6 sm:p-7 shadow-sm border border-slate-800 flex flex-col lg:flex-row lg:items-center justify-between gap-6"
       >
-        <div style={{ maxWidth: 540 }}>
-          <div
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 6,
-              padding: '3px 10px',
-              borderRadius: 99,
-              background: 'rgba(255, 255, 255, 0.18)',
-              border: '1px solid rgba(255, 255, 255, 0.3)',
-              color: '#A7F3D0',
-              fontSize: 11,
-              fontWeight: 800,
-              marginBottom: 10,
-              letterSpacing: '0.04em'
-            }}
-          >
-            <Sparkles size={12} />
-            <span>CAMPUS EXCLUSIVE • VERIFIED PASS</span>
+        <div className="max-w-xl">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white/10 text-amber-300 text-[11px] font-semibold tracking-wide mb-2.5 border border-white/10">
+            <Sparkles size={12} className="text-amber-400" />
+            <span>BENNETT UNIVERSITY HOSPITALITY NETWORK</span>
           </div>
-          <h2
-            style={{
-              fontSize: 'clamp(1.25rem, 3.5vw, 1.65rem)',
-              fontWeight: 800,
-              color: '#FFFFFF',
-              lineHeight: 1.25,
-              margin: '0 0 8px'
-            }}
-          >
-            Partner Dining Network Live Across Bennett TechZone
+          <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight leading-snug">
+            Curated Dining &amp; Guaranteed Priority Seating
           </h2>
-          <p
-            style={{
-              fontSize: 13,
-              color: '#D1FAE5',
-              margin: 0,
-              lineHeight: 1.5,
-              opacity: 0.95
-            }}
-          >
-            Direct pre-booking with instant table hold, student discount settlement, and zero wait lines.
+          <p className="text-xs sm:text-sm text-slate-300 mt-1.5 leading-relaxed">
+            Reserve certified dining spots across Bennett TechZone with digital entry passes, guaranteed table holds, and 20% flat student privileges.
           </p>
         </div>
 
-        <button
-          type="button"
-          onClick={() => navigate('/discover')}
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 8,
-            padding: '11px 22px',
-            borderRadius: 14,
-            background: '#FFFFFF',
-            color: '#064E3B',
-            fontWeight: 800,
-            fontSize: 13,
-            border: 'none',
-            cursor: 'pointer',
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.12)',
-            transition: 'all 0.15s ease',
-            whiteSpace: 'nowrap'
-          }}
-        >
-          <span>Explore All Spots</span>
-          <ArrowRight size={15} />
-        </button>
-      </div>
-
-      {/* Filter Chips Stream */}
-      <div>
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
-          {FILTERS.map(f => {
-            const FilterIcon = f.icon;
-            const isSelected = activeFilter === f.id;
-            return (
-              <button
-                key={f.id}
-                type="button"
-                onClick={() => {
-                  setActiveFilter(f.id);
-                  setActiveMood(null);
-                }}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 7,
-                  padding: '8px 18px',
-                  minHeight: 36,
-                  borderRadius: 99,
-                  fontSize: 12.5,
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                  flexShrink: 0,
-                  transition: 'all 0.15s ease',
-                  background: isSelected ? '#15803D' : '#FFFFFF',
-                  color: isSelected ? '#FFFFFF' : '#334155',
-                  border: `1.5px solid ${isSelected ? '#15803D' : '#E2E8F0'}`,
-                  boxShadow: isSelected ? '0 3px 8px rgba(21, 128, 61, 0.2)' : 'none'
-                }}
-              >
-                <FilterIcon size={13} />
-                <span>{f.label}</span>
-              </button>
-            );
-          })}
+        <div className="flex items-center gap-3 shrink-0">
+          <button
+            type="button"
+            onClick={() => navigate('/discover')}
+            className="btn btn-outline btn-md"
+            style={{ borderRadius: 10, background: '#FFFFFF', color: '#0F172A', fontWeight: 700 }}
+          >
+            <span>Explore Full Directory</span>
+            <ArrowRight size={14} />
+          </button>
         </div>
       </div>
 
-      {/* Top Dining Spots Section */}
+      {/* ── Filter Chips Stream ── */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+        {FILTERS.map(f => {
+          const FilterIcon = f.icon;
+          const isSelected = activeFilter === f.id;
+          return (
+            <button
+              key={f.id}
+              type="button"
+              onClick={() => {
+                setActiveFilter(f.id);
+                setActiveMood(null);
+              }}
+              className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer shrink-0 border ${
+                isSelected
+                  ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
+                  : 'bg-white text-slate-700 border-slate-200 hover:border-slate-300 hover:bg-slate-50'
+              }`}
+            >
+              <FilterIcon size={13} className={isSelected ? 'text-white' : 'text-slate-400'} />
+              <span>{f.label}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* ── Top Dining Spots Section ── */}
       <div>
-        <div className="flex justify-between items-end mb-4">
+        <div className="flex justify-between items-center mb-4">
           <div>
-            <h2 className="text-lg sm:text-xl font-bold tracking-tight text-slate-900">
-              Top Dining Spots Near Campus
+            <h2 className="text-base sm:text-lg font-bold tracking-tight text-slate-900">
+              Verified Dining Partners
             </h2>
-            <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-              {filteredRestaurants.length} verified partner restaurants available
+            <p className="text-xs text-slate-500 mt-0.5">
+              {filteredRestaurants.length} establishments available in TechZone II
             </p>
           </div>
           <button
             type="button"
             onClick={() => navigate('/discover')}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 5,
-              padding: '7px 14px',
-              borderRadius: 10,
-              background: '#ECFDF5',
-              border: '1px solid #A7F3D0',
-              color: '#065F46',
-              fontSize: 12.5,
-              fontWeight: 700,
-              cursor: 'pointer'
-            }}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-700 hover:text-slate-950 hover:border-slate-300 text-xs font-semibold cursor-pointer transition-colors shadow-xs"
           >
-            <span>View Map</span>
-            <ChevronRight size={14} />
+            <span>Radar Map</span>
+            <ChevronRight size={13} />
           </button>
         </div>
 
