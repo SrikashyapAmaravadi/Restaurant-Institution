@@ -409,45 +409,25 @@ export default function StaffPortal() {
                     </button>
                   )}
 
-                  {/* STAGE 2: Seated -> Add items & Settle Bill */}
+                  {/* STAGE 2: Seated -> Settle Bill */}
                   {isSeated && (
-                    <>
-                      <button
-                        className="btn-secondary"
-                        onClick={() => setSelectedTableForOrder(item)}
-                        style={{
-                          padding: '9px 18px',
-                          minHeight: 38,
-                          borderRadius: 10,
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: 6,
-                          fontWeight: 600,
-                          fontSize: 13,
-                          boxSizing: 'border-box'
-                        }}
-                      >
-                        <Utensils size={15} /> Add Dishes / View Tab
-                      </button>
-
-                      <button
-                        className="btn-accent"
-                        onClick={() => setPaymentModalBooking(item)}
-                        style={{
-                          padding: '9px 18px',
-                          minHeight: 38,
-                          borderRadius: 10,
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: 6,
-                          fontWeight: 700,
-                          fontSize: 13,
-                          boxSizing: 'border-box'
-                        }}
-                      >
-                        <Receipt size={16} /> Settle Bill (₹{netPayable})
-                      </button>
-                    </>
+                    <button
+                      className="btn-accent"
+                      onClick={() => setPaymentModalBooking(item)}
+                      style={{
+                        padding: '9px 18px',
+                        minHeight: 38,
+                        borderRadius: 10,
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 6,
+                        fontWeight: 700,
+                        fontSize: 13,
+                        boxSizing: 'border-box'
+                      }}
+                    >
+                      <Receipt size={16} /> Settle Bill (₹{netPayable})
+                    </button>
                   )}
 
                   {/* STAGE 3: Completed -> View Receipt */}
