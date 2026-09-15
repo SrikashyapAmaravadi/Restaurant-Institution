@@ -40,7 +40,7 @@ export default function PaymentModal({
   menuItems: propMenuItems,
   onOrdersUpdated
 }) {
-  const [method, setMethod] = useState('UPI'); // 'UPI' | 'CASH' | 'CARD'
+  const [method, setMethod] = useState('UPI'); // 'UPI' | 'CASH'
   const [step, setStep] = useState('SELECT'); // 'SELECT' | 'PROCESSING' | 'SUCCESS'
   const [activeView, setActiveView] = useState('SETTLEMENT'); // 'SETTLEMENT' | 'OFFICIAL_BILL'
   const [activePaymentQr, setActivePaymentQr] = useState(null);
@@ -154,22 +154,8 @@ export default function PaymentModal({
   }, [grandTotal]);
   const changeToReturn = Math.max(0, cashTendered - grandTotal);
 
-  // --- CARD STATE ---
-  const [cardNumber, setCardNumber] = useState('');
-  const [cardHolder, setCardHolder] = useState(booking?.guestName || 'Campus Diner');
-  const [cardExpiry, setCardExpiry] = useState('');
-  const [cardCvv, setCardCvv] = useState('');
-  const [cardType, setCardType] = useState('Card');
-
   // Success summary
   const [paymentResult, setPaymentResult] = useState(null);
-
-  useEffect(() => {
-    if (cardNumber.startsWith('4')) setCardType('Visa');
-    else if (cardNumber.startsWith('5')) setCardType('Mastercard');
-    else if (cardNumber.startsWith('6')) setCardType('RuPay');
-    else setCardType('Card');
-  }, [cardNumber]);
 
   // UPI countdown timer
   useEffect(() => {
@@ -286,13 +272,11 @@ export default function PaymentModal({
         orders: currentOrders,
         details: method === 'CASH'
           ? { tendered: cashTendered, change: changeToReturn, billedBy: { role: billedRole, name: billedByName } }
-          : method === 'UPI'
-          ? {
+          : {
               upiApp: selectedUpiApp,
               upiId: customUpiId || `${selectedUpiApp.toLowerCase().replace(' ', '')}@okaxis`,
               billedBy: { role: billedRole, name: billedByName }
-            }
-          : { cardType, last4: cardNumber.replace(/\s+/g, '').slice(-4), billedBy: { role: billedRole, name: billedByName } },
+            },
         date: new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }),
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
@@ -876,18 +860,17 @@ export default function PaymentModal({
                 </div>
               </div>
 
-              {/* SECTION 3: THREE PAYMENT OPTIONS TABS */}
+              {/* SECTION 3: TWO PAYMENT OPTIONS TABS */}
               <div>
                 <label className="form-label" style={{ marginBottom: 10, display: 'flex', alignItems: 'center', gap: 6 }}>
                   <span>Select Payment Method</span>
-                  <span style={{ fontSize: 11, color: 'var(--t4)', fontWeight: 400 }}>(Choose 1 of 3 options to settle bill)</span>
+                  <span style={{ fontSize: 11, color: 'var(--t4)', fontWeight: 400 }}>(Choose 1 of 2 options to settle bill)</span>
                 </label>
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10 }}>
                   {[
                     { id: 'UPI', label: 'UPI / QR', icon: Smartphone, desc: 'GPay, PhonePe, Paytm' },
-                    { id: 'CASH', label: 'Cash', icon: Banknote, desc: 'Counter / Tendered' },
-                    { id: 'CARD', label: 'Card / POS', icon: CreditCard, desc: 'Visa, Master, RuPay' }
+                    { id: 'CASH', label: 'Cash', icon: Banknote, desc: 'Counter / Tendered' }
                   ].map(opt => {
                     const Icon = opt.icon;
                     const isActive = method === opt.id;
@@ -1127,101 +1110,6 @@ export default function PaymentModal({
                   <div style={{ fontSize: 12, color: 'var(--t3)', display: 'flex', alignItems: 'center', gap: 6 }}>
                     <Check size={14} style={{ color: '#10B981' }} />
                     Cash collected at billing counter by {billedByName}. Drawer balance logged automatically.
-                  </div>
-                </div>
-              )}
-
-              {/* PAYMENT OPTION 3: CARD */}
-              {method === 'CARD' && (
-                <div
-                  className="anim-fade-up"
-                  style={{
-                    background: '#F8FAFC',
-                    border: '1px solid var(--border)',
-                    borderRadius: 'var(--r-sm)',
-                    padding: 18,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: 14
-                  }}
-                >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <CreditCard size={18} style={{ color: 'var(--primary)' }} />
-                      <span style={{ fontWeight: 700, fontSize: 14, color: 'var(--t1)' }}>Card Swipe / Contactless POS</span>
-                    </div>
-                    <span className="badge badge-warning">{cardType} POS Terminal Ready</span>
-                  </div>
-
-                  {/* Virtual Card Preview */}
-                  <div
-                    style={{
-                      borderRadius: 'var(--r-sm)',
-                      background: 'linear-gradient(135deg, #1E1B4B 0%, #312E81 50%, #4338CA 100%)',
-                      border: '1px solid rgba(255,255,255,0.15)',
-                      padding: '14px 18px',
-                      color: '#fff',
-                      boxShadow: 'var(--shadow-md)',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: 12
-                    }}
-                  >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--accent)', letterSpacing: '0.1em' }}>CAMPUS CARD PAY</span>
-                      <span style={{ fontSize: 13, fontWeight: 800 }}>{cardType}</span>
-                    </div>
-                    <div style={{ fontSize: '1.2rem', letterSpacing: '0.15em', fontWeight: 800, fontFamily: 'monospace' }}>
-                      {cardNumber || '•••• •••• •••• ••••'}
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 11, color: 'var(--t2)' }}>
-                      <div>
-                        <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase' }}>Cardholder</div>
-                        <div style={{ fontWeight: 700, color: '#fff' }}>{cardHolder || 'Campus Diner'}</div>
-                      </div>
-                      <div>
-                        <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase' }}>Expires</div>
-                        <div style={{ fontWeight: 700, color: '#fff' }}>{cardExpiry || 'MM/YY'}</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Card Form Inputs */}
-                  <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: 8 }}>
-                    <div>
-                      <label className="form-label" style={{ fontSize: 11 }}>Card Number</label>
-                      <input
-                        className="form-input"
-                        placeholder="4532 0000 0000 0000"
-                        maxLength={19}
-                        style={{ fontSize: 12 }}
-                        value={cardNumber}
-                        onChange={e => setCardNumber(e.target.value)}
-                      />
-                    </div>
-                    <div>
-                      <label className="form-label" style={{ fontSize: 11 }}>Expiry (MM/YY)</label>
-                      <input
-                        className="form-input"
-                        placeholder="MM/YY"
-                        maxLength={5}
-                        style={{ fontSize: 12 }}
-                        value={cardExpiry}
-                        onChange={e => setCardExpiry(e.target.value)}
-                      />
-                    </div>
-                    <div>
-                      <label className="form-label" style={{ fontSize: 11 }}>CVV</label>
-                      <input
-                        className="form-input"
-                        type="password"
-                        placeholder="•••"
-                        maxLength={4}
-                        style={{ fontSize: 12 }}
-                        value={cardCvv}
-                        onChange={e => setCardCvv(e.target.value)}
-                      />
-                    </div>
                   </div>
                 </div>
               )}
