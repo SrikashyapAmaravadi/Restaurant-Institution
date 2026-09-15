@@ -120,7 +120,7 @@ export default function Discover() {
           <div className="flex items-center gap-2.5 flex-wrap">
             {/* Sort Selector */}
             <div className="inline-flex items-center gap-1.5 bg-white border border-slate-200 rounded-xl px-3 py-1.5 shadow-xs">
-              <ArrowUpDown size={13} className="text-emerald-700 shrink-0" />
+              <ArrowUpDown size={13} className="text-[#FF5200] shrink-0" />
               <select
                 value={sortBy}
                 onChange={e => setSortBy(e.target.value)}
@@ -136,7 +136,7 @@ export default function Discover() {
             </div>
 
             {/* Segmented Grid / Map Control */}
-            <div style={{ display: 'inline-flex', padding: 4, background: '#F1F5F9', border: '1px solid var(--border)', borderRadius: 12, gap: 4 }}>
+            <div style={{ display: 'inline-flex', padding: 4, background: '#F8F9FA', border: '1px solid var(--border)', borderRadius: 12, gap: 4 }}>
               <button
                 type="button"
                 style={{
@@ -151,7 +151,7 @@ export default function Discover() {
                   cursor: 'pointer',
                   border: 'none',
                   background: viewMode === 'grid' ? '#FFFFFF' : 'transparent',
-                  color: viewMode === 'grid' ? '#0F172A' : '#64748B',
+                  color: viewMode === 'grid' ? '#FF5200' : '#64748B',
                   boxShadow: viewMode === 'grid' ? '0 1px 4px rgba(0,0,0,0.08)' : 'none',
                   transition: 'all 0.15s ease'
                 }}
@@ -174,7 +174,7 @@ export default function Discover() {
                   cursor: 'pointer',
                   border: 'none',
                   background: viewMode === 'map' ? '#FFFFFF' : 'transparent',
-                  color: viewMode === 'map' ? '#0F172A' : '#64748B',
+                  color: viewMode === 'map' ? '#FF5200' : '#64748B',
                   boxShadow: viewMode === 'map' ? '0 1px 4px rgba(0,0,0,0.08)' : 'none',
                   transition: 'all 0.15s ease'
                 }}
@@ -192,7 +192,7 @@ export default function Discover() {
           <div className="relative flex-1 flex items-center">
             <Search size={16} className="absolute left-3.5 text-slate-400 pointer-events-none" />
             <input
-              className="w-full pl-10 pr-9 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 outline-none transition-all focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10 shadow-xs"
+              className="w-full pl-10 pr-9 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 outline-none transition-all focus:border-[#FF5200] focus:ring-2 focus:ring-orange-500/20 shadow-xs"
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Search by restaurant name, cuisine, or popular dish..."
@@ -219,7 +219,7 @@ export default function Discover() {
               borderRadius: 12,
               background: '#FFFFFF',
               border: '1px solid #E2E8F0',
-              color: '#0F172A',
+              color: '#1C1E21',
               fontSize: 13,
               fontWeight: 700,
               boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
@@ -231,7 +231,7 @@ export default function Discover() {
             <Filter size={14} className="text-slate-500" />
             <span>Filters</span>
             {activeFiltersCount > 0 && (
-              <span style={{ marginLeft: 4, padding: '2px 7px', borderRadius: 99, fontSize: 10.5, fontWeight: 800, background: '#0F172A', color: '#FFFFFF' }}>
+              <span style={{ marginLeft: 4, padding: '2px 7px', borderRadius: 99, fontSize: 10.5, fontWeight: 800, background: '#FF5200', color: '#FFFFFF' }}>
                 {activeFiltersCount}
               </span>
             )}
@@ -253,8 +253,8 @@ export default function Discover() {
               fontWeight: 700,
               cursor: 'pointer',
               flexShrink: 0,
-              border: !openOnly && !offersOnly && cuisines.length === 0 ? '1.5px solid #0F172A' : '1px solid #E2E8F0',
-              background: !openOnly && !offersOnly && cuisines.length === 0 ? '#0F172A' : '#FFFFFF',
+              border: !openOnly && !offersOnly && cuisines.length === 0 ? '1.5px solid #FF5200' : '1px solid #E2E8F0',
+              background: !openOnly && !offersOnly && cuisines.length === 0 ? '#FF5200' : '#FFFFFF',
               color: !openOnly && !offersOnly && cuisines.length === 0 ? '#FFFFFF' : '#334155'
             }}
             onClick={clearAll}
@@ -276,8 +276,8 @@ export default function Discover() {
               fontWeight: 700,
               cursor: 'pointer',
               flexShrink: 0,
-              border: openOnly ? '1.5px solid #0F172A' : '1px solid #E2E8F0',
-              background: openOnly ? '#0F172A' : '#FFFFFF',
+              border: openOnly ? '1.5px solid #FF5200' : '1px solid #E2E8F0',
+              background: openOnly ? '#FF5200' : '#FFFFFF',
               color: openOnly ? '#FFFFFF' : '#334155'
             }}
             onClick={() => setOpen(!openOnly)}
@@ -299,14 +299,14 @@ export default function Discover() {
               fontWeight: 700,
               cursor: 'pointer',
               flexShrink: 0,
-              border: offersOnly ? '1.5px solid #0F172A' : '1px solid #E2E8F0',
-              background: offersOnly ? '#0F172A' : '#FFFFFF',
+              border: offersOnly ? '1.5px solid #FF5200' : '1px solid #E2E8F0',
+              background: offersOnly ? '#FF5200' : '#FFFFFF',
               color: offersOnly ? '#FFFFFF' : '#334155'
             }}
             onClick={() => setOffers(!offersOnly)}
           >
             <Tag size={13} />
-            <span>Campus Offers</span>
+            <span>Campus Deals</span>
           </button>
 
           {CUISINES.map(c => {
@@ -326,8 +326,8 @@ export default function Discover() {
                   fontWeight: 700,
                   cursor: 'pointer',
                   flexShrink: 0,
-                  border: isSelected ? '1.5px solid #0F172A' : '1px solid #E2E8F0',
-                  background: isSelected ? '#0F172A' : '#FFFFFF',
+                  border: isSelected ? '1.5px solid #FF5200' : '1px solid #E2E8F0',
+                  background: isSelected ? '#FF5200' : '#FFFFFF',
                   color: isSelected ? '#FFFFFF' : '#334155'
                 }}
                 onClick={() => toggle(cuisines, setCuisines, c)}
@@ -432,7 +432,7 @@ export default function Discover() {
                   <span className="text-xs font-bold text-slate-900 uppercase tracking-wider">
                     Radius from Campus
                   </span>
-                  <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-slate-900 text-white">
+                  <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-[#FF5200] text-white">
                     {maxDist} km
                   </span>
                 </div>
@@ -443,7 +443,7 @@ export default function Discover() {
                   step={0.5}
                   value={maxDist}
                   onChange={e => setDist(parseFloat(e.target.value))}
-                  className="w-full accent-slate-900 h-2 bg-slate-200 rounded-lg cursor-pointer"
+                  className="w-full accent-[#FF5200] h-2 bg-slate-200 rounded-lg cursor-pointer"
                 />
                 {/* Distance Presets */}
                 <div className="grid grid-cols-3 gap-2 mt-3">
@@ -458,8 +458,8 @@ export default function Discover() {
                       onClick={() => setDist(p.val)}
                       className={`py-1.5 px-2 rounded-lg text-xs font-semibold border transition-all cursor-pointer text-center ${
                         maxDist === p.val
-                          ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
-                          : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'
+                          ? 'bg-[#FF5200] text-white border-[#FF5200] shadow-xs'
+                          : 'bg-white text-slate-600 border-slate-200 hover:border-orange-200'
                       }`}
                     >
                       {p.label}
@@ -487,8 +487,8 @@ export default function Discover() {
                         onClick={() => toggle(prices, setPrices, p.id)}
                         className={`py-2.5 px-3 rounded-xl text-xs font-bold border transition-all cursor-pointer text-center ${
                           isSelected
-                            ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
-                            : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100 hover:border-slate-300'
+                            ? 'bg-[#FF5200] text-white border-[#FF5200] shadow-xs'
+                            : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-orange-50/40 hover:border-orange-200'
                         }`}
                       >
                         {p.label}
@@ -513,11 +513,11 @@ export default function Discover() {
                         onClick={() => setRating(r)}
                         className={`py-2.5 px-3 rounded-xl text-xs font-bold border transition-all cursor-pointer text-center flex items-center justify-center gap-1 ${
                           isSelected
-                            ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
-                            : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100 hover:border-slate-300'
+                            ? 'bg-[#FF5200] text-white border-[#FF5200] shadow-xs'
+                            : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-orange-50/40 hover:border-orange-200'
                         }`}
                       >
-                        {r !== 'Any' && <Star size={11} className={isSelected ? 'fill-amber-400 text-amber-400' : 'fill-amber-500 text-amber-500'} />}
+                        {r !== 'Any' && <Star size={11} className={isSelected ? 'fill-white text-white' : 'fill-amber-500 text-amber-500'} />}
                         <span>{r}</span>
                       </button>
                     );
@@ -540,11 +540,11 @@ export default function Discover() {
                         onClick={() => toggle(cuisines, setCuisines, c)}
                         className={`py-2 px-3.5 rounded-full text-xs font-semibold border transition-all cursor-pointer flex items-center gap-1.5 ${
                           isSelected
-                            ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
-                            : 'bg-white text-slate-700 border-slate-200 hover:border-slate-300 hover:bg-slate-50'
+                            ? 'bg-[#FF5200] text-white border-[#FF5200] shadow-xs'
+                            : 'bg-white text-slate-700 border-slate-200 hover:border-orange-200 hover:bg-orange-50/40'
                         }`}
                       >
-                        <UtensilsCrossed size={12} className={isSelected ? 'text-emerald-400' : 'text-slate-400'} />
+                        <UtensilsCrossed size={12} className={isSelected ? 'text-white' : 'text-[#FF5200]'} />
                         <span>{c}</span>
                       </button>
                     );

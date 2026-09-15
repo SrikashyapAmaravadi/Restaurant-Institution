@@ -196,8 +196,8 @@ export default function DigitalPassModal({ booking, onClose }) {
               <div style={{ fontSize: 10.5, color: '#64748B', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Date
               </div>
-              <div style={{ fontSize: 13, fontWeight: 700, color: '#0F172A', marginTop: 2, display: 'flex', alignItems: 'center', gap: 4 }}>
-                <Calendar size={13} className="text-slate-700" />
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#1C1E21', marginTop: 2, display: 'flex', alignItems: 'center', gap: 4 }}>
+                <Calendar size={13} className="text-[#FF5200]" />
                 <span>{booking.date || 'Today'}</span>
               </div>
             </div>
@@ -206,8 +206,8 @@ export default function DigitalPassModal({ booking, onClose }) {
               <div style={{ fontSize: 10.5, color: '#64748B', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Time Slot
               </div>
-              <div style={{ fontSize: 13, fontWeight: 700, color: '#0F172A', marginTop: 2, display: 'flex', alignItems: 'center', gap: 4 }}>
-                <Clock size={13} className="text-slate-700" />
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#1C1E21', marginTop: 2, display: 'flex', alignItems: 'center', gap: 4 }}>
+                <Clock size={13} className="text-[#FF5200]" />
                 <span>{booking.time || '1:00 PM'}</span>
               </div>
             </div>
@@ -216,8 +216,8 @@ export default function DigitalPassModal({ booking, onClose }) {
               <div style={{ fontSize: 10.5, color: '#64748B', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Guests
               </div>
-              <div style={{ fontSize: 13, fontWeight: 700, color: '#0F172A', marginTop: 2, display: 'flex', alignItems: 'center', gap: 4 }}>
-                <Users size={13} className="text-slate-700" />
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#1C1E21', marginTop: 2, display: 'flex', alignItems: 'center', gap: 4 }}>
+                <Users size={13} className="text-[#FF5200]" />
                 <span>{booking.guests || 2} Diners</span>
               </div>
             </div>
@@ -233,7 +233,7 @@ export default function DigitalPassModal({ booking, onClose }) {
           }}>
             <div style={{ fontSize: 12, color: '#475569' }}>
               <span style={{ fontWeight: 600 }}>Table: </span>
-              <span style={{ fontWeight: 700, color: '#0F172A' }}>{booking.tableAssigned || 'Priority Host Seating'}</span>
+              <span style={{ fontWeight: 800, color: '#FF5200' }}>{booking.tableAssigned || 'Priority Host Seating'}</span>
             </div>
             <div style={{
               fontSize: 11,
@@ -254,15 +254,15 @@ export default function DigitalPassModal({ booking, onClose }) {
           {/* Pre-Ordered Items Summary if present */}
           {hasOrders && (
             <div style={{
-              background: '#F8FAFC',
-              border: '1px solid #E2E8F0',
+              background: '#FFF8F4',
+              border: '1px solid #FFE4D6',
               borderRadius: 12,
               padding: '10px 12px',
               margin: '12px 0',
               fontSize: 12
             }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontWeight: 700, color: '#0F172A', marginBottom: 4 }}>
-                <UtensilsCrossed size={12} className="text-emerald-700" />
+              <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontWeight: 700, color: '#FF5200', marginBottom: 4 }}>
+                <UtensilsCrossed size={12} className="text-[#FF5200]" />
                 <span>Pre-Ordered Dishes ({booking.orders.length})</span>
               </div>
               <div style={{ color: '#475569', fontSize: 11.5 }}>

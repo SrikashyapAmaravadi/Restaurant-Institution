@@ -87,13 +87,13 @@ export default function Bookings() {
       <div className="anim-fade-up" style={{ marginBottom: 28, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16 }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-            <h1 className="font-display" style={{ fontSize: 'clamp(1.5rem, 4vw, 2rem)', fontWeight: 800, color: '#0F172A', margin: 0 }}>
+            <h1 className="font-display" style={{ fontSize: 'clamp(1.5rem, 4vw, 2rem)', fontWeight: 800, color: '#1C1E21', margin: 0 }}>
               My Dining Reservations
             </h1>
             <span style={{
-              background: '#F1F5F9',
-              border: '1px solid #CBD5E1',
-              color: '#0F172A',
+              background: '#FFF5EE',
+              border: '1px solid #FFD8CC',
+              color: '#FF5200',
               fontSize: 11,
               fontWeight: 700,
               padding: '3px 10px',
@@ -138,7 +138,7 @@ export default function Bookings() {
                 padding: '10px 20px',
                 minHeight: 40,
                 fontSize: 13,
-                background: isActive ? '#0F172A' : 'transparent',
+                background: isActive ? '#FF5200' : 'transparent',
                 color: isActive ? '#FFFFFF' : '#475569'
               }}
             >
@@ -150,8 +150,8 @@ export default function Bookings() {
                   fontWeight: 800,
                   padding: '2px 7px',
                   borderRadius: 99,
-                  background: isActive ? '#FFFFFF' : '#ECFDF5',
-                  color: isActive ? '#0F172A' : '#047857'
+                  background: isActive ? '#FFFFFF' : '#FFF5EE',
+                  color: '#FF5200'
                 }}>
                   {upcomingList.length}
                 </span>
@@ -164,7 +164,7 @@ export default function Bookings() {
                   padding: '2px 7px',
                   borderRadius: 99,
                   background: isActive ? '#FFFFFF' : '#F1F5F9',
-                  color: isActive ? '#0F172A' : '#475569'
+                  color: isActive ? '#FF5200' : '#475569'
                 }}>
                   {pastList.length}
                 </span>
@@ -198,7 +198,7 @@ export default function Bookings() {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#F8FAFC', padding: '6px 12px', borderRadius: 99, border: '1px solid var(--border)' }}>
-          <ArrowUpDown size={13} className="text-emerald-700" />
+          <ArrowUpDown size={13} className="text-[#FF5200]" />
           <select
             style={{
               border: 'none',
@@ -381,13 +381,13 @@ export default function Bookings() {
 
                   <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 14, fontSize: 12.5, color: 'var(--t2)' }}>
                     <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                      <Calendar size={13} className="text-emerald-700" /> {b.date}
+                      <Calendar size={13} className="text-[#FF5200]" /> {b.date}
                     </span>
                     <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                      <Clock size={13} className="text-emerald-700" /> {b.time}
+                      <Clock size={13} className="text-[#FF5200]" /> {b.time}
                     </span>
                     <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                      <Users size={13} className="text-emerald-700" /> {b.guests} Diners
+                      <Users size={13} className="text-[#FF5200]" /> {b.guests} Diners
                     </span>
                   </div>
 

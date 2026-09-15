@@ -134,21 +134,21 @@ export default function Landing() {
               width: 38,
               height: 38,
               borderRadius: 10,
-              background: '#0F172A',
+              background: '#FF5200',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               color: '#FFFFFF',
-              boxShadow: '0 2px 8px rgba(15, 23, 42, 0.2)'
+              boxShadow: '0 2px 8px rgba(255, 82, 0, 0.28)'
             }}>
               <UtensilsCrossed size={18} />
             </div>
             <div>
-              <div className="font-display" style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.025em', lineHeight: 1.1 }}>
+              <div className="font-display" style={{ fontSize: '1.15rem', fontWeight: 800, color: '#1C1E21', letterSpacing: '-0.025em', lineHeight: 1.1 }}>
                 Dine@Bennett
               </div>
               <div style={{ fontSize: 11, color: '#64748B', fontWeight: 600 }}>
-                Bennett University Dining Network
+                Bennett Campus Dining Network
               </div>
             </div>
           </div>
@@ -180,8 +180,8 @@ export default function Landing() {
       <section style={{
         position: 'relative',
         padding: 'clamp(54px, 8vw, 92px) 24px',
-        background: 'radial-gradient(ellipse at 50% 0%, #F1F5F9 0%, #F8FAFC 70%)',
-        borderBottom: '1px solid #E2E8F0'
+        background: 'radial-gradient(ellipse at 50% 0%, #FFF5EE 0%, #F8F9FA 70%)',
+        borderBottom: '1px solid #EAECEF'
       }}>
         <div style={{ maxWidth: 960, margin: '0 auto', textAlign: 'center' }}>
           {/* Institutional Badge */}
@@ -191,28 +191,28 @@ export default function Landing() {
             gap: 6,
             padding: '5px 14px',
             borderRadius: 99,
-            background: '#FFFFFF',
-            border: '1px solid #CBD5E1',
-            color: '#0F172A',
+            background: '#FFF5EE',
+            border: '1px solid #FFD8CC',
+            color: '#FF5200',
             fontSize: 11.5,
             fontWeight: 700,
             marginBottom: 22,
-            boxShadow: '0 1px 3px rgba(0, 0, 0, 0.04)'
+            boxShadow: '0 1px 3px rgba(255, 82, 0, 0.08)'
           }}>
-            <GraduationCap size={14} className="text-emerald-700" />
+            <GraduationCap size={14} className="text-[#FF5200]" />
             <span>OFFICIAL CAMPUS DINING NETWORK • BENNETT UNIVERSITY</span>
           </div>
 
           <h1 className="font-display" style={{
             fontSize: 'clamp(2.2rem, 5.5vw, 3.8rem)',
             fontWeight: 900,
-            color: '#0F172A',
+            color: '#1C1E21',
             letterSpacing: '-0.035em',
             lineHeight: 1.12,
             margin: '0 auto 20px',
             maxWidth: 820
           }}>
-            Campus Hospitality &amp; Reservations, Perfected.
+            Campus Dining &amp; Reservations, Perfected.
           </h1>
 
           <p style={{
@@ -222,7 +222,7 @@ export default function Landing() {
             margin: '0 auto 36px',
             lineHeight: 1.6
           }}>
-            Guaranteed table reservations with 20% campus dining privileges, Apple Wallet-style QR entry passes, and zero queue waiting across premier Bennett TechZone partner restaurants.
+            Guaranteed table reservations with 20% campus dining privileges, digital QR entry passes, and zero queue waiting across premier Bennett TechZone partner restaurants.
           </p>
 
           {/* Action CTAs */}
@@ -236,7 +236,7 @@ export default function Landing() {
                 padding: '14px 30px',
                 fontSize: 14.5,
                 fontWeight: 700,
-                boxShadow: '0 4px 14px rgba(15, 23, 42, 0.25)',
+                boxShadow: '0 4px 14px rgba(255, 82, 0, 0.28)',
                 gap: 8
               }}
             >
@@ -270,23 +270,23 @@ export default function Landing() {
             padding: '20px 24px',
             background: '#FFFFFF',
             borderRadius: 16,
-            border: '1px solid #E2E8F0',
+            border: '1px solid #EAECEF',
             boxShadow: '0 4px 20px rgba(0, 0, 0, 0.03)'
           }}>
             <div>
-              <div className="font-display" style={{ fontSize: '1.8rem', fontWeight: 800, color: '#0F172A' }}>4</div>
+              <div className="font-display" style={{ fontSize: '1.8rem', fontWeight: 800, color: '#1C1E21' }}>4</div>
               <div style={{ fontSize: 12, fontWeight: 600, color: '#64748B' }}>Partner Venues</div>
             </div>
             <div>
-              <div className="font-display" style={{ fontSize: '1.8rem', fontWeight: 800, color: '#059669' }}>20%</div>
+              <div className="font-display" style={{ fontSize: '1.8rem', fontWeight: 800, color: '#FF5200' }}>20%</div>
               <div style={{ fontSize: 12, fontWeight: 600, color: '#64748B' }}>Verified Privilege</div>
             </div>
             <div>
-              <div className="font-display" style={{ fontSize: '1.8rem', fontWeight: 800, color: '#0F172A' }}>3,400+</div>
+              <div className="font-display" style={{ fontSize: '1.8rem', fontWeight: 800, color: '#1C1E21' }}>3,400+</div>
               <div style={{ fontSize: 12, fontWeight: 600, color: '#64748B' }}>Active Scholars</div>
             </div>
             <div>
-              <div className="font-display" style={{ fontSize: '1.8rem', fontWeight: 800, color: '#059669' }}>0 min</div>
+              <div className="font-display" style={{ fontSize: '1.8rem', fontWeight: 800, color: '#10B981' }}>0 min</div>
               <div style={{ fontSize: 12, fontWeight: 600, color: '#64748B' }}>Queue Wait Time</div>
             </div>
           </div>
@@ -297,10 +297,10 @@ export default function Landing() {
       <section style={{ padding: 'clamp(40px, 6vw, 64px) 24px', maxWidth: 1200, margin: '0 auto', width: '100%', boxSizing: 'border-box' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 28, flexWrap: 'wrap', gap: 12 }}>
           <div>
-            <div style={{ fontSize: 11.5, fontWeight: 700, color: '#059669', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+            <div style={{ fontSize: 11.5, fontWeight: 700, color: '#FF5200', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
               Campus Neighborhood Outlets
             </div>
-            <h2 className="font-display" style={{ fontSize: 'clamp(1.5rem, 3.5vw, 2.2rem)', fontWeight: 800, color: '#0F172A', margin: '4px 0 0' }}>
+            <h2 className="font-display" style={{ fontSize: 'clamp(1.5rem, 3.5vw, 2.2rem)', fontWeight: 800, color: '#1C1E21', margin: '4px 0 0' }}>
               Premier Dining Near Bennett TechZone
             </h2>
           </div>
@@ -308,7 +308,7 @@ export default function Landing() {
             type="button"
             className="btn btn-ghost btn-sm"
             onClick={() => navigate('/login')}
-            style={{ fontWeight: 600, color: '#0F172A', gap: 4 }}
+            style={{ fontWeight: 600, color: '#FF5200', gap: 4 }}
           >
             <span>View All Partner Menus</span>
             <ChevronRight size={15} />

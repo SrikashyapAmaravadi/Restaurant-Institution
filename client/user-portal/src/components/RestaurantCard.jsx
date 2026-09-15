@@ -103,8 +103,8 @@ export default function RestaurantCard({ restaurant, onQuickReserve, onViewOffer
         {/* Bottom-Left: Refined Campus Privilege Chip */}
         {hasOffer && (
           <div className="absolute bottom-2.5 left-3 z-10">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-900/90 backdrop-blur-md text-white text-[11px] font-semibold shadow-xs border border-white/10">
-              <Sparkles size={11} className="text-amber-400" />
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#FF5200] text-white text-[11px] font-bold shadow-xs border border-orange-400/30">
+              <Sparkles size={11} className="text-white" />
               <span>{offerLabel || '20% OFF'} Privilege</span>
             </span>
           </div>
@@ -116,15 +116,15 @@ export default function RestaurantCard({ restaurant, onQuickReserve, onViewOffer
         <div>
           {/* Header: Name + Rating */}
           <div className="flex items-start justify-between gap-2">
-            <h3 className="text-base sm:text-lg font-bold text-slate-900 group-hover:text-slate-700 transition-colors line-clamp-1 leading-snug">
+            <h3 className="text-base sm:text-lg font-bold text-slate-900 group-hover:text-[#FF5200] transition-colors line-clamp-1 leading-snug">
               {name}
             </h3>
 
             {/* Clean Rating Badge */}
-            <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-50 border border-amber-200/80 text-amber-900 text-xs font-bold shrink-0">
-              <Star size={11} className="fill-amber-500 text-amber-500" />
+            <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-50 border border-emerald-200/80 text-emerald-800 text-xs font-bold shrink-0">
+              <Star size={11} className="fill-emerald-600 text-emerald-600" />
               <span>{rating}</span>
-              <span className="text-amber-700/70 font-medium text-[10.5px]">({displayReviewCount})</span>
+              <span className="text-emerald-700/70 font-medium text-[10.5px]">({displayReviewCount})</span>
             </div>
           </div>
 

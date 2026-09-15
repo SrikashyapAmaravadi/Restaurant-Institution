@@ -40,13 +40,13 @@ export default function Topbar({ onOpenMobileDrawer }) {
     return (
       <header className="topbar">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-emerald-700 text-white flex items-center justify-center font-bold">
+          <div className="w-8 h-8 rounded-lg bg-[#FF5200] text-white flex items-center justify-center font-bold shadow-xs">
             <UtensilsCrossed size={16} />
           </div>
           <h1 className="font-bold text-slate-900 text-base sm:text-lg tracking-tight">Dine@Bennett</h1>
         </div>
         <button
-          className="px-4 py-2 text-xs sm:text-sm font-semibold rounded-xl bg-emerald-700 text-white hover:bg-emerald-800 transition-colors"
+          className="px-4 py-2 text-xs sm:text-sm font-semibold rounded-xl bg-[#FF5200] text-white hover:bg-[#E64A00] transition-colors shadow-xs"
           onClick={() => navigate('/login')}
         >
           Sign In
@@ -65,7 +65,7 @@ export default function Topbar({ onOpenMobileDrawer }) {
         return { label: 'Host Desk', icon: ConciergeBell, color: 'text-slate-800 bg-slate-100 border-slate-300' };
       case 'STUDENT':
       default:
-        return { label: 'Verified Member', icon: GraduationCap, color: 'text-emerald-800 bg-emerald-50 border-emerald-200' };
+        return { label: 'Verified Member', icon: GraduationCap, color: 'text-orange-800 bg-orange-50 border-orange-200' };
     }
   };
 
@@ -92,8 +92,8 @@ export default function Topbar({ onOpenMobileDrawer }) {
               className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 hover:bg-slate-200/70 border border-slate-200/80 text-slate-800 text-xs font-semibold cursor-pointer transition-colors shrink-0"
               title="Campus Zone"
             >
-              <MapPin size={12} className="text-emerald-700 shrink-0" />
-              <span className="truncate max-w-[130px] sm:max-w-none">Bennett TechZone II</span>
+              <MapPin size={12} className="text-[#FF5200] shrink-0" />
+              <span className="truncate max-w-[130px] sm:max-w-none">Bennett TechZone</span>
               <ChevronDown size={11} className="text-slate-400 shrink-0" />
             </button>
 
@@ -119,7 +119,7 @@ export default function Topbar({ onOpenMobileDrawer }) {
             title="Search restaurants & offers"
           >
             <Search size={14} className="text-slate-400" />
-            <span>Search directory...</span>
+            <span>Search dishes, restaurants...</span>
             <kbd className="px-1.5 py-0.5 text-[10px] font-bold bg-slate-100 text-slate-500 rounded border border-slate-200">⌘K</kbd>
           </button>
         )}
@@ -143,14 +143,14 @@ export default function Topbar({ onOpenMobileDrawer }) {
         >
           <Bell size={16} />
           {unreadNotifs > 0 && (
-            <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-emerald-600 ring-2 ring-white" />
+            <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#FF5200] ring-2 ring-white" />
           )}
         </button>
 
         {/* Live Camera Scanner Button */}
         <button
           type="button"
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 h-9 rounded-lg bg-slate-900 text-white hover:bg-slate-800 font-semibold text-xs cursor-pointer transition-colors shadow-xs"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 h-9 rounded-lg bg-[#FF5200] text-white hover:bg-[#E64A00] font-semibold text-xs cursor-pointer transition-colors shadow-xs"
           onClick={openScanner}
           title="Open QR Scanner"
         >

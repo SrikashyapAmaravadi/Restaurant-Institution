@@ -53,7 +53,7 @@ export default function Sidebar() {
             <div className="sidebar-brand-name font-display" style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '1.05rem', fontWeight: 800 }}>
               <span>Dine@Bennett</span>
             </div>
-            <div className="sidebar-brand-sub" style={{ fontSize: '11px', color: 'var(--t3)', fontWeight: 600 }}>Hospitality &amp; Reservations</div>
+            <div className="sidebar-brand-sub" style={{ fontSize: '11px', color: 'var(--t3)', fontWeight: 600 }}>Campus Dining &amp; Passes</div>
           </div>
         </div>
       </div>
@@ -188,16 +188,16 @@ export default function Sidebar() {
         <div style={{
           padding: '12px 14px',
           borderRadius: 12,
-          background: '#F8FAFC',
-          border: '1px solid #E2E8F0',
+          background: '#FFF8F4',
+          border: '1px solid #FFE4D6',
           fontSize: 11.5
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontWeight: 700, color: '#0F172A', marginBottom: 2 }}>
-            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#059669' }} />
-            <span>TechZone II Active</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontWeight: 700, color: '#FF5200', marginBottom: 2 }}>
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#FF5200' }} />
+            <span>TechZone Active</span>
           </div>
-          <div style={{ color: '#64748B', fontSize: 11, lineHeight: 1.4 }}>
-            Direct table hold &amp; 20% verified campus subsidies.
+          <div style={{ color: 'var(--t3)', fontSize: 11, lineHeight: 1.4 }}>
+            Zero-wait table passes &amp; flat 20% campus privilege.
           </div>
         </div>
       </div>

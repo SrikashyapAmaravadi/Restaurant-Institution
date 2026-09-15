@@ -625,14 +625,14 @@ export default function RestaurantDetail() {
             {/* Desktop Hero CTA */}
             <div style={{ flexShrink: 0 }}>
               <button
-                className="btn btn-emerald btn-lg"
+                className="btn btn-primary btn-lg"
                 onClick={() => setShowBookingModal(true)}
                 style={{
                   borderRadius: 12,
                   padding: '13px 28px',
                   fontSize: 14.5,
                   fontWeight: 800,
-                  boxShadow: '0 8px 24px rgba(5, 150, 105, 0.35)',
+                  boxShadow: '0 8px 24px rgba(255, 82, 0, 0.35)',
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: 8,
@@ -987,8 +987,8 @@ export default function RestaurantDetail() {
                             padding: '7px 14px',
                             fontSize: 12,
                             fontWeight: 700,
-                            borderColor: '#15803D',
-                            color: '#15803D',
+                            borderColor: '#FF5200',
+                            color: '#FF5200',
                             minHeight: 32
                           }}
                         >
@@ -1364,7 +1364,7 @@ export default function RestaurantDetail() {
         <div className="booking-rail-card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
             <div>
-              <span style={{ fontSize: 11, fontWeight: 700, color: '#15803D', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <span style={{ fontSize: 11, fontWeight: 700, color: '#FF5200', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Instant Seating
               </span>
               <h3 className="font-display" style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--t1)', margin: '2px 0 0' }}>
@@ -1372,8 +1372,9 @@ export default function RestaurantDetail() {
               </h3>
             </div>
             <span style={{
-              background: '#ECFDF5',
-              color: '#065F46',
+              background: '#FFF5EE',
+              color: '#FF5200',
+              border: '1px solid #FFD8CC',
               fontSize: 11,
               fontWeight: 800,
               padding: '3px 8px',
@@ -1408,7 +1409,7 @@ export default function RestaurantDetail() {
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--t2)' }}>
               <span>Campus Discount:</span>
-              <strong style={{ color: '#15803D' }}>20% OFF Available</strong>
+              <strong style={{ color: '#FF5200' }}>20% OFF Available</strong>
             </div>
           </div>
 
