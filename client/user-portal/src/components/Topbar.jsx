@@ -8,16 +8,18 @@ import {
   Menu,
   ChevronDown,
   User as UserIcon,
+  UtensilsCrossed,
+  Bell,
+  Sparkles,
 } from 'lucide-react';
 import DistrictSearchModal from './DistrictSearchModal';
 
-const DISTRICT_NAV_TABS = [
-  { id: 'foryou', label: 'For you', path: '/dashboard' },
-  { id: 'dining', label: 'Dining', path: '/dashboard' },
-  { id: 'outlets', label: 'Outlets', path: '/discover' },
-  { id: 'passes', label: 'Passes', path: '/bookings' },
-  { id: 'cafeteria', label: 'Cafeteria', path: '/discover?tag=Cafeteria' },
-  { id: 'events', label: 'Events', path: '/notifications' },
+const CAMPUS_NAV_TABS = [
+  { id: 'home', label: 'Home', path: '/dashboard' },
+  { id: 'dining', label: 'Dining Outlets', path: '/discover', activeHighlight: true },
+  { id: 'passes', label: 'Table Passes', path: '/bookings' },
+  { id: 'cafes', label: 'Cafeteria & Cafes', path: '/discover?tag=Cafeteria' },
+  { id: 'deals', label: 'Student Perks', path: '/discover?offers=true' },
 ];
 
 export default function Topbar({ onOpenMobileDrawer }) {
@@ -33,8 +35,8 @@ export default function Topbar({ onOpenMobileDrawer }) {
     <>
       <header
         style={{
-          height: 72,
-          padding: '0 clamp(16px, 3vw, 36px)',
+          height: 74,
+          padding: '0 clamp(16px, 3.5vw, 40px)',
           background: '#FFFFFF',
           borderBottom: '1px solid #EEF0F3',
           display: 'flex',
@@ -45,9 +47,9 @@ export default function Topbar({ onOpenMobileDrawer }) {
           zIndex: 40,
         }}
       >
-        {/* Left: District Logo + Location Picker */}
+        {/* Left: Brand Identity + Campus Location */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
-          {/* Mobile Menu Trigger */}
+          {/* Mobile Drawer Trigger */}
           <button
             className="mobile-menu-trigger"
             onClick={onOpenMobileDrawer}
@@ -68,38 +70,59 @@ export default function Topbar({ onOpenMobileDrawer }) {
             <Menu size={18} />
           </button>
 
-          {/* District Logo (Exact Screenshot 1 Style) */}
+          {/* Dine@Bennett Logo */}
           <div
             onClick={() => navigate('/dashboard')}
-            style={{ display: 'flex', flexDirection: 'column', cursor: 'pointer' }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 10,
+              cursor: 'pointer',
+            }}
           >
-            <span
+            <div
               style={{
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                fontSize: 22,
-                fontWeight: 800,
-                letterSpacing: '-0.04em',
-                color: '#000000',
-                lineHeight: 1,
+                width: 38,
+                height: 38,
+                borderRadius: 11,
+                background: 'linear-gradient(135deg, #E11D48 0%, #BE123C 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#FFFFFF',
+                boxShadow: '0 4px 12px rgba(225, 29, 72, 0.25)',
               }}
             >
-              district
-            </span>
-            <span
-              style={{
-                fontSize: 9,
-                fontWeight: 800,
-                letterSpacing: '0.14em',
-                color: '#475569',
-                textTransform: 'uppercase',
-                marginTop: 2,
-              }}
-            >
-              BY BENNETT
-            </span>
+              <UtensilsCrossed size={20} strokeWidth={2.4} />
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.1 }}>
+              <span
+                style={{
+                  fontFamily: "'Plus Jakarta Sans', sans-serif",
+                  fontSize: 18,
+                  fontWeight: 800,
+                  letterSpacing: '-0.03em',
+                  color: '#0F172A',
+                }}
+              >
+                Dine<span style={{ color: '#E11D48' }}>@Bennett</span>
+              </span>
+              <span
+                style={{
+                  fontSize: 10,
+                  fontWeight: 700,
+                  letterSpacing: '0.08em',
+                  color: '#64748B',
+                  textTransform: 'uppercase',
+                  marginTop: 2,
+                }}
+              >
+                Campus Dining
+              </span>
+            </div>
           </div>
 
-          {/* District Location Picker (Purple Pin + City/Area) */}
+          {/* Campus Location Pill */}
           <div
             onClick={() => navigate('/discover')}
             style={{
@@ -107,7 +130,7 @@ export default function Topbar({ onOpenMobileDrawer }) {
               alignItems: 'center',
               gap: 8,
               cursor: 'pointer',
-              padding: '6px 10px',
+              padding: '6px 12px',
               borderRadius: 8,
               transition: 'background 0.15s ease',
             }}
@@ -122,23 +145,23 @@ export default function Topbar({ onOpenMobileDrawer }) {
                 justifyContent: 'center',
               }}
             >
-              <MapPin size={19} strokeWidth={2.4} />
+              <MapPin size={18} strokeWidth={2.4} />
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.15 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
                 <span style={{ fontSize: 13.5, fontWeight: 700, color: '#0F172A' }}>
-                  Bennett Campus
+                  Bennett University
                 </span>
                 <ChevronDown size={13} color="#64748B" />
               </div>
               <span style={{ fontSize: 11, color: '#64748B', fontWeight: 500 }}>
-                Greater Noida
+                TechZone II · Greater Noida
               </span>
             </div>
           </div>
         </div>
 
-        {/* Center: Top Category Tabs (Screenshot 1: "For you", "Dining" pill, "Movies"...) */}
+        {/* Center: Campus Navigation Tabs */}
         <nav
           className="mobile-hide"
           style={{
@@ -147,8 +170,8 @@ export default function Topbar({ onOpenMobileDrawer }) {
             gap: 4,
           }}
         >
-          {DISTRICT_NAV_TABS.map(tab => {
-            const isDining = tab.id === 'dining';
+          {CAMPUS_NAV_TABS.map(tab => {
+            const isActive = pathname === tab.path || (tab.activeHighlight && pathname === '/dashboard');
             return (
               <button
                 key={tab.id}
@@ -157,18 +180,18 @@ export default function Topbar({ onOpenMobileDrawer }) {
                   padding: '7px 16px',
                   borderRadius: 99,
                   fontSize: 13.5,
-                  fontWeight: isDining ? 700 : 500,
-                  color: isDining ? '#BE185D' : '#334155',
-                  background: isDining ? '#FFE4E6' : 'transparent',
+                  fontWeight: isActive ? 700 : 500,
+                  color: isActive ? '#BE185D' : '#475569',
+                  background: isActive ? '#FFE4E6' : 'transparent',
                   border: 'none',
                   cursor: 'pointer',
                   transition: 'all 0.15s ease',
                 }}
                 onMouseEnter={e => {
-                  if (!isDining) e.currentTarget.style.background = '#F1F5F9';
+                  if (!isActive) e.currentTarget.style.background = '#F1F5F9';
                 }}
                 onMouseLeave={e => {
-                  if (!isDining) e.currentTarget.style.background = 'transparent';
+                  if (!isActive) e.currentTarget.style.background = 'transparent';
                 }}
               >
                 {tab.label}
@@ -177,9 +200,9 @@ export default function Topbar({ onOpenMobileDrawer }) {
           })}
         </nav>
 
-        {/* Right: Search Icon Button + Avatar */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          {/* Search Trigger (Opens District Search Modal) */}
+        {/* Right: Search + Notifications + Avatar */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          {/* Search Trigger */}
           <button
             onClick={() => setSearchModalOpen(true)}
             style={{
@@ -195,11 +218,44 @@ export default function Topbar({ onOpenMobileDrawer }) {
               color: '#6D28D9',
               transition: 'background 0.15s ease',
             }}
-            title="Search restaurants"
-            onMouseEnter={e => e.currentTarget.style.background = '#F1F5F9'}
-            onMouseLeave={e => e.currentTarget.style.background = '#F8FAFC'}
+            title="Search dishes or outlets"
           >
-            <Search size={19} strokeWidth={2.2} />
+            <Search size={18} strokeWidth={2.2} />
+          </button>
+
+          {/* Alerts */}
+          <button
+            onClick={() => navigate('/notifications')}
+            style={{
+              width: 40,
+              height: 40,
+              borderRadius: '50%',
+              border: 'none',
+              background: '#F8FAFC',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              color: '#475569',
+              position: 'relative',
+            }}
+            title="Notifications"
+          >
+            <Bell size={18} />
+            {unreadNotifs > 0 && (
+              <span
+                style={{
+                  position: 'absolute',
+                  top: 9,
+                  right: 9,
+                  width: 8,
+                  height: 8,
+                  borderRadius: '50%',
+                  background: '#E11D48',
+                  border: '2px solid #FFF',
+                }}
+              />
+            )}
           </button>
 
           {/* User Profile Avatar */}
@@ -232,7 +288,7 @@ export default function Topbar({ onOpenMobileDrawer }) {
         </div>
       </header>
 
-      {/* District Search Modal Overlay */}
+      {/* Campus Search Modal Overlay */}
       <DistrictSearchModal
         isOpen={searchModalOpen}
         onClose={() => setSearchModalOpen(false)}

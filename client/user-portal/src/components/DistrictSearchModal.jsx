@@ -1,24 +1,22 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, X, Utensils, Sparkles } from 'lucide-react';
+import { Search, X, Utensils, Sparkles, MapPin } from 'lucide-react';
 import { useDining } from '../context/DiningContext';
 
-const DISTRICT_CATEGORIES = [
+const CAMPUS_CATEGORIES = [
   'All',
-  'Dining',
-  'Events',
-  'Comedy',
-  'Movies',
-  'Stores',
-  'Activities',
-  'Play'
+  'Dining Halls',
+  'Cafes',
+  'Fast Casual',
+  'Night Canteen',
+  'Student Deals'
 ];
 
-export default function DistrictSearchModal({ isOpen, onClose }) {
+export default function CampusSearchModal({ isOpen, onClose }) {
   const navigate = useNavigate();
   const { restaurants = [] } = useDining() || {};
   const [searchTerm, setSearchTerm] = useState('');
-  const [activeCategory, setActiveCategory] = useState('Dining');
+  const [activeCategory, setActiveCategory] = useState('All');
   const inputRef = useRef(null);
 
   useEffect(() => {
@@ -36,14 +34,25 @@ export default function DistrictSearchModal({ isOpen, onClose }) {
   const safeRestaurants = Array.isArray(restaurants) ? restaurants : [];
 
   const filteredList = useMemo(() => {
-    if (!searchTerm.trim()) return safeRestaurants.slice(0, 10);
+    let list = safeRestaurants;
+    if (activeCategory === 'Dining Halls') {
+      list = list.filter(r => r.cuisine?.toLowerCase().includes('indian') || r.name?.toLowerCase().includes('garden'));
+    } else if (activeCategory === 'Cafes') {
+      list = list.filter(r => r.cuisine?.toLowerCase().includes('cafe') || r.cuisine?.toLowerCase().includes('continental'));
+    } else if (activeCategory === 'Fast Casual') {
+      list = list.filter(r => r.tags?.some(t => t.toLowerCase().includes('fast')) || r.price === '₹');
+    } else if (activeCategory === 'Student Deals') {
+      list = list.filter(r => r.hasOffer);
+    }
+
+    if (!searchTerm.trim()) return list.slice(0, 8);
     const q = searchTerm.toLowerCase();
-    return safeRestaurants.filter(r =>
+    return list.filter(r =>
       r.name?.toLowerCase().includes(q) ||
       r.cuisine?.toLowerCase().includes(q) ||
       r.popularDishes?.some(d => d.toLowerCase().includes(q))
     );
-  }, [safeRestaurants, searchTerm]);
+  }, [safeRestaurants, searchTerm, activeCategory]);
 
   if (!isOpen) return null;
 
@@ -59,9 +68,9 @@ export default function DistrictSearchModal({ isOpen, onClose }) {
         position: 'fixed',
         inset: 0,
         zIndex: 1000,
-        background: 'rgba(15, 23, 42, 0.45)',
-        backdropFilter: 'blur(6px)',
-        WebkitBackdropFilter: 'blur(6px)',
+        background: 'rgba(15, 23, 42, 0.4)',
+        backdropFilter: 'blur(8px)',
+        WebkitBackdropFilter: 'blur(8px)',
         display: 'flex',
         alignItems: 'flex-start',
         justifyContent: 'center',
@@ -73,10 +82,10 @@ export default function DistrictSearchModal({ isOpen, onClose }) {
         onClick={e => e.stopPropagation()}
         style={{
           width: '100%',
-          maxWidth: 620,
+          maxWidth: 640,
           background: '#FFFFFF',
           borderRadius: 24,
-          boxShadow: '0 25px 60px rgba(0, 0, 0, 0.18)',
+          boxShadow: '0 25px 60px rgba(15, 23, 42, 0.15)',
           padding: '24px',
           display: 'flex',
           flexDirection: 'column',
@@ -90,11 +99,11 @@ export default function DistrictSearchModal({ isOpen, onClose }) {
             display: 'flex',
             alignItems: 'center',
             gap: 12,
-            background: '#FFFFFF',
-            border: '1.5px solid #CBD5E1',
+            background: '#F8FAFC',
+            border: '1.5px solid #E2E8F0',
             borderRadius: 14,
-            padding: '12px 16px',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
+            padding: '12px 18px',
+            boxShadow: '0 1px 2px rgba(0,0,0,0.02)',
           }}
         >
           <Search size={18} color="#64748B" />
@@ -103,7 +112,7 @@ export default function DistrictSearchModal({ isOpen, onClose }) {
             type="text"
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
-            placeholder="Search for 'Vegan Treats' or dishes, cafes..."
+            placeholder="Search campus cafes, rolls, biryani, cold brew..."
             style={{
               flex: 1,
               border: 'none',
@@ -112,13 +121,14 @@ export default function DistrictSearchModal({ isOpen, onClose }) {
               fontWeight: 500,
               color: '#0F172A',
               fontFamily: 'inherit',
+              background: 'transparent',
             }}
           />
           {searchTerm && (
             <button
               onClick={() => setSearchTerm('')}
               style={{
-                background: '#F1F5F9',
+                background: '#E2E8F0',
                 border: 'none',
                 borderRadius: '50%',
                 width: 24,
@@ -127,7 +137,7 @@ export default function DistrictSearchModal({ isOpen, onClose }) {
                 alignItems: 'center',
                 justifyContent: 'center',
                 cursor: 'pointer',
-                color: '#64748B',
+                color: '#475569',
               }}
             >
               <X size={14} />
@@ -135,7 +145,7 @@ export default function DistrictSearchModal({ isOpen, onClose }) {
           )}
         </div>
 
-        {/* Category Pills (Screenshot 3 exact style) */}
+        {/* Category Pills */}
         <div
           style={{
             display: 'flex',
@@ -146,14 +156,14 @@ export default function DistrictSearchModal({ isOpen, onClose }) {
           }}
           className="scrollbar-none"
         >
-          {DISTRICT_CATEGORIES.map(cat => {
+          {CAMPUS_CATEGORIES.map(cat => {
             const isActive = activeCategory === cat;
             return (
               <button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
                 style={{
-                  padding: '7px 18px',
+                  padding: '7px 16px',
                   borderRadius: 99,
                   fontSize: 13,
                   fontWeight: 600,
@@ -161,9 +171,9 @@ export default function DistrictSearchModal({ isOpen, onClose }) {
                   border: 'none',
                   whiteSpace: 'nowrap',
                   transition: 'all 0.15s ease',
-                  background: isActive ? '#9F1239' : '#FFFFFF',
+                  background: isActive ? '#E11D48' : '#F1F5F9',
                   color: isActive ? '#FFFFFF' : '#475569',
-                  boxShadow: isActive ? '0 2px 8px rgba(159, 18, 57, 0.25)' : 'none',
+                  boxShadow: isActive ? '0 2px 8px rgba(225, 29, 72, 0.25)' : 'none',
                 }}
               >
                 {cat}
@@ -182,19 +192,19 @@ export default function DistrictSearchModal({ isOpen, onClose }) {
               fontFamily: "'Plus Jakarta Sans', sans-serif",
             }}
           >
-            Trending in Bennett Campus
+            Recommended Outlets on Campus
           </span>
           <span style={{ fontSize: 11, color: '#94A3B8', fontWeight: 500 }}>
-            {filteredList.length} results
+            {filteredList.length} spots
           </span>
         </div>
 
-        {/* 2-Column Restaurant Results (Screenshot 3 exact layout) */}
+        {/* 2-Column Restaurant Results */}
         <div
           style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(2, 1fr)',
-            gap: '12px 16px',
+            gap: '12px 14px',
             maxHeight: 380,
             overflowY: 'auto',
             paddingRight: 4,
@@ -252,7 +262,7 @@ export default function DistrictSearchModal({ isOpen, onClose }) {
                     whiteSpace: 'nowrap',
                   }}
                 >
-                  {item.cuisine || 'Restaurant'}
+                  {item.cuisine || 'Multi-Cuisine'} · {item.distance || 0.4} km
                 </div>
               </div>
             </div>

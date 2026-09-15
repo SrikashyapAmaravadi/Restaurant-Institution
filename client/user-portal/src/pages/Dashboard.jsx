@@ -51,7 +51,7 @@ export default function Dashboard() {
     { id: 'TopRated', label: '⭐ 4.5+ Top Rated' },
     { id: 'Instant', label: '⚡ Instant Seats' },
     { id: 'NorthIndian', label: '🍛 North Indian' },
-    { id: 'Continental', label: '🍕 Continental' },
+    { id: 'Continental', label: '🍕 Continental & Cafes' },
     { id: 'PanAsian', label: '🍜 Pan-Asian' },
   ];
 
@@ -60,7 +60,7 @@ export default function Dashboard() {
     if (activeFilter === 'Offers') return r.hasOffer;
     if (activeFilter === 'TopRated') return (r.rating || 0) >= 4.5;
     if (activeFilter === 'NorthIndian') return r.cuisine?.toLowerCase().includes('north indian');
-    if (activeFilter === 'Continental') return r.cuisine?.toLowerCase().includes('continental');
+    if (activeFilter === 'Continental') return r.cuisine?.toLowerCase().includes('continental') || r.cuisine?.toLowerCase().includes('cafe');
     if (activeFilter === 'PanAsian') return r.cuisine?.toLowerCase().includes('asian');
     return true;
   });
@@ -70,10 +70,10 @@ export default function Dashboard() {
   return (
     <div style={{ maxWidth: 1160, margin: '0 auto', padding: '24px 20px 100px', display: 'flex', flexDirection: 'column', gap: 36 }}>
 
-      {/* ── 1. DISTRICT HERO BANNER WITH EMBEDDED SEARCH PILL (Screenshot 1) ── */}
+      {/* ── 1. CAMPUS HERO BANNER WITH EMBEDDED SEARCH PILL ── */}
       <div className="district-hero-canvas">
         <div className="district-hero-art">
-          {/* Subtle Decorative Dishes */}
+          {/* Decorative Food Elements */}
           <div style={{ position: 'absolute', top: 18, left: 24, opacity: 0.85 }}>
             <span style={{ fontSize: 38 }}>🍝</span>
           </div>
@@ -84,7 +84,7 @@ export default function Dashboard() {
             <span style={{ fontSize: 38 }}>🥗</span>
           </div>
           <div style={{ position: 'absolute', bottom: 18, right: 24, opacity: 0.85 }}>
-            <span style={{ fontSize: 38 }}>🍷</span>
+            <span style={{ fontSize: 38 }}>☕</span>
           </div>
 
           <div style={{ position: 'relative', zIndex: 2, width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -101,7 +101,7 @@ export default function Dashboard() {
                 gap: 8,
               }}
             >
-              <span>Seamlessly Crafted</span>
+              <span>Welcome back, {firstName}</span>
               <Sparkles size={16} color="#FDE047" />
             </div>
             <div
@@ -115,7 +115,7 @@ export default function Dashboard() {
                 marginTop: 2,
               }}
             >
-              Dining Experiences
+              Campus Dining Experiences
             </div>
 
             {/* Embedded Search Bar Pill */}
@@ -134,7 +134,7 @@ export default function Dashboard() {
                   paddingLeft: 10,
                 }}
               >
-                Search for a restaurant name, cuisine or dish
+                Search campus cafes, rolls, biryani, thali, cold brew...
               </span>
               <button className="district-search-btn">
                 <ArrowRight size={17} />
@@ -166,10 +166,10 @@ export default function Dashboard() {
             }}
           >
             <span style={{ fontSize: 12, fontWeight: 700, color: '#BE185D', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
-              ● LIVE RESERVATION PASS
+              ● ACTIVE BENNETT TABLE PASS
             </span>
             <span style={{ fontSize: 12, color: '#9F1239', fontWeight: 600 }}>
-              Code: {upcoming.passCode || 'BU-8492'}
+              Pass: {upcoming.passCode || 'BU-8492'}
             </span>
           </div>
 
@@ -213,13 +213,13 @@ export default function Dashboard() {
               style={{ borderRadius: 99, padding: '9px 18px' }}
             >
               <QrCode size={15} />
-              <span>Show Pass</span>
+              <span>Show QR Pass</span>
             </button>
           </div>
         </div>
       )}
 
-      {/* ── 3. FILTER PILLS (100% Light Theme) ── */}
+      {/* ── 3. FILTER PILLS ── */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, overflowX: 'auto', paddingBottom: 4 }} className="scrollbar-none">
         {MOOD_FILTERS.map(f => {
           const isActive = activeFilter === f.id;
@@ -246,17 +246,17 @@ export default function Dashboard() {
         })}
       </div>
 
-      {/* ── 4. "BOOK" SECTION (Screenshot 2 exact style) ── */}
+      {/* ── 4. BOOK A TABLE GRID ── */}
       <div>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <Calendar size={24} color="#0F172A" />
             <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 24, fontWeight: 800, color: '#0F172A' }}>
-              Book a Table
+              Book a Table on Campus
             </h2>
           </div>
           <span style={{ fontSize: 13, color: '#64748B', fontWeight: 500 }}>
-            {filteredRestaurants.length} outlets available
+            {filteredRestaurants.length} outlets serving now
           </span>
         </div>
 
@@ -271,14 +271,14 @@ export default function Dashboard() {
             }}
           >
             <UtensilsCrossed size={36} color="#CBD5E1" style={{ margin: '0 auto 12px' }} />
-            <h3 style={{ fontSize: 16, fontWeight: 700, color: '#334155' }}>No restaurants found</h3>
-            <p style={{ fontSize: 13, color: '#94A3B8', marginTop: 4 }}>Try clearing the active filter</p>
+            <h3 style={{ fontSize: 16, fontWeight: 700, color: '#334155' }}>No outlets found</h3>
+            <p style={{ fontSize: 13, color: '#94A3B8', marginTop: 4 }}>Try selecting another category or reset filters</p>
             <button
               onClick={() => setActiveFilter('All')}
               className="btn btn-primary btn-sm"
               style={{ marginTop: 14 }}
             >
-              Show All
+              Show All Outlets
             </button>
           </div>
         ) : (

@@ -21,13 +21,12 @@ import {
 import DistrictSearchModal from '../components/DistrictSearchModal';
 import RestaurantCard from '../components/RestaurantCard';
 
-const DISTRICT_NAV_TABS = [
-  { id: 'foryou', label: 'For you' },
-  { id: 'dining', label: 'Dining', active: true },
-  { id: 'cafeteria', label: 'Cafeteria' },
-  { id: 'hostels', label: 'Hostels' },
-  { id: 'events', label: 'Events' },
-  { id: 'night', label: 'Night Canteen' },
+const CAMPUS_NAV_TABS = [
+  { id: 'foryou', label: 'Home' },
+  { id: 'dining', label: 'Dining Outlets', active: true },
+  { id: 'cafeteria', label: 'Cafeterias' },
+  { id: 'hostels', label: 'Hostel Blocks' },
+  { id: 'night', label: 'Night Tuck Shops' },
 ];
 
 export default function Landing() {
@@ -78,7 +77,7 @@ export default function Landing() {
   return (
     <div style={{ minHeight: '100vh', background: '#FFFFFF', color: '#0F172A', display: 'flex', flexDirection: 'column' }}>
 
-      {/* ── 1. DISTRICT EXACT TOPBAR (Screenshot 1) ── */}
+      {/* ── 1. CAMPUS TOPBAR ── */}
       <header
         style={{
           height: 76,
@@ -94,38 +93,54 @@ export default function Landing() {
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
-          {/* District Logo */}
+          {/* Logo */}
           <div
             onClick={() => navigate('/login')}
-            style={{ display: 'flex', flexDirection: 'column', cursor: 'pointer' }}
+            style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}
           >
-            <span
+            <div
               style={{
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                fontSize: 24,
-                fontWeight: 800,
-                letterSpacing: '-0.04em',
-                color: '#000000',
-                lineHeight: 1,
+                width: 40,
+                height: 40,
+                borderRadius: 12,
+                background: 'linear-gradient(135deg, #E11D48 0%, #BE123C 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#FFFFFF',
+                boxShadow: '0 4px 14px rgba(225, 29, 72, 0.25)',
               }}
             >
-              district
-            </span>
-            <span
-              style={{
-                fontSize: 9.5,
-                fontWeight: 800,
-                letterSpacing: '0.12em',
-                color: '#64748B',
-                textTransform: 'uppercase',
-                marginTop: 2,
-              }}
-            >
-              BY BENNETT
-            </span>
+              <UtensilsCrossed size={21} strokeWidth={2.4} />
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.1 }}>
+              <span
+                style={{
+                  fontFamily: "'Plus Jakarta Sans', sans-serif",
+                  fontSize: 20,
+                  fontWeight: 800,
+                  letterSpacing: '-0.03em',
+                  color: '#0F172A',
+                }}
+              >
+                Dine<span style={{ color: '#E11D48' }}>@Bennett</span>
+              </span>
+              <span
+                style={{
+                  fontSize: 10,
+                  fontWeight: 700,
+                  letterSpacing: '0.08em',
+                  color: '#64748B',
+                  textTransform: 'uppercase',
+                  marginTop: 2,
+                }}
+              >
+                Campus Dining
+              </span>
+            </div>
           </div>
 
-          {/* Location Picker with Purple Pin */}
+          {/* Location Picker */}
           <div
             onClick={() => setSearchModalOpen(true)}
             style={{
@@ -140,7 +155,7 @@ export default function Landing() {
             onMouseEnter={e => e.currentTarget.style.background = '#F8FAFC'}
             onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
           >
-            <MapPin size={20} color="#6D28D9" strokeWidth={2.4} />
+            <MapPin size={19} color="#6D28D9" strokeWidth={2.4} />
             <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.15 }}>
               <span style={{ fontSize: 13.5, fontWeight: 700, color: '#0F172A' }}>
                 Bennett Campus
@@ -152,9 +167,9 @@ export default function Landing() {
           </div>
         </div>
 
-        {/* Category Navigation Pills (Screenshot 1) */}
+        {/* Category Navigation Pills */}
         <nav className="mobile-hide" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          {DISTRICT_NAV_TABS.map(tab => (
+          {CAMPUS_NAV_TABS.map(tab => (
             <button
               key={tab.id}
               onClick={() => navigate('/login')}
@@ -204,7 +219,7 @@ export default function Landing() {
         </div>
       </header>
 
-      {/* ── 2. DISTRICT EXACT HEADLINE (Screenshot 1) ── */}
+      {/* ── 2. HEADLINE ── */}
       <section style={{ padding: 'clamp(36px, 6vw, 64px) 20px 28px', textAlign: 'center' }}>
         <h1
           style={{
@@ -214,11 +229,11 @@ export default function Landing() {
             color: '#0F172A',
             letterSpacing: '-0.03em',
             lineHeight: 1.18,
-            maxWidth: 900,
+            maxWidth: 920,
             margin: '0 auto',
           }}
         >
-          Discover restaurants, explore menus, book tables, pay bills—
+          Discover campus restaurants, explore menus, book tables, dine better—
           <span
             style={{
               color: '#4F46E5',
@@ -233,22 +248,11 @@ export default function Landing() {
         </h1>
       </section>
 
-      {/* ── 3. DISTRICT EXACT HERO BANNER CARD (Screenshot 1) ── */}
+      {/* ── 3. HERO ILLUSTRATED DINING CANVAS ── */}
       <section style={{ padding: '0 clamp(16px, 4vw, 48px) 60px' }}>
         <div className="district-hero-canvas">
           <div className="district-hero-art">
-            {/* Illustrated Culinary Graphic Elements (Simulated with SVGs) */}
-            <div
-              style={{
-                position: 'absolute',
-                inset: 0,
-                backgroundImage: `radial-gradient(circle at 10% 20%, rgba(244, 63, 94, 0.25) 0%, transparent 40%),
-                                  radial-gradient(circle at 90% 80%, rgba(99, 102, 241, 0.3) 0%, transparent 50%)`,
-                pointerEvents: 'none',
-              }}
-            />
-
-            {/* Subtle Illustrated Food Icons on canvas perimeter */}
+            {/* Food Accents */}
             <div style={{ position: 'absolute', top: 20, left: 30, opacity: 0.85 }}>
               <span style={{ fontSize: 44 }}>🍝</span>
             </div>
@@ -259,10 +263,10 @@ export default function Landing() {
               <span style={{ fontSize: 44 }}>🥗</span>
             </div>
             <div style={{ position: 'absolute', bottom: 24, right: 30, opacity: 0.85 }}>
-              <span style={{ fontSize: 44 }}>🍷</span>
+              <span style={{ fontSize: 44 }}>☕</span>
             </div>
 
-            {/* Centered Serif Title */}
+            {/* Centered Typography */}
             <div style={{ position: 'relative', zIndex: 2 }}>
               <div
                 style={{
@@ -291,10 +295,10 @@ export default function Landing() {
                   marginTop: 4,
                 }}
               >
-                Dining Experiences
+                Campus Dining Experiences
               </div>
 
-              {/* Floating White Search Bar Pill (Screenshot 1) */}
+              {/* Floating Search Bar Pill */}
               <div
                 className="district-search-bar"
                 onClick={() => setSearchModalOpen(true)}
@@ -310,7 +314,7 @@ export default function Landing() {
                     paddingLeft: 12,
                   }}
                 >
-                  Search for a restaurant name
+                  Search for a campus cafeteria, tuck shop, or dish
                 </span>
                 <button className="district-search-btn">
                   <ArrowRight size={18} />
@@ -321,7 +325,7 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ── 4. DISTRICT EXACT FEATURE SHOWCASE SPLIT (Screenshot 2) ── */}
+      {/* ── 4. FEATURE SHOWCASE SPLIT ── */}
       <section style={{ maxWidth: 1120, margin: '0 auto', padding: '40px 24px 80px', width: '100%' }}>
         <div
           style={{
@@ -331,11 +335,11 @@ export default function Landing() {
             alignItems: 'center',
           }}
         >
-          {/* Left: Romantic/Warm Restaurant Photography */}
+          {/* Left: Warm Dining Photography */}
           <div style={{ position: 'relative', borderRadius: 28, overflow: 'hidden', boxShadow: '0 16px 40px rgba(0,0,0,0.08)' }}>
             <img
               src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80"
-              alt="Restaurant table setup"
+              alt="Campus restaurant table"
               style={{
                 width: '100%',
                 height: 480,
@@ -345,7 +349,7 @@ export default function Landing() {
             />
           </div>
 
-          {/* Right: Feature Timeline (Screenshot 2 exact copy) */}
+          {/* Right: Feature Timeline */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
             <h2
               style={{
@@ -357,15 +361,14 @@ export default function Landing() {
                 lineHeight: 1.2,
               }}
             >
-              Explore dining experiences{' '}
+              Explore institutional dining{' '}
               <span style={{ color: '#4F46E5', fontStyle: 'italic', fontWeight: 700 }}>
-                tailored to your mood.
+                tailored to campus life.
               </span>
             </h2>
 
             {/* Bullet list with timeline dots */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 20, position: 'relative', paddingLeft: 18 }}>
-              {/* Timeline guide line */}
               <div
                 style={{
                   position: 'absolute',
@@ -406,12 +409,12 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ── 5. DISTRICT "BOOK" SHOWCASE SECTION (Screenshot 2) ── */}
+      {/* ── 5. BOOK A TABLE SHOWCASE ── */}
       <section style={{ maxWidth: 1120, margin: '0 auto', padding: '0 24px 80px', width: '100%' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 28 }}>
           <Calendar size={28} color="#0F172A" />
           <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 28, fontWeight: 800, color: '#0F172A' }}>
-            Book
+            Book a Table
           </h2>
         </div>
 
@@ -433,19 +436,19 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ── 6. PURE LIGHT FOOTER ── */}
+      {/* ── 6. FOOTER ── */}
       <footer style={{ borderTop: '1px solid #EEF0F3', padding: '40px 24px', textAlign: 'center', background: '#FAFAFB', marginTop: 'auto' }}>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 20, fontWeight: 800, color: '#000' }}>
-            district
+          <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 18, fontWeight: 800, color: '#0F172A' }}>
+            Dine<span style={{ color: '#E11D48' }}>@Bennett</span>
           </span>
           <p style={{ fontSize: 13, color: '#64748B' }}>
-            © 2026 DISTRICT BY BENNETT · Institutional Campus Dining Ecosystem
+            © 2026 Dine@Bennett · Bennett University Institutional Campus Dining Ecosystem
           </p>
         </div>
       </footer>
 
-      {/* District Search Modal Overlay */}
+      {/* Campus Search Modal Overlay */}
       <DistrictSearchModal
         isOpen={searchModalOpen}
         onClose={() => setSearchModalOpen(false)}

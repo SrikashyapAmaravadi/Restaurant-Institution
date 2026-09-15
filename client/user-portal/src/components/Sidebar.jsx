@@ -15,7 +15,7 @@ import {
   Sparkles,
   UtensilsCrossed,
   ShieldCheck,
-  Flame,
+  Tag,
 } from 'lucide-react';
 
 export default function Sidebar() {
@@ -63,43 +63,61 @@ export default function Sidebar() {
     >
       {/* Top Section */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
-        {/* District Brand (Light Theme) */}
+        {/* Dine@Bennett Brand (Light Theme) */}
         <div
           onClick={() => navigate('/dashboard')}
           style={{
             display: 'flex',
-            flexDirection: 'column',
+            alignItems: 'center',
+            gap: 12,
             cursor: 'pointer',
-            padding: '4px 8px',
+            padding: '4px 6px',
           }}
         >
-          <span
+          <div
             style={{
-              fontFamily: "'Plus Jakarta Sans', sans-serif",
-              fontSize: 24,
-              fontWeight: 800,
-              letterSpacing: '-0.04em',
-              color: '#000000',
-              lineHeight: 1,
+              width: 38,
+              height: 38,
+              borderRadius: 11,
+              background: 'linear-gradient(135deg, #E11D48 0%, #BE123C 100%)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#FFFFFF',
+              boxShadow: '0 4px 12px rgba(225, 29, 72, 0.25)',
+              flexShrink: 0,
             }}
           >
-            district
-          </span>
-          <span
-            style={{
-              fontSize: 9.5,
-              fontWeight: 800,
-              letterSpacing: '0.14em',
-              color: '#64748B',
-              textTransform: 'uppercase',
-              marginTop: 3,
-            }}
-          >
-            CAMPUS DINING
-          </span>
+            <UtensilsCrossed size={20} strokeWidth={2.4} />
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.15 }}>
+            <span
+              style={{
+                fontFamily: "'Plus Jakarta Sans', sans-serif",
+                fontSize: 17,
+                fontWeight: 800,
+                letterSpacing: '-0.03em',
+                color: '#0F172A',
+              }}
+            >
+              Dine<span style={{ color: '#E11D48' }}>@Bennett</span>
+            </span>
+            <span
+              style={{
+                fontSize: 9.5,
+                fontWeight: 700,
+                letterSpacing: '0.08em',
+                color: '#64748B',
+                textTransform: 'uppercase',
+                marginTop: 2,
+              }}
+            >
+              Campus Dining
+            </span>
+          </div>
         </div>
 
-        {/* Navigation Items (District Light Style) */}
+        {/* Navigation Items (Light Theme) */}
         <nav style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
           <div
             style={{
@@ -111,7 +129,7 @@ export default function Sidebar() {
               padding: '0 12px 6px',
             }}
           >
-            Menu
+            Campus Menu
           </div>
 
           {isStudent && (
@@ -185,7 +203,7 @@ export default function Sidebar() {
                 })}
               >
                 <CalendarDays size={18} />
-                <span style={{ flex: 1 }}>Reservations</span>
+                <span style={{ flex: 1 }}>Table Passes</span>
                 {activeBookingsCount > 0 && (
                   <span
                     style={{
@@ -219,7 +237,7 @@ export default function Sidebar() {
                 })}
               >
                 <Bell size={18} />
-                <span style={{ flex: 1 }}>Updates</span>
+                <span style={{ flex: 1 }}>Campus Alerts</span>
                 {unreadNotifsCount > 0 && (
                   <span
                     style={{
@@ -253,7 +271,7 @@ export default function Sidebar() {
                 })}
               >
                 <User size={18} />
-                <span style={{ flex: 1 }}>Profile & Perks</span>
+                <span style={{ flex: 1 }}>Student ID &amp; Perks</span>
               </NavLink>
             </>
           )}
@@ -377,7 +395,7 @@ export default function Sidebar() {
                 })}
               >
                 <Building2 size={18} />
-                <span style={{ flex: 1 }}>Governance</span>
+                <span style={{ flex: 1 }}>Campus Governance</span>
               </NavLink>
               <NavLink
                 to="/management/superadmin?tab=Restaurants"
@@ -420,7 +438,7 @@ export default function Sidebar() {
         </nav>
       </div>
 
-      {/* Bottom User Card (100% Light Theme) */}
+      {/* Bottom User Card */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         <div
           style={{
@@ -455,7 +473,7 @@ export default function Sidebar() {
                 whiteSpace: 'nowrap',
               }}
             >
-              {user?.name || 'Scholar'}
+              {user?.name || 'Bennett Scholar'}
             </div>
             <div
               style={{
