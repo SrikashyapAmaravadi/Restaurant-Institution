@@ -16,7 +16,8 @@ import {
   Building2,
   X,
   LogOut,
-  UtensilsCrossed
+  Flame,
+  ShieldCheck,
 } from 'lucide-react';
 
 export default function AppLayout() {
@@ -77,11 +78,11 @@ export default function AppLayout() {
       case 'STUDENT':
       default:
         return [
-          { to: '/dashboard', label: 'Home', icon: LayoutDashboard },
-          { to: '/discover', label: 'Discover', icon: Compass },
-          { to: '/bookings', label: 'Bookings', icon: CalendarDays, badge: activeBookingsCount },
+          { to: '/dashboard', label: 'Hotspots', icon: LayoutDashboard },
+          { to: '/discover', label: 'Outlets', icon: Compass },
+          { to: '/bookings', label: 'Passes', icon: CalendarDays, badge: activeBookingsCount },
           { to: '/notifications', label: 'Alerts', icon: Bell, badge: unreadNotifsCount },
-          { to: '/profile', label: 'Profile', icon: User }
+          { to: '/profile', label: 'Dining ID', icon: User }
         ];
     }
   };
@@ -89,7 +90,7 @@ export default function AppLayout() {
   const navItems = getNavItems();
 
   return (
-    <div className="app-layout">
+    <div className="app-layout" style={{ background: '#F7F6F3', minHeight: '100vh' }}>
       <Sidebar />
 
       <div className="main-area">
@@ -99,8 +100,31 @@ export default function AppLayout() {
         </main>
       </div>
 
-      {/* Bottom Nav */}
-      <nav className={`mobile-bottom-nav ${!navVisible ? 'nav-hidden' : ''}`} aria-label="Navigation">
+      {/* Floating Modern Pill Dock for Mobile */}
+      <nav
+        className="mobile-bottom-dock"
+        style={{
+          position: 'fixed',
+          bottom: 20,
+          left: '50%',
+          transform: `translateX(-50%) translateY(${navVisible ? '0' : '100px'})`,
+          transition: 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease',
+          opacity: navVisible ? 1 : 0,
+          width: 'calc(100% - 36px)',
+          maxWidth: 420,
+          background: 'rgba(13, 14, 18, 0.92)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          borderRadius: 99,
+          padding: '8px 12px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-around',
+          boxShadow: '0 16px 36px rgba(0, 0, 0, 0.35)',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          zIndex: 90,
+        }}
+      >
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = location.pathname.startsWith(item.to);
@@ -108,14 +132,50 @@ export default function AppLayout() {
             <NavLink
               key={item.to}
               to={item.to}
-              className={`mobile-nav-item ${isActive ? 'active' : ''}`}
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 3,
+                textDecoration: 'none',
+                position: 'relative',
+                padding: '6px 12px',
+                borderRadius: 99,
+                color: isActive ? '#FFFFFF' : 'rgba(255, 255, 255, 0.5)',
+                background: isActive ? 'rgba(255, 82, 0, 0.25)' : 'transparent',
+                transition: 'all 0.18s ease',
+              }}
             >
-              {isActive && <div className="mobile-nav-active-bg" />}
-              <div className="mobile-nav-icon-wrap">
-                <Icon size={19} />
-                {item.badge > 0 && <span className="mobile-nav-badge">{item.badge}</span>}
+              <div style={{ position: 'relative' }}>
+                <Icon size={19} color={isActive ? '#FF5200' : 'currentColor'} />
+                {item.badge > 0 && (
+                  <span
+                    style={{
+                      position: 'absolute',
+                      top: -4,
+                      right: -8,
+                      minWidth: 16,
+                      height: 16,
+                      padding: '0 4px',
+                      borderRadius: 8,
+                      background: '#FF5200',
+                      color: '#FFF',
+                      fontSize: 9,
+                      fontWeight: 700,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      lineHeight: 1,
+                    }}
+                  >
+                    {item.badge}
+                  </span>
+                )}
               </div>
-              <span className="mobile-nav-label">{item.label}</span>
+              <span style={{ fontSize: 10, fontWeight: isActive ? 600 : 500, letterSpacing: '0.01em' }}>
+                {item.label}
+              </span>
             </NavLink>
           );
         })}
@@ -123,98 +183,148 @@ export default function AppLayout() {
 
       {/* Mobile Drawer */}
       {mobileDrawerOpen && (
-        <div className="mobile-drawer-overlay" onClick={() => setMobileDrawerOpen(false)}>
+        <div
+          className="mobile-drawer-overlay"
+          onClick={() => setMobileDrawerOpen(false)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0,0,0,0.6)',
+            backdropFilter: 'blur(4px)',
+            zIndex: 100,
+            display: 'flex',
+            justifyContent: 'flex-start',
+          }}
+        >
           <div
-            className="mobile-drawer-sheet"
             onClick={e => e.stopPropagation()}
-            style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
+            style={{
+              width: '82%',
+              maxWidth: 320,
+              height: '100%',
+              background: '#0D0E12',
+              color: '#FFF',
+              padding: '24px 20px',
+              display: 'flex',
+              flexDirection: 'column',
+              boxShadow: '8px 0 32px rgba(0,0,0,0.5)',
+            }}
           >
             {/* Drawer Header */}
-            <div style={{
-              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-              marginBottom: 20, paddingBottom: 16, borderBottom: '1px solid #F5F5F5'
-            }}>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                paddingBottom: 20,
+                borderBottom: '1px solid rgba(255,255,255,0.08)',
+                marginBottom: 20,
+              }}
+            >
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <div style={{
-                  width: 34, height: 34, borderRadius: 8,
-                  background: '#FF5200', color: '#FFF',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                }}>
-                  <UtensilsCrossed size={15} />
+                <div
+                  style={{
+                    width: 36,
+                    height: 36,
+                    borderRadius: 10,
+                    background: '#FF5200',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Flame size={20} color="#FFF" />
                 </div>
                 <div>
-                  <div style={{ fontWeight: 700, fontSize: 14, color: '#111' }}>Dine@Bennett</div>
-                  <div style={{ fontSize: 10, color: '#999', fontWeight: 500 }}>Campus Dining</div>
+                  <div style={{ fontWeight: 700, fontSize: 16, color: '#FFF', fontFamily: "'Space Grotesk', sans-serif" }}>
+                    DISTRICT<span style={{ color: '#FF5200' }}>@BU</span>
+                  </div>
+                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>Campus Dining</div>
                 </div>
               </div>
               <button
                 style={{
-                  width: 30, height: 30, borderRadius: 8,
-                  border: '1px solid #EEE', background: '#FFF',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  cursor: 'pointer', color: '#999',
+                  width: 34,
+                  height: 34,
+                  borderRadius: 99,
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  background: 'rgba(255,255,255,0.05)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  color: '#FFF',
                 }}
                 onClick={() => setMobileDrawerOpen(false)}
               >
-                <X size={14} />
+                <X size={16} />
               </button>
             </div>
 
-            {/* User */}
-            <div style={{
-              padding: 12, borderRadius: 12, background: '#FAFAFA',
-              border: '1px solid #F0F0F0', marginBottom: 20,
-              display: 'flex', alignItems: 'center', gap: 10,
-            }}>
+            {/* User Profile */}
+            <div
+              style={{
+                padding: '12px 14px',
+                borderRadius: 14,
+                background: 'rgba(255,255,255,0.05)',
+                border: '1px solid rgba(255,255,255,0.08)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 12,
+                marginBottom: 24,
+              }}
+            >
               <img
                 src={user.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80'}
                 alt={user.name}
-                style={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'cover' }}
+                style={{ width: 40, height: 40, borderRadius: '50%', objectFit: 'cover' }}
               />
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 13, fontWeight: 600, color: '#111', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+                <div style={{ fontSize: 14, fontWeight: 600, color: '#FFF', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
                   {user.name}
                 </div>
-                <div style={{ fontSize: 11, color: '#FF5200', fontWeight: 500 }}>
-                  {user.roleLabel?.split('(')[0] || user.role}
+                <div style={{ fontSize: 11, color: '#FF5200', display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <ShieldCheck size={12} />
+                  <span>{user.roleLabel?.split('(')[0] || user.role || 'Scholar'}</span>
                 </div>
               </div>
             </div>
 
             {/* Nav Links */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 4, flex: 1, overflowY: 'auto' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6, flex: 1, overflowY: 'auto' }}>
               {navItems.map((item) => {
                 const Icon = item.icon;
                 return (
                   <NavLink
                     key={item.to}
                     to={item.to}
-                    className={({ isActive }) =>
-                      `nav-item${isActive ? ' active' : ''}`
-                    }
                     style={({ isActive }) => ({
-                      padding: '10px 14px',
-                      borderRadius: 10,
-                      fontSize: 13,
-                      borderLeft: 'none',
-                      ...(isActive ? {
-                        background: '#FFF5EE',
-                        color: '#FF5200',
-                        fontWeight: 600,
-                      } : {
-                        color: '#555',
-                      })
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 12,
+                      padding: '12px 16px',
+                      borderRadius: 12,
+                      fontSize: 14,
+                      textDecoration: 'none',
+                      color: isActive ? '#FFFFFF' : 'rgba(255,255,255,0.6)',
+                      background: isActive ? 'rgba(255,82,0,0.2)' : 'transparent',
+                      borderLeft: isActive ? '3px solid #FF5200' : '3px solid transparent',
                     })}
                     onClick={() => setMobileDrawerOpen(false)}
                   >
-                    <Icon size={17} />
+                    <Icon size={18} />
                     <span style={{ flex: 1 }}>{item.label}</span>
                     {item.badge > 0 && (
-                      <span style={{
-                        padding: '1px 6px', borderRadius: 99,
-                        background: '#FF5200', color: '#FFF',
-                        fontSize: 10, fontWeight: 700,
-                      }}>
+                      <span
+                        style={{
+                          padding: '2px 7px',
+                          borderRadius: 99,
+                          background: '#FF5200',
+                          color: '#FFF',
+                          fontSize: 10,
+                          fontWeight: 700,
+                        }}
+                      >
                         {item.badge}
                       </span>
                     )}
@@ -224,22 +334,26 @@ export default function AppLayout() {
             </div>
 
             {/* Logout */}
-            <div style={{ borderTop: '1px solid #F0F0F0', paddingTop: 16, marginTop: 'auto' }}>
+            <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: 16, marginTop: 'auto' }}>
               <button
                 style={{
                   width: '100%',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-                  padding: '10px 16px',
-                  borderRadius: 10,
-                  border: '1px solid #FEE2E2',
-                  background: '#FFF',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 8,
+                  padding: '12px 16px',
+                  borderRadius: 12,
+                  border: '1px solid rgba(239, 68, 68, 0.3)',
+                  background: 'rgba(239, 68, 68, 0.1)',
                   color: '#EF4444',
-                  fontSize: 13, fontWeight: 500,
+                  fontSize: 13,
+                  fontWeight: 600,
                   cursor: 'pointer',
                 }}
                 onClick={() => { logout(); navigate('/login'); }}
               >
-                <LogOut size={15} /> Sign out
+                <LogOut size={16} /> Sign out
               </button>
             </div>
           </div>

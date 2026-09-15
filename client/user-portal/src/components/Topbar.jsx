@@ -7,38 +7,61 @@ import {
   MapPin,
   Menu,
   Camera,
+  ChevronDown,
+  Sparkles,
 } from 'lucide-react';
 
 const PAGE_TITLES = {
-  '/dashboard':             'Home',
-  '/discover':              'Discover',
-  '/bookings':              'Reservations',
-  '/notifications':         'Notifications',
-  '/profile':               'Profile',
-  '/restaurant':            'Restaurant',
-  '/management/admin':      'Operations',
-  '/management/staff':      'Host Desk',
-  '/management/superadmin': 'Governance',
+  '/dashboard':             'Explore Hotspots',
+  '/discover':              'All Campus Outlets',
+  '/bookings':              'My Table Passes',
+  '/notifications':         'Campus Alerts',
+  '/profile':               'Dining ID & Perks',
+  '/restaurant':            'Restaurant Profile',
+  '/management/admin':      'Outlet Operations',
+  '/management/staff':      'Live Host Desk',
+  '/management/superadmin': 'Platform Governance',
 };
 
 export default function Topbar({ onOpenMobileDrawer }) {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { notifications = [], openScanner } = useDining() || {};
+  const { notifications = [], openScanner, restaurants = [] } = useDining() || {};
 
   const unreadNotifs = Array.isArray(notifications) ? notifications.filter(n => !n.read).length : 0;
-  const title = Object.entries(PAGE_TITLES).find(([k]) => pathname.startsWith(k))?.[1] ?? 'Dine@Bennett';
+  const title = Object.entries(PAGE_TITLES).find(([k]) => pathname.startsWith(k))?.[1] ?? 'District@BU';
+  const openOutletsCount = Array.isArray(restaurants) ? restaurants.filter(r => r.isOpen !== false).length : 8;
 
   if (!user) {
     return (
-      <header className="topbar">
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontSize: '0.95rem', fontWeight: 700, color: '#111' }}>Dine@Bennett</span>
+      <header
+        style={{
+          height: 64,
+          padding: '0 24px',
+          background: '#0D0E12',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <span
+            style={{
+              fontFamily: "'Space Grotesk', sans-serif",
+              fontSize: 18,
+              fontWeight: 700,
+              color: '#FFF',
+            }}
+          >
+            DISTRICT<span style={{ color: '#FF5200' }}>@BU</span>
+          </span>
         </div>
         <button
           className="btn btn-primary btn-sm"
           onClick={() => navigate('/login')}
+          style={{ borderRadius: 99, padding: '8px 20px' }}
         >
           Sign In
         </button>
@@ -47,135 +70,250 @@ export default function Topbar({ onOpenMobileDrawer }) {
   }
 
   return (
-    <header className="topbar">
-      {/* Left: menu + page context */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 1, minWidth: 0 }}>
+    <header
+      style={{
+        height: 68,
+        padding: '0 28px',
+        background: 'rgba(255, 255, 255, 0.88)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        borderBottom: '1px solid #EBE7E2',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        position: 'sticky',
+        top: 0,
+        zIndex: 40,
+      }}
+    >
+      {/* Left: Mobile Drawer Trigger + Location Switcher */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
         <button
           className="mobile-menu-trigger"
-          style={{
-            width: 36, height: 36,
-            borderRadius: 8,
-            border: '1px solid #EEE',
-            background: '#FFF',
-            color: '#555',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            cursor: 'pointer',
-            flexShrink: 0,
-          }}
           onClick={onOpenMobileDrawer}
-          aria-label="Toggle mobile menu"
+          style={{
+            width: 40,
+            height: 40,
+            borderRadius: 12,
+            border: '1px solid #E4E0DB',
+            background: '#FFFFFF',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            color: '#1A1A1A',
+          }}
+          aria-label="Toggle navigation"
         >
-          <Menu size={17} />
+          <Menu size={18} />
         </button>
 
-        <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
-          <span style={{ fontSize: '0.9rem', fontWeight: 600, color: '#111', lineHeight: 1.2 }}>
-            {title}
-          </span>
-          <button
-            onClick={() => navigate('/discover')}
+        {/* District Location Selector */}
+        <div
+          onClick={() => navigate('/discover')}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 10,
+            padding: '6px 14px',
+            borderRadius: 99,
+            background: '#F5F3F0',
+            border: '1px solid #EAE6E1',
+            cursor: 'pointer',
+            transition: 'all 0.18s ease',
+          }}
+          title="Campus Zone"
+        >
+          <div
             style={{
-              display: 'inline-flex', alignItems: 'center', gap: 4,
-              fontSize: 11, color: '#888', fontWeight: 500,
-              background: 'none', border: 'none', cursor: 'pointer', padding: 0,
-              marginTop: 1,
+              width: 24,
+              height: 24,
+              borderRadius: '50%',
+              background: '#FF5200',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
           >
-            <MapPin size={10} color="#FF5200" />
-            <span>Bennett Campus</span>
-          </button>
+            <MapPin size={13} color="#FFFFFF" />
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+              <span
+                style={{
+                  fontSize: 13,
+                  fontWeight: 700,
+                  color: '#1A1A1A',
+                  fontFamily: "'Space Grotesk', sans-serif",
+                  lineHeight: 1.1,
+                }}
+              >
+                Bennett University
+              </span>
+              <ChevronDown size={13} color="#666" />
+            </div>
+            <span style={{ fontSize: 11, color: '#10B981', fontWeight: 600 }}>
+              ● {openOutletsCount} Outlets Serving Now
+            </span>
+          </div>
         </div>
       </div>
 
-      {/* Right: actions */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
-        {/* Search */}
-        {(user?.role === 'STUDENT' || !user?.role) && (
-          <button
+      {/* Center: Global Search Bar Pill */}
+      {(user?.role === 'STUDENT' || !user?.role) && (
+        <div
+          onClick={() => navigate('/discover')}
+          className="mobile-hide"
+          style={{
+            flex: '0 1 420px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 10,
+            padding: '9px 18px',
+            borderRadius: 99,
+            background: '#FFFFFF',
+            border: '1.5px solid #E5E1DB',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
+            cursor: 'pointer',
+            transition: 'all 0.2s ease',
+          }}
+          onMouseEnter={e => {
+            e.currentTarget.style.borderColor = '#FF5200';
+            e.currentTarget.style.boxShadow = '0 4px 16px rgba(255, 82, 0, 0.1)';
+          }}
+          onMouseLeave={e => {
+            e.currentTarget.style.borderColor = '#E5E1DB';
+            e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.03)';
+          }}
+        >
+          <Search size={16} color="#888" />
+          <span style={{ fontSize: 13, color: '#999', flex: 1, fontWeight: 400 }}>
+            Search cafés, thalis, pizza, shakes...
+          </span>
+          <span
             style={{
-              width: 36, height: 36,
-              borderRadius: 8,
-              border: '1px solid #EEE',
-              background: '#FFF',
+              fontSize: 10,
+              fontWeight: 700,
               color: '#888',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              cursor: 'pointer',
+              background: '#F4F1ED',
+              padding: '3px 7px',
+              borderRadius: 6,
+              border: '1px solid #E5E0DA',
             }}
-            onClick={() => navigate('/discover')}
-            title="Search"
           >
-            <Search size={16} />
-          </button>
-        )}
+            ⌘K
+          </span>
+        </div>
+      )}
 
-        {/* Notifications */}
+      {/* Right: Quick Actions */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        {/* Alerts Button */}
         <button
+          onClick={() => navigate('/notifications')}
           style={{
             position: 'relative',
-            width: 36, height: 36,
-            borderRadius: 8,
-            border: '1px solid #EEE',
-            background: '#FFF',
-            color: '#888',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            width: 40,
+            height: 40,
+            borderRadius: 99,
+            border: '1px solid #E5E1DB',
+            background: '#FFFFFF',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
             cursor: 'pointer',
+            color: '#333',
+            transition: 'all 0.15s ease',
           }}
-          onClick={() => navigate('/notifications')}
-          title="Notifications"
+          title="Alerts"
         >
-          <Bell size={16} />
+          <Bell size={18} />
           {unreadNotifs > 0 && (
-            <span style={{
-              position: 'absolute', top: 7, right: 7,
-              width: 6, height: 6, borderRadius: '50%',
-              background: '#FF5200', border: '1.5px solid #FFF',
-            }} />
+            <span
+              style={{
+                position: 'absolute',
+                top: 8,
+                right: 8,
+                width: 8,
+                height: 8,
+                borderRadius: '50%',
+                background: '#FF5200',
+                border: '2px solid #FFF',
+              }}
+            />
           )}
         </button>
 
-        {/* Scanner */}
+        {/* Scan / Host Button */}
         <button
-          style={{
-            display: 'inline-flex', alignItems: 'center', gap: 5,
-            padding: '7px 14px',
-            height: 36,
-            borderRadius: 8,
-            background: '#111',
-            color: '#FFF',
-            border: 'none',
-            fontSize: 12, fontWeight: 600,
-            cursor: 'pointer',
-          }}
           onClick={openScanner}
-          title="Open QR Scanner"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 7,
+            padding: '9px 18px',
+            borderRadius: 99,
+            background: '#0D0E12',
+            color: '#FFFFFF',
+            border: 'none',
+            fontSize: 13,
+            fontWeight: 600,
+            cursor: 'pointer',
+            boxShadow: '0 4px 14px rgba(0, 0, 0, 0.2)',
+            transition: 'all 0.2s ease',
+          }}
+          onMouseEnter={e => {
+            e.currentTarget.style.background = '#222';
+            e.currentTarget.style.transform = 'translateY(-1px)';
+          }}
+          onMouseLeave={e => {
+            e.currentTarget.style.background = '#0D0E12';
+            e.currentTarget.style.transform = 'translateY(0)';
+          }}
         >
-          <Camera size={14} />
-          <span className="mobile-hide">Scan</span>
+          <Camera size={15} color="#FF5200" />
+          <span className="mobile-hide">QR Pass</span>
         </button>
 
-        {/* Avatar */}
-        <button
-          style={{
-            display: 'flex', alignItems: 'center', gap: 6,
-            padding: '3px 10px 3px 3px',
-            borderRadius: 99,
-            border: '1px solid #EEE',
-            background: '#FFF',
-            cursor: 'pointer',
-            marginLeft: 2,
-          }}
+        {/* User Avatar Pill */}
+        <div
           onClick={() => navigate('/profile')}
-          title="Profile"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            padding: '4px 12px 4px 4px',
+            borderRadius: 99,
+            background: '#F5F3F0',
+            border: '1px solid #E5E1DB',
+            cursor: 'pointer',
+          }}
         >
           <img
             src={user?.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80'}
             alt={user?.name || 'User'}
-            style={{ width: 26, height: 26, borderRadius: '50%', objectFit: 'cover' }}
+            style={{
+              width: 32,
+              height: 32,
+              borderRadius: '50%',
+              objectFit: 'cover',
+            }}
           />
-          <span className="mobile-hide" style={{ fontSize: 12, fontWeight: 500, color: '#333', maxWidth: 80, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
-            {(user?.name || 'User').split(' ')[0]}
+          <span
+            className="mobile-hide"
+            style={{
+              fontSize: 12.5,
+              fontWeight: 600,
+              color: '#1A1A1A',
+              maxWidth: 90,
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {(user?.name || 'Scholar').split(' ')[0]}
           </span>
-        </button>
+        </div>
       </div>
     </header>
   );

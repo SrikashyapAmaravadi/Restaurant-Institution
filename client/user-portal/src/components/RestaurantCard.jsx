@@ -1,8 +1,22 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Star, MapPin, Sparkles, ChevronRight, Tag, CalendarDays } from 'lucide-react';
+import {
+  Star,
+  MapPin,
+  Sparkles,
+  ChevronRight,
+  Tag,
+  CalendarDays,
+  Clock,
+  Heart,
+  Zap,
+  Flame,
+} from 'lucide-react';
 
 export default function RestaurantCard({ restaurant, onQuickReserve, onViewOffer }) {
   const navigate = useNavigate();
+  const [isLiked, setIsLiked] = useState(false);
+
   const {
     id,
     name,
@@ -11,7 +25,7 @@ export default function RestaurantCard({ restaurant, onQuickReserve, onViewOffer
     price = '₹₹',
     rating = 4.8,
     reviews = 142,
-    distance = 0.8,
+    distance = 0.4,
     isOpen = true,
     hasOffer = true,
     offerLabel = '20% OFF',
@@ -24,10 +38,10 @@ export default function RestaurantCard({ restaurant, onQuickReserve, onViewOffer
     (hasOffer
       ? {
           id: `offer-${id}`,
-          title: offerLabel ? `${offerLabel} Campus Special` : 'Student Exclusive Offer',
-          description: `Save with ${offerLabel || 'exclusive discounts'} with verified Bennett credentials.`,
+          title: offerLabel ? `${offerLabel} Campus Exclusive` : 'Student Special Deal',
+          description: `Enjoy ${offerLabel || 'special discounts'} on all dining bills with your Bennett Student ID.`,
           discount: offerLabel || '20% OFF',
-          promoCode: `BENNETT${id}0`,
+          promoCode: `CAMPUS${id || '20'}`,
           validTill: 'End of Semester',
           restaurantName: name,
         }
@@ -35,10 +49,13 @@ export default function RestaurantCard({ restaurant, onQuickReserve, onViewOffer
 
   const handleCardClick = () => navigate(`/restaurant/${id}`);
 
-  const handleBookClick = (e) => {
+  const handleBookClick = (e, slotTime = null) => {
     e.stopPropagation();
-    if (onQuickReserve) onQuickReserve(restaurant);
-    else navigate(`/restaurant/${id}?reserve=true`);
+    if (onQuickReserve) {
+      onQuickReserve({ ...restaurant, defaultTime: slotTime });
+    } else {
+      navigate(`/restaurant/${id}?reserve=true${slotTime ? `&time=${slotTime}` : ''}`);
+    }
   };
 
   const handleOfferClick = (e) => {
@@ -50,7 +67,7 @@ export default function RestaurantCard({ restaurant, onQuickReserve, onViewOffer
         restaurantId: id,
         title: activeOffer.title || `${offerLabel || '20% OFF'} Campus Exclusive`,
         description: activeOffer.description || 'Special dining discount for verified students.',
-        code: activeOffer.promoCode || activeOffer.code || `BENNETT${id}0`,
+        code: activeOffer.promoCode || activeOffer.code || `CAMPUS${id || '20'}`,
         validTill: activeOffer.endDate || activeOffer.validTill || 'End of Semester',
       };
       if (onViewOffer) onViewOffer(fullOffer);
@@ -62,160 +79,352 @@ export default function RestaurantCard({ restaurant, onQuickReserve, onViewOffer
     ? reviews
     : (Array.isArray(reviews) ? reviews.length : 142);
 
+  const quickSlots = ['12:30 PM', '1:15 PM', '7:30 PM', '8:15 PM'];
+
   return (
     <div
       onClick={handleCardClick}
+      className="district-card"
       style={{
-        background: '#FFF',
-        borderRadius: 16,
-        border: '1px solid #EEE',
+        background: '#FFFFFF',
+        borderRadius: 22,
+        border: '1px solid #ECE8E3',
+        boxShadow: '0 4px 18px rgba(0, 0, 0, 0.04)',
         overflow: 'hidden',
         cursor: 'pointer',
-        display: 'flex', flexDirection: 'column',
+        display: 'flex',
+        flexDirection: 'column',
+        position: 'relative',
         transition: 'transform 0.25s cubic-bezier(0.16,1,0.3,1), box-shadow 0.25s ease',
       }}
       onMouseEnter={e => {
-        e.currentTarget.style.transform = 'translateY(-4px)';
-        e.currentTarget.style.boxShadow = '0 12px 32px rgba(0,0,0,0.10)';
+        e.currentTarget.style.transform = 'translateY(-6px)';
+        e.currentTarget.style.boxShadow = '0 18px 40px rgba(0, 0, 0, 0.1)';
       }}
       onMouseLeave={e => {
         e.currentTarget.style.transform = 'translateY(0)';
-        e.currentTarget.style.boxShadow = 'none';
+        e.currentTarget.style.boxShadow = '0 4px 18px rgba(0, 0, 0, 0.04)';
       }}
     >
-      {/* Image */}
-      <div style={{ position: 'relative', aspectRatio: '16/10', overflow: 'hidden', background: '#F5F5F5' }}>
+      {/* ── Image & Badges Container ── */}
+      <div style={{ position: 'relative', width: '100%', height: 210, overflow: 'hidden', background: '#222' }}>
         <img
-          src={image || 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80'}
+          src={
+            image ||
+            'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80'
+          }
           alt={name}
-          loading="lazy"
           style={{
-            width: '100%', height: '100%', objectFit: 'cover',
-            transition: 'transform 0.4s cubic-bezier(0.16,1,0.3,1)',
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            transition: 'transform 0.45s ease',
           }}
-          onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
-          onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+          onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.06)'}
+          onMouseLeave={e => e.currentTarget.style.transform = 'scale(1.0)'}
         />
 
-        {/* Gradient overlay */}
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.35) 0%, transparent 50%)' }} />
+        {/* Gradient Overlay */}
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            background: 'linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0) 45%, rgba(0,0,0,0.75) 100%)',
+            pointerEvents: 'none',
+          }}
+        />
 
-        {/* Status pill */}
-        <div style={{ position: 'absolute', top: 10, right: 10, zIndex: 2 }}>
-          <span style={{
-            display: 'inline-flex', alignItems: 'center', gap: 5,
-            padding: '4px 10px',
-            borderRadius: 99,
-            background: 'rgba(255,255,255,0.95)',
-            backdropFilter: 'blur(8px)',
-            fontSize: 11, fontWeight: 600, color: '#333',
-          }}>
-            <span style={{
-              width: 6, height: 6, borderRadius: '50%',
-              background: isOpen ? '#22C55E' : '#EF4444',
-            }} />
-            {isOpen ? 'Open' : 'Closed'}
-          </span>
+        {/* Top Badges Row */}
+        <div
+          style={{
+            position: 'absolute',
+            top: 12,
+            left: 12,
+            right: 12,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            zIndex: 2,
+          }}
+        >
+          {/* Vibe / Trending Pill */}
+          <div
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 5,
+              padding: '5px 11px',
+              borderRadius: 99,
+              background: 'rgba(13, 14, 18, 0.75)',
+              backdropFilter: 'blur(10px)',
+              WebkitBackdropFilter: 'blur(10px)',
+              color: '#FFFFFF',
+              fontSize: 11,
+              fontWeight: 600,
+              border: '1px solid rgba(255,255,255,0.15)',
+            }}
+          >
+            <Flame size={12} color="#FF5200" />
+            <span>Trending Hotspot</span>
+          </div>
+
+          {/* Right: Rating Pill + Like Button */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            {/* Rating */}
+            <div
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 4,
+                padding: '4px 10px',
+                borderRadius: 99,
+                background: '#10B981',
+                color: '#FFFFFF',
+                fontSize: 12,
+                fontWeight: 700,
+                boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+              }}
+            >
+              <span>{rating}</span>
+              <Star size={11} fill="#FFF" color="#FFF" />
+            </div>
+
+            {/* Favorite Button */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsLiked(!isLiked);
+              }}
+              style={{
+                width: 32,
+                height: 32,
+                borderRadius: 99,
+                background: 'rgba(13, 14, 18, 0.65)',
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(255,255,255,0.2)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                color: isLiked ? '#EF4444' : '#FFFFFF',
+              }}
+            >
+              <Heart size={14} fill={isLiked ? '#EF4444' : 'none'} />
+            </button>
+          </div>
         </div>
 
-        {/* Offer badge */}
-        {hasOffer && (
-          <div style={{ position: 'absolute', bottom: 10, left: 10, zIndex: 2 }}>
-            <span style={{
-              display: 'inline-flex', alignItems: 'center', gap: 4,
-              padding: '4px 10px',
+        {/* Bottom Overlay Info (on image) */}
+        <div
+          style={{
+            position: 'absolute',
+            bottom: 10,
+            left: 14,
+            right: 14,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            color: '#FFFFFF',
+            zIndex: 2,
+          }}
+        >
+          <span style={{ fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.95)' }}>
+            {price} · Approx ₹250 for two
+          </span>
+          <span
+            style={{
+              fontSize: 11,
+              fontWeight: 600,
+              padding: '3px 8px',
               borderRadius: 6,
-              background: '#FF5200',
-              fontSize: 10.5, fontWeight: 700, color: '#FFF',
-            }}>
-              {offerLabel || '20% OFF'}
+              background: isOpen ? 'rgba(16, 185, 129, 0.25)' : 'rgba(239, 68, 68, 0.25)',
+              color: isOpen ? '#34D399' : '#FCA5A5',
+              border: `1px solid ${isOpen ? 'rgba(52, 211, 153, 0.4)' : 'rgba(252, 165, 165, 0.4)'}`,
+            }}
+          >
+            {isOpen ? '● Open Now' : 'Closed'}
+          </span>
+        </div>
+      </div>
+
+      {/* ── Card Content ── */}
+      <div style={{ padding: '16px 18px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+        {/* Name & Distance */}
+        <div>
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
+            <h3
+              style={{
+                fontFamily: "'Space Grotesk', sans-serif",
+                fontSize: 17,
+                fontWeight: 700,
+                color: '#1A1A1A',
+                letterSpacing: '-0.02em',
+                lineHeight: 1.25,
+              }}
+            >
+              {name}
+            </h3>
+          </div>
+
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              marginTop: 4,
+              fontSize: 12.5,
+              color: '#777',
+              flexWrap: 'wrap',
+            }}
+          >
+            <span style={{ fontWeight: 500 }}>{cuisine || 'Multi-Cuisine'}</span>
+            <span>•</span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3 }}>
+              <MapPin size={11} color="#FF5200" />
+              {distance} km · 4 min walk
+            </span>
+            <span>•</span>
+            <span>{displayReviewCount} reviews</span>
+          </div>
+        </div>
+
+        {/* ── District Perforated Coupon Ribbon ── */}
+        {activeOffer && (
+          <div
+            onClick={handleOfferClick}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '8px 12px',
+              borderRadius: 10,
+              background: 'linear-gradient(90deg, #FFF7ED 0%, #FFF1E6 100%)',
+              border: '1px dashed #F97316',
+              cursor: 'pointer',
+              position: 'relative',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+              <Tag size={13} color="#FF5200" />
+              <span style={{ fontSize: 11.5, fontWeight: 700, color: '#C2410C', letterSpacing: '0.01em' }}>
+                {activeOffer.discount || '20% OFF'}
+              </span>
+              <span style={{ fontSize: 11, color: '#9A3412', fontWeight: 500 }}>
+                · Code: <strong style={{ textDecoration: 'underline' }}>{activeOffer.promoCode || `CAMPUS20`}</strong>
+              </span>
+            </div>
+            <span style={{ fontSize: 11, fontWeight: 700, color: '#EA580C' }}>
+              CLAIM ▾
             </span>
           </div>
         )}
-      </div>
 
-      {/* Body */}
-      <div style={{ padding: '14px 16px 16px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+        {/* ── Instant Slot Booking Row (District Experience) ── */}
         <div>
-          {/* Name + Rating */}
-          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
-            <h3 style={{
-              fontSize: 15, fontWeight: 600, color: '#111',
-              lineHeight: 1.3,
-              overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-            }}>
-              {name}
-            </h3>
-            <span style={{
-              display: 'inline-flex', alignItems: 'center', gap: 3,
-              padding: '2px 7px',
-              borderRadius: 6,
-              background: '#F0FDF4', border: '1px solid #DCF5DC',
-              fontSize: 11, fontWeight: 600, color: '#16A34A',
-              flexShrink: 0,
-            }}>
-              <Star size={10} style={{ fill: '#22C55E', color: '#22C55E' }} />
-              {rating}
-            </span>
+          <div
+            style={{
+              fontSize: 11,
+              fontWeight: 600,
+              color: '#999',
+              textTransform: 'uppercase',
+              letterSpacing: '0.04em',
+              marginBottom: 6,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 4,
+            }}
+          >
+            <Zap size={11} color="#FF5200" />
+            <span>Instant Table Slots Today</span>
           </div>
 
-          {/* Meta */}
-          <div style={{ fontSize: 12, color: '#999', marginTop: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
-            <span style={{ fontWeight: 500 }}>{cuisine}</span>
-            <span>·</span>
-            <span>{distance} km</span>
-            <span>·</span>
-            <span style={{ fontWeight: 500 }}>{price}</span>
+          <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 2 }} className="scrollbar-none">
+            {quickSlots.map(slot => (
+              <button
+                key={slot}
+                onClick={(e) => handleBookClick(e, slot)}
+                style={{
+                  padding: '5px 10px',
+                  borderRadius: 8,
+                  background: '#F5F3F0',
+                  border: '1px solid #E5E1DB',
+                  color: '#1A1A1A',
+                  fontSize: 11,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                  transition: 'all 0.15s ease',
+                  flexShrink: 0,
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.background = '#FF5200';
+                  e.currentTarget.style.color = '#FFF';
+                  e.currentTarget.style.borderColor = '#FF5200';
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.background = '#F5F3F0';
+                  e.currentTarget.style.color = '#1A1A1A';
+                  e.currentTarget.style.borderColor = '#E5E1DB';
+                }}
+              >
+                {slot}
+              </button>
+            ))}
           </div>
-
-          {/* Tagline */}
-          <p style={{
-            fontSize: 12, color: '#AAA', marginTop: 8, lineHeight: 1.4,
-            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-          }}>
-            {popularDishes && popularDishes.length > 0
-              ? `Popular: ${popularDishes.slice(0, 3).join(', ')}`
-              : tagline || 'Campus dining partner'}
-          </p>
         </div>
 
-        {/* Footer */}
-        <div style={{
-          marginTop: 14, paddingTop: 12,
-          borderTop: '1px solid #F5F5F5',
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          gap: 8,
-        }}>
-          {activeOffer ? (
-            <button
-              onClick={handleOfferClick}
-              style={{
-                display: 'inline-flex', alignItems: 'center', gap: 4,
-                padding: '6px 10px',
-                borderRadius: 6,
-                background: '#FFFBEB', border: '1px solid #FDE68A',
-                color: '#92400E',
-                fontSize: 11, fontWeight: 600,
-                cursor: 'pointer',
-              }}
-            >
-              <Tag size={11} />
-              {activeOffer.promoCode || 'BENNETT20'}
-              <ChevronRight size={11} style={{ color: '#D97706' }} />
-            </button>
-          ) : (
-            <span style={{ fontSize: 11, color: '#CCC', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-              <MapPin size={11} /> Partner
-            </span>
-          )}
-
+        {/* ── Action Buttons Row ── */}
+        <div style={{ display: 'flex', gap: 8, paddingTop: 4, borderTop: '1px solid #F3EFEA' }}>
           <button
             onClick={handleBookClick}
-            className="btn btn-primary btn-xs"
-            style={{ borderRadius: 8, fontSize: 11.5, fontWeight: 600, padding: '6px 14px' }}
+            style={{
+              flex: 1,
+              padding: '9px 14px',
+              borderRadius: 99,
+              background: '#0D0E12',
+              color: '#FFFFFF',
+              border: 'none',
+              fontSize: 12.5,
+              fontWeight: 600,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 6,
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.background = '#FF5200';
+              e.currentTarget.style.transform = 'translateY(-1px)';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.background = '#0D0E12';
+              e.currentTarget.style.transform = 'translateY(0)';
+            }}
           >
-            <CalendarDays size={12} />
-            Reserve
+            <CalendarDays size={13} />
+            <span>Book Table</span>
+          </button>
+
+          <button
+            onClick={handleCardClick}
+            style={{
+              padding: '9px 14px',
+              borderRadius: 99,
+              background: '#F5F3F0',
+              color: '#333333',
+              border: '1px solid #E5E1DB',
+              fontSize: 12.5,
+              fontWeight: 600,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 4,
+              cursor: 'pointer',
+            }}
+          >
+            <span>Menu</span>
+            <ChevronRight size={13} />
           </button>
         </div>
       </div>
