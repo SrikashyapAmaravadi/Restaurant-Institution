@@ -13,8 +13,9 @@ import {
   ConciergeBell,
   Store,
   Sparkles,
-  Flame,
+  UtensilsCrossed,
   ShieldCheck,
+  Flame,
 } from 'lucide-react';
 
 export default function Sidebar() {
@@ -44,93 +45,73 @@ export default function Sidebar() {
 
   return (
     <aside
-      className="sidebar-container"
       style={{
         width: 260,
         height: '100vh',
         position: 'sticky',
         top: 0,
-        background: '#0D0E12',
-        borderRight: '1px solid rgba(255, 255, 255, 0.07)',
+        background: '#FFFFFF',
+        borderRight: '1px solid #EEF0F3',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
-        padding: '24px 16px',
-        color: '#FFF',
+        padding: '24px 18px',
         zIndex: 50,
         flexShrink: 0,
-        boxShadow: '4px 0 24px rgba(0,0,0,0.25)',
+        boxShadow: '2px 0 12px rgba(0, 0, 0, 0.02)',
       }}
     >
       {/* Top Section */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
-        {/* Brand Logo */}
+        {/* District Brand (Light Theme) */}
         <div
           onClick={() => navigate('/dashboard')}
           style={{
             display: 'flex',
-            alignItems: 'center',
-            gap: 12,
+            flexDirection: 'column',
             cursor: 'pointer',
             padding: '4px 8px',
           }}
         >
-          <div
+          <span
             style={{
-              width: 42,
-              height: 42,
-              borderRadius: 14,
-              background: 'linear-gradient(135deg, #FF5200 0%, #E02B00 100%)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: '0 8px 20px rgba(255, 82, 0, 0.35)',
-              position: 'relative',
+              fontFamily: "'Plus Jakarta Sans', sans-serif",
+              fontSize: 24,
+              fontWeight: 800,
+              letterSpacing: '-0.04em',
+              color: '#000000',
+              lineHeight: 1,
             }}
           >
-            <Flame size={22} color="#FFFFFF" strokeWidth={2.4} />
-          </div>
-          <div>
-            <div
-              style={{
-                fontFamily: "'Space Grotesk', sans-serif",
-                fontSize: 18,
-                fontWeight: 700,
-                letterSpacing: '-0.02em',
-                color: '#FFFFFF',
-                lineHeight: 1.1,
-              }}
-            >
-              DISTRICT<span style={{ color: '#FF5200' }}>@BU</span>
-            </div>
-            <div
-              style={{
-                fontSize: 11,
-                color: 'rgba(255, 255, 255, 0.45)',
-                fontWeight: 500,
-                letterSpacing: '0.04em',
-                textTransform: 'uppercase',
-                marginTop: 2,
-              }}
-            >
-              Campus Dining
-            </div>
-          </div>
+            district
+          </span>
+          <span
+            style={{
+              fontSize: 9.5,
+              fontWeight: 800,
+              letterSpacing: '0.14em',
+              color: '#64748B',
+              textTransform: 'uppercase',
+              marginTop: 3,
+            }}
+          >
+            CAMPUS DINING
+          </span>
         </div>
 
-        {/* Navigation Items */}
-        <nav style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        {/* Navigation Items (District Light Style) */}
+        <nav style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
           <div
             style={{
-              fontSize: 10,
+              fontSize: 11,
               fontWeight: 700,
               textTransform: 'uppercase',
-              letterSpacing: '0.08em',
-              color: 'rgba(255, 255, 255, 0.35)',
+              letterSpacing: '0.06em',
+              color: '#94A3B8',
               padding: '0 12px 6px',
             }}
           >
-            Discover & Dine
+            Menu
           </div>
 
           {isStudent && (
@@ -141,21 +122,18 @@ export default function Sidebar() {
                   display: 'flex',
                   alignItems: 'center',
                   gap: 12,
-                  padding: '11px 14px',
-                  borderRadius: 12,
-                  fontSize: 14,
-                  fontWeight: isActive ? 600 : 500,
-                  color: isActive ? '#FFFFFF' : 'rgba(255, 255, 255, 0.65)',
-                  background: isActive
-                    ? 'linear-gradient(90deg, rgba(255, 82, 0, 0.22) 0%, rgba(255, 82, 0, 0.05) 100%)'
-                    : 'transparent',
-                  borderLeft: isActive ? '3px solid #FF5200' : '3px solid transparent',
+                  padding: '10px 14px',
+                  borderRadius: 99,
+                  fontSize: 13.5,
+                  fontWeight: isActive ? 700 : 500,
+                  color: isActive ? '#BE185D' : '#334155',
+                  background: isActive ? '#FFE4E6' : 'transparent',
                   textDecoration: 'none',
-                  transition: 'all 0.18s ease',
+                  transition: 'all 0.15s ease',
                 })}
               >
                 <LayoutDashboard size={18} />
-                <span style={{ flex: 1 }}>Explore Hotspots</span>
+                <span style={{ flex: 1 }}>Dining Home</span>
               </NavLink>
 
               <NavLink
@@ -164,29 +142,26 @@ export default function Sidebar() {
                   display: 'flex',
                   alignItems: 'center',
                   gap: 12,
-                  padding: '11px 14px',
-                  borderRadius: 12,
-                  fontSize: 14,
-                  fontWeight: isActive ? 600 : 500,
-                  color: isActive ? '#FFFFFF' : 'rgba(255, 255, 255, 0.65)',
-                  background: isActive
-                    ? 'linear-gradient(90deg, rgba(255, 82, 0, 0.22) 0%, rgba(255, 82, 0, 0.05) 100%)'
-                    : 'transparent',
-                  borderLeft: isActive ? '3px solid #FF5200' : '3px solid transparent',
+                  padding: '10px 14px',
+                  borderRadius: 99,
+                  fontSize: 13.5,
+                  fontWeight: isActive ? 700 : 500,
+                  color: isActive ? '#BE185D' : '#334155',
+                  background: isActive ? '#FFE4E6' : 'transparent',
                   textDecoration: 'none',
-                  transition: 'all 0.18s ease',
+                  transition: 'all 0.15s ease',
                 })}
               >
                 <Compass size={18} />
-                <span style={{ flex: 1 }}>All Outlets</span>
+                <span style={{ flex: 1 }}>Explore Outlets</span>
                 <span
                   style={{
-                    fontSize: 10,
+                    fontSize: 11,
                     fontWeight: 700,
-                    padding: '2px 7px',
+                    padding: '2px 8px',
                     borderRadius: 99,
-                    background: 'rgba(255, 255, 255, 0.1)',
-                    color: 'rgba(255, 255, 255, 0.8)',
+                    background: '#F1F5F9',
+                    color: '#475569',
                   }}
                 >
                   {safeRestaurants.length}
@@ -199,21 +174,18 @@ export default function Sidebar() {
                   display: 'flex',
                   alignItems: 'center',
                   gap: 12,
-                  padding: '11px 14px',
-                  borderRadius: 12,
-                  fontSize: 14,
-                  fontWeight: isActive ? 600 : 500,
-                  color: isActive ? '#FFFFFF' : 'rgba(255, 255, 255, 0.65)',
-                  background: isActive
-                    ? 'linear-gradient(90deg, rgba(255, 82, 0, 0.22) 0%, rgba(255, 82, 0, 0.05) 100%)'
-                    : 'transparent',
-                  borderLeft: isActive ? '3px solid #FF5200' : '3px solid transparent',
+                  padding: '10px 14px',
+                  borderRadius: 99,
+                  fontSize: 13.5,
+                  fontWeight: isActive ? 700 : 500,
+                  color: isActive ? '#BE185D' : '#334155',
+                  background: isActive ? '#FFE4E6' : 'transparent',
                   textDecoration: 'none',
-                  transition: 'all 0.18s ease',
+                  transition: 'all 0.15s ease',
                 })}
               >
                 <CalendarDays size={18} />
-                <span style={{ flex: 1 }}>My Table Passes</span>
+                <span style={{ flex: 1 }}>Reservations</span>
                 {activeBookingsCount > 0 && (
                   <span
                     style={{
@@ -221,9 +193,8 @@ export default function Sidebar() {
                       fontWeight: 700,
                       padding: '2px 7px',
                       borderRadius: 99,
-                      background: '#FF5200',
+                      background: '#E11D48',
                       color: '#FFFFFF',
-                      boxShadow: '0 0 10px rgba(255, 82, 0, 0.5)',
                     }}
                   >
                     {activeBookingsCount}
@@ -237,21 +208,18 @@ export default function Sidebar() {
                   display: 'flex',
                   alignItems: 'center',
                   gap: 12,
-                  padding: '11px 14px',
-                  borderRadius: 12,
-                  fontSize: 14,
-                  fontWeight: isActive ? 600 : 500,
-                  color: isActive ? '#FFFFFF' : 'rgba(255, 255, 255, 0.65)',
-                  background: isActive
-                    ? 'linear-gradient(90deg, rgba(255, 82, 0, 0.22) 0%, rgba(255, 82, 0, 0.05) 100%)'
-                    : 'transparent',
-                  borderLeft: isActive ? '3px solid #FF5200' : '3px solid transparent',
+                  padding: '10px 14px',
+                  borderRadius: 99,
+                  fontSize: 13.5,
+                  fontWeight: isActive ? 700 : 500,
+                  color: isActive ? '#BE185D' : '#334155',
+                  background: isActive ? '#FFE4E6' : 'transparent',
                   textDecoration: 'none',
-                  transition: 'all 0.18s ease',
+                  transition: 'all 0.15s ease',
                 })}
               >
                 <Bell size={18} />
-                <span style={{ flex: 1 }}>Live Alerts</span>
+                <span style={{ flex: 1 }}>Updates</span>
                 {unreadNotifsCount > 0 && (
                   <span
                     style={{
@@ -259,7 +227,7 @@ export default function Sidebar() {
                       fontWeight: 700,
                       padding: '2px 7px',
                       borderRadius: 99,
-                      background: '#10B981',
+                      background: '#059669',
                       color: '#FFFFFF',
                     }}
                   >
@@ -274,21 +242,18 @@ export default function Sidebar() {
                   display: 'flex',
                   alignItems: 'center',
                   gap: 12,
-                  padding: '11px 14px',
-                  borderRadius: 12,
-                  fontSize: 14,
-                  fontWeight: isActive ? 600 : 500,
-                  color: isActive ? '#FFFFFF' : 'rgba(255, 255, 255, 0.65)',
-                  background: isActive
-                    ? 'linear-gradient(90deg, rgba(255, 82, 0, 0.22) 0%, rgba(255, 82, 0, 0.05) 100%)'
-                    : 'transparent',
-                  borderLeft: isActive ? '3px solid #FF5200' : '3px solid transparent',
+                  padding: '10px 14px',
+                  borderRadius: 99,
+                  fontSize: 13.5,
+                  fontWeight: isActive ? 700 : 500,
+                  color: isActive ? '#BE185D' : '#334155',
+                  background: isActive ? '#FFE4E6' : 'transparent',
                   textDecoration: 'none',
-                  transition: 'all 0.18s ease',
+                  transition: 'all 0.15s ease',
                 })}
               >
                 <User size={18} />
-                <span style={{ flex: 1 }}>Dining ID & Perks</span>
+                <span style={{ flex: 1 }}>Profile & Perks</span>
               </NavLink>
             </>
           )}
@@ -301,18 +266,17 @@ export default function Sidebar() {
                   display: 'flex',
                   alignItems: 'center',
                   gap: 12,
-                  padding: '11px 14px',
-                  borderRadius: 12,
-                  fontSize: 14,
-                  fontWeight: isActive ? 600 : 500,
-                  color: isActive ? '#FFFFFF' : 'rgba(255, 255, 255, 0.65)',
-                  background: isActive ? 'rgba(255, 82, 0, 0.15)' : 'transparent',
-                  borderLeft: isActive ? '3px solid #FF5200' : '3px solid transparent',
+                  padding: '10px 14px',
+                  borderRadius: 99,
+                  fontSize: 13.5,
+                  fontWeight: isActive ? 700 : 500,
+                  color: isActive ? '#BE185D' : '#334155',
+                  background: isActive ? '#FFE4E6' : 'transparent',
                   textDecoration: 'none',
                 })}
               >
                 <ChefHat size={18} />
-                <span style={{ flex: 1 }}>Outlet Operations</span>
+                <span style={{ flex: 1 }}>Outlet Manager</span>
               </NavLink>
               <NavLink
                 to="/management/staff"
@@ -320,18 +284,17 @@ export default function Sidebar() {
                   display: 'flex',
                   alignItems: 'center',
                   gap: 12,
-                  padding: '11px 14px',
-                  borderRadius: 12,
-                  fontSize: 14,
-                  fontWeight: isActive ? 600 : 500,
-                  color: isActive ? '#FFFFFF' : 'rgba(255, 255, 255, 0.65)',
-                  background: isActive ? 'rgba(255, 82, 0, 0.15)' : 'transparent',
-                  borderLeft: isActive ? '3px solid #FF5200' : '3px solid transparent',
+                  padding: '10px 14px',
+                  borderRadius: 99,
+                  fontSize: 13.5,
+                  fontWeight: isActive ? 700 : 500,
+                  color: isActive ? '#BE185D' : '#334155',
+                  background: isActive ? '#FFE4E6' : 'transparent',
                   textDecoration: 'none',
                 })}
               >
                 <ConciergeBell size={18} />
-                <span style={{ flex: 1 }}>Live Host Desk</span>
+                <span style={{ flex: 1 }}>Host Desk</span>
               </NavLink>
               <NavLink
                 to="/profile"
@@ -339,13 +302,12 @@ export default function Sidebar() {
                   display: 'flex',
                   alignItems: 'center',
                   gap: 12,
-                  padding: '11px 14px',
-                  borderRadius: 12,
-                  fontSize: 14,
-                  fontWeight: isActive ? 600 : 500,
-                  color: isActive ? '#FFFFFF' : 'rgba(255, 255, 255, 0.65)',
-                  background: isActive ? 'rgba(255, 82, 0, 0.15)' : 'transparent',
-                  borderLeft: isActive ? '3px solid #FF5200' : '3px solid transparent',
+                  padding: '10px 14px',
+                  borderRadius: 99,
+                  fontSize: 13.5,
+                  fontWeight: isActive ? 700 : 500,
+                  color: isActive ? '#BE185D' : '#334155',
+                  background: isActive ? '#FFE4E6' : 'transparent',
                   textDecoration: 'none',
                 })}
               >
@@ -363,13 +325,12 @@ export default function Sidebar() {
                   display: 'flex',
                   alignItems: 'center',
                   gap: 12,
-                  padding: '11px 14px',
-                  borderRadius: 12,
-                  fontSize: 14,
-                  fontWeight: isActive ? 600 : 500,
-                  color: isActive ? '#FFFFFF' : 'rgba(255, 255, 255, 0.65)',
-                  background: isActive ? 'rgba(255, 82, 0, 0.15)' : 'transparent',
-                  borderLeft: isActive ? '3px solid #FF5200' : '3px solid transparent',
+                  padding: '10px 14px',
+                  borderRadius: 99,
+                  fontSize: 13.5,
+                  fontWeight: isActive ? 700 : 500,
+                  color: isActive ? '#BE185D' : '#334155',
+                  background: isActive ? '#FFE4E6' : 'transparent',
                   textDecoration: 'none',
                 })}
               >
@@ -382,13 +343,12 @@ export default function Sidebar() {
                   display: 'flex',
                   alignItems: 'center',
                   gap: 12,
-                  padding: '11px 14px',
-                  borderRadius: 12,
-                  fontSize: 14,
-                  fontWeight: isActive ? 600 : 500,
-                  color: isActive ? '#FFFFFF' : 'rgba(255, 255, 255, 0.65)',
-                  background: isActive ? 'rgba(255, 82, 0, 0.15)' : 'transparent',
-                  borderLeft: isActive ? '3px solid #FF5200' : '3px solid transparent',
+                  padding: '10px 14px',
+                  borderRadius: 99,
+                  fontSize: 13.5,
+                  fontWeight: isActive ? 700 : 500,
+                  color: isActive ? '#BE185D' : '#334155',
+                  background: isActive ? '#FFE4E6' : 'transparent',
                   textDecoration: 'none',
                 })}
               >
@@ -407,18 +367,17 @@ export default function Sidebar() {
                   display: 'flex',
                   alignItems: 'center',
                   gap: 12,
-                  padding: '11px 14px',
-                  borderRadius: 12,
-                  fontSize: 14,
-                  fontWeight: isActive && !location.search.includes('Restaurants') ? 600 : 500,
-                  color: isActive && !location.search.includes('Restaurants') ? '#FFFFFF' : 'rgba(255, 255, 255, 0.65)',
-                  background: isActive && !location.search.includes('Restaurants') ? 'rgba(255, 82, 0, 0.15)' : 'transparent',
-                  borderLeft: isActive && !location.search.includes('Restaurants') ? '3px solid #FF5200' : '3px solid transparent',
+                  padding: '10px 14px',
+                  borderRadius: 99,
+                  fontSize: 13.5,
+                  fontWeight: isActive && !location.search.includes('Restaurants') ? 700 : 500,
+                  color: isActive && !location.search.includes('Restaurants') ? '#BE185D' : '#334155',
+                  background: isActive && !location.search.includes('Restaurants') ? '#FFE4E6' : 'transparent',
                   textDecoration: 'none',
                 })}
               >
                 <Building2 size={18} />
-                <span style={{ flex: 1 }}>Platform Governance</span>
+                <span style={{ flex: 1 }}>Governance</span>
               </NavLink>
               <NavLink
                 to="/management/superadmin?tab=Restaurants"
@@ -426,31 +385,17 @@ export default function Sidebar() {
                   display: 'flex',
                   alignItems: 'center',
                   gap: 12,
-                  padding: '11px 14px',
-                  borderRadius: 12,
-                  fontSize: 14,
-                  fontWeight: location.pathname === '/management/superadmin' && location.search.includes('Restaurants') ? 600 : 500,
-                  color: location.pathname === '/management/superadmin' && location.search.includes('Restaurants') ? '#FFFFFF' : 'rgba(255, 255, 255, 0.65)',
-                  background: location.pathname === '/management/superadmin' && location.search.includes('Restaurants') ? 'rgba(255, 82, 0, 0.15)' : 'transparent',
-                  borderLeft: location.pathname === '/management/superadmin' && location.search.includes('Restaurants') ? '3px solid #FF5200' : '3px solid transparent',
+                  padding: '10px 14px',
+                  borderRadius: 99,
+                  fontSize: 13.5,
+                  fontWeight: location.pathname === '/management/superadmin' && location.search.includes('Restaurants') ? 700 : 500,
+                  color: location.pathname === '/management/superadmin' && location.search.includes('Restaurants') ? '#BE185D' : '#334155',
+                  background: location.pathname === '/management/superadmin' && location.search.includes('Restaurants') ? '#FFE4E6' : 'transparent',
                   textDecoration: 'none',
                 })}
               >
                 <Store size={18} />
                 <span style={{ flex: 1 }}>Manage Outlets</span>
-                {safeRestaurants.length > 0 && (
-                  <span
-                    style={{
-                      fontSize: 10,
-                      fontWeight: 700,
-                      padding: '2px 7px',
-                      borderRadius: 99,
-                      background: 'rgba(255, 255, 255, 0.1)',
-                    }}
-                  >
-                    {safeRestaurants.length}
-                  </span>
-                )}
               </NavLink>
               <NavLink
                 to="/profile"
@@ -458,13 +403,12 @@ export default function Sidebar() {
                   display: 'flex',
                   alignItems: 'center',
                   gap: 12,
-                  padding: '11px 14px',
-                  borderRadius: 12,
-                  fontSize: 14,
-                  fontWeight: isActive ? 600 : 500,
-                  color: isActive ? '#FFFFFF' : 'rgba(255, 255, 255, 0.65)',
-                  background: isActive ? 'rgba(255, 82, 0, 0.15)' : 'transparent',
-                  borderLeft: isActive ? '3px solid #FF5200' : '3px solid transparent',
+                  padding: '10px 14px',
+                  borderRadius: 99,
+                  fontSize: 13.5,
+                  fontWeight: isActive ? 700 : 500,
+                  color: isActive ? '#BE185D' : '#334155',
+                  background: isActive ? '#FFE4E6' : 'transparent',
                   textDecoration: 'none',
                 })}
               >
@@ -476,53 +420,51 @@ export default function Sidebar() {
         </nav>
       </div>
 
-      {/* Bottom Profile & VIP Card */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-        {/* VIP Dining Badge Card */}
+      {/* Bottom User Card (100% Light Theme) */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         <div
           style={{
-            padding: '14px',
+            padding: '12px 14px',
             borderRadius: 16,
-            background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%)',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
+            background: '#F8FAFC',
+            border: '1px solid #E2E8F0',
             display: 'flex',
             alignItems: 'center',
-            gap: 12,
+            gap: 10,
           }}
         >
           <img
             src={user?.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80'}
             alt={user?.name || 'User'}
             style={{
-              width: 38,
-              height: 38,
-              borderRadius: 12,
+              width: 36,
+              height: 36,
+              borderRadius: '50%',
               objectFit: 'cover',
-              border: '1.5px solid rgba(255, 82, 0, 0.5)',
+              border: '1.5px solid #CBD5E1',
             }}
           />
           <div style={{ flex: 1, minWidth: 0 }}>
             <div
               style={{
                 fontSize: 13,
-                fontWeight: 600,
-                color: '#FFFFFF',
+                fontWeight: 700,
+                color: '#0F172A',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
                 whiteSpace: 'nowrap',
               }}
             >
-              {user?.name || 'Bennett Scholar'}
+              {user?.name || 'Scholar'}
             </div>
             <div
               style={{
                 fontSize: 11,
-                color: '#FF5200',
+                color: '#059669',
                 display: 'flex',
                 alignItems: 'center',
                 gap: 4,
-                marginTop: 2,
-                fontWeight: 500,
+                fontWeight: 600,
               }}
             >
               <ShieldCheck size={12} />
@@ -537,30 +479,31 @@ export default function Sidebar() {
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: 10,
-            padding: '10px 14px',
-            borderRadius: 10,
-            background: 'transparent',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
-            color: 'rgba(255, 255, 255, 0.5)',
-            fontSize: 13,
-            fontWeight: 500,
+            justifyContent: 'center',
+            gap: 8,
+            padding: '9px 14px',
+            borderRadius: 99,
+            background: '#FFFFFF',
+            border: '1px solid #E2E8F0',
+            color: '#64748B',
+            fontSize: 12.5,
+            fontWeight: 600,
             cursor: 'pointer',
-            transition: 'all 0.18s ease',
+            transition: 'all 0.15s ease',
           }}
           onMouseEnter={e => {
-            e.currentTarget.style.color = '#EF4444';
-            e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.3)';
-            e.currentTarget.style.background = 'rgba(239, 68, 68, 0.08)';
+            e.currentTarget.style.color = '#DC2626';
+            e.currentTarget.style.borderColor = '#FECACA';
+            e.currentTarget.style.background = '#FEF2F2';
           }}
           onMouseLeave={e => {
-            e.currentTarget.style.color = 'rgba(255, 255, 255, 0.5)';
-            e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)';
-            e.currentTarget.style.background = 'transparent';
+            e.currentTarget.style.color = '#64748B';
+            e.currentTarget.style.borderColor = '#E2E8F0';
+            e.currentTarget.style.background = '#FFFFFF';
           }}
         >
-          <LogOut size={16} />
-          <span>Exit Session</span>
+          <LogOut size={15} />
+          <span>Sign Out</span>
         </button>
       </div>
     </aside>

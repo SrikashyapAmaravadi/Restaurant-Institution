@@ -1,320 +1,242 @@
+import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useDining } from '../context/DiningContext';
 import {
-  Bell,
   Search,
   MapPin,
   Menu,
-  Camera,
   ChevronDown,
-  Sparkles,
+  User as UserIcon,
 } from 'lucide-react';
+import DistrictSearchModal from './DistrictSearchModal';
 
-const PAGE_TITLES = {
-  '/dashboard':             'Explore Hotspots',
-  '/discover':              'All Campus Outlets',
-  '/bookings':              'My Table Passes',
-  '/notifications':         'Campus Alerts',
-  '/profile':               'Dining ID & Perks',
-  '/restaurant':            'Restaurant Profile',
-  '/management/admin':      'Outlet Operations',
-  '/management/staff':      'Live Host Desk',
-  '/management/superadmin': 'Platform Governance',
-};
+const DISTRICT_NAV_TABS = [
+  { id: 'foryou', label: 'For you', path: '/dashboard' },
+  { id: 'dining', label: 'Dining', path: '/dashboard' },
+  { id: 'outlets', label: 'Outlets', path: '/discover' },
+  { id: 'passes', label: 'Passes', path: '/bookings' },
+  { id: 'cafeteria', label: 'Cafeteria', path: '/discover?tag=Cafeteria' },
+  { id: 'events', label: 'Events', path: '/notifications' },
+];
 
 export default function Topbar({ onOpenMobileDrawer }) {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { notifications = [], openScanner, restaurants = [] } = useDining() || {};
+  const { notifications = [] } = useDining() || {};
+  const [searchModalOpen, setSearchModalOpen] = useState(false);
 
   const unreadNotifs = Array.isArray(notifications) ? notifications.filter(n => !n.read).length : 0;
-  const title = Object.entries(PAGE_TITLES).find(([k]) => pathname.startsWith(k))?.[1] ?? 'District@BU';
-  const openOutletsCount = Array.isArray(restaurants) ? restaurants.filter(r => r.isOpen !== false).length : 8;
 
-  if (!user) {
-    return (
+  return (
+    <>
       <header
         style={{
-          height: 64,
-          padding: '0 24px',
-          background: '#0D0E12',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+          height: 72,
+          padding: '0 clamp(16px, 3vw, 36px)',
+          background: '#FFFFFF',
+          borderBottom: '1px solid #EEF0F3',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
+          position: 'sticky',
+          top: 0,
+          zIndex: 40,
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <span
+        {/* Left: District Logo + Location Picker */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
+          {/* Mobile Menu Trigger */}
+          <button
+            className="mobile-menu-trigger"
+            onClick={onOpenMobileDrawer}
             style={{
-              fontFamily: "'Space Grotesk', sans-serif",
-              fontSize: 18,
-              fontWeight: 700,
-              color: '#FFF',
-            }}
-          >
-            DISTRICT<span style={{ color: '#FF5200' }}>@BU</span>
-          </span>
-        </div>
-        <button
-          className="btn btn-primary btn-sm"
-          onClick={() => navigate('/login')}
-          style={{ borderRadius: 99, padding: '8px 20px' }}
-        >
-          Sign In
-        </button>
-      </header>
-    );
-  }
-
-  return (
-    <header
-      style={{
-        height: 68,
-        padding: '0 28px',
-        background: 'rgba(255, 255, 255, 0.88)',
-        backdropFilter: 'blur(20px)',
-        WebkitBackdropFilter: 'blur(20px)',
-        borderBottom: '1px solid #EBE7E2',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        position: 'sticky',
-        top: 0,
-        zIndex: 40,
-      }}
-    >
-      {/* Left: Mobile Drawer Trigger + Location Switcher */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-        <button
-          className="mobile-menu-trigger"
-          onClick={onOpenMobileDrawer}
-          style={{
-            width: 40,
-            height: 40,
-            borderRadius: 12,
-            border: '1px solid #E4E0DB',
-            background: '#FFFFFF',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-            color: '#1A1A1A',
-          }}
-          aria-label="Toggle navigation"
-        >
-          <Menu size={18} />
-        </button>
-
-        {/* District Location Selector */}
-        <div
-          onClick={() => navigate('/discover')}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 10,
-            padding: '6px 14px',
-            borderRadius: 99,
-            background: '#F5F3F0',
-            border: '1px solid #EAE6E1',
-            cursor: 'pointer',
-            transition: 'all 0.18s ease',
-          }}
-          title="Campus Zone"
-        >
-          <div
-            style={{
-              width: 24,
-              height: 24,
-              borderRadius: '50%',
-              background: '#FF5200',
+              width: 38,
+              height: 38,
+              borderRadius: 10,
+              border: '1px solid #E2E8F0',
+              background: '#FFFFFF',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
+              cursor: 'pointer',
+              color: '#0F172A',
             }}
+            aria-label="Toggle navigation"
           >
-            <MapPin size={13} color="#FFFFFF" />
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-              <span
-                style={{
-                  fontSize: 13,
-                  fontWeight: 700,
-                  color: '#1A1A1A',
-                  fontFamily: "'Space Grotesk', sans-serif",
-                  lineHeight: 1.1,
-                }}
-              >
-                Bennett University
-              </span>
-              <ChevronDown size={13} color="#666" />
-            </div>
-            <span style={{ fontSize: 11, color: '#10B981', fontWeight: 600 }}>
-              ● {openOutletsCount} Outlets Serving Now
-            </span>
-          </div>
-        </div>
-      </div>
+            <Menu size={18} />
+          </button>
 
-      {/* Center: Global Search Bar Pill */}
-      {(user?.role === 'STUDENT' || !user?.role) && (
-        <div
-          onClick={() => navigate('/discover')}
-          className="mobile-hide"
-          style={{
-            flex: '0 1 420px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 10,
-            padding: '9px 18px',
-            borderRadius: 99,
-            background: '#FFFFFF',
-            border: '1.5px solid #E5E1DB',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
-            cursor: 'pointer',
-            transition: 'all 0.2s ease',
-          }}
-          onMouseEnter={e => {
-            e.currentTarget.style.borderColor = '#FF5200';
-            e.currentTarget.style.boxShadow = '0 4px 16px rgba(255, 82, 0, 0.1)';
-          }}
-          onMouseLeave={e => {
-            e.currentTarget.style.borderColor = '#E5E1DB';
-            e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.03)';
-          }}
-        >
-          <Search size={16} color="#888" />
-          <span style={{ fontSize: 13, color: '#999', flex: 1, fontWeight: 400 }}>
-            Search cafés, thalis, pizza, shakes...
-          </span>
-          <span
-            style={{
-              fontSize: 10,
-              fontWeight: 700,
-              color: '#888',
-              background: '#F4F1ED',
-              padding: '3px 7px',
-              borderRadius: 6,
-              border: '1px solid #E5E0DA',
-            }}
+          {/* District Logo (Exact Screenshot 1 Style) */}
+          <div
+            onClick={() => navigate('/dashboard')}
+            style={{ display: 'flex', flexDirection: 'column', cursor: 'pointer' }}
           >
-            ⌘K
-          </span>
-        </div>
-      )}
-
-      {/* Right: Quick Actions */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-        {/* Alerts Button */}
-        <button
-          onClick={() => navigate('/notifications')}
-          style={{
-            position: 'relative',
-            width: 40,
-            height: 40,
-            borderRadius: 99,
-            border: '1px solid #E5E1DB',
-            background: '#FFFFFF',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-            color: '#333',
-            transition: 'all 0.15s ease',
-          }}
-          title="Alerts"
-        >
-          <Bell size={18} />
-          {unreadNotifs > 0 && (
             <span
               style={{
-                position: 'absolute',
-                top: 8,
-                right: 8,
-                width: 8,
-                height: 8,
-                borderRadius: '50%',
-                background: '#FF5200',
-                border: '2px solid #FFF',
+                fontFamily: "'Plus Jakarta Sans', sans-serif",
+                fontSize: 22,
+                fontWeight: 800,
+                letterSpacing: '-0.04em',
+                color: '#000000',
+                lineHeight: 1,
               }}
-            />
-          )}
-        </button>
+            >
+              district
+            </span>
+            <span
+              style={{
+                fontSize: 9,
+                fontWeight: 800,
+                letterSpacing: '0.14em',
+                color: '#475569',
+                textTransform: 'uppercase',
+                marginTop: 2,
+              }}
+            >
+              BY BENNETT
+            </span>
+          </div>
 
-        {/* Scan / Host Button */}
-        <button
-          onClick={openScanner}
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 7,
-            padding: '9px 18px',
-            borderRadius: 99,
-            background: '#0D0E12',
-            color: '#FFFFFF',
-            border: 'none',
-            fontSize: 13,
-            fontWeight: 600,
-            cursor: 'pointer',
-            boxShadow: '0 4px 14px rgba(0, 0, 0, 0.2)',
-            transition: 'all 0.2s ease',
-          }}
-          onMouseEnter={e => {
-            e.currentTarget.style.background = '#222';
-            e.currentTarget.style.transform = 'translateY(-1px)';
-          }}
-          onMouseLeave={e => {
-            e.currentTarget.style.background = '#0D0E12';
-            e.currentTarget.style.transform = 'translateY(0)';
-          }}
-        >
-          <Camera size={15} color="#FF5200" />
-          <span className="mobile-hide">QR Pass</span>
-        </button>
+          {/* District Location Picker (Purple Pin + City/Area) */}
+          <div
+            onClick={() => navigate('/discover')}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              cursor: 'pointer',
+              padding: '6px 10px',
+              borderRadius: 8,
+              transition: 'background 0.15s ease',
+            }}
+            onMouseEnter={e => e.currentTarget.style.background = '#F8FAFC'}
+            onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+          >
+            <div
+              style={{
+                color: '#6D28D9',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <MapPin size={19} strokeWidth={2.4} />
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.15 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+                <span style={{ fontSize: 13.5, fontWeight: 700, color: '#0F172A' }}>
+                  Bennett Campus
+                </span>
+                <ChevronDown size={13} color="#64748B" />
+              </div>
+              <span style={{ fontSize: 11, color: '#64748B', fontWeight: 500 }}>
+                Greater Noida
+              </span>
+            </div>
+          </div>
+        </div>
 
-        {/* User Avatar Pill */}
-        <div
-          onClick={() => navigate('/profile')}
+        {/* Center: Top Category Tabs (Screenshot 1: "For you", "Dining" pill, "Movies"...) */}
+        <nav
+          className="mobile-hide"
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: 8,
-            padding: '4px 12px 4px 4px',
-            borderRadius: 99,
-            background: '#F5F3F0',
-            border: '1px solid #E5E1DB',
-            cursor: 'pointer',
+            gap: 4,
           }}
         >
-          <img
-            src={user?.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80'}
-            alt={user?.name || 'User'}
+          {DISTRICT_NAV_TABS.map(tab => {
+            const isDining = tab.id === 'dining';
+            return (
+              <button
+                key={tab.id}
+                onClick={() => navigate(tab.path)}
+                style={{
+                  padding: '7px 16px',
+                  borderRadius: 99,
+                  fontSize: 13.5,
+                  fontWeight: isDining ? 700 : 500,
+                  color: isDining ? '#BE185D' : '#334155',
+                  background: isDining ? '#FFE4E6' : 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease',
+                }}
+                onMouseEnter={e => {
+                  if (!isDining) e.currentTarget.style.background = '#F1F5F9';
+                }}
+                onMouseLeave={e => {
+                  if (!isDining) e.currentTarget.style.background = 'transparent';
+                }}
+              >
+                {tab.label}
+              </button>
+            );
+          })}
+        </nav>
+
+        {/* Right: Search Icon Button + Avatar */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+          {/* Search Trigger (Opens District Search Modal) */}
+          <button
+            onClick={() => setSearchModalOpen(true)}
             style={{
-              width: 32,
-              height: 32,
+              width: 40,
+              height: 40,
               borderRadius: '50%',
-              objectFit: 'cover',
+              border: 'none',
+              background: '#F8FAFC',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              color: '#6D28D9',
+              transition: 'background 0.15s ease',
             }}
-          />
-          <span
-            className="mobile-hide"
-            style={{
-              fontSize: 12.5,
-              fontWeight: 600,
-              color: '#1A1A1A',
-              maxWidth: 90,
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-            }}
+            title="Search restaurants"
+            onMouseEnter={e => e.currentTarget.style.background = '#F1F5F9'}
+            onMouseLeave={e => e.currentTarget.style.background = '#F8FAFC'}
           >
-            {(user?.name || 'Scholar').split(' ')[0]}
-          </span>
+            <Search size={19} strokeWidth={2.2} />
+          </button>
+
+          {/* User Profile Avatar */}
+          <div
+            onClick={() => navigate('/profile')}
+            style={{
+              width: 38,
+              height: 38,
+              borderRadius: '50%',
+              background: '#E2E8F0',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              overflow: 'hidden',
+              border: '1.5px solid #CBD5E1',
+            }}
+            title={user?.name || 'Profile'}
+          >
+            {user?.avatar ? (
+              <img
+                src={user.avatar}
+                alt={user.name || 'User'}
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
+            ) : (
+              <UserIcon size={20} color="#64748B" />
+            )}
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
+
+      {/* District Search Modal Overlay */}
+      <DistrictSearchModal
+        isOpen={searchModalOpen}
+        onClose={() => setSearchModalOpen(false)}
+      />
+    </>
   );
 }

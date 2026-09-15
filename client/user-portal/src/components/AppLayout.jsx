@@ -16,7 +16,6 @@ import {
   Building2,
   X,
   LogOut,
-  Flame,
   ShieldCheck,
 } from 'lucide-react';
 
@@ -78,11 +77,11 @@ export default function AppLayout() {
       case 'STUDENT':
       default:
         return [
-          { to: '/dashboard', label: 'Hotspots', icon: LayoutDashboard },
+          { to: '/dashboard', label: 'Dining', icon: LayoutDashboard },
           { to: '/discover', label: 'Outlets', icon: Compass },
           { to: '/bookings', label: 'Passes', icon: CalendarDays, badge: activeBookingsCount },
           { to: '/notifications', label: 'Alerts', icon: Bell, badge: unreadNotifsCount },
-          { to: '/profile', label: 'Dining ID', icon: User }
+          { to: '/profile', label: 'Profile', icon: User }
         ];
     }
   };
@@ -90,7 +89,7 @@ export default function AppLayout() {
   const navItems = getNavItems();
 
   return (
-    <div className="app-layout" style={{ background: '#F7F6F3', minHeight: '100vh' }}>
+    <div className="app-layout" style={{ background: '#FFFFFF', minHeight: '100vh' }}>
       <Sidebar />
 
       <div className="main-area">
@@ -100,28 +99,28 @@ export default function AppLayout() {
         </main>
       </div>
 
-      {/* Floating Modern Pill Dock for Mobile */}
+      {/* Floating Modern Pill Dock for Mobile (100% Light Theme) */}
       <nav
         className="mobile-bottom-dock"
         style={{
           position: 'fixed',
-          bottom: 20,
+          bottom: 18,
           left: '50%',
           transform: `translateX(-50%) translateY(${navVisible ? '0' : '100px'})`,
-          transition: 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease',
+          transition: 'transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.28s ease',
           opacity: navVisible ? 1 : 0,
-          width: 'calc(100% - 36px)',
-          maxWidth: 420,
-          background: 'rgba(13, 14, 18, 0.92)',
+          width: 'calc(100% - 32px)',
+          maxWidth: 400,
+          background: 'rgba(255, 255, 255, 0.94)',
           backdropFilter: 'blur(20px)',
           WebkitBackdropFilter: 'blur(20px)',
           borderRadius: 99,
-          padding: '8px 12px',
+          padding: '6px 10px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-around',
-          boxShadow: '0 16px 36px rgba(0, 0, 0, 0.35)',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
+          boxShadow: '0 12px 32px rgba(15, 23, 42, 0.12)',
+          border: '1px solid #E2E8F0',
           zIndex: 90,
         }}
       >
@@ -137,18 +136,18 @@ export default function AppLayout() {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: 3,
+                gap: 2,
                 textDecoration: 'none',
                 position: 'relative',
-                padding: '6px 12px',
+                padding: '6px 14px',
                 borderRadius: 99,
-                color: isActive ? '#FFFFFF' : 'rgba(255, 255, 255, 0.5)',
-                background: isActive ? 'rgba(255, 82, 0, 0.25)' : 'transparent',
+                color: isActive ? '#BE185D' : '#64748B',
+                background: isActive ? '#FFE4E6' : 'transparent',
                 transition: 'all 0.18s ease',
               }}
             >
               <div style={{ position: 'relative' }}>
-                <Icon size={19} color={isActive ? '#FF5200' : 'currentColor'} />
+                <Icon size={19} color={isActive ? '#BE185D' : 'currentColor'} strokeWidth={isActive ? 2.4 : 1.8} />
                 {item.badge > 0 && (
                   <span
                     style={{
@@ -159,9 +158,9 @@ export default function AppLayout() {
                       height: 16,
                       padding: '0 4px',
                       borderRadius: 8,
-                      background: '#FF5200',
+                      background: '#E11D48',
                       color: '#FFF',
-                      fontSize: 9,
+                      fontSize: 9.5,
                       fontWeight: 700,
                       display: 'flex',
                       alignItems: 'center',
@@ -173,7 +172,7 @@ export default function AppLayout() {
                   </span>
                 )}
               </div>
-              <span style={{ fontSize: 10, fontWeight: isActive ? 600 : 500, letterSpacing: '0.01em' }}>
+              <span style={{ fontSize: 10, fontWeight: isActive ? 700 : 500 }}>
                 {item.label}
               </span>
             </NavLink>
@@ -181,7 +180,7 @@ export default function AppLayout() {
         })}
       </nav>
 
-      {/* Mobile Drawer */}
+      {/* Mobile Drawer (100% Light Theme) */}
       {mobileDrawerOpen && (
         <div
           className="mobile-drawer-overlay"
@@ -189,7 +188,7 @@ export default function AppLayout() {
           style={{
             position: 'fixed',
             inset: 0,
-            background: 'rgba(0,0,0,0.6)',
+            background: 'rgba(15, 23, 42, 0.4)',
             backdropFilter: 'blur(4px)',
             zIndex: 100,
             display: 'flex',
@@ -199,15 +198,15 @@ export default function AppLayout() {
           <div
             onClick={e => e.stopPropagation()}
             style={{
-              width: '82%',
+              width: '84%',
               maxWidth: 320,
               height: '100%',
-              background: '#0D0E12',
-              color: '#FFF',
+              background: '#FFFFFF',
+              color: '#0F172A',
               padding: '24px 20px',
               display: 'flex',
               flexDirection: 'column',
-              boxShadow: '8px 0 32px rgba(0,0,0,0.5)',
+              boxShadow: '10px 0 40px rgba(0, 0, 0, 0.1)',
             }}
           >
             {/* Drawer Header */}
@@ -216,44 +215,31 @@ export default function AppLayout() {
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                paddingBottom: 20,
-                borderBottom: '1px solid rgba(255,255,255,0.08)',
+                paddingBottom: 18,
+                borderBottom: '1px solid #EEF0F3',
                 marginBottom: 20,
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <div
-                  style={{
-                    width: 36,
-                    height: 36,
-                    borderRadius: 10,
-                    background: '#FF5200',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <Flame size={20} color="#FFF" />
-                </div>
-                <div>
-                  <div style={{ fontWeight: 700, fontSize: 16, color: '#FFF', fontFamily: "'Space Grotesk', sans-serif" }}>
-                    DISTRICT<span style={{ color: '#FF5200' }}>@BU</span>
-                  </div>
-                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>Campus Dining</div>
-                </div>
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 22, fontWeight: 800, color: '#000' }}>
+                  district
+                </span>
+                <span style={{ fontSize: 9.5, fontWeight: 800, letterSpacing: '0.12em', color: '#64748B' }}>
+                  CAMPUS DINING
+                </span>
               </div>
               <button
                 style={{
                   width: 34,
                   height: 34,
-                  borderRadius: 99,
-                  border: '1px solid rgba(255,255,255,0.1)',
-                  background: 'rgba(255,255,255,0.05)',
+                  borderRadius: '50%',
+                  border: '1px solid #E2E8F0',
+                  background: '#F8FAFC',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   cursor: 'pointer',
-                  color: '#FFF',
+                  color: '#64748B',
                 }}
                 onClick={() => setMobileDrawerOpen(false)}
               >
@@ -266,12 +252,12 @@ export default function AppLayout() {
               style={{
                 padding: '12px 14px',
                 borderRadius: 14,
-                background: 'rgba(255,255,255,0.05)',
-                border: '1px solid rgba(255,255,255,0.08)',
+                background: '#F8FAFC',
+                border: '1px solid #E2E8F0',
                 display: 'flex',
                 alignItems: 'center',
                 gap: 12,
-                marginBottom: 24,
+                marginBottom: 20,
               }}
             >
               <img
@@ -280,12 +266,12 @@ export default function AppLayout() {
                 style={{ width: 40, height: 40, borderRadius: '50%', objectFit: 'cover' }}
               />
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 14, fontWeight: 600, color: '#FFF', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+                <div style={{ fontSize: 13.5, fontWeight: 700, color: '#0F172A', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
                   {user.name}
                 </div>
-                <div style={{ fontSize: 11, color: '#FF5200', display: 'flex', alignItems: 'center', gap: 4 }}>
+                <div style={{ fontSize: 11, color: '#059669', display: 'flex', alignItems: 'center', gap: 4, fontWeight: 600 }}>
                   <ShieldCheck size={12} />
-                  <span>{user.roleLabel?.split('(')[0] || user.role || 'Scholar'}</span>
+                  <span>Campus Verified</span>
                 </div>
               </div>
             </div>
@@ -302,13 +288,13 @@ export default function AppLayout() {
                       display: 'flex',
                       alignItems: 'center',
                       gap: 12,
-                      padding: '12px 16px',
-                      borderRadius: 12,
-                      fontSize: 14,
+                      padding: '11px 16px',
+                      borderRadius: 99,
+                      fontSize: 13.5,
                       textDecoration: 'none',
-                      color: isActive ? '#FFFFFF' : 'rgba(255,255,255,0.6)',
-                      background: isActive ? 'rgba(255,82,0,0.2)' : 'transparent',
-                      borderLeft: isActive ? '3px solid #FF5200' : '3px solid transparent',
+                      color: isActive ? '#BE185D' : '#334155',
+                      background: isActive ? '#FFE4E6' : 'transparent',
+                      fontWeight: isActive ? 700 : 500,
                     })}
                     onClick={() => setMobileDrawerOpen(false)}
                   >
@@ -319,7 +305,7 @@ export default function AppLayout() {
                         style={{
                           padding: '2px 7px',
                           borderRadius: 99,
-                          background: '#FF5200',
+                          background: '#E11D48',
                           color: '#FFF',
                           fontSize: 10,
                           fontWeight: 700,
@@ -334,7 +320,7 @@ export default function AppLayout() {
             </div>
 
             {/* Logout */}
-            <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: 16, marginTop: 'auto' }}>
+            <div style={{ borderTop: '1px solid #EEF0F3', paddingTop: 16, marginTop: 'auto' }}>
               <button
                 style={{
                   width: '100%',
@@ -342,11 +328,11 @@ export default function AppLayout() {
                   alignItems: 'center',
                   justifyContent: 'center',
                   gap: 8,
-                  padding: '12px 16px',
-                  borderRadius: 12,
-                  border: '1px solid rgba(239, 68, 68, 0.3)',
-                  background: 'rgba(239, 68, 68, 0.1)',
-                  color: '#EF4444',
+                  padding: '11px 16px',
+                  borderRadius: 99,
+                  border: '1px solid #E2E8F0',
+                  background: '#FFFFFF',
+                  color: '#DC2626',
                   fontSize: 13,
                   fontWeight: 600,
                   cursor: 'pointer',
