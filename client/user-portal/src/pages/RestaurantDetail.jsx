@@ -30,10 +30,12 @@ import {
   Award,
   ArrowUpDown,
   CheckCircle2,
-  ExternalLink
+  ExternalLink,
+  BookOpen,
+  ChevronDown
 } from 'lucide-react';
 
-const TABS = ['Menu Catalog', 'Active Offers', 'Student Reviews', 'About & Location'];
+const TABS = ['Menu', 'Offers', 'Reviews', 'About & Location'];
 
 const CURATED_FALLBACK_MENUS = {
   1: {
@@ -187,7 +189,8 @@ export default function RestaurantDetail() {
   const { restaurants: liveRestaurants = [] } = useDining() || {};
 
   const [restaurantData, setRestaurantData] = useState(null);
-  const [activeTab, setActiveTab] = useState('Menu Catalog');
+  const [activeTab, setActiveTab] = useState('Menu');
+  const [menuExpanded, setMenuExpanded] = useState(true);
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [selectedOffer, setSelectedOffer] = useState(null);
@@ -207,7 +210,7 @@ export default function RestaurantDetail() {
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     if (params.get('tab') === 'offers') {
-      setActiveTab('Active Offers');
+      setActiveTab('Offers');
     }
     if (params.get('reserve') === 'true') {
       setShowBookingModal(true);
@@ -393,10 +396,10 @@ export default function RestaurantDetail() {
   }
 
   return (
-    <div className="page-pad" style={{ maxWidth: 1240, margin: '0 auto', paddingBottom: 80 }}>
+    <div className="restaurant-detail-page page-pad" style={{ maxWidth: 1320, margin: '0 auto', paddingBottom: 100 }}>
       {/* Toast Notification */}
       {toastMessage && (
-        <div style={{
+        <div className="restaurant-toast" style={{
           position: 'fixed',
           bottom: 24,
           right: 24,
@@ -418,7 +421,7 @@ export default function RestaurantDetail() {
       )}
 
       {/* Top Breadcrumb & Action Row */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
+      <div className="restaurant-action-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
         <button
           onClick={() => navigate(-1)}
           className="btn btn-ghost btn-sm"
@@ -487,7 +490,7 @@ export default function RestaurantDetail() {
 
       {/* ── Hero Showcase Section ── */}
       <div
-        className="anim-fade-up"
+        className="restaurant-detail-hero anim-fade-up"
         style={{
           position: 'relative',
           borderRadius: 24,
@@ -497,7 +500,7 @@ export default function RestaurantDetail() {
           boxShadow: '0 10px 30px -5px rgba(15, 23, 42, 0.08)'
         }}
       >
-        <div style={{ position: 'relative', height: 'clamp(280px, 42vw, 420px)', width: '100%' }}>
+        <div className="restaurant-hero-canvas" style={{ position: 'relative', height: 'clamp(280px, 42vw, 420px)', width: '100%' }}>
           <img
             src={restaurant.heroImage || restaurant.image}
             alt={restaurant.name}
@@ -511,7 +514,7 @@ export default function RestaurantDetail() {
           }} />
 
           {/* Hero Content Overlay */}
-          <div style={{
+          <div className="restaurant-hero-content" style={{
             position: 'absolute',
             bottom: 'clamp(18px, 4vw, 32px)',
             left: 'clamp(18px, 4vw, 36px)',
@@ -522,9 +525,9 @@ export default function RestaurantDetail() {
             flexWrap: 'wrap',
             gap: 20
           }}>
-            <div style={{ maxWidth: 680 }}>
+            <div className="restaurant-hero-info" style={{ maxWidth: 680 }}>
               {/* Badges Row */}
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 12 }}>
+              <div className="restaurant-hero-badges" style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 12 }}>
                 <span style={{
                   background: 'rgba(255, 255, 255, 0.16)',
                   backdropFilter: 'blur(8px)',
@@ -605,7 +608,7 @@ export default function RestaurantDetail() {
                 {restaurant.tagline || restaurant.description}
               </p>
 
-              <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 14, fontSize: 13, color: '#CBD5E1' }}>
+              <div className="restaurant-hero-meta" style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 14, fontSize: 13, color: '#CBD5E1' }}>
                 <span style={{ display: 'flex', alignItems: 'center', gap: 4, color: '#FBBF24', fontWeight: 700 }}>
                   <Star size={15} fill="#FBBF24" /> {restaurant.rating} ({displayReviewsCount} verified reviews)
                 </span>
@@ -623,7 +626,7 @@ export default function RestaurantDetail() {
             </div>
 
             {/* Desktop Hero CTA */}
-            <div style={{ flexShrink: 0 }}>
+            <div className="restaurant-hero-cta" style={{ flexShrink: 0 }}>
               <button
                 className="btn btn-primary btn-lg"
                 onClick={() => setShowBookingModal(true)}
@@ -647,11 +650,11 @@ export default function RestaurantDetail() {
       </div>
 
       {/* ── Main Layout: Tabs & Sticky Rail ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) min(320px, 100%)', gap: 32, alignItems: 'start' }}>
+      <div className="restaurant-detail-layout" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) min(320px, 100%)', gap: 32, alignItems: 'start' }}>
         {/* Left Column: Navigation Tabs & Tab Content */}
-        <div>
+        <div className="restaurant-detail-main">
           {/* Tabs Bar */}
-          <div className="tab-bar anim-fade-up delay-1" style={{ marginBottom: 28, background: '#FFFFFF', padding: 4, borderRadius: 14, border: '1px solid var(--border)' }}>
+          <div className="restaurant-detail-tabs tab-bar anim-fade-up delay-1" style={{ marginBottom: 28, background: '#FFFFFF', padding: 4, borderRadius: 14, border: '1px solid var(--border)' }}>
             {TABS.map(tab => (
               <button
                 key={tab}
@@ -665,7 +668,7 @@ export default function RestaurantDetail() {
                 }}
               >
                 {tab}
-                {tab === 'Active Offers' && offers.length > 0 && (
+                {tab === 'Offers' && offers.length > 0 && (
                   <span style={{
                     marginLeft: 6,
                     fontSize: 10.5,
@@ -682,11 +685,75 @@ export default function RestaurantDetail() {
             ))}
           </div>
 
-          {/* ── TAB 1: MENU CATALOG ── */}
-          {activeTab === 'Menu Catalog' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+          {/* ── TAB 1: EDITORIAL MENU ── */}
+          {activeTab === 'Menu' && (
+            <div className="restaurant-menu-tab" style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+              <section className="district-menu-section">
+                <div className="district-section-heading">
+                  <div>
+                    <span className="district-section-eyebrow">Updated today</span>
+                    <h2>Menu</h2>
+                  </div>
+                  <span>{displayedDishes.length} items</span>
+                </div>
+
+                <div className={`district-menu-booklet ${menuExpanded ? 'is-expanded' : ''}`}>
+                  <div className="district-menu-cover">
+                    <img src={restaurant.image || restaurant.heroImage} alt="" />
+                    <div className="district-menu-cover-overlay" />
+                    <div className="district-menu-cover-content">
+                      <BookOpen size={26} />
+                      <span>Dining menu</span>
+                      <strong>{restaurant.name}</strong>
+                      <small>{restaurant.cuisine} · {restaurant.price}</small>
+                    </div>
+                  </div>
+
+                  <div className="district-menu-paper">
+                    <div className="district-menu-paper-header">
+                      <div>
+                        <span>Bennett verified partner</span>
+                        <h3>{restaurant.name}</h3>
+                      </div>
+                      <span className="district-menu-mark">DB</span>
+                    </div>
+
+                    <div className="district-menu-columns">
+                      {Object.entries(menu).map(([category, items]) => (
+                        <div className="district-menu-category" key={category}>
+                          <h4>{category}</h4>
+                          {items.map(item => (
+                            <div className="district-menu-line" key={item.id || `${category}-${item.name}`}>
+                              <span className={item.veg ? 'veg' : 'non-veg'} aria-hidden="true" />
+                              <div>
+                                <strong>{item.name}</strong>
+                                {item.desc && <small>{item.desc}</small>}
+                              </div>
+                              <b>₹{item.price}</b>
+                            </div>
+                          ))}
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="district-menu-note">
+                      Menu prices and availability may change at the restaurant. Taxes may apply.
+                    </div>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  className="district-menu-toggle"
+                  onClick={() => setMenuExpanded(value => !value)}
+                  aria-expanded={menuExpanded}
+                >
+                  {menuExpanded ? 'Show less' : 'View full menu'}
+                  <ChevronDown size={16} />
+                </button>
+              </section>
               {/* Dish Filter Toolbar */}
-              <div style={{
+              <div className="restaurant-menu-toolbar" style={{
                 background: '#FFFFFF',
                 border: '1px solid var(--border)',
                 borderRadius: 16,
@@ -697,7 +764,7 @@ export default function RestaurantDetail() {
                 flexWrap: 'wrap',
                 gap: 12
               }}>
-                <div style={{ flex: 1, minWidth: 220, position: 'relative' }}>
+                <div className="restaurant-menu-search" style={{ flex: 1, minWidth: 220, position: 'relative' }}>
                   <Search size={15} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
                   <input
                     className="form-input"
@@ -708,7 +775,7 @@ export default function RestaurantDetail() {
                   />
                 </div>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                <div className="restaurant-menu-controls" style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
                   {/* Sort Selector */}
                   <div style={{
                     display: 'inline-flex',
@@ -814,7 +881,7 @@ export default function RestaurantDetail() {
 
               {/* Category Filter Pills */}
               {categoriesList.length > 2 && (
-                <div style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 4 }}>
+                <div className="restaurant-category-strip scrollbar-none" style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 4 }}>
                   {categoriesList.map(cat => {
                     const isSelected = selectedCategory === cat;
                     return (
@@ -868,7 +935,7 @@ export default function RestaurantDetail() {
                   </button>
                 </div>
               ) : viewMode === 'grid' ? (
-                <div style={{
+                <div className="restaurant-dish-grid" style={{
                   display: 'grid',
                   gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 300px), 1fr))',
                   gap: 16
@@ -935,9 +1002,10 @@ export default function RestaurantDetail() {
                 </div>
               ) : (
                 /* List View */
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <div className="restaurant-dish-list" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                   {displayedDishes.map(item => (
                     <div
+                      className="restaurant-dish-list-item"
                       key={item.id}
                       style={{
                         background: '#FFFFFF',
@@ -1003,8 +1071,8 @@ export default function RestaurantDetail() {
           )}
 
           {/* ── TAB 2: ACTIVE OFFERS ── */}
-          {activeTab === 'Active Offers' && (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 300px), 1fr))', gap: 16 }}>
+          {activeTab === 'Offers' && (
+            <div className="restaurant-offers-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 300px), 1fr))', gap: 16 }}>
               {offers.map(offer => (
                 <div
                   key={offer.id}
@@ -1104,10 +1172,10 @@ export default function RestaurantDetail() {
           )}
 
           {/* ── TAB 3: STUDENT REVIEWS ── */}
-          {activeTab === 'Student Reviews' && (
+          {activeTab === 'Reviews' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
               {/* Review Score Summary Card */}
-              <div style={{
+              <div className="restaurant-review-summary" style={{
                 background: '#FFFFFF',
                 border: '1px solid var(--border)',
                 borderRadius: 20,
@@ -1303,7 +1371,7 @@ export default function RestaurantDetail() {
                   {restaurant.description}
                 </p>
 
-                <div style={{ borderTop: '1px solid var(--border)', paddingTop: 18, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+                <div className="restaurant-contact-grid" style={{ borderTop: '1px solid var(--border)', paddingTop: 18, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13, color: 'var(--t2)' }}>
                     <MapPin size={16} className="text-emerald-700" />
                     <span>{restaurant.address}</span>
@@ -1437,20 +1505,23 @@ export default function RestaurantDetail() {
 
       {/* ── Fixed Mobile Bottom Action Bar ── */}
       <div
-        className="mobile-only-flex"
+        className="restaurant-mobile-booking mobile-only-flex"
         style={{
           position: 'fixed',
-          bottom: 0,
-          left: 0,
-          right: 0,
+          bottom: 'calc(82px + env(safe-area-inset-bottom))',
+          left: 12,
+          right: 12,
           background: 'rgba(255, 255, 255, 0.96)',
           backdropFilter: 'blur(12px)',
-          borderTop: '1px solid var(--border)',
-          padding: '12px 18px',
-          zIndex: 100,
+          WebkitBackdropFilter: 'blur(12px)',
+          border: '1px solid var(--border)',
+          borderRadius: 16,
+          padding: '10px 16px',
+          zIndex: 80,
+          display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          boxShadow: '0 -4px 16px rgba(0, 0, 0, 0.06)'
+          boxShadow: '0 8px 24px rgba(15, 23, 42, 0.12)'
         }}
       >
         <div>

@@ -24,12 +24,12 @@ import {
   ShieldCheck
 } from 'lucide-react';
 
-const TABS = ['Upcoming Reservations', 'Past Visits', 'Cancelled'];
+const TABS = ['Upcoming', 'Past Visits', 'Cancelled'];
 
 export default function Bookings() {
   const navigate = useNavigate();
   const { restaurants = [], reservations = [], setReservations, cancelBooking, staffCompletePayment, openScanner } = useDining();
-  const [activeTab, setActiveTab] = useState('Upcoming Reservations');
+  const [activeTab, setActiveTab] = useState('Upcoming');
   const [passModalBooking, setPassModalBooking] = useState(null);
   const [reviewModalRestaurant, setReviewModalRestaurant] = useState(null);
   const [paymentModalBooking, setPaymentModalBooking] = useState(null);
@@ -54,7 +54,7 @@ export default function Bookings() {
 
   const currentList = useMemo(() => {
     let list = [];
-    if (activeTab === 'Upcoming Reservations') list = upcomingList;
+    if (activeTab === 'Upcoming') list = upcomingList;
     else if (activeTab === 'Past Visits') list = pastList;
     else list = cancelledList;
 
@@ -82,18 +82,18 @@ export default function Bookings() {
   }, [activeTab, upcomingList, pastList, cancelledList, searchQuery, sortBy]);
 
   return (
-    <div className="page-pad" style={{ maxWidth: 1040, margin: '0 auto', paddingBottom: 60 }}>
+    <div className="bookings-page content-shell page-pad" style={{ paddingBottom: 100 }}>
       {/* Header */}
-      <div className="anim-fade-up" style={{ marginBottom: 28, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16 }}>
+      <div className="bookings-header anim-fade-up" style={{ marginBottom: 28, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16 }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
             <h1 className="font-display" style={{ fontSize: 'clamp(1.5rem, 4vw, 2rem)', fontWeight: 800, color: '#1C1E21', margin: 0 }}>
               My Dining Reservations
             </h1>
             <span style={{
-              background: '#FFF5EE',
-              border: '1px solid #FFD8CC',
-              color: '#FF5200',
+              background: '#FFF1F2',
+              border: '1px solid #FECDD3',
+              color: '#E11D48',
               fontSize: 11,
               fontWeight: 700,
               padding: '3px 10px',
@@ -124,7 +124,7 @@ export default function Bookings() {
       </div>
 
       {/* Tabs */}
-      <div className="tab-bar anim-fade-up delay-1 tabs-scroll-x" style={{ marginBottom: 24, background: '#FFFFFF', padding: 4, borderRadius: 14, border: '1px solid var(--border)' }}>
+      <div className="bookings-tabs tab-bar anim-fade-up delay-1 tabs-scroll-x" style={{ marginBottom: 24, background: '#FFFFFF', padding: 4, borderRadius: 14, border: '1px solid var(--border)' }}>
         {TABS.map(tab => {
           const isActive = activeTab === tab;
           return (
@@ -138,20 +138,20 @@ export default function Bookings() {
                 padding: '10px 20px',
                 minHeight: 40,
                 fontSize: 13,
-                background: isActive ? '#FF5200' : 'transparent',
+                background: isActive ? '#E11D48' : 'transparent',
                 color: isActive ? '#FFFFFF' : '#475569'
               }}
             >
               {tab}
-              {tab === 'Upcoming Reservations' && upcomingList.length > 0 && (
+              {tab === 'Upcoming' && upcomingList.length > 0 && (
                 <span style={{
                   marginLeft: 6,
                   fontSize: 10.5,
                   fontWeight: 800,
                   padding: '2px 7px',
                   borderRadius: 99,
-                  background: isActive ? '#FFFFFF' : '#FFF5EE',
-                  color: '#FF5200'
+                  background: isActive ? '#FFFFFF' : '#FFF1F2',
+                  color: '#E11D48'
                 }}>
                   {upcomingList.length}
                 </span>
@@ -164,7 +164,7 @@ export default function Bookings() {
                   padding: '2px 7px',
                   borderRadius: 99,
                   background: isActive ? '#FFFFFF' : '#F1F5F9',
-                  color: isActive ? '#FF5200' : '#475569'
+                  color: isActive ? '#E11D48' : '#475569'
                 }}>
                   {pastList.length}
                 </span>
@@ -175,7 +175,7 @@ export default function Bookings() {
       </div>
 
       {/* Search & Sort Toolbar */}
-      <div className="anim-fade-up delay-1" style={{
+      <div className="bookings-toolbar anim-fade-up delay-1" style={{
         display: 'flex',
         gap: 12,
         marginBottom: 24,
@@ -198,7 +198,7 @@ export default function Bookings() {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#F8FAFC', padding: '6px 12px', borderRadius: 99, border: '1px solid var(--border)' }}>
-          <ArrowUpDown size={13} className="text-[#FF5200]" />
+          <ArrowUpDown size={13} className="text-[#E11D48]" />
           <select
             style={{
               border: 'none',
@@ -221,9 +221,9 @@ export default function Bookings() {
       </div>
 
       {/* Bookings List */}
-      <div className="anim-fade-up delay-2" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div className="bookings-list anim-fade-up delay-2" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         {currentList.length === 0 ? (
-          <div style={{
+          <div className="bookings-empty-state" style={{
             background: '#FFFFFF',
             border: '1px solid var(--border)',
             borderRadius: 20,
@@ -267,6 +267,7 @@ export default function Bookings() {
 
             return (
               <motion.div
+                className="booking-list-card"
                 key={b.id}
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -381,13 +382,13 @@ export default function Bookings() {
 
                   <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 14, fontSize: 12.5, color: 'var(--t2)' }}>
                     <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                      <Calendar size={13} className="text-[#FF5200]" /> {b.date}
+                      <Calendar size={13} className="text-[#E11D48]" /> {b.date}
                     </span>
                     <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                      <Clock size={13} className="text-[#FF5200]" /> {b.time}
+                      <Clock size={13} className="text-[#E11D48]" /> {b.time}
                     </span>
                     <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                      <Users size={13} className="text-[#FF5200]" /> {b.guests} Diners
+                      <Users size={13} className="text-[#E11D48]" /> {b.guests} Diners
                     </span>
                   </div>
 

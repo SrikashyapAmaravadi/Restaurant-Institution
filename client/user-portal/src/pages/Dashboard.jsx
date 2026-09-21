@@ -68,7 +68,7 @@ export default function Dashboard() {
   const firstName = user?.name ? user.name.split(' ')[0] : 'Scholar';
 
   return (
-    <div style={{ maxWidth: 1160, margin: '0 auto', padding: '24px 20px 100px', display: 'flex', flexDirection: 'column', gap: 36 }}>
+    <div className="dashboard-page" style={{ maxWidth: 1160, margin: '0 auto', padding: '24px 20px 100px', display: 'flex', flexDirection: 'column', gap: 36 }}>
 
       {/* ── 1. CAMPUS HERO BANNER WITH EMBEDDED SEARCH PILL ── */}
       <div className="district-hero-canvas">
@@ -87,14 +87,14 @@ export default function Dashboard() {
             <span style={{ fontSize: 38 }}>☕</span>
           </div>
 
-          <div style={{ position: 'relative', zIndex: 2, width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <div style={{ position: 'relative', zIndex: 2, width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: 16, paddingBottom: 8 }}>
             <div
               style={{
                 fontFamily: "'Playfair Display', Georgia, serif",
                 fontStyle: 'italic',
-                fontSize: 'clamp(1.2rem, 2.5vw, 1.8rem)',
+                fontSize: 'clamp(1.1rem, 2.2vw, 1.6rem)',
                 color: '#FBCFE8',
-                lineHeight: 1.2,
+                lineHeight: 1.3,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -107,12 +107,14 @@ export default function Dashboard() {
             <div
               style={{
                 fontFamily: "'Playfair Display', Georgia, serif",
-                fontSize: 'clamp(2rem, 4.5vw, 3.2rem)',
+                fontSize: 'clamp(1.8rem, 4vw, 3rem)',
                 fontWeight: 600,
                 fontStyle: 'italic',
                 color: '#FFFFFF',
                 letterSpacing: '-0.02em',
-                marginTop: 2,
+                marginTop: 6,
+                lineHeight: 1.25,
+                padding: '4px 0'
               }}
             >
               Campus Dining Experiences
@@ -283,6 +285,7 @@ export default function Dashboard() {
           </div>
         ) : (
           <div
+            className="dashboard-restaurant-grid"
             style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',

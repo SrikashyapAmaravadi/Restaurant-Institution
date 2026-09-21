@@ -1,10 +1,10 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import { useAuth } from '../context/AuthContext';
 import { useDining } from '../context/DiningContext';
-import api from '../services/api';
+
 import {
   Calendar,
   Clock,
@@ -15,19 +15,18 @@ import {
   ChevronLeft,
   X,
   AlertCircle,
-  Utensils,
+
   QrCode,
   ShieldCheck,
   Sun,
   Moon,
-  Plus,
-  Minus,
+
   Check,
   Zap,
   MapPin,
   Star,
   Info,
-  Leaf,
+
   MessageSquare
 } from 'lucide-react';
 
@@ -65,7 +64,7 @@ export default function BookingModal({ restaurant, onClose, onBookingSuccess }) 
   const { user } = useAuth();
   const { createReservation } = useDining();
 
-  const [step, setStep] = useState(1); // 1: Date & Time, 2: Pre-order, 3: Occasion & Notes, 4: Confirmed
+  const [step, setStep] = useState(1); // 1: Date & Time, 2: Occasion & Notes, 3: Confirmed
   const [session, setSession] = useState('lunch');
   const [selectedSlot, setSelectedSlot] = useState('1:00 PM');
   const [guests, setGuests] = useState(2);
@@ -73,13 +72,6 @@ export default function BookingModal({ restaurant, onClose, onBookingSuccess }) 
   const [specialNotes, setSpecialNotes] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [confirmedBooking, setConfirmedBooking] = useState(null);
-
-  // Pre-order dish state
-  const [liveMenu, setLiveMenu] = useState([]);
-  const [menuLoading, setMenuLoading] = useState(false);
-  const [menuFilter, setMenuFilter] = useState('all'); // 'all' | 'veg' | 'non-veg'
-  const [menuSearch, setMenuSearch] = useState('');
-  const [preOrders, setPreOrders] = useState({});
 
   // Generate 7 consecutive dynamic dates starting from today
   const dateOptions = useMemo(() => {
@@ -99,41 +91,6 @@ export default function BookingModal({ restaurant, onClose, onBookingSuccess }) 
 
   const [selectedDate, setSelectedDate] = useState(dateOptions[0]);
 
-  // Load live menu items for pre-ordering
-  useEffect(() => {
-    if (!restaurant?.id) return;
-    if (restaurant.menuItems && restaurant.menuItems.length > 0) {
-      setLiveMenu(restaurant.menuItems);
-      return;
-    }
-    setMenuLoading(true);
-    api.restaurants.getById(restaurant.id)
-      .then(res => {
-        if (res.data?.menuItems) {
-          setLiveMenu(res.data.menuItems);
-        }
-      })
-      .catch(err => console.warn('Could not load menu items for pre-order:', err))
-      .finally(() => setMenuLoading(false));
-  }, [restaurant]);
-
-  // Pre-order items total computation
-  const preOrderList = Object.values(preOrders).filter(p => p.qty > 0);
-  const preOrderTotal = preOrderList.reduce((acc, p) => acc + (p.price * p.qty), 0);
-
-  const handlePreOrderChange = (item, delta) => {
-    setPreOrders(prev => {
-      const curr = prev[item.id] || { id: item.id, name: item.name, price: item.price, qty: 0, isVeg: item.isVeg ?? item.veg ?? true };
-      const newQty = Math.max(0, curr.qty + delta);
-      if (newQty === 0) {
-        const copy = { ...prev };
-        delete copy[item.id];
-        return copy;
-      }
-      return { ...prev, [item.id]: { ...curr, qty: newQty } };
-    });
-  };
-
   const handleConfirmReservation = async () => {
     if (!user) {
       alert('Please sign in to reserve a table at partner venues.');
@@ -145,11 +102,6 @@ export default function BookingModal({ restaurant, onClose, onBookingSuccess }) 
     const randomNum = Math.floor(1000 + Math.random() * 9000);
     const bookingCode = `DB-${randomNum}`;
 
-    const ordersToSave = preOrderList.map(p => ({
-      name: p.name,
-      price: p.price,
-      quantity: p.qty
-    }));
 
     const bookingPayload = {
       id: bookingCode,
@@ -164,7 +116,7 @@ export default function BookingModal({ restaurant, onClose, onBookingSuccess }) 
       guestEmail: user.email,
       specialRequest: `${occasion}${specialNotes ? ` · ${specialNotes}` : ''}`,
       tableAssigned: null,
-      orders: ordersToSave,
+      orders: [],
       qrCode: `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${bookingCode}-BENNETT-VERIFIED`
     };
 
@@ -182,7 +134,7 @@ export default function BookingModal({ restaurant, onClose, onBookingSuccess }) 
       }
 
       setConfirmedBooking(saved || bookingPayload);
-      setStep(4);
+      setStep(3);
 
       if (onBookingSuccess) {
         onBookingSuccess(saved || bookingPayload);
@@ -194,20 +146,17 @@ export default function BookingModal({ restaurant, onClose, onBookingSuccess }) 
     }
   };
 
-  const filteredMenuItems = liveMenu.filter(item => {
-    const isVeg = item.isVeg !== undefined ? item.isVeg : (item.veg !== undefined ? item.veg : true);
-    if (menuFilter === 'veg' && !isVeg) return false;
-    if (menuFilter === 'non-veg' && isVeg) return false;
-    if (menuSearch && !item.name.toLowerCase().includes(menuSearch.toLowerCase())) return false;
-    return true;
-  });
+
 
   return (
     <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
       <div
-        className="modal-card modal-bottom-sheet anim-scale-in"
+        className="booking-modal modal-card modal-bottom-sheet anim-scale-in"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Reserve a table"
         style={{
-          maxWidth: 620,
+          maxWidth: 680,
           maxHeight: '92vh',
           display: 'flex',
           flexDirection: 'column',
@@ -218,7 +167,7 @@ export default function BookingModal({ restaurant, onClose, onBookingSuccess }) 
         }}
       >
         {/* ── Modal Header ── */}
-        <div style={{
+        <div className="booking-modal-header" style={{
           padding: '18px 24px',
           borderBottom: '1px solid var(--border)',
           display: 'flex',
@@ -235,7 +184,7 @@ export default function BookingModal({ restaurant, onClose, onBookingSuccess }) 
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <h3 className="font-display" style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--t1)', margin: 0 }}>
-                  {step === 4 ? 'Reservation Confirmed' : restaurant.name}
+                  {step === 3 ? 'Reservation Confirmed' : restaurant.name}
                 </h3>
                 <span style={{
                   fontSize: 10.5,
@@ -283,17 +232,16 @@ export default function BookingModal({ restaurant, onClose, onBookingSuccess }) 
           </button>
         </div>
 
-        {/* ── Stepper Navigation Bar (Steps 1 to 3) ── */}
-        {step !== 4 && (
-          <div style={{
+        {/* ── Stepper Navigation Bar ── */}
+        {step !== 3 && (
+          <div className="booking-stepper" style={{
             display: 'flex',
             borderBottom: '1px solid var(--border)',
             background: '#F8FAFC'
           }}>
             {[
               { num: 1, label: '1. Date & Time' },
-              { num: 2, label: `2. Pre-Order Dishes ${preOrderList.length > 0 ? `(${preOrderList.length})` : ''}` },
-              { num: 3, label: '3. Occasion & Notes' }
+              { num: 2, label: '2. Occasion & Notes' }
             ].map(s => {
               const isActive = step === s.num;
               const isPast = step > s.num;
@@ -324,7 +272,7 @@ export default function BookingModal({ restaurant, onClose, onBookingSuccess }) 
         )}
 
         {/* ── Scrollable Body ── */}
-        <div style={{ overflowY: 'auto', flex: 1, padding: 24, background: '#FFFFFF' }}>
+        <div className="booking-modal-body" style={{ overflowY: 'auto', flex: 1, padding: 24, background: '#FFFFFF' }}>
           <AnimatePresence mode="wait">
             {/* STEP 1: DATE, GUESTS & TIME */}
             {step === 1 && (
@@ -540,210 +488,10 @@ export default function BookingModal({ restaurant, onClose, onBookingSuccess }) 
               </motion.div>
             )}
 
-            {/* STEP 2: PRE-ORDER SPECIALTIES (OPTIONAL) */}
+            {/* STEP 2: OCCASION & SPECIAL NOTES */}
             {step === 2 && (
               <motion.div
                 key="step-2"
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.18 }}
-                style={{ display: 'flex', flexDirection: 'column', gap: 16 }}
-              >
-                <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div>
-                      <h4 className="font-display" style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--t1)', margin: 0 }}>
-                        Pre-Order Kitchen Dishes
-                      </h4>
-                      <p style={{ fontSize: 12, color: 'var(--t3)', margin: '2px 0 0' }}>
-                        Optional: Order in advance so food is ready when you arrive.
-                      </p>
-                    </div>
-
-                    {preOrderTotal > 0 && (
-                      <span style={{
-                        background: '#ECFDF5',
-                        border: '1px solid #A7F3D0',
-                        color: '#065F46',
-                        fontSize: 12,
-                        fontWeight: 800,
-                        padding: '4px 10px',
-                        borderRadius: 99
-                      }}>
-                        Total: ₹{preOrderTotal}
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Filter and Search Bar */}
-                  <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
-                    <input
-                      type="text"
-                      className="form-input"
-                      style={{ flex: 1, padding: '8px 12px', fontSize: 12.5 }}
-                      placeholder="Search menu items..."
-                      value={menuSearch}
-                      onChange={e => setMenuSearch(e.target.value)}
-                    />
-                    <div style={{ display: 'flex', gap: 6 }}>
-                      <button
-                        type="button"
-                        onClick={() => setMenuFilter('all')}
-                        style={{
-                          padding: '7px 16px',
-                          minHeight: 34,
-                          borderRadius: 10,
-                          fontSize: 12,
-                          fontWeight: 700,
-                          border: `1px solid ${menuFilter === 'all' ? '#15803D' : '#E2E8F0'}`,
-                          background: menuFilter === 'all' ? '#ECFDF5' : '#FFFFFF',
-                          color: menuFilter === 'all' ? '#065F46' : 'var(--t2)',
-                          cursor: 'pointer'
-                        }}
-                      >
-                        All
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setMenuFilter('veg')}
-                        style={{
-                          padding: '7px 16px',
-                          minHeight: 34,
-                          borderRadius: 10,
-                          fontSize: 12,
-                          fontWeight: 700,
-                          border: `1px solid ${menuFilter === 'veg' ? '#15803D' : '#E2E8F0'}`,
-                          background: menuFilter === 'veg' ? '#ECFDF5' : '#FFFFFF',
-                          color: menuFilter === 'veg' ? '#065F46' : 'var(--t2)',
-                          cursor: 'pointer'
-                        }}
-                      >
-                        Veg
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Dish List */}
-                {menuLoading ? (
-                  <div style={{ textAlign: 'center', padding: '30px 0', color: 'var(--t3)', fontSize: 13 }}>
-                    Loading fresh kitchen catalog...
-                  </div>
-                ) : filteredMenuItems.length === 0 ? (
-                  <div style={{ textAlign: 'center', padding: '30px 0', color: 'var(--t3)', fontSize: 13 }}>
-                    No matching dishes found. You can still proceed to reserve your table.
-                  </div>
-                ) : (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxHeight: 320, overflowY: 'auto', paddingRight: 4 }}>
-                    {filteredMenuItems.map(item => {
-                      const isVeg = item.isVeg !== undefined ? item.isVeg : (item.veg !== undefined ? item.veg : true);
-                      const qty = preOrders[item.id]?.qty || 0;
-                      return (
-                        <div
-                          key={item.id}
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                            padding: '10px 14px',
-                            borderRadius: 12,
-                            border: '1px solid #E2E8F0',
-                            background: qty > 0 ? '#F0FDF4' : '#FFFFFF'
-                          }}
-                        >
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 1 }}>
-                            <span style={{
-                              width: 9,
-                              height: 9,
-                              borderRadius: '50%',
-                              background: isVeg ? '#10B981' : '#EF4444',
-                              flexShrink: 0
-                            }} />
-                            <div>
-                              <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--t1)' }}>
-                                {item.name}
-                              </div>
-                              <div style={{ fontSize: 12, color: 'var(--t3)' }}>
-                                ₹{item.price} {item.category ? `· ${item.category}` : ''}
-                              </div>
-                            </div>
-                          </div>
-
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                            {qty > 0 ? (
-                              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                <button
-                                  type="button"
-                                  onClick={() => handlePreOrderChange(item, -1)}
-                                  style={{
-                                    width: 28,
-                                    height: 28,
-                                    borderRadius: 6,
-                                    border: '1px solid #CBD5E1',
-                                    background: '#FFFFFF',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    cursor: 'pointer'
-                                  }}
-                                >
-                                  <Minus size={13} />
-                                </button>
-                                <span style={{ fontSize: 13, fontWeight: 800, minWidth: 16, textAlign: 'center' }}>
-                                  {qty}
-                                </span>
-                                <button
-                                  type="button"
-                                  onClick={() => handlePreOrderChange(item, 1)}
-                                  style={{
-                                    width: 28,
-                                    height: 28,
-                                    borderRadius: 6,
-                                    border: '1px solid #15803D',
-                                    background: '#15803D',
-                                    color: '#FFFFFF',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    cursor: 'pointer'
-                                  }}
-                                >
-                                  <Plus size={13} />
-                                </button>
-                              </div>
-                            ) : (
-                              <button
-                                type="button"
-                                onClick={() => handlePreOrderChange(item, 1)}
-                                style={{
-                                  padding: '6px 14px',
-                                  minHeight: 32,
-                                  borderRadius: 8,
-                                  border: '1px solid #E2E8F0',
-                                  background: '#FFFFFF',
-                                  color: 'var(--t1)',
-                                  fontSize: 12,
-                                  fontWeight: 700,
-                                  cursor: 'pointer'
-                                }}
-                              >
-                                + Add
-                              </button>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </motion.div>
-            )}
-
-            {/* STEP 3: OCCASION & SPECIAL NOTES */}
-            {step === 3 && (
-              <motion.div
-                key="step-3"
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
@@ -814,16 +562,17 @@ export default function BookingModal({ restaurant, onClose, onBookingSuccess }) 
                     <div>Date: <strong>{selectedDate.formatted}</strong></div>
                     <div>Slot: <strong>{selectedSlot}</strong></div>
                     <div>Party: <strong>{guests} Diners</strong></div>
-                    <div>Pre-orders: <strong>{preOrderList.length} items (₹{preOrderTotal})</strong></div>
+                    <div>Occasion: <strong>{occasion}</strong></div>
                   </div>
                 </div>
               </motion.div>
             )}
 
-            {/* STEP 4: CONFIRMATION */}
-            {step === 4 && confirmedBooking && (
+            {/* STEP 3: CONFIRMATION */}
+            {step === 3 && confirmedBooking && (
               <motion.div
-                key="step-4"
+                className="booking-confirmation"
+                key="step-3"
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.2 }}
@@ -852,7 +601,7 @@ export default function BookingModal({ restaurant, onClose, onBookingSuccess }) 
                 </p>
 
                 {/* Digital Ticket Preview Box */}
-                <div style={{
+                <div className="booking-pass-card" style={{
                   background: '#F8FAFC',
                   border: '1px solid #E2E8F0',
                   borderRadius: 16,
@@ -876,7 +625,7 @@ export default function BookingModal({ restaurant, onClose, onBookingSuccess }) 
                     {confirmedBooking.id}
                   </div>
 
-                  <div style={{ borderTop: '1px dashed #CBD5E1', paddingTop: 10, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6, fontSize: 12, textAlign: 'left' }}>
+                  <div className="booking-pass-details" style={{ borderTop: '1px dashed #CBD5E1', paddingTop: 10, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6, fontSize: 12, textAlign: 'left' }}>
                     <div><span style={{ color: '#64748B' }}>Date:</span> <strong>{confirmedBooking.date}</strong></div>
                     <div><span style={{ color: '#64748B' }}>Time:</span> <strong>{confirmedBooking.time}</strong></div>
                     <div><span style={{ color: '#64748B' }}>Guests:</span> <strong>{confirmedBooking.guests} Diners</strong></div>
@@ -894,7 +643,7 @@ export default function BookingModal({ restaurant, onClose, onBookingSuccess }) 
         </div>
 
         {/* ── Modal Footer ── */}
-        <div style={{
+        <div className="booking-modal-footer" style={{
           padding: '16px 24px',
           borderTop: '1px solid var(--border)',
           display: 'flex',
@@ -921,7 +670,7 @@ export default function BookingModal({ restaurant, onClose, onBookingSuccess }) 
                   onClick={() => setStep(2)}
                   style={{ borderRadius: 10, padding: '9px 20px', minHeight: 38, fontWeight: 700 }}
                 >
-                  Next: Pre-Order <ChevronRight size={14} />
+                  Continue <ChevronRight size={14} />
                 </button>
               </div>
             </div>
@@ -936,35 +685,6 @@ export default function BookingModal({ restaurant, onClose, onBookingSuccess }) 
               >
                 <ChevronLeft size={14} /> Back
               </button>
-              <div style={{ display: 'flex', gap: 8 }}>
-                <button
-                  type="button"
-                  className="btn btn-outline btn-sm"
-                  onClick={() => setStep(3)}
-                >
-                  Skip Pre-Order
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-primary btn-sm"
-                  onClick={() => setStep(3)}
-                  style={{ borderRadius: 10, padding: '9px 20px', minHeight: 38, fontWeight: 700 }}
-                >
-                  Next: Occasion <ChevronRight size={14} />
-                </button>
-              </div>
-            </div>
-          )}
-
-          {step === 3 && (
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-              <button
-                type="button"
-                className="btn btn-ghost btn-sm"
-                onClick={() => setStep(2)}
-              >
-                <ChevronLeft size={14} /> Back
-              </button>
               <button
                 type="button"
                 className="btn btn-primary btn-sm"
@@ -976,15 +696,15 @@ export default function BookingModal({ restaurant, onClose, onBookingSuccess }) 
                   'Confirming Table...'
                 ) : (
                   <>
-                    <Sparkles size={14} /> Confirm Reservation {preOrderList.length > 0 && `(₹${preOrderTotal})`}
+                    <Sparkles size={14} /> Confirm Reservation
                   </>
                 )}
               </button>
             </div>
           )}
 
-          {step === 4 && (
-            <div style={{ display: 'flex', gap: 10, width: '100%' }}>
+          {step === 3 && (
+            <div className="booking-confirmation-actions" style={{ display: 'flex', gap: 10, width: '100%' }}>
               <button
                 type="button"
                 className="btn btn-outline btn-md"

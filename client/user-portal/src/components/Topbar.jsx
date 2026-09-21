@@ -34,6 +34,7 @@ export default function Topbar({ onOpenMobileDrawer }) {
   return (
     <>
       <header
+        className="app-topbar"
         style={{
           height: 74,
           padding: '0 clamp(16px, 3.5vw, 40px)',
@@ -48,7 +49,7 @@ export default function Topbar({ onOpenMobileDrawer }) {
         }}
       >
         {/* Left: Brand Identity + Campus Location */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
+        <div className="topbar-left" style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
           {/* Mobile Drawer Trigger */}
           <button
             className="mobile-menu-trigger"
@@ -72,6 +73,7 @@ export default function Topbar({ onOpenMobileDrawer }) {
 
           {/* Dine@Bennett Logo */}
           <div
+            className="topbar-brand"
             onClick={() => navigate('/dashboard')}
             style={{
               display: 'flex',
@@ -124,6 +126,7 @@ export default function Topbar({ onOpenMobileDrawer }) {
 
           {/* Campus Location Pill */}
           <div
+            className="topbar-location"
             onClick={() => navigate('/discover')}
             style={{
               display: 'flex',
@@ -201,7 +204,7 @@ export default function Topbar({ onOpenMobileDrawer }) {
         </nav>
 
         {/* Right: Search + Notifications + Avatar */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div className="topbar-actions" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           {/* Search Trigger */}
           <button
             onClick={() => setSearchModalOpen(true)}

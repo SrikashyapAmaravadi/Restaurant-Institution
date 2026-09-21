@@ -45,11 +45,13 @@ export default function Sidebar() {
 
   return (
     <aside
+      className="app-sidebar"
       style={{
         width: 260,
         height: '100vh',
         position: 'sticky',
         top: 0,
+        overflowY: 'auto',
         background: '#FFFFFF',
         borderRight: '1px solid #EEF0F3',
         display: 'flex',

@@ -75,10 +75,11 @@ export default function Landing() {
   ];
 
   return (
-    <div style={{ minHeight: '100vh', background: '#FFFFFF', color: '#0F172A', display: 'flex', flexDirection: 'column' }}>
+    <div className="landing-page" style={{ minHeight: '100vh', background: '#FFFFFF', color: '#0F172A', display: 'flex', flexDirection: 'column' }}>
 
       {/* ── 1. CAMPUS TOPBAR ── */}
       <header
+        className="landing-topbar"
         style={{
           height: 76,
           padding: '0 clamp(16px, 4vw, 48px)',
@@ -92,9 +93,10 @@ export default function Landing() {
           zIndex: 50,
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
+        <div className="landing-topbar-left" style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
           {/* Logo */}
           <div
+            className="landing-brand"
             onClick={() => navigate('/login')}
             style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}
           >
@@ -142,6 +144,7 @@ export default function Landing() {
 
           {/* Location Picker */}
           <div
+            className="landing-location"
             onClick={() => setSearchModalOpen(true)}
             style={{
               display: 'flex',
@@ -190,7 +193,7 @@ export default function Landing() {
         </nav>
 
         {/* Right Search & Sign In */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+        <div className="landing-actions" style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
           <button
             onClick={() => setSearchModalOpen(true)}
             style={{

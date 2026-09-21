@@ -103,8 +103,18 @@ export default function Profile() {
   };
 
   return (
-    <div className="page-pad">
-      <div style={{ maxWidth: 880, display: 'flex', flexDirection: 'column', gap: 28 }}>
+    <div className="profile-page page-pad">
+      <div className="profile-shell" style={{ maxWidth: 1160, display: 'flex', flexDirection: 'column', gap: 28 }}>
+        <div className="profile-page-heading anim-fade-up">
+          <div>
+            <span className="profile-eyebrow">Student account</span>
+            <h1>Profile &amp; dining identity</h1>
+            <p>Manage your verified campus profile, preferences, and digital dining pass.</p>
+          </div>
+          <div className="profile-verified-pill">
+            <ShieldCheck size={17} /> Bennett verified
+          </div>
+        </div>
 
         {/* Holographic Digital Student ID Card */}
         <div
@@ -129,7 +139,7 @@ export default function Profile() {
           }} />
 
           {/* Card Top Branding */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
+          <div className="digital-id-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               <div style={{ width: 44, height: 44, borderRadius: 'var(--r-sm)', background: 'rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
                 <GraduationCap size={22} />
@@ -150,7 +160,7 @@ export default function Profile() {
           </div>
 
           {/* Card Middle: Photo + Info */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 24, flexWrap: 'wrap' }}>
+          <div className="digital-id-body" style={{ display: 'flex', alignItems: 'center', gap: 24, flexWrap: 'wrap' }}>
             <div style={{ position: 'relative', width: 92, height: 92, flexShrink: 0 }}>
               <img
                 src={avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=240&q=80'}
@@ -221,7 +231,7 @@ export default function Profile() {
         </div>
 
         {/* Stats and Badges */}
-        <div className="anim-fade-up delay-1" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16 }}>
+        <div className="profile-stats-grid anim-fade-up delay-1" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16 }}>
           <div className="card card-hover stat-tile-interactive" style={{ padding: 18, display: 'flex', alignItems: 'center', gap: 14 }}>
             <div style={{ width: 44, height: 44, borderRadius: 'var(--r-sm)', background: 'rgba(245, 158, 11, 0.12)', color: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Award size={22} />
@@ -257,7 +267,7 @@ export default function Profile() {
         </div>
 
         {/* Profile Settings Form */}
-        <div className="card anim-fade-up delay-2" style={{ padding: 28 }}>
+        <div className="profile-settings-card card anim-fade-up delay-2" style={{ padding: 28 }}>
           <h3 className="font-display" style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--t1)', marginBottom: 6 }}>
             Personal Details &amp; Profile Photo
           </h3>
@@ -267,7 +277,7 @@ export default function Profile() {
 
           <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
             {/* Photo Upload & Presets Section */}
-            <div style={{ padding: 16, borderRadius: 'var(--r-sm)', background: 'var(--bg-subtle)', border: '1px solid var(--border)' }}>
+            <div className="profile-photo-panel" style={{ padding: 16, borderRadius: 'var(--r-sm)', background: 'var(--bg-subtle)', border: '1px solid var(--border)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12, flexWrap: 'wrap', gap: 8 }}>
                 <div>
                   <div style={{ fontSize: 13.5, fontWeight: 700, color: 'var(--t1)', display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -326,7 +336,7 @@ export default function Profile() {
               </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 18 }}>
+            <div className="profile-fields-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 18 }}>
               <div>
                 <label className="form-label">Full Name</label>
                 <div className="form-input-wrap">
@@ -377,7 +387,7 @@ export default function Profile() {
             </div>
 
             {/* Notification Preferences */}
-            <div style={{ borderTop: '1px solid var(--border)', paddingTop: 18, marginTop: 4 }}>
+            <div className="profile-notifications" style={{ borderTop: '1px solid var(--border)', paddingTop: 18, marginTop: 4 }}>
               <div className="form-label" style={{ marginBottom: 12 }}>Notification Channels</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 <label style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13, color: 'var(--t2)', cursor: 'pointer' }}>
@@ -407,7 +417,7 @@ export default function Profile() {
               </div>
             )}
 
-            <div style={{ display: 'flex', gap: 12, marginTop: 10, flexWrap: 'wrap' }}>
+            <div className="profile-actions" style={{ display: 'flex', gap: 12, marginTop: 10, flexWrap: 'wrap' }}>
               <button type="submit" className="btn btn-primary btn-md" style={{ borderRadius: 12 }} disabled={isSaving}>
                 <Save size={16} /> {isSaving ? 'Saving Changes...' : 'Save Profile Changes'}
               </button>

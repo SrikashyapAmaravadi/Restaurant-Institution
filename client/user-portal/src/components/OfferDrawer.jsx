@@ -16,19 +16,19 @@ export default function OfferDrawer({ offer, onClose, onApplyOffer }) {
 
   return (
     <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
-      <div className="modal-card anim-scale-in" style={{ maxWidth: 480 }}>
-        <div className="modal-hd">
+      <div className="offer-modal modal-card anim-scale-in" style={{ maxWidth: 520 }} role="dialog" aria-modal="true" aria-labelledby="offer-modal-title">
+        <div className="offer-modal-header modal-hd">
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <span className="badge badge-warning" style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
               <Tag size={12} /> Exclusive Deal
             </span>
-            <div className="modal-title font-display" style={{ fontSize: '1.2rem', color: 'var(--t1)' }}>Offer Details</div>
+            <div id="offer-modal-title" className="modal-title font-display" style={{ fontSize: '1.2rem', color: 'var(--t1)' }}>Offer Details</div>
           </div>
-          <button className="modal-close" onClick={onClose}><X size={18} /></button>
+          <button className="modal-close" onClick={onClose} aria-label="Close offer details"><X size={18} /></button>
         </div>
 
-        <div className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-          <div style={{
+        <div className="offer-modal-body modal-body" style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+          <div className="offer-hero-card" style={{
             background: '#FFFBEB',
             border: '1px solid #FDE68A',
             borderRadius: 'var(--r)',
@@ -93,22 +93,22 @@ export default function OfferDrawer({ offer, onClose, onApplyOffer }) {
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10, fontSize: 12.5, color: 'var(--t2)' }}>
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
-                <Clock size={16} className="text-amber-400 flex-shrink-0 mt-0.5" />
+                <Clock size={16} className="text-amber-400 shrink-0 mt-0.5" />
                 <span>Valid till <strong>{offer.validTill || offer.endDate || 'End of Semester'}</strong>. Applicable during restaurant operating hours.</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
-                <ShieldCheck size={16} className="text-emerald-400 flex-shrink-0 mt-0.5" />
+                <ShieldCheck size={16} className="text-emerald-400 shrink-0 mt-0.5" />
                 <span>Requires Bennett University Student/Faculty digital verification badge.</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
-                <Tag size={16} className="text-indigo-400 flex-shrink-0 mt-0.5" />
+                <Tag size={16} className="text-indigo-400 shrink-0 mt-0.5" />
                 <span>{offer.terms || (offer.minOrderAmount ? `Minimum order spend of ₹${offer.minOrderAmount}. Dine-in reservations only.` : 'Valid on dine-in reservations for verified institutional diners.')}</span>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="modal-ft">
+        <div className="offer-modal-footer modal-ft">
           <button
             className="btn btn-ghost btn-md"
             onClick={onClose}
@@ -126,7 +126,7 @@ export default function OfferDrawer({ offer, onClose, onApplyOffer }) {
             className="btn btn-primary btn-md"
             onClick={() => {
               if (onApplyOffer) onApplyOffer(offer);
-              alert(`Offer ${offer.code} claimed and ready for pre-booking!`);
+              alert(`Offer ${codeToCopy} claimed and ready for your reservation!`);
               onClose();
             }}
             style={{

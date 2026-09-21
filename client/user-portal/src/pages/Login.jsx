@@ -187,10 +187,10 @@ export default function Login() {
   };
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: '#FAFAFB' }}>
+    <div className="auth-page" style={{ display: 'flex', minHeight: '100vh', background: '#FAFAFB' }}>
       {/* Desktop Left Hero Panel (District Light Theme) */}
       <div
-        className="mobile-hide"
+        className="auth-hero mobile-hide"
         style={{
           flex: 1,
           background: 'linear-gradient(135deg, #FFF1F2 0%, #F5F3FF 100%)',
@@ -307,6 +307,7 @@ export default function Login() {
 
       {/* Right Side: Interactive Form Container */}
       <div
+        className="auth-form-panel"
         style={{
           flex: 1,
           display: 'flex',
@@ -326,7 +327,7 @@ export default function Login() {
             marginBottom: 24,
             textAlign: 'center',
           }}
-          className="md:hidden"
+          className="auth-mobile-brand md:hidden"
         >
           <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 26, fontWeight: 800, color: '#000' }}>
             district
@@ -338,6 +339,7 @@ export default function Login() {
 
         {/* Form Card */}
         <div
+          className="auth-card"
           style={{
             width: '100%',
             maxWidth: 440,
@@ -350,7 +352,7 @@ export default function Login() {
         >
 
           {/* Mode Switcher Tabs */}
-          <div style={{
+          <div className="auth-mode-switcher" style={{
             display: 'flex',
             padding: 4,
             background: '#F1F5F9',
@@ -460,12 +462,15 @@ export default function Login() {
 
                   <form onSubmit={handleSendOtp} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                     <div>
-                      <label className="form-label">University Email Address</label>
+                      <label className="form-label" htmlFor="institutional-email">University Email Address</label>
                       <div className="form-input-wrap">
                         <Mail size={15} className="form-input-icon" style={{ color: 'var(--primary)' }} />
                         <input
+                          id="institutional-email"
                           className="form-input"
                           type="email"
+                          inputMode="email"
+                          autoComplete="email"
                           required
                           placeholder="name@bennett.edu.in"
                           value={otpEmail}
@@ -562,13 +567,15 @@ export default function Login() {
 
                   <form onSubmit={handleVerifyOtp}>
                     {/* 6 Digit Input Boxes */}
-                    <div style={{ display: 'flex', justifyContent: 'space-between', gap: 'clamp(4px, 1.5vw, 8px)', marginBottom: 20 }}>
+                    <div className="auth-otp-grid" style={{ display: 'flex', justifyContent: 'space-between', gap: 'clamp(4px, 1.5vw, 8px)', marginBottom: 20 }}>
                       {otpDigits.map((digit, index) => (
                         <input
                           key={index}
                           ref={el => (inputRefs.current[index] = el)}
                           type="text"
                           inputMode="numeric"
+                          autoComplete={index === 0 ? 'one-time-code' : 'off'}
+                          aria-label={`Verification digit ${index + 1}`}
                           maxLength={1}
                           value={digit}
                           onChange={e => handleDigitChange(index, e.target.value)}
@@ -666,12 +673,15 @@ export default function Login() {
 
               <form onSubmit={handlePasswordLogin} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                 <div>
-                  <label className="form-label">Email Address</label>
+                  <label className="form-label" htmlFor="staff-email">Email Address</label>
                   <div className="form-input-wrap">
                     <Mail size={15} className="form-input-icon" style={{ color: 'var(--primary)' }} />
                     <input
+                      id="staff-email"
                       className="form-input"
                       type="email"
+                      inputMode="email"
+                      autoComplete="username"
                       required
                       placeholder="owner@spicegarden.com"
                       value={pwdEmail}
@@ -682,12 +692,14 @@ export default function Login() {
                 </div>
 
                 <div>
-                  <label className="form-label">Password</label>
+                  <label className="form-label" htmlFor="staff-password">Password</label>
                   <div className="form-input-wrap">
                     <Lock size={15} className="form-input-icon" style={{ color: 'var(--accent)' }} />
                     <input
+                      id="staff-password"
                       className="form-input"
                       type="password"
+                      autoComplete="current-password"
                       required
                       placeholder="••••••••"
                       value={pwdPass}
@@ -736,7 +748,7 @@ export default function Login() {
         </div>
 
         {/* Footer */}
-        <div style={{ marginTop: 20, textAlign: 'center', fontSize: 11, color: 'var(--t4)' }}>
+        <div className="auth-footer" style={{ marginTop: 20, textAlign: 'center', fontSize: 11, color: 'var(--t4)' }}>
           Bennett University · Institutional Dining Platform V1.0
         </div>
       </div>

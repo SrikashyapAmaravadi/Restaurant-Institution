@@ -52,9 +52,10 @@ export default function Notifications() {
   };
 
   return (
-    <div className="page-pad">
+    <div className="notifications-page page-pad">
+      <div className="notifications-shell">
       {/* Header */}
-      <div className="anim-fade-up" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, flexWrap: 'wrap', gap: 14 }}>
+      <div className="notifications-header anim-fade-up" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, flexWrap: 'wrap', gap: 14 }}>
         <div>
           <h2 className="font-display" style={{ fontSize: 'clamp(1.4rem, 4.5vw, 1.8rem)', fontWeight: 800, color: 'var(--t1)' }}>
             Notification Center
@@ -73,7 +74,7 @@ export default function Notifications() {
       </div>
 
       {/* Tabs */}
-      <div className="tab-bar anim-fade-up delay-1 tabs-scroll-x" style={{ marginBottom: 24 }}>
+      <div className="notifications-tabs tab-bar anim-fade-up delay-1 tabs-scroll-x" style={{ marginBottom: 24 }}>
         {TABS.map(t => (
           <button
             key={t}
@@ -86,7 +87,7 @@ export default function Notifications() {
       </div>
 
       {/* Notifications List */}
-      <div className="anim-fade-up delay-2" style={{ maxWidth: 760, display: 'flex', flexDirection: 'column', gap: 12 }}>
+      <div className="notifications-list anim-fade-up delay-2" style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         {filtered.length === 0 ? (
           <div className="card" style={{ padding: 48, textAlign: 'center' }}>
             <Bell size={36} className="text-slate-500 mx-auto mb-3" />
@@ -97,7 +98,7 @@ export default function Notifications() {
           filtered.map(n => (
             <div
               key={n.id}
-              className="card notification-card"
+              className={`card notification-card ${n.read ? 'is-read' : 'is-unread'}`}
               style={{
                 padding: '16px 20px',
                 display: 'flex',
@@ -121,14 +122,14 @@ export default function Notifications() {
                 {getIcon(n.type)}
               </div>
 
-              <div style={{ flex: 1 }}>
+              <div className="notification-content" style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 3 }}>
                   <h4 className="font-display" style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--t1)' }}>
                     {n.title}
                   </h4>
-                  <span style={{ fontSize: 11, color: 'var(--t4)' }}>
+                  <time style={{ fontSize: 11, color: 'var(--t4)' }}>
                     {n.createdAt ? new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Recent'}
-                  </span>
+                  </time>
                 </div>
 
                 <p style={{ fontSize: 13, color: 'var(--t2)', lineHeight: 1.4, marginBottom: 8 }}>
@@ -167,6 +168,7 @@ export default function Notifications() {
             </div>
           ))
         )}
+      </div>
       </div>
     </div>
   );

@@ -1,14 +1,13 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider, useAuth } from './context/AuthContext';
+import { AuthProvider } from './context/AuthContext';
 import { DiningProvider } from './context/DiningContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import AppLayout from './components/AppLayout';
+import MobileSplash from './components/MobileSplash';
 
 // Auth Pages
 import Login from './pages/Login';
-import Register from './pages/Register';
-import Verify from './pages/Verify';
-import PendingApproval from './pages/PendingApproval';
+
 import { OfflineBanner } from './components/states';
 
 // Student Portal Pages
@@ -29,6 +28,7 @@ export default function App() {
   return (
     <AuthProvider>
       <DiningProvider>
+        <MobileSplash />
         <BrowserRouter>
           <OfflineBanner />
           <Routes>

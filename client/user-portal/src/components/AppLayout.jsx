@@ -52,7 +52,11 @@ export default function AppLayout() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  useEffect(() => { setMobileDrawerOpen(false); }, [location.pathname]);
+  useEffect(() => {
+    setMobileDrawerOpen(false);
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    document.querySelector('.page-scroll')?.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+  }, [location.pathname]);
 
   if (!user) return <Outlet />;
 
@@ -104,22 +108,20 @@ export default function AppLayout() {
         className="mobile-bottom-dock"
         style={{
           position: 'fixed',
-          bottom: 18,
+          bottom: 'max(14px, env(safe-area-inset-bottom))',
           left: '50%',
           transform: `translateX(-50%) translateY(${navVisible ? '0' : '100px'})`,
           transition: 'transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.28s ease',
           opacity: navVisible ? 1 : 0,
           width: 'calc(100% - 32px)',
           maxWidth: 400,
-          background: 'rgba(255, 255, 255, 0.94)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
+          background: '#FFFFFF',
           borderRadius: 99,
           padding: '6px 10px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-around',
-          boxShadow: '0 12px 32px rgba(15, 23, 42, 0.12)',
+          boxShadow: '0 12px 32px rgba(15, 23, 42, 0.16), 0 0 0 1px rgba(0, 0, 0, 0.05)',
           border: '1px solid #E2E8F0',
           zIndex: 90,
         }}
