@@ -44,23 +44,7 @@ export default function Sidebar() {
   };
 
   return (
-    <aside
-      style={{
-        width: 260,
-        height: '100vh',
-        position: 'sticky',
-        top: 0,
-        background: '#FFFFFF',
-        borderRight: '1px solid #EEF0F3',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-        padding: '24px 18px',
-        zIndex: 50,
-        flexShrink: 0,
-        boxShadow: '2px 0 12px rgba(0, 0, 0, 0.02)',
-      }}
-    >
+    <aside className="app-sidebar">
       {/* Top Section */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
         {/* District Brand (Light Theme) */}

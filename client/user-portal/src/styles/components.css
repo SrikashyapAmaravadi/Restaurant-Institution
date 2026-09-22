@@ -79,7 +79,7 @@ html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
   width: 100%;
-  overflow-x: hidden;
+  overflow-x: clip;
   background: var(--bg-main);
   color: var(--text-primary);
 }
@@ -92,7 +92,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   line-height: 1.5;
   width: 100%;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -109,7 +109,7 @@ h1, h2, h3, h4, h5, h6 {
 
 #root {
   width: 100%;
-  overflow-x: hidden;
+  overflow-x: clip;
   min-height: 100vh;
   background: #FFFFFF;
 }
@@ -697,26 +697,73 @@ h1, h2, h3, h4, h5, h6 {
   box-shadow: 0 6px 20px rgba(15, 23, 42, 0.06);
 }
 
-/* ── Layout Framework ───────────────────────────────────────────────────── */
+/* ── Layout Framework & Constant Fixed Sidebar ─────────────────────────── */
 .app-layout {
   display: flex;
   min-height: 100vh;
   width: 100%;
   background: #FFFFFF;
+  position: relative;
+}
+
+.app-sidebar {
+  width: 260px;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  background: #FFFFFF;
+  border-right: 1px solid #EEF0F3;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 24px 18px;
+  z-index: 45;
+  box-shadow: 2px 0 12px rgba(0, 0, 0, 0.02);
+  overflow-y: auto;
+  box-sizing: border-box;
 }
 
 .main-area {
   flex: 1;
   min-width: 0;
+  margin-left: 260px;
+  width: calc(100% - 260px);
   display: flex;
   flex-direction: column;
   background: #FFFFFF;
+  min-height: 100vh;
 }
 
 .page-scroll {
   flex: 1;
   width: 100%;
-  overflow-y: auto;
+}
+
+@media (max-width: 1024px) {
+  .app-sidebar {
+    display: none !important;
+  }
+  .main-area {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+  .mobile-menu-trigger {
+    display: flex !important;
+  }
+  .mobile-bottom-dock {
+    display: flex !important;
+  }
+}
+
+@media (min-width: 1025px) {
+  .mobile-menu-trigger {
+    display: none !important;
+  }
+  .mobile-bottom-dock {
+    display: none !important;
+  }
 }
 
 /* ── District Hero Card Styles ─────────────────────────────────────────── */
