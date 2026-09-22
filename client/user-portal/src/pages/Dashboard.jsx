@@ -4,6 +4,7 @@ import RestaurantCard from '../components/RestaurantCard';
 import BookingModal from '../components/BookingModal';
 import DigitalPassModal from '../components/DigitalPassModal';
 import OfferDrawer from '../components/OfferDrawer';
+import DistrictSearchModal from '../components/DistrictSearchModal';
 import { useAuth } from '../context/AuthContext';
 import { useDining } from '../context/DiningContext';
 import {
@@ -19,10 +20,11 @@ import {
   Pizza,
   Utensils,
   Soup,
-  Trees,
-  UtensilsCrossed,
   Compass,
-  ChevronRight
+  ChevronRight,
+  Ticket,
+  Calendar,
+  UtensilsCrossed,
 } from 'lucide-react';
 
 export default function Dashboard() {
@@ -33,53 +35,26 @@ export default function Dashboard() {
   const [selectedRestaurantForBooking, setSelectedRestaurant] = useState(null);
   const [selectedBookingForPass, setSelectedBookingForPass] = useState(null);
   const [selectedOffer, setSelectedOffer] = useState(null);
+  const [searchModalOpen, setSearchModalOpen] = useState(false);
   const [activeFilter, setActiveFilter] = useState('All');
-  const [activeMood, setActiveMood] = useState(null);
 
   const safeReservations = Array.isArray(reservations) ? reservations : [];
   const safeRestaurants = Array.isArray(restaurants) ? restaurants : [];
 
-  // Active confirmed or seated booking
   const upcoming = safeReservations.find(
     b => b?.status === 'CONFIRMED' || b?.status === 'SEATED'
   );
 
-  // Campus Dining Mood Categories
-  const MOOD_STORIES = [
-    { id: 'farm', label: 'Farm to Table', icon: Leaf, tag: 'Organic' },
-    { id: 'cafes', label: 'Study Cafes', icon: Coffee, cuisine: 'Continental' },
-    { id: 'pizza', label: 'Pizza & Brews', icon: Pizza, cuisine: 'Continental' },
-    { id: 'mughlai', label: 'Tandoor & Curry', icon: Utensils, cuisine: 'North Indian' },
-    { id: 'asian', label: 'Asian & Ramen', icon: Soup, cuisine: 'Pan-Asian' },
-    { id: 'patio', label: 'Open Patio', icon: Trees, tag: 'Outdoor Patio' },
-    { id: 'quick', label: 'Quick Bites', icon: UtensilsCrossed, tag: 'Fast Casual' },
-    { id: 'dessert', label: 'Boba & Sweets', icon: Sparkles, tag: 'Boba Tea Bar' },
+  const MOOD_FILTERS = [
+    { id: 'All', label: 'All Places' },
+    { id: 'Offers', label: '🎟️ Student Deals' },
+    { id: 'TopRated', label: '⭐ 4.5+ Top Rated' },
+    { id: 'Instant', label: '⚡ Instant Seats' },
+    { id: 'NorthIndian', label: '🍛 North Indian' },
+    { id: 'Continental', label: '🍕 Continental' },
+    { id: 'PanAsian', label: '🍜 Pan-Asian' },
   ];
 
-  // Filter Chips
-  const FILTERS = [
-    { id: 'All', label: 'All Spots', icon: Compass },
-    { id: 'Offers', label: 'Campus Deals', icon: Tag },
-    { id: 'TopRated', label: 'Top Rated (4.5+)', icon: Star },
-    { id: 'Instant', label: 'Instant Pass', icon: Zap },
-    { id: 'NorthIndian', label: 'North Indian', icon: Utensils },
-    { id: 'Continental', label: 'Continental', icon: Pizza },
-    { id: 'PanAsian', label: 'Pan-Asian', icon: Soup },
-  ];
-
-  const handleMoodSelect = mood => {
-    if (activeMood === mood.id) {
-      setActiveMood(null);
-      setActiveFilter('All');
-    } else {
-      setActiveMood(mood.id);
-      if (mood.cuisine) {
-        setActiveFilter(mood.cuisine.replace(' ', ''));
-      }
-    }
-  };
-
-  // Filter logic
   const filteredRestaurants = safeRestaurants.filter(r => {
     if (activeFilter === 'Instant') return true;
     if (activeFilter === 'Offers') return r.hasOffer;
@@ -87,365 +62,273 @@ export default function Dashboard() {
     if (activeFilter === 'NorthIndian') return r.cuisine?.toLowerCase().includes('north indian');
     if (activeFilter === 'Continental') return r.cuisine?.toLowerCase().includes('continental');
     if (activeFilter === 'PanAsian') return r.cuisine?.toLowerCase().includes('asian');
-    if (activeMood) {
-      const story = MOOD_STORIES.find(m => m.id === activeMood);
-      if (story?.cuisine && !r.cuisine?.toLowerCase().includes(story.cuisine.toLowerCase())) {
-        return false;
-      }
-    }
     return true;
   });
 
+  const firstName = user?.name ? user.name.split(' ')[0] : 'Scholar';
+
   return (
-    <div className="page-pad pb-28 flex flex-col gap-6">
-      {/* Search Header Trigger */}
-      <div
-        onClick={() => navigate('/discover')}
-        className="flex items-center gap-3 p-3 sm:px-4 sm:py-3 rounded-2xl bg-white border border-slate-200 hover:border-slate-300 shadow-xs cursor-pointer transition-all"
-      >
-        <Search size={18} className="text-emerald-700 shrink-0" />
-        <span className="text-xs sm:text-sm text-slate-400 font-medium flex-1 truncate">
-          Search dishes, dining spots, or offers near Bennett...
-        </span>
-        <div className="hidden sm:flex items-center gap-2 shrink-0">
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-semibold">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
-            Live Network
-          </span>
-          <span style={{ padding: '6px 16px', borderRadius: 10, background: '#F1F5F9', color: '#334155', fontSize: 12, fontWeight: 700 }}>
-            Search
-          </span>
-        </div>
-      </div>
+    <div style={{ maxWidth: 1160, margin: '0 auto', padding: '24px 20px 100px', display: 'flex', flexDirection: 'column', gap: 36 }}>
 
-      {/* Going Out Vibes Horizontal Stories */}
-      <div>
-        <div className="flex justify-between items-center mb-3">
-          <div className="flex items-center gap-2">
-            <Zap size={15} className="text-emerald-700" />
-            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-700">
-              Going Out Vibes
-            </h2>
+      {/* ── 1. DISTRICT HERO BANNER WITH EMBEDDED SEARCH PILL (Screenshot 1) ── */}
+      <div className="district-hero-canvas">
+        <div className="district-hero-art">
+          {/* Subtle Decorative Dishes */}
+          <div style={{ position: 'absolute', top: 18, left: 24, opacity: 0.85 }}>
+            <span style={{ fontSize: 38 }}>🍝</span>
           </div>
-          <span className="text-xs text-slate-400 font-medium">Swipe to filter &rarr;</span>
-        </div>
+          <div style={{ position: 'absolute', top: 18, right: 24, opacity: 0.85 }}>
+            <span style={{ fontSize: 38 }}>🍕</span>
+          </div>
+          <div style={{ position: 'absolute', bottom: 18, left: 24, opacity: 0.85 }}>
+            <span style={{ fontSize: 38 }}>🥗</span>
+          </div>
+          <div style={{ position: 'absolute', bottom: 18, right: 24, opacity: 0.85 }}>
+            <span style={{ fontSize: 38 }}>🍷</span>
+          </div>
 
-        <div className="flex items-center gap-4 overflow-x-auto pb-2 scrollbar-none">
-          {MOOD_STORIES.map(mood => {
-            const Icon = mood.icon;
-            const isSelected = activeMood === mood.id;
-            return (
-              <button
-                key={mood.id}
-                type="button"
-                onClick={() => handleMoodSelect(mood)}
-                className="flex flex-col items-center gap-1.5 shrink-0 group cursor-pointer"
+          <div style={{ position: 'relative', zIndex: 2, width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div
+              style={{
+                fontFamily: "'Playfair Display', Georgia, serif",
+                fontStyle: 'italic',
+                fontSize: 'clamp(1.2rem, 2.5vw, 1.8rem)',
+                color: '#FBCFE8',
+                lineHeight: 1.2,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 8,
+              }}
+            >
+              <span>Seamlessly Crafted</span>
+              <Sparkles size={16} color="#FDE047" />
+            </div>
+            <div
+              style={{
+                fontFamily: "'Playfair Display', Georgia, serif",
+                fontSize: 'clamp(2rem, 4.5vw, 3.2rem)',
+                fontWeight: 600,
+                fontStyle: 'italic',
+                color: '#FFFFFF',
+                letterSpacing: '-0.02em',
+                marginTop: 2,
+              }}
+            >
+              Dining Experiences
+            </div>
+
+            {/* Embedded Search Bar Pill */}
+            <div
+              className="district-search-bar"
+              onClick={() => setSearchModalOpen(true)}
+            >
+              <Search size={18} color="#64748B" />
+              <span
+                style={{
+                  flex: 1,
+                  textAlign: 'left',
+                  fontSize: 14.5,
+                  color: '#94A3B8',
+                  fontWeight: 500,
+                  paddingLeft: 10,
+                }}
               >
-                <div
-                  className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all ${
-                    isSelected
-                      ? 'bg-emerald-700 text-white ring-3 ring-emerald-600/30 scale-105 shadow-sm'
-                      : 'bg-white text-slate-600 border border-slate-200 group-hover:border-slate-300 group-hover:bg-slate-50'
-                  }`}
-                >
-                  <Icon size={22} />
-                </div>
-                <span
-                  className={`text-[11px] max-w-[68px] text-center truncate leading-tight font-medium ${
-                    isSelected ? 'font-bold text-emerald-800' : 'text-slate-600'
-                  }`}
-                >
-                  {mood.label}
-                </span>
+                Search for a restaurant name, cuisine or dish
+              </span>
+              <button className="district-search-btn">
+                <ArrowRight size={17} />
               </button>
-            );
-          })}
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Active Upcoming Reservation Banner (If Any) */}
+      {/* ── 2. ACTIVE DIGITAL PASS TICKET (100% LIGHT THEME) ── */}
       {upcoming && (
-        <div className="bg-white border border-emerald-200 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 flex items-center justify-center shrink-0">
-              <QrCode size={24} />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800">
-                  Confirmed Table
-                </span>
-                <span className="text-xs text-slate-500 font-medium">
-                  {upcoming.date} • {upcoming.time}
-                </span>
-              </div>
-              <h3 className="text-base sm:text-lg font-bold text-slate-900 mt-1">
-                {upcoming.restaurantName}
-              </h3>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Table {upcoming.tableAssigned || 'T-01'} • {upcoming.partySize || 2} Guests
-              </p>
-            </div>
-          </div>
-
-          <button
-            type="button"
-            onClick={() => setSelectedBookingForPass(upcoming)}
+        <div
+          style={{
+            borderRadius: 20,
+            background: '#FFFFFF',
+            border: '1px solid #E2E8F0',
+            boxShadow: '0 4px 16px rgba(0, 0, 0, 0.04)',
+            overflow: 'hidden',
+          }}
+        >
+          <div
             style={{
-              display: 'inline-flex',
+              padding: '10px 18px',
+              background: '#FFF1F2',
+              borderBottom: '1px solid #FFE4E6',
+              display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center',
-              gap: 7,
-              padding: '10px 20px',
-              minHeight: 40,
-              borderRadius: 12,
-              background: 'linear-gradient(135deg, #15803D 0%, #064E3B 100%)',
-              color: '#FFFFFF',
-              fontSize: 13,
-              fontWeight: 700,
-              boxShadow: '0 4px 12px rgba(21, 128, 61, 0.25)',
-              cursor: 'pointer',
-              border: 'none',
-              whiteSpace: 'nowrap'
+              justifyContent: 'space-between',
             }}
           >
-            <QrCode size={15} />
-            <span>View Digital Pass</span>
-          </button>
+            <span style={{ fontSize: 12, fontWeight: 700, color: '#BE185D', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+              ● LIVE RESERVATION PASS
+            </span>
+            <span style={{ fontSize: 12, color: '#9F1239', fontWeight: 600 }}>
+              Code: {upcoming.passCode || 'BU-8492'}
+            </span>
+          </div>
+
+          <div
+            style={{
+              padding: '18px 20px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: 16,
+              flexWrap: 'wrap',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+              <div
+                style={{
+                  width: 50,
+                  height: 50,
+                  borderRadius: 14,
+                  background: '#FFE4E6',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <QrCode size={24} color="#BE185D" />
+              </div>
+              <div>
+                <div style={{ fontSize: 16, fontWeight: 700, color: '#0F172A', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                  {upcoming.restaurantName}
+                </div>
+                <div style={{ fontSize: 12.5, color: '#64748B', marginTop: 2 }}>
+                  Table <strong style={{ color: '#BE185D' }}>{upcoming.tableAssigned || 'T-01'}</strong> · {upcoming.date} at {upcoming.time} ({upcoming.partySize || 2} Guests)
+                </div>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setSelectedBookingForPass(upcoming)}
+              className="btn btn-primary btn-sm"
+              style={{ borderRadius: 99, padding: '9px 18px' }}
+            >
+              <QrCode size={15} />
+              <span>Show Pass</span>
+            </button>
+          </div>
         </div>
       )}
 
-      {/* Campus Spotlight Banner */}
-      <div
-        style={{
-          position: 'relative',
-          overflow: 'hidden',
-          borderRadius: 20,
-          background: 'linear-gradient(135deg, #064E3B 0%, #065F46 50%, #0F172A 100%)',
-          padding: '24px 28px',
-          color: '#FFFFFF',
-          boxShadow: '0 8px 24px -4px rgba(6, 78, 59, 0.25)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          flexWrap: 'wrap',
-          gap: 20
-        }}
-      >
-        <div style={{ maxWidth: 540 }}>
-          <div
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 6,
-              padding: '3px 10px',
-              borderRadius: 99,
-              background: 'rgba(255, 255, 255, 0.18)',
-              border: '1px solid rgba(255, 255, 255, 0.3)',
-              color: '#A7F3D0',
-              fontSize: 11,
-              fontWeight: 800,
-              marginBottom: 10,
-              letterSpacing: '0.04em'
-            }}
-          >
-            <Sparkles size={12} />
-            <span>CAMPUS EXCLUSIVE • VERIFIED PASS</span>
-          </div>
-          <h2
-            style={{
-              fontSize: 'clamp(1.25rem, 3.5vw, 1.65rem)',
-              fontWeight: 800,
-              color: '#FFFFFF',
-              lineHeight: 1.25,
-              margin: '0 0 8px'
-            }}
-          >
-            Partner Dining Network Live Across Bennett TechZone
-          </h2>
-          <p
-            style={{
-              fontSize: 13,
-              color: '#D1FAE5',
-              margin: 0,
-              lineHeight: 1.5,
-              opacity: 0.95
-            }}
-          >
-            Direct pre-booking with instant table hold, student discount settlement, and zero wait lines.
-          </p>
-        </div>
-
-        <button
-          type="button"
-          onClick={() => navigate('/discover')}
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 8,
-            padding: '11px 22px',
-            borderRadius: 14,
-            background: '#FFFFFF',
-            color: '#064E3B',
-            fontWeight: 800,
-            fontSize: 13,
-            border: 'none',
-            cursor: 'pointer',
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.12)',
-            transition: 'all 0.15s ease',
-            whiteSpace: 'nowrap'
-          }}
-        >
-          <span>Explore All Spots</span>
-          <ArrowRight size={15} />
-        </button>
+      {/* ── 3. FILTER PILLS (100% Light Theme) ── */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, overflowX: 'auto', paddingBottom: 4 }} className="scrollbar-none">
+        {MOOD_FILTERS.map(f => {
+          const isActive = activeFilter === f.id;
+          return (
+            <button
+              key={f.id}
+              onClick={() => setActiveFilter(f.id)}
+              style={{
+                padding: '7px 18px',
+                borderRadius: 99,
+                fontSize: 13,
+                fontWeight: isActive ? 700 : 500,
+                cursor: 'pointer',
+                whiteSpace: 'nowrap',
+                transition: 'all 0.15s ease',
+                background: isActive ? '#FFE4E6' : '#F1F5F9',
+                color: isActive ? '#BE185D' : '#475569',
+                border: `1px solid ${isActive ? '#FDA4AF' : 'transparent'}`,
+              }}
+            >
+              {f.label}
+            </button>
+          );
+        })}
       </div>
 
-      {/* Filter Chips Stream */}
+      {/* ── 4. "BOOK" SECTION (Screenshot 2 exact style) ── */}
       <div>
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
-          {FILTERS.map(f => {
-            const FilterIcon = f.icon;
-            const isSelected = activeFilter === f.id;
-            return (
-              <button
-                key={f.id}
-                type="button"
-                onClick={() => {
-                  setActiveFilter(f.id);
-                  setActiveMood(null);
-                }}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 7,
-                  padding: '8px 18px',
-                  minHeight: 36,
-                  borderRadius: 99,
-                  fontSize: 12.5,
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                  flexShrink: 0,
-                  transition: 'all 0.15s ease',
-                  background: isSelected ? '#15803D' : '#FFFFFF',
-                  color: isSelected ? '#FFFFFF' : '#334155',
-                  border: `1.5px solid ${isSelected ? '#15803D' : '#E2E8F0'}`,
-                  boxShadow: isSelected ? '0 3px 8px rgba(21, 128, 61, 0.2)' : 'none'
-                }}
-              >
-                <FilterIcon size={13} />
-                <span>{f.label}</span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Top Dining Spots Section */}
-      <div>
-        <div className="flex justify-between items-end mb-4">
-          <div>
-            <h2 className="text-lg sm:text-xl font-bold tracking-tight text-slate-900">
-              Top Dining Spots Near Campus
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <Calendar size={24} color="#0F172A" />
+            <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 24, fontWeight: 800, color: '#0F172A' }}>
+              Book a Table
             </h2>
-            <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-              {filteredRestaurants.length} verified partner restaurants available
-            </p>
           </div>
-          <button
-            type="button"
-            onClick={() => navigate('/discover')}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 5,
-              padding: '7px 14px',
-              borderRadius: 10,
-              background: '#ECFDF5',
-              border: '1px solid #A7F3D0',
-              color: '#065F46',
-              fontSize: 12.5,
-              fontWeight: 700,
-              cursor: 'pointer'
-            }}
-          >
-            <span>View Map</span>
-            <ChevronRight size={14} />
-          </button>
+          <span style={{ fontSize: 13, color: '#64748B', fontWeight: 500 }}>
+            {filteredRestaurants.length} outlets available
+          </span>
         </div>
 
         {filteredRestaurants.length === 0 ? (
-          <div className="bg-white border border-slate-200 rounded-2xl p-10 text-center shadow-xs">
-            <p className="text-sm font-bold text-slate-900 mb-1">No venues found for this filter</p>
-            <p className="text-xs text-slate-500 mb-4">Tap "All Spots" to see all spots near Bennett.</p>
+          <div
+            style={{
+              padding: '48px 24px',
+              textAlign: 'center',
+              background: '#FFFFFF',
+              borderRadius: 20,
+              border: '1px solid #EEF0F3',
+            }}
+          >
+            <UtensilsCrossed size={36} color="#CBD5E1" style={{ margin: '0 auto 12px' }} />
+            <h3 style={{ fontSize: 16, fontWeight: 700, color: '#334155' }}>No restaurants found</h3>
+            <p style={{ fontSize: 13, color: '#94A3B8', marginTop: 4 }}>Try clearing the active filter</p>
             <button
-              type="button"
-              onClick={() => {
-                setActiveFilter('All');
-                setActiveMood(null);
-              }}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '10px 22px',
-                minHeight: 40,
-                borderRadius: 12,
-                background: '#F1F5F9',
-                border: '1px solid #CBD5E1',
-                color: '#0F172A',
-                fontSize: 13,
-                fontWeight: 700,
-                cursor: 'pointer'
-              }}
+              onClick={() => setActiveFilter('All')}
+              className="btn btn-primary btn-sm"
+              style={{ marginTop: 14 }}
             >
-              Reset Filters
+              Show All
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {filteredRestaurants.map(restaurant => (
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
+              gap: 22,
+            }}
+          >
+            {filteredRestaurants.map(r => (
               <RestaurantCard
-                key={restaurant.id}
-                restaurant={restaurant}
-                onQuickReserve={r => setSelectedRestaurant(r)}
-                onViewOffer={offer => setSelectedOffer(offer)}
+                key={r.id}
+                restaurant={r}
+                onQuickReserve={res => setSelectedRestaurant(res)}
+                onViewOffer={off => setSelectedOffer(off)}
               />
             ))}
           </div>
         )}
       </div>
 
-      {/* Booking Modal */}
+      {/* Modals */}
       {selectedRestaurantForBooking && (
         <BookingModal
           restaurant={selectedRestaurantForBooking}
-          isOpen={!!selectedRestaurantForBooking}
+          initialTime={selectedRestaurantForBooking.defaultTime}
           onClose={() => setSelectedRestaurant(null)}
-          onSuccess={newBooking => {
-            setSelectedRestaurant(null);
-            setSelectedBookingForPass(newBooking);
-          }}
         />
       )}
 
-      {/* Digital Pass Modal */}
       {selectedBookingForPass && (
         <DigitalPassModal
           booking={selectedBookingForPass}
-          isOpen={!!selectedBookingForPass}
           onClose={() => setSelectedBookingForPass(null)}
         />
       )}
 
-      {/* Offer Drawer */}
       {selectedOffer && (
         <OfferDrawer
           offer={selectedOffer}
-          isOpen={!!selectedOffer}
+          isOpen={Boolean(selectedOffer)}
           onClose={() => setSelectedOffer(null)}
         />
       )}
+
+      <DistrictSearchModal
+        isOpen={searchModalOpen}
+        onClose={() => setSearchModalOpen(false)}
+      />
     </div>
   );
 }
