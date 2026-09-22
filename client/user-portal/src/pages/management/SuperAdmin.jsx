@@ -386,195 +386,68 @@ export default function SuperAdmin() {
 
   return (
     <div className="page-pad">
-      {/* Header */}
-      <div className="anim-fade-up" style={{
-        padding: '24px 28px',
-        borderRadius: 'var(--r-lg)',
-        background: 'linear-gradient(135deg, #2F5E31 0%, #1E4624 60%, #0F2D1E 100%)',
-        border: '1px solid rgba(255, 255, 255, 0.15)',
-        marginBottom: 28,
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        flexWrap: 'wrap',
-        gap: 20,
-        boxShadow: 'var(--shadow-md)'
-      }}>
+      {/* Executive Hero Banner */}
+      <div className="anim-fade-up dashboard-hero-banner">
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          <div style={{ width: 56, height: 56, borderRadius: 'var(--r-sm)', background: 'rgba(255, 255, 255, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
-            <Building2 size={28} />
+          <div style={{ width: 52, height: 52, borderRadius: 14, background: 'rgba(255, 255, 255, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', border: '1px solid rgba(255, 255, 255, 0.18)' }}>
+            <Building2 size={26} />
           </div>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span className="badge badge-primary" style={{ background: 'rgba(111, 175, 61, 0.2)', color: '#6FAF3D', border: '1px solid rgba(111, 175, 61, 0.4)' }}>Super Admin Governance</span>
-              <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.85)' }}>Institution: Bennett University</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+              <span className="status-pill" style={{ background: 'rgba(255, 255, 255, 0.12)', color: '#FFFFFF', border: '1px solid rgba(255, 255, 255, 0.22)', padding: '3px 10px', fontSize: 11 }}>
+                ● Super Admin Governance
+              </span>
+              <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.75)' }}>Institution: Bennett University</span>
             </div>
-            <h2 className="font-display" style={{ fontSize: '1.75rem', fontWeight: 800, color: '#fff' }}>
+            <h2 className="font-display" style={{ fontSize: '1.75rem', fontWeight: 800, color: '#fff', margin: '4px 0 2px' }}>
               Platform Operations &amp; Verification Gate
             </h2>
-            <div style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.85)' }}>
-              Governed by NIVIXPE PRIVATE LIMITED · PostgreSQL Database Live
+            <div style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.7)' }}>
+              Governed by NIVIXPE PRIVATE LIMITED · PostgreSQL Live Network
             </div>
           </div>
-        </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <button
-            className="btn btn-primary btn-md"
-            style={{
-              background: 'linear-gradient(135deg, #f59e0b, #d97706)',
-              color: '#000',
-              fontWeight: 800,
-              boxShadow: '0 4px 16px rgba(245, 158, 11, 0.4)',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 8,
-              padding: '11px 22px',
-              minHeight: 44,
-              borderRadius: 12,
-              fontSize: '0.95rem',
-              boxSizing: 'border-box'
-            }}
-            onClick={() => setShowAddRestModal(true)}
-          >
-            <Plus size={18} strokeWidth={2.5} /> Onboard New Restaurant
-          </button>
         </div>
 
         {/* Tab Switcher Pills */}
-        <div className="tabs-scroll-x" style={{ borderTop: '1px solid rgba(255,255,255,0.15)', paddingTop: 16, width: '100%', gap: 8 }}>
+        <div className="tabs-scroll-x" style={{ borderTop: '1px solid rgba(255,255,255,0.12)', paddingTop: 16, width: '100%', gap: 8 }}>
           <button
-            className={`btn btn-sm tab-pill-interactive ${activeTab === 'Restaurants' ? 'btn-primary' : 'btn-outline'}`}
-            style={{
-              color: activeTab === 'Restaurants' ? '#FFFFFF' : 'var(--t1)',
-              backgroundColor: activeTab === 'Restaurants' ? undefined : '#FFFFFF',
-              borderColor: activeTab === 'Restaurants' ? 'rgba(255,255,255,0.3)' : '#C8DEC3',
-              fontWeight: 700,
-              flexShrink: 0,
-              padding: '9px 18px',
-              minHeight: 38,
-              borderRadius: 10,
-              boxSizing: 'border-box'
-            }}
+            className={`btn-tab-pill ${activeTab === 'Restaurants' ? 'active' : ''}`}
             onClick={() => setActiveTab('Restaurants')}
           >
             <Store size={14} /> Partner Restaurants ({restaurantsList.length})
           </button>
           <button
-            className={`btn btn-sm tab-pill-interactive ${activeTab === 'Users' ? 'btn-primary' : 'btn-outline'}`}
-            style={{
-              color: activeTab === 'Users' ? '#FFFFFF' : 'var(--t1)',
-              backgroundColor: activeTab === 'Users' ? undefined : '#FFFFFF',
-              borderColor: activeTab === 'Users' ? 'rgba(255,255,255,0.3)' : '#C8DEC3',
-              fontWeight: 700,
-              flexShrink: 0,
-              padding: '9px 18px',
-              minHeight: 38,
-              borderRadius: 10,
-              boxSizing: 'border-box'
-            }}
+            className={`btn-tab-pill ${activeTab === 'Users' ? 'active' : ''}`}
             onClick={() => setActiveTab('Users')}
           >
             <Users size={14} /> User Directory ({usersList.length})
           </button>
           <button
-            className={`btn btn-sm tab-pill-interactive ${activeTab === 'Verifications' ? 'btn-primary' : 'btn-outline'}`}
-            style={{
-              color: activeTab === 'Verifications' ? '#FFFFFF' : 'var(--t1)',
-              backgroundColor: activeTab === 'Verifications' ? undefined : '#FFFFFF',
-              borderColor: activeTab === 'Verifications' ? 'rgba(255,255,255,0.3)' : '#C8DEC3',
-              fontWeight: 700,
-              flexShrink: 0,
-              padding: '9px 18px',
-              minHeight: 38,
-              borderRadius: 10,
-              boxSizing: 'border-box'
-            }}
-            onClick={() => setActiveTab('Verifications')}
-          >
-            <ShieldCheck size={14} /> Passkey Gate ({verifications.length})
-          </button>
-          <button
-            className={`btn btn-sm tab-pill-interactive ${activeTab === 'Institutions' ? 'btn-primary' : 'btn-outline'}`}
-            style={{
-              color: activeTab === 'Institutions' ? '#FFFFFF' : 'var(--t1)',
-              backgroundColor: activeTab === 'Institutions' ? undefined : '#FFFFFF',
-              borderColor: activeTab === 'Institutions' ? 'rgba(255,255,255,0.3)' : '#C8DEC3',
-              fontWeight: 700,
-              flexShrink: 0,
-              padding: '9px 18px',
-              minHeight: 38,
-              borderRadius: 10,
-              boxSizing: 'border-box'
-            }}
+            className={`btn-tab-pill ${activeTab === 'Institutions' ? 'active' : ''}`}
             onClick={() => setActiveTab('Institutions')}
           >
             <Globe size={14} /> Institutions ({institutions.length})
           </button>
           <button
-            className={`btn btn-sm tab-pill-interactive ${activeTab === 'Bookings' ? 'btn-primary' : 'btn-outline'}`}
-            style={{
-              color: activeTab === 'Bookings' ? '#FFFFFF' : 'var(--t1)',
-              backgroundColor: activeTab === 'Bookings' ? undefined : '#FFFFFF',
-              borderColor: activeTab === 'Bookings' ? 'rgba(255,255,255,0.3)' : '#C8DEC3',
-              fontWeight: 700,
-              flexShrink: 0,
-              padding: '9px 18px',
-              minHeight: 38,
-              borderRadius: 10,
-              boxSizing: 'border-box'
-            }}
+            className={`btn-tab-pill ${activeTab === 'Bookings' ? 'active' : ''}`}
             onClick={() => setActiveTab('Bookings')}
           >
             <Calendar size={14} /> Bookings ({reservations.length})
           </button>
           <button
-            className={`btn btn-sm tab-pill-interactive ${activeTab === 'Analytics' ? 'btn-primary' : 'btn-outline'}`}
-            style={{
-              color: activeTab === 'Analytics' ? '#FFFFFF' : 'var(--t1)',
-              backgroundColor: activeTab === 'Analytics' ? undefined : '#FFFFFF',
-              borderColor: activeTab === 'Analytics' ? 'rgba(255,255,255,0.3)' : '#C8DEC3',
-              fontWeight: 700,
-              flexShrink: 0,
-              padding: '9px 18px',
-              minHeight: 38,
-              borderRadius: 10,
-              boxSizing: 'border-box'
-            }}
+            className={`btn-tab-pill ${activeTab === 'Analytics' ? 'active' : ''}`}
             onClick={() => setActiveTab('Analytics')}
           >
             <BarChart3 size={14} /> Platform Analytics
           </button>
           <button
-            className={`btn btn-sm tab-pill-interactive ${activeTab === 'Moderation' ? 'btn-primary' : 'btn-outline'}`}
-            style={{
-              color: activeTab === 'Moderation' ? '#FFFFFF' : 'var(--t1)',
-              backgroundColor: activeTab === 'Moderation' ? undefined : '#FFFFFF',
-              borderColor: activeTab === 'Moderation' ? 'rgba(255,255,255,0.3)' : '#C8DEC3',
-              fontWeight: 700,
-              flexShrink: 0,
-              padding: '9px 18px',
-              minHeight: 38,
-              borderRadius: 10,
-              boxSizing: 'border-box'
-            }}
+            className={`btn-tab-pill ${activeTab === 'Moderation' ? 'active' : ''}`}
             onClick={() => setActiveTab('Moderation')}
           >
             <ShieldAlert size={14} /> Reviews Moderation
           </button>
           <button
-            className={`btn btn-sm tab-pill-interactive ${activeTab === 'Audit' ? 'btn-primary' : 'btn-outline'}`}
-            style={{
-              color: activeTab === 'Audit' ? '#FFFFFF' : 'var(--t1)',
-              backgroundColor: activeTab === 'Audit' ? undefined : '#FFFFFF',
-              borderColor: activeTab === 'Audit' ? 'rgba(255,255,255,0.3)' : '#C8DEC3',
-              fontWeight: 700,
-              flexShrink: 0,
-              padding: '9px 18px',
-              minHeight: 38,
-              borderRadius: 10,
-              boxSizing: 'border-box'
-            }}
+            className={`btn-tab-pill ${activeTab === 'Audit' ? 'active' : ''}`}
             onClick={() => setActiveTab('Audit')}
           >
             <Activity size={14} /> Security Audit
@@ -585,111 +458,129 @@ export default function SuperAdmin() {
       {/* Quick Interactive KPI Overview */}
       <div className="grid-responsive-kpi anim-fade-up delay-1">
         <div
-          className="card stat-tile-interactive"
-          style={{ padding: 18, background: 'var(--bg-card)' }}
+          className="kpi-card-lux"
+          style={{ cursor: 'pointer' }}
           onClick={() => setActiveTab('Restaurants')}
           title="Click to view Partner Restaurants"
         >
-          <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--t4)', textTransform: 'uppercase' }}>Partner Restaurants</div>
-          <div className="font-display" style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--primary)', margin: '4px 0' }}>
-            {restaurantsList.length} Active
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
+            <span style={{ fontSize: 11, fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              Partner Restaurants
+            </span>
+            <div style={{ width: 28, height: 28, borderRadius: 8, background: '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0F172A' }}>
+              <Store size={14} />
+            </div>
           </div>
-          <div style={{ fontSize: 11.5, color: '#10B981', display: 'flex', alignItems: 'center', gap: 4 }}>
-            ● Live in PostgreSQL DB →
+          <div className="font-display" style={{ fontSize: '1.85rem', fontWeight: 800, color: '#0F172A', margin: '2px 0 6px' }}>
+            {restaurantsList.length} <span style={{ fontSize: '1rem', fontWeight: 600, color: '#64748B' }}>Active</span>
+          </div>
+          <div style={{ fontSize: 11.5, color: '#0F172A', display: 'flex', alignItems: 'center', gap: 5, fontWeight: 700 }}>
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#0F172A', display: 'inline-block' }}></span>
+            Live PostgreSQL DB →
           </div>
         </div>
 
         <div
-          className="card stat-tile-interactive"
-          style={{ padding: 18, background: 'var(--bg-card)' }}
+          className="kpi-card-lux"
+          style={{ cursor: 'pointer' }}
           onClick={() => setActiveTab('Bookings')}
           title="Click to view Live Bookings"
         >
-          <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--t4)', textTransform: 'uppercase' }}>Active Table Bookings</div>
-          <div className="font-display" style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--t1)', margin: '4px 0' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
+            <span style={{ fontSize: 11, fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              Active Bookings
+            </span>
+            <div style={{ width: 28, height: 28, borderRadius: 8, background: '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0F172A' }}>
+              <Calendar size={14} />
+            </div>
+          </div>
+          <div className="font-display" style={{ fontSize: '1.85rem', fontWeight: 800, color: '#0F172A', margin: '2px 0 6px' }}>
             {reservations.length}
           </div>
-          <div style={{ fontSize: 11.5, color: '#10B981', display: 'flex', alignItems: 'center', gap: 4 }}>
-            ● Real-time reservations →
+          <div style={{ fontSize: 11.5, color: '#0F172A', display: 'flex', alignItems: 'center', gap: 5, fontWeight: 700 }}>
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#0F172A', display: 'inline-block' }}></span>
+            Real-time reservations →
           </div>
         </div>
 
         <div
-          className="card stat-tile-interactive"
-          style={{ padding: 18, background: 'var(--bg-card)' }}
-          onClick={() => setActiveTab('Verifications')}
-          title="Click to view Passkey Verification Queue"
-        >
-          <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--t4)', textTransform: 'uppercase' }}>Awaiting Clearance</div>
-          <div className="font-display" style={{ fontSize: '1.8rem', fontWeight: 800, color: '#EF4444', margin: '4px 0' }}>
-            {verifications.length}
-          </div>
-          <div style={{ fontSize: 11.5, color: '#EF4444', display: 'flex', alignItems: 'center', gap: 4 }}>
-            ● Pending passkey gate →
-          </div>
-        </div>
-
-        <div
-          className="card stat-tile-interactive"
-          style={{ padding: 18, background: 'var(--bg-card)' }}
+          className="kpi-card-lux"
+          style={{ cursor: 'pointer' }}
           onClick={() => setActiveTab('Institutions')}
           title="Click to view Institutions"
         >
-          <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--t4)', textTransform: 'uppercase' }}>Platform Institutions</div>
-          <div className="font-display" style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--t1)', margin: '4px 0' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
+            <span style={{ fontSize: 11, fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              Platform Institutions
+            </span>
+            <div style={{ width: 28, height: 28, borderRadius: 8, background: '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0F172A' }}>
+              <Globe size={14} />
+            </div>
+          </div>
+          <div className="font-display" style={{ fontSize: '1.85rem', fontWeight: 800, color: '#0F172A', margin: '2px 0 6px' }}>
             {institutions.length}
           </div>
-          <div style={{ fontSize: 11.5, color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: 4 }}>
-            ● Multi-tenant campus gates →
+          <div style={{ fontSize: 11.5, color: '#0F172A', display: 'flex', alignItems: 'center', gap: 5, fontWeight: 700 }}>
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#0F172A', display: 'inline-block' }}></span>
+            Multi-tenant campus gates →
           </div>
         </div>
       </div>
 
       {/* ================= TAB 1: RESTAURANTS ================= */}
       {activeTab === 'Restaurants' && (
-        <div className="card anim-fade-up delay-2" style={{ padding: 24, background: 'var(--bg-card)' }}>
+        <div className="card anim-fade-up delay-2" style={{ padding: 24, background: '#FFFFFF', border: '1px solid #EEF0F3', borderRadius: 16 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18, flexWrap: 'wrap', gap: 12 }}>
             <div>
-              <h3 className="font-display" style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--t1)' }}>
+              <h3 className="font-display" style={{ fontSize: '1.3rem', fontWeight: 800, color: '#0F172A' }}>
                 Institutional Partner Establishments
               </h3>
-              <p style={{ fontSize: 12.5, color: 'var(--t3)' }}>
+              <p style={{ fontSize: 12.5, color: '#64748B' }}>
                 Authorized dining outlets for Bennett University students and faculty members.
               </p>
             </div>
-            <span className="badge badge-info">{restaurantsList.length} Outlets Configured</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <span className="status-pill">{restaurantsList.length} Outlets Configured</span>
+              <button
+                className="btn-action-admit"
+                style={{ padding: '8px 16px', fontSize: 12 }}
+                onClick={() => setShowAddRestModal(true)}
+              >
+                <Plus size={14} /> Onboard Restaurant
+              </button>
+            </div>
           </div>
 
           {restSuccessMsg && (
-            <div style={{ padding: '10px 14px', borderRadius: 'var(--r-xs)', background: '#ECFDF5', border: '1px solid #A7F3D0', color: '#065F46', marginBottom: 16, fontSize: 13 }}>
+            <div style={{ padding: '10px 14px', borderRadius: 10, background: '#F8FAFC', border: '1px solid #CBD5E1', color: '#0F172A', marginBottom: 16, fontSize: 13, fontWeight: 600 }}>
               {restSuccessMsg}
             </div>
           )}
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))', gap: 16 }}>
             {restaurantsList.map(r => (
-              <div key={r.id} className="card hover-lift" style={{ border: '1px solid var(--border)', borderRadius: 'var(--r-sm)', padding: 16, display: 'flex', gap: 14, alignItems: 'flex-start', background: 'var(--bg-card)' }}>
-                <img src={r.image} alt={r.name} style={{ width: 80, height: 80, borderRadius: 'var(--r-xs)', objectFit: 'cover', flexShrink: 0 }} />
+              <div key={r.id} className="card hover-lift" style={{ border: '1px solid #EEF0F3', borderRadius: 14, padding: 16, display: 'flex', gap: 14, alignItems: 'flex-start', background: '#FFFFFF', boxShadow: '0 2px 8px rgba(15, 23, 42, 0.03)' }}>
+                <img src={r.image} alt={r.name} style={{ width: 80, height: 80, borderRadius: 10, objectFit: 'cover', flexShrink: 0 }} />
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div style={{ fontWeight: 800, fontSize: 15, color: 'var(--t1)' }}>{r.name}</div>
-                    <span className={`badge ${r.isOpen ? 'badge-success' : 'badge-neutral'}`}>
+                    <div style={{ fontWeight: 800, fontSize: 15, color: '#0F172A' }}>{r.name}</div>
+                    <span className="status-pill">
                       {r.isOpen ? '● Open' : '○ Suspended'}
                     </span>
                   </div>
-                  <div style={{ fontSize: 12, color: 'var(--t3)', margin: '3px 0' }}>{r.cuisine} · {r.price || '₹450 for two'} · {r.hours || '11:00 AM - 11:00 PM'}</div>
-                  <div style={{ fontSize: 11.5, color: 'var(--t4)', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{r.address}</div>
-                  <div style={{ display: 'flex', gap: 8, marginTop: 10 }}>
+                  <div style={{ fontSize: 12, color: '#64748B', margin: '3px 0' }}>{r.cuisine} · {r.price || '₹450 for two'} · {r.hours || '11:00 AM - 11:00 PM'}</div>
+                  <div style={{ fontSize: 11.5, color: '#94A3B8', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{r.address}</div>
+                  <div style={{ display: 'flex', gap: 8, marginTop: 12, flexWrap: 'wrap' }}>
                     <button
-                      className="btn btn-outline btn-xs"
-                      style={{ fontSize: 11, fontWeight: 700 }}
+                      className="btn-action-dishes"
+                      style={{ padding: '6px 14px', fontSize: 11.5 }}
                       onClick={() => handleToggleStatus(r.id, r.isOpen)}
                     >
                       {r.isOpen ? 'Suspend' : 'Activate'}
                     </button>
                     <button
-                      className="btn btn-ghost btn-xs"
-                      style={{ fontSize: 11, color: '#EF4444', fontWeight: 700 }}
+                      className="btn-action-cancel"
+                      style={{ padding: '6px 12px', fontSize: 11.5 }}
                       onClick={() => handleDeleteRestaurant(r.id, r.name)}
                     >
                       <Trash2 size={12} /> Remove
@@ -704,25 +595,25 @@ export default function SuperAdmin() {
 
       {/* ================= TAB 2: USER DIRECTORY ================= */}
       {activeTab === 'Users' && (
-        <div className="card anim-fade-up delay-2" style={{ padding: 24, background: 'var(--bg-card)' }}>
+        <div className="card anim-fade-up delay-2" style={{ padding: 24, background: '#FFFFFF', border: '1px solid #EEF0F3', borderRadius: 16 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18, flexWrap: 'wrap', gap: 12 }}>
             <div>
-              <h3 className="font-display" style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--t1)' }}>
+              <h3 className="font-display" style={{ fontSize: '1.3rem', fontWeight: 800, color: '#0F172A' }}>
                 Platform User Directory &amp; RBAC Roles
               </h3>
-              <p style={{ fontSize: 12.5, color: 'var(--t3)' }}>
+              <p style={{ fontSize: 12.5, color: '#64748B' }}>
                 Manage institutional users, promote roles, assign staff to restaurants, and control verification status.
               </p>
             </div>
-            <button className="btn btn-ghost btn-sm" onClick={fetchUsers}>
-              <RefreshCw size={14} className={loadingUsers ? 'spin' : ''} /> Refresh Users
+            <button className="btn-action-dishes" style={{ padding: '7px 14px', fontSize: 12 }} onClick={fetchUsers}>
+              <RefreshCw size={13} className={loadingUsers ? 'spin' : ''} /> Refresh Users
             </button>
           </div>
 
           {/* Filters Bar */}
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 18, alignItems: 'center' }}>
             <div style={{ position: 'relative', flex: '1 1 240px' }}>
-              <Search size={16} style={{ position: 'absolute', left: 12, top: 11, color: 'var(--t4)' }} />
+              <Search size={16} style={{ position: 'absolute', left: 12, top: 11, color: '#94A3B8' }} />
               <input
                 className="form-input"
                 style={{ paddingLeft: 36, height: 38 }}
@@ -733,9 +624,9 @@ export default function SuperAdmin() {
             </div>
 
             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-              <span style={{ fontSize: 12, color: 'var(--t4)', fontWeight: 600 }}>Role:</span>
+              <span style={{ fontSize: 12, color: '#64748B', fontWeight: 600 }}>Role:</span>
               <select
-                className="form-input"
+                className="form-select"
                 style={{ height: 38, width: 170, fontSize: 12 }}
                 value={userRoleFilter}
                 onChange={e => setUserRoleFilter(e.target.value)}
@@ -750,9 +641,9 @@ export default function SuperAdmin() {
             </div>
 
             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-              <span style={{ fontSize: 12, color: 'var(--t4)', fontWeight: 600 }}>Status:</span>
+              <span style={{ fontSize: 12, color: '#64748B', fontWeight: 600 }}>Status:</span>
               <select
-                className="form-input"
+                className="form-select"
                 style={{ height: 38, width: 150, fontSize: 12 }}
                 value={userVerifiedFilter}
                 onChange={e => setUserVerifiedFilter(e.target.value)}
@@ -766,54 +657,50 @@ export default function SuperAdmin() {
 
           {/* Users Table */}
           <div className="table-responsive">
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, textAlign: 'left' }}>
+            <table className="admin-table">
               <thead>
-                <tr style={{ borderBottom: '2px solid var(--border)', color: 'var(--t4)', textTransform: 'uppercase', fontSize: 11 }}>
-                  <th style={{ padding: '12px 14px' }}>User Details</th>
-                  <th style={{ padding: '12px 14px' }}>Role</th>
-                  <th style={{ padding: '12px 14px' }}>Campus Info</th>
-                  <th style={{ padding: '12px 14px' }}>Verification</th>
-                  <th style={{ padding: '12px 14px', textAlign: 'right' }}>Actions</th>
+                <tr>
+                  <th>User Details</th>
+                  <th>Role</th>
+                  <th>Campus Info</th>
+                  <th>Verification</th>
+                  <th style={{ textAlign: 'right' }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {loadingUsers ? (
                   <tr>
-                    <td colSpan="5" style={{ padding: 32, textAlign: 'center', color: 'var(--t3)' }}>
+                    <td colSpan="5" style={{ padding: 32, textAlign: 'center', color: '#64748B' }}>
                       Loading platform users from PostgreSQL...
                     </td>
                   </tr>
                 ) : usersList.length === 0 ? (
                   <tr>
-                    <td colSpan="5" style={{ padding: 32, textAlign: 'center', color: 'var(--t3)' }}>
+                    <td colSpan="5" style={{ padding: 32, textAlign: 'center', color: '#64748B' }}>
                       No users match the selected filters.
                     </td>
                   </tr>
                 ) : (
                   usersList.map(u => (
-                    <tr key={u.id} className="table-row-interactive" style={{ borderBottom: '1px solid var(--border)' }}>
-                      <td style={{ padding: '14px' }}>
-                        <div style={{ fontWeight: 700, color: 'var(--t1)' }}>{u.name}</div>
-                        <div style={{ fontSize: 11.5, color: 'var(--t3)' }}>{u.email}</div>
+                    <tr key={u.id}>
+                      <td>
+                        <div style={{ fontWeight: 700, color: '#0F172A' }}>{u.name}</div>
+                        <div style={{ fontSize: 11.5, color: '#64748B' }}>{u.email}</div>
                       </td>
-                      <td style={{ padding: '14px' }}>
-                        <span className={`badge ${
-                          u.role === 'SUPER_ADMIN' ? 'badge-primary' :
-                          u.role === 'RESTAURANT_ADMIN' ? 'badge-warning' :
-                          u.role === 'RESTAURANT_STAFF' ? 'badge-info' : 'badge-neutral'
-                        }`}>
+                      <td>
+                        <span className="status-pill" style={{ background: '#F8FAFC', color: '#0F172A', border: '1px solid #E2E8F0' }}>
                           {u.role.replace('_', ' ')}
                         </span>
                       </td>
-                      <td style={{ padding: '14px', color: 'var(--t3)' }}>
+                      <td style={{ color: '#475569' }}>
                         <div>{u.department || 'Student Body'}</div>
-                        {u.rollNumber && <div style={{ fontSize: 11, color: 'var(--t4)' }}>Roll: {u.rollNumber}</div>}
+                        {u.rollNumber && <div style={{ fontSize: 11, color: '#94A3B8' }}>Roll: {u.rollNumber}</div>}
                       </td>
-                      <td style={{ padding: '14px' }}>
+                      <td>
                         <button
                           onClick={() => handleToggleUserVerify(u.id, u.verified)}
-                          className={`btn btn-xs ${u.verified ? 'btn-success' : 'btn-outline'}`}
-                          style={{ fontSize: 11 }}
+                          className={u.verified ? 'btn-action-dishes' : 'btn-action-cancel'}
+                          style={{ padding: '5px 12px', fontSize: 11 }}
                         >
                           {u.verified ? (
                             <><CheckCircle2 size={12} /> Verified</>
@@ -822,10 +709,11 @@ export default function SuperAdmin() {
                           )}
                         </button>
                       </td>
-                      <td style={{ padding: '14px', textAlign: 'right' }}>
+                      <td style={{ textAlign: 'right' }}>
                         <div style={{ display: 'inline-flex', gap: 8, alignItems: 'center' }}>
                           <select
-                            style={{ fontSize: 11, padding: '4px 6px', borderRadius: 'var(--r-xs)', border: '1px solid var(--border)', background: '#FFFFFF' }}
+                            className="form-select"
+                            style={{ fontSize: 11, padding: '5px 8px', height: 'auto', width: 'auto', borderRadius: 99, background: '#FFFFFF' }}
                             value={u.role}
                             onChange={e => handleUpdateUserRole(u.id, e.target.value, u.restaurantId)}
                           >
@@ -837,8 +725,8 @@ export default function SuperAdmin() {
                           </select>
                           {u.id !== user?.id && (
                             <button
-                              className="btn btn-ghost btn-xs"
-                              style={{ color: '#EF4444' }}
+                              className="btn-action-cancel"
+                              style={{ padding: '6px 9px' }}
                               onClick={() => handleDeleteUser(u.id, u.name)}
                               title="Delete user"
                             >
@@ -856,88 +744,19 @@ export default function SuperAdmin() {
         </div>
       )}
 
-      {/* ================= TAB 3: PASSKEY CLEARANCE QUEUE ================= */}
-      {(activeTab === 'Clearance' || activeTab === 'Verifications') && (
-        <div className="card anim-fade-up delay-2" style={{ padding: 24, background: 'var(--bg-card)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18, flexWrap: 'wrap', gap: 12 }}>
-            <div>
-              <h3 className="font-display" style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--t1)' }}>
-                Institutional Onboarding Clearance Queue
-              </h3>
-              <p style={{ fontSize: 12.5, color: 'var(--t3)' }}>
-                Issue 6-digit verification passkeys to institutional users awaiting activation.
-              </p>
-            </div>
-            <span className="badge badge-warning">{verifications.length} Pending</span>
-          </div>
-
-          {lastSentInfo && (
-            <div style={{
-              background: '#ECFDF5',
-              border: '1.5px solid #10B981',
-              borderRadius: 'var(--r-sm)',
-              padding: '14px 18px',
-              marginBottom: 20,
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              flexWrap: 'wrap',
-              gap: 12
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <KeyRound size={20} color="#059669" />
-                <div>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: '#065F46' }}>
-                    Passkey <strong style={{ color: '#1E3A8A', fontSize: 16 }}>{lastSentInfo.code}</strong> issued to {lastSentInfo.name}!
-                  </div>
-                  <div style={{ fontSize: 12, color: '#047857' }}>
-                    Sent to: {lastSentInfo.email}
-                  </div>
-                </div>
-              </div>
-              <button className="btn btn-ghost btn-xs" onClick={() => setLastSentInfo(null)}>
-                <X size={14} /> Close
-              </button>
-            </div>
-          )}
-
-          {verifications.length === 0 ? (
-            <div style={{ padding: 32, textAlign: 'center', color: 'var(--t3)' }}>
-              All user registrations have been verified and cleared!
-            </div>
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              {verifications.map(v => (
-                <div key={v.id} className="card hover-lift" style={{ border: '1px solid var(--border)', borderRadius: 'var(--r-sm)', padding: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12, background: 'var(--bg-card)' }}>
-                  <div>
-                    <div style={{ fontWeight: 800, color: 'var(--t1)', fontSize: 14 }}>{v.name}</div>
-                    <div style={{ fontSize: 12, color: 'var(--t3)', marginTop: 2 }}>{v.email} · Role: <strong>{v.role}</strong></div>
-                  </div>
-                  <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                    <button className="btn btn-primary btn-sm" onClick={() => handleSendVerificationCode(v)}>
-                      <Send size={13} /> Send Passkey
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* ================= TAB 4: INSTITUTIONS ================= */}
+      {/* ================= TAB 3: INSTITUTIONS ================= */}
       {activeTab === 'Institutions' && (
-        <div className="card anim-fade-up delay-2" style={{ padding: 24, background: 'var(--bg-card)' }}>
+        <div className="card anim-fade-up delay-2" style={{ padding: 24, background: '#FFFFFF', border: '1px solid #EEF0F3', borderRadius: 16 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, flexWrap: 'wrap', gap: 12 }}>
             <div>
-              <h3 className="font-display" style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--t1)' }}>
+              <h3 className="font-display" style={{ fontSize: '1.3rem', fontWeight: 800, color: '#0F172A' }}>
                 Institutional Tenant Governance &amp; Email Domains
               </h3>
-              <p style={{ fontSize: 12.5, color: 'var(--t3)' }}>
+              <p style={{ fontSize: 12.5, color: '#64748B' }}>
                 Manage participating universities and approved institutional email domain gates.
               </p>
             </div>
-            <button className="btn btn-primary btn-sm" onClick={() => setShowInstModal(true)}>
+            <button className="btn-action-admit" style={{ padding: '9px 18px', fontSize: 12.5 }} onClick={() => setShowInstModal(true)}>
               <Plus size={14} /> Onboard New Institution
             </button>
           </div>
@@ -949,9 +768,9 @@ export default function SuperAdmin() {
                 className="card hover-lift"
                 style={{
                   padding: 18,
-                  borderRadius: 'var(--r-sm)',
+                  borderRadius: 14,
                   background: '#FFFFFF',
-                  border: inst.isPrimary ? '1.5px solid var(--primary)' : '1px solid var(--border)',
+                  border: inst.isPrimary ? '1.5px solid #0F172A' : '1px solid #EEF0F3',
                   display: 'flex',
                   justifyContent: 'space-between',
                   alignItems: 'center',
@@ -960,16 +779,16 @@ export default function SuperAdmin() {
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                  <div style={{ width: 44, height: 44, borderRadius: 'var(--r-sm)', background: '#EFF6FF', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)', flexShrink: 0 }}>
+                  <div style={{ width: 44, height: 44, borderRadius: 12, background: '#F8FAFC', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0F172A', flexShrink: 0 }}>
                     <GraduationCap size={22} />
                   </div>
                   <div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <span style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--t1)' }}>{inst.name}</span>
-                      {inst.isPrimary && <span className="badge badge-primary">Primary Tenant</span>}
-                      <span className={`badge ${inst.status === 'ACTIVE' ? 'badge-success' : 'badge-warning'}`}>{inst.status}</span>
+                      <span style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0F172A' }}>{inst.name}</span>
+                      {inst.isPrimary && <span className="status-pill" style={{ background: '#0F172A', color: '#FFFFFF' }}>Primary Tenant</span>}
+                      <span className="status-pill">{inst.status}</span>
                     </div>
-                    <div style={{ fontSize: 12, color: 'var(--primary)', fontWeight: 600, marginTop: 2 }}>
+                    <div style={{ fontSize: 12, color: '#64748B', fontWeight: 600, marginTop: 2 }}>
                       Allowed Domain Gate: {inst.domain} · {inst.location}
                     </div>
                   </div>
@@ -977,17 +796,17 @@ export default function SuperAdmin() {
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
                   <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontSize: 11, color: 'var(--t4)', textTransform: 'uppercase' }}>Verified Members</div>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--t1)' }}>{inst.activeUsers?.toLocaleString() || 0}</div>
+                    <div style={{ fontSize: 11, color: '#94A3B8', textTransform: 'uppercase', fontWeight: 700 }}>Verified Members</div>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: '#0F172A' }}>{inst.activeUsers?.toLocaleString() || 0}</div>
                   </div>
                   <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontSize: 11, color: 'var(--t4)', textTransform: 'uppercase' }}>Partners</div>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--primary)' }}>{inst.partnerRestaurants || 0} Restaurants</div>
+                    <div style={{ fontSize: 11, color: '#94A3B8', textTransform: 'uppercase', fontWeight: 700 }}>Partners</div>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: '#0F172A' }}>{inst.partnerRestaurants || 0} Restaurants</div>
                   </div>
                   {!inst.isPrimary && (
                     <button
-                      className="btn btn-ghost btn-sm"
-                      style={{ color: '#EF4444' }}
+                      className="btn-action-cancel"
+                      style={{ padding: '6px 10px' }}
                       onClick={() => handleDeleteInstitution(inst.id, inst.name)}
                       title="Remove Institution"
                     >
@@ -1003,64 +822,60 @@ export default function SuperAdmin() {
 
       {/* ================= TAB 5: DEDICATED LIVE BOOKINGS QUEUE ================= */}
       {activeTab === 'Bookings' && (
-        <div className="card anim-fade-up delay-2" style={{ padding: 24, background: 'var(--bg-card)' }}>
+        <div className="card anim-fade-up delay-2" style={{ padding: 24, background: '#FFFFFF', border: '1px solid #EEF0F3', borderRadius: 16 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18, flexWrap: 'wrap', gap: 12 }}>
             <div>
-              <h3 className="font-display" style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--t1)' }}>
+              <h3 className="font-display" style={{ fontSize: '1.3rem', fontWeight: 800, color: '#0F172A' }}>
                 Live Campus Dining Reservations &amp; Queue
               </h3>
-              <p style={{ fontSize: 12.5, color: 'var(--t3)' }}>
+              <p style={{ fontSize: 12.5, color: '#64748B' }}>
                 Unified real-time feed of table bookings across all Bennett University partner restaurants.
               </p>
             </div>
-            <span className="badge badge-info">{reservations.length} Active Reservations</span>
+            <span className="status-pill">{reservations.length} Active Reservations</span>
           </div>
 
           <div className="table-responsive">
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, textAlign: 'left' }}>
+            <table className="admin-table">
               <thead>
-                <tr style={{ borderBottom: '2px solid var(--border)', color: 'var(--t4)', textTransform: 'uppercase', fontSize: 11 }}>
-                  <th style={{ padding: '12px 14px' }}>Booking Code</th>
-                  <th style={{ padding: '12px 14px' }}>Diner / Guest</th>
-                  <th style={{ padding: '12px 14px' }}>Restaurant Venue</th>
-                  <th style={{ padding: '12px 14px' }}>Schedule &amp; Guests</th>
-                  <th style={{ padding: '12px 14px' }}>Table</th>
-                  <th style={{ padding: '12px 14px' }}>Status</th>
+                <tr>
+                  <th>Booking Code</th>
+                  <th>Diner / Guest</th>
+                  <th>Restaurant Venue</th>
+                  <th>Schedule &amp; Guests</th>
+                  <th>Table</th>
+                  <th>Status</th>
                 </tr>
               </thead>
               <tbody>
                 {reservations.length === 0 ? (
                   <tr>
-                    <td colSpan="6" style={{ padding: 32, textAlign: 'center', color: 'var(--t3)' }}>
+                    <td colSpan="6" style={{ padding: 32, textAlign: 'center', color: '#64748B' }}>
                       No table bookings currently recorded across partner restaurants.
                     </td>
                   </tr>
                 ) : (
                   reservations.map(b => (
-                    <tr key={b.id} className="table-row-interactive" style={{ borderBottom: '1px solid var(--border)' }}>
-                      <td style={{ padding: '14px', fontWeight: 800, color: 'var(--accent)' }}>
+                    <tr key={b.id}>
+                      <td style={{ fontWeight: 800, color: '#0F172A' }}>
                         {b.id}
                       </td>
-                      <td style={{ padding: '14px' }}>
-                        <div style={{ fontWeight: 700, color: 'var(--t1)' }}>{b.guestName || b.guest || 'Campus Member'}</div>
-                        <div style={{ fontSize: 11.5, color: 'var(--t4)' }}>{b.guestEmail || b.email || 'student@bennett.edu.in'}</div>
+                      <td>
+                        <div style={{ fontWeight: 700, color: '#0F172A' }}>{b.guestName || b.guest || 'Campus Member'}</div>
+                        <div style={{ fontSize: 11.5, color: '#64748B' }}>{b.guestEmail || b.email || 'student@bennett.edu.in'}</div>
                       </td>
-                      <td style={{ padding: '14px', fontWeight: 600, color: 'var(--t2)' }}>
+                      <td style={{ fontWeight: 600, color: '#334155' }}>
                         {b.restaurantName || 'The Spice Garden'}
                       </td>
-                      <td style={{ padding: '14px', color: 'var(--t3)' }}>
+                      <td style={{ color: '#475569' }}>
                         <div>{b.date} · {b.time}</div>
-                        <div style={{ fontSize: 11, color: 'var(--t4)' }}>{b.guests || 2} Guests</div>
+                        <div style={{ fontSize: 11, color: '#94A3B8' }}>{b.guests || 2} Guests</div>
                       </td>
-                      <td style={{ padding: '14px', fontWeight: 700, color: 'var(--primary)' }}>
+                      <td style={{ fontWeight: 700, color: '#0F172A' }}>
                         {b.tableAssigned || 'T-01'}
                       </td>
-                      <td style={{ padding: '14px' }}>
-                        <span className={`badge ${
-                          b.status === 'SEATED' ? 'badge-success' :
-                          b.status === 'CONFIRMED' ? 'badge-primary' :
-                          b.status === 'COMPLETED' ? 'badge-neutral' : 'badge-warning'
-                        }`}>
+                      <td>
+                        <span className="status-pill">
                           {b.status || 'CONFIRMED'}
                         </span>
                       </td>
@@ -1075,78 +890,78 @@ export default function SuperAdmin() {
 
       {/* ================= TAB 6: PLATFORM ANALYTICS ================= */}
       {activeTab === 'Analytics' && (
-        <div className="card anim-fade-up delay-2" style={{ padding: 24, background: 'var(--bg-card)' }}>
+        <div className="card anim-fade-up delay-2" style={{ padding: 24, background: '#FFFFFF', border: '1px solid #EEF0F3', borderRadius: 16 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, flexWrap: 'wrap', gap: 12 }}>
             <div>
-              <h3 className="font-display" style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--t1)' }}>
+              <h3 className="font-display" style={{ fontSize: '1.3rem', fontWeight: 800, color: '#0F172A' }}>
                 Platform Operational Analytics &amp; KPIs
               </h3>
-              <p style={{ fontSize: 12.5, color: 'var(--t3)' }}>
+              <p style={{ fontSize: 12.5, color: '#64748B' }}>
                 Aggregated performance metrics across university partners, dining conversions, and operations.
               </p>
             </div>
-            <button className="btn btn-ghost btn-sm" onClick={fetchPlatformStats}>
-              <RefreshCw size={14} className={loadingStats ? 'spin' : ''} /> Refresh Analytics
+            <button className="btn-action-dishes" style={{ padding: '7px 14px', fontSize: 12 }} onClick={fetchPlatformStats}>
+              <RefreshCw size={13} className={loadingStats ? 'spin' : ''} /> Refresh Analytics
             </button>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
-            <div className="card hover-lift" style={{ padding: 18, borderRadius: 'var(--r-sm)', background: '#F8FAFC', border: '1px solid var(--border)' }}>
-              <div style={{ fontSize: 11, color: 'var(--t4)', textTransform: 'uppercase', fontWeight: 700 }}>Total Registered Users</div>
-              <div className="font-display" style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--primary)', marginTop: 4 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16 }}>
+            <div className="kpi-card-lux">
+              <div style={{ fontSize: 11, color: '#64748B', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.05em' }}>Total Registered Users</div>
+              <div className="font-display" style={{ fontSize: '1.85rem', fontWeight: 800, color: '#0F172A', marginTop: 4 }}>
                 {platformStats?.totalUsers ?? '3,420'}
               </div>
-              <div style={{ fontSize: 11.5, color: '#10B981', marginTop: 4 }}>Active campus directory</div>
+              <div style={{ fontSize: 11.5, color: '#0F172A', marginTop: 4, fontWeight: 600 }}>Active campus directory</div>
             </div>
 
-            <div className="card hover-lift" style={{ padding: 18, borderRadius: 'var(--r-sm)', background: '#F8FAFC', border: '1px solid var(--border)' }}>
-              <div style={{ fontSize: 11, color: 'var(--t4)', textTransform: 'uppercase', fontWeight: 700 }}>Partner Dining Outlets</div>
-              <div className="font-display" style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--t1)', marginTop: 4 }}>
+            <div className="kpi-card-lux">
+              <div style={{ fontSize: 11, color: '#64748B', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.05em' }}>Partner Dining Outlets</div>
+              <div className="font-display" style={{ fontSize: '1.85rem', fontWeight: 800, color: '#0F172A', marginTop: 4 }}>
                 {platformStats?.totalRestaurants ?? restaurantsList.length}
               </div>
-              <div style={{ fontSize: 11.5, color: 'var(--primary)', marginTop: 4 }}>Approved campus vendors</div>
+              <div style={{ fontSize: 11.5, color: '#0F172A', marginTop: 4, fontWeight: 600 }}>Approved campus vendors</div>
             </div>
 
-            <div className="card hover-lift" style={{ padding: 18, borderRadius: 'var(--r-sm)', background: '#F8FAFC', border: '1px solid var(--border)' }}>
-              <div style={{ fontSize: 11, color: 'var(--t4)', textTransform: 'uppercase', fontWeight: 700 }}>Total Dining Volume</div>
-              <div className="font-display" style={{ fontSize: '1.75rem', fontWeight: 800, color: '#10B981', marginTop: 4 }}>
+            <div className="kpi-card-lux">
+              <div style={{ fontSize: 11, color: '#64748B', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.05em' }}>Total Dining Volume</div>
+              <div className="font-display" style={{ fontSize: '1.85rem', fontWeight: 800, color: '#0F172A', marginTop: 4 }}>
                 {platformStats?.totalBookings ?? '840'}
               </div>
-              <div style={{ fontSize: 11.5, color: '#10B981', marginTop: 4 }}>98.2% fulfillment rate</div>
+              <div style={{ fontSize: 11.5, color: '#0F172A', marginTop: 4, fontWeight: 600 }}>98.2% fulfillment rate</div>
             </div>
 
-            <div className="card hover-lift" style={{ padding: 18, borderRadius: 'var(--r-sm)', background: '#F8FAFC', border: '1px solid var(--border)' }}>
-              <div style={{ fontSize: 11, color: 'var(--t4)', textTransform: 'uppercase', fontWeight: 700 }}>Audit Events Logged</div>
-              <div className="font-display" style={{ fontSize: '1.75rem', fontWeight: 800, color: '#F59E0B', marginTop: 4 }}>
+            <div className="kpi-card-lux">
+              <div style={{ fontSize: 11, color: '#64748B', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.05em' }}>Audit Events Logged</div>
+              <div className="font-display" style={{ fontSize: '1.85rem', fontWeight: 800, color: '#0F172A', marginTop: 4 }}>
                 {platformStats?.auditEventsCount ?? '1,240'}
               </div>
-              <div style={{ fontSize: 11.5, color: '#F59E0B', marginTop: 4 }}>Security &amp; access logs</div>
+              <div style={{ fontSize: 11.5, color: '#0F172A', marginTop: 4, fontWeight: 600 }}>Security &amp; access logs</div>
             </div>
           </div>
         </div>
       )}
 
-      {/* ================= TAB 6: REVIEWS MODERATION ================= */}
+      {/* ================= TAB 7: REVIEWS MODERATION ================= */}
       {activeTab === 'Moderation' && (
-        <div className="card anim-fade-up delay-2" style={{ padding: 24, background: 'var(--bg-card)' }}>
+        <div className="card anim-fade-up delay-2" style={{ padding: 24, background: '#FFFFFF', border: '1px solid #EEF0F3', borderRadius: 16 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18, flexWrap: 'wrap', gap: 12 }}>
             <div>
-              <h3 className="font-display" style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--t1)' }}>
+              <h3 className="font-display" style={{ fontSize: '1.3rem', fontWeight: 800, color: '#0F172A' }}>
                 Campus Dining Reviews Moderation Gate
               </h3>
-              <p style={{ fontSize: 12.5, color: 'var(--t3)' }}>
+              <p style={{ fontSize: 12.5, color: '#64748B' }}>
                 Super Admin authority to hide or approve feedback according to institutional community standards.
               </p>
             </div>
-            <button className="btn btn-ghost btn-sm" onClick={fetchModerationReviews}>
-              <RefreshCw size={14} className={loadingModeration ? 'spin' : ''} /> Refresh Reviews
+            <button className="btn-action-dishes" style={{ padding: '7px 14px', fontSize: 12 }} onClick={fetchModerationReviews}>
+              <RefreshCw size={13} className={loadingModeration ? 'spin' : ''} /> Refresh Reviews
             </button>
           </div>
 
           {moderationReviews.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '40px 20px', color: 'var(--t3)' }}>
-              <ShieldAlert size={36} style={{ margin: '0 auto 12px', color: 'var(--t4)' }} />
-              <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--t1)' }}>No Reviews Available</div>
+            <div style={{ textAlign: 'center', padding: '40px 20px', color: '#64748B' }}>
+              <ShieldAlert size={36} style={{ margin: '0 auto 12px', color: '#94A3B8' }} />
+              <div style={{ fontSize: 14, fontWeight: 700, color: '#0F172A' }}>No Reviews Available</div>
               <div style={{ fontSize: 12 }}>There are currently no reviews submitted across partner restaurants.</div>
             </div>
           ) : (
@@ -1157,9 +972,9 @@ export default function SuperAdmin() {
                   className="card hover-lift"
                   style={{
                     padding: 16,
-                    borderRadius: 'var(--r-sm)',
-                    background: rev.flagged ? '#FEF2F2' : '#F8FAFC',
-                    border: rev.flagged ? '1px solid #FCA5A5' : '1px solid var(--border)',
+                    borderRadius: 14,
+                    background: '#FFFFFF',
+                    border: rev.flagged ? '1.5px solid #CBD5E1' : '1px solid #EEF0F3',
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'flex-start',
@@ -1169,31 +984,31 @@ export default function SuperAdmin() {
                 >
                   <div style={{ flex: 1, minWidth: 260 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                      <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--t1)' }}>{rev.restaurant}</span>
-                      <span style={{ fontSize: 11, color: '#D97706', display: 'inline-flex', alignItems: 'center', gap: 3, fontWeight: 700 }}>
-                        <Star size={12} fill="#F59E0B" /> {rev.rating}/5
+                      <span style={{ fontSize: 13, fontWeight: 700, color: '#0F172A' }}>{rev.restaurant}</span>
+                      <span style={{ fontSize: 11, color: '#0F172A', display: 'inline-flex', alignItems: 'center', gap: 3, fontWeight: 700 }}>
+                        <Star size={12} fill="#0F172A" /> {rev.rating}/5
                       </span>
-                      <span className={`badge ${rev.status === 'APPROVED' ? 'badge-success' : 'badge-error'}`}>
+                      <span className="status-pill">
                         {rev.status}
                       </span>
                       {rev.flagged && (
-                        <span className="badge badge-warning" style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                        <span className="status-pill" style={{ background: '#F1F5F9', border: '1px solid #94A3B8' }}>
                           <AlertTriangle size={12} /> Hidden/Flagged
                         </span>
                       )}
                     </div>
-                    <div style={{ fontSize: 12, color: 'var(--t4)', marginBottom: 6 }}>
+                    <div style={{ fontSize: 12, color: '#94A3B8', marginBottom: 6 }}>
                       By {rev.author} · {rev.date}
                     </div>
-                    <p style={{ fontSize: 13, color: 'var(--t2)', fontStyle: 'italic' }}>
+                    <p style={{ fontSize: 13, color: '#334155', fontStyle: 'italic' }}>
                       "{rev.text}"
                     </p>
                   </div>
 
                   <div style={{ display: 'flex', gap: 8 }}>
                     <button
-                      className={`btn btn-sm ${rev.status === 'APPROVED' ? 'btn-danger' : 'btn-primary'}`}
-                      style={{ fontSize: 11 }}
+                      className={rev.status === 'APPROVED' ? 'btn-action-cancel' : 'btn-action-admit'}
+                      style={{ padding: '7px 14px', fontSize: 12 }}
                       onClick={() => toggleReviewStatus(rev.id, rev.status)}
                     >
                       {rev.status === 'APPROVED' ? <><EyeOff size={13} /> Hide Review</> : <><Eye size={13} /> Approve Review</>}
@@ -1206,70 +1021,70 @@ export default function SuperAdmin() {
         </div>
       )}
 
-      {/* ================= TAB 7: PLATFORM AUDIT LOG ================= */}
+      {/* ================= TAB 8: PLATFORM AUDIT LOG ================= */}
       {activeTab === 'Audit' && (
-        <div className="card anim-fade-up delay-2" style={{ padding: 24, background: 'var(--bg-card)' }}>
+        <div className="card anim-fade-up delay-2" style={{ padding: 24, background: '#FFFFFF', border: '1px solid #EEF0F3', borderRadius: 16 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18, flexWrap: 'wrap', gap: 12 }}>
             <div>
-              <h3 className="font-display" style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--t1)' }}>
+              <h3 className="font-display" style={{ fontSize: '1.3rem', fontWeight: 800, color: '#0F172A' }}>
                 System-Wide Audit Trail &amp; Compliance Log
               </h3>
-              <p style={{ fontSize: 12.5, color: 'var(--t3)' }}>
+              <p style={{ fontSize: 12.5, color: '#64748B' }}>
                 Immutable records of administrative operations, role assignments, security actions, and dining changes.
               </p>
             </div>
-            <button className="btn btn-ghost btn-sm" onClick={fetchAuditLogs}>
-              <RefreshCw size={14} className={loadingAudit ? 'spin' : ''} /> Refresh Logs
+            <button className="btn-action-dishes" style={{ padding: '7px 14px', fontSize: 12 }} onClick={fetchAuditLogs}>
+              <RefreshCw size={13} className={loadingAudit ? 'spin' : ''} /> Refresh Logs
             </button>
           </div>
 
           <div className="table-responsive">
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12.5 }}>
+            <table className="admin-table">
               <thead>
-                <tr style={{ borderBottom: '2px solid var(--border)', color: 'var(--t4)', textTransform: 'uppercase', fontSize: 11, textAlign: 'left' }}>
-                  <th style={{ padding: '10px 12px' }}>Timestamp</th>
-                  <th style={{ padding: '10px 12px' }}>Actor</th>
-                  <th style={{ padding: '10px 12px' }}>Action</th>
-                  <th style={{ padding: '10px 12px' }}>Target Entity</th>
-                  <th style={{ padding: '10px 12px' }}>Details / Metadata</th>
-                  <th style={{ padding: '10px 12px' }}>IP Address</th>
+                <tr>
+                  <th>Timestamp</th>
+                  <th>Actor</th>
+                  <th>Action</th>
+                  <th>Target Entity</th>
+                  <th>Details / Metadata</th>
+                  <th>IP Address</th>
                 </tr>
               </thead>
               <tbody>
                 {loadingAudit ? (
                   <tr>
-                    <td colSpan="6" style={{ padding: 32, textAlign: 'center', color: 'var(--t3)' }}>
+                    <td colSpan="6" style={{ padding: 32, textAlign: 'center', color: '#64748B' }}>
                       Loading audit records...
                     </td>
                   </tr>
                 ) : auditLogs.length === 0 ? (
                   <tr>
-                    <td colSpan="6" style={{ padding: 32, textAlign: 'center', color: 'var(--t3)' }}>
+                    <td colSpan="6" style={{ padding: 32, textAlign: 'center', color: '#64748B' }}>
                       No audit log entries recorded yet.
                     </td>
                   </tr>
                 ) : (
                   auditLogs.map(log => (
-                    <tr key={log.id} className="table-row-interactive" style={{ borderBottom: '1px solid var(--border)' }}>
-                      <td style={{ padding: '10px 12px', whiteSpace: 'nowrap', color: 'var(--t3)', fontSize: 11.5 }}>
+                    <tr key={log.id}>
+                      <td style={{ whiteSpace: 'nowrap', color: '#64748B', fontSize: 11.5 }}>
                         {new Date(log.createdAt).toLocaleString()}
                       </td>
-                      <td style={{ padding: '10px 12px' }}>
-                        <div style={{ fontWeight: 600, color: 'var(--t1)' }}>{log.userName || 'System Service'}</div>
-                        <div style={{ fontSize: 10.5, color: 'var(--t4)' }}>{log.userRole || 'ANONYMOUS'}</div>
+                      <td>
+                        <div style={{ fontWeight: 600, color: '#0F172A' }}>{log.userName || 'System Service'}</div>
+                        <div style={{ fontSize: 10.5, color: '#94A3B8' }}>{log.userRole || 'ANONYMOUS'}</div>
                       </td>
-                      <td style={{ padding: '10px 12px' }}>
-                        <span className="badge badge-info" style={{ fontSize: 11 }}>
+                      <td>
+                        <span className="status-pill" style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', fontSize: 11 }}>
                           {log.action}
                         </span>
                       </td>
-                      <td style={{ padding: '10px 12px', color: 'var(--t2)' }}>
-                        {log.entityType} {log.entityId && <span style={{ fontSize: 10.5, color: 'var(--t4)' }}>({log.entityId.slice(0, 8)}...)</span>}
+                      <td style={{ color: '#334155' }}>
+                        {log.entityType} {log.entityId && <span style={{ fontSize: 10.5, color: '#94A3B8' }}>({log.entityId.slice(0, 8)}...)</span>}
                       </td>
-                      <td style={{ padding: '10px 12px', color: 'var(--t3)', maxWidth: 260, textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+                      <td style={{ color: '#64748B', maxWidth: 260, textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
                         {log.detailsJson || '—'}
                       </td>
-                      <td style={{ padding: '10px 12px', fontSize: 11, color: 'var(--t4)' }}>
+                      <td style={{ fontSize: 11, color: '#94A3B8' }}>
                         {log.ipAddress || '127.0.0.1'}
                       </td>
                     </tr>
@@ -1284,7 +1099,7 @@ export default function SuperAdmin() {
       {/* ================= MODAL: ONBOARD RESTAURANT ================= */}
       {showAddRestModal && (
         <div className="modal-overlay" onClick={() => setShowAddRestModal(false)}>
-          <div className="modal-card anim-scale-in" style={{ maxWidth: 640, width: '100%', maxHeight: '90vh', overflowY: 'auto' }} onClick={e => e.stopPropagation()}>
+          <div className="modal-card anim-scale-in" style={{ maxWidth: 640 }} onClick={e => e.stopPropagation()}>
             <div className="modal-hd">
               <div>
                 <h3 className="modal-title font-display">Onboard Partner Restaurant</h3>
@@ -1295,88 +1110,90 @@ export default function SuperAdmin() {
               </button>
             </div>
 
-            <form onSubmit={handleCreateRestaurant} style={{ padding: '0 24px 24px', display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 240px), 1fr))', gap: 14 }}>
-                <div style={{ gridColumn: 'span 2' }}>
-                  <label className="form-label">Restaurant Name *</label>
-                  <input
-                    className="form-input"
-                    placeholder="e.g. Bistro Central"
-                    required
-                    value={restForm.name}
-                    onChange={e => setRestForm({ ...restForm, name: e.target.value })}
-                  />
-                </div>
+            <form onSubmit={handleCreateRestaurant}>
+              <div className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 240px), 1fr))', gap: 14 }}>
+                  <div style={{ gridColumn: 'span 2' }}>
+                    <label className="form-label">Restaurant Name *</label>
+                    <input
+                      className="form-input"
+                      placeholder="e.g. Bistro Central"
+                      required
+                      value={restForm.name}
+                      onChange={e => setRestForm({ ...restForm, name: e.target.value })}
+                    />
+                  </div>
 
-                <div>
-                  <label className="form-label">Cuisine Type *</label>
-                  <select
-                    className="form-input"
-                    value={restForm.cuisine}
-                    onChange={e => setRestForm({ ...restForm, cuisine: e.target.value })}
-                  >
-                    <option value="North Indian">North Indian</option>
-                    <option value="Continental">Continental</option>
-                    <option value="Mediterranean">Mediterranean</option>
-                    <option value="Pan-Asian">Pan-Asian</option>
-                    <option value="Italian">Italian</option>
-                    <option value="Fast Food & Cafe">Fast Food & Cafe</option>
-                    <option value="South Indian">South Indian</option>
-                  </select>
-                </div>
+                  <div>
+                    <label className="form-label">Cuisine Type *</label>
+                    <select
+                      className="form-select"
+                      value={restForm.cuisine}
+                      onChange={e => setRestForm({ ...restForm, cuisine: e.target.value })}
+                    >
+                      <option value="North Indian">North Indian</option>
+                      <option value="Continental">Continental</option>
+                      <option value="Mediterranean">Mediterranean</option>
+                      <option value="Pan-Asian">Pan-Asian</option>
+                      <option value="Italian">Italian</option>
+                      <option value="Fast Food & Cafe">Fast Food & Cafe</option>
+                      <option value="South Indian">South Indian</option>
+                    </select>
+                  </div>
 
-                <div>
-                  <label className="form-label">Price Category</label>
-                  <select
-                    className="form-input"
-                    value={restForm.price}
-                    onChange={e => setRestForm({ ...restForm, price: e.target.value })}
-                  >
-                    <option value="₹">₹ (Budget Friendly)</option>
-                    <option value="₹₹">₹₹ (Moderate)</option>
-                    <option value="₹₹₹">₹₹₹ (Premium)</option>
-                  </select>
-                </div>
+                  <div>
+                    <label className="form-label">Price Category</label>
+                    <select
+                      className="form-select"
+                      value={restForm.price}
+                      onChange={e => setRestForm({ ...restForm, price: e.target.value })}
+                    >
+                      <option value="₹">₹ (Budget Friendly)</option>
+                      <option value="₹₹">₹₹ (Moderate)</option>
+                      <option value="₹₹₹">₹₹₹ (Premium)</option>
+                    </select>
+                  </div>
 
-                <div style={{ gridColumn: 'span 2' }}>
-                  <label className="form-label">Address &amp; Location *</label>
-                  <input
-                    className="form-input"
-                    placeholder="e.g. Sector Alpha Commercial, Greater Noida"
-                    required
-                    value={restForm.address}
-                    onChange={e => setRestForm({ ...restForm, address: e.target.value })}
-                  />
-                </div>
+                  <div style={{ gridColumn: 'span 2' }}>
+                    <label className="form-label">Address &amp; Location *</label>
+                    <input
+                      className="form-input"
+                      placeholder="e.g. Sector Alpha Commercial, Greater Noida"
+                      required
+                      value={restForm.address}
+                      onChange={e => setRestForm({ ...restForm, address: e.target.value })}
+                    />
+                  </div>
 
-                <div>
-                  <label className="form-label">Phone Number *</label>
-                  <input
-                    className="form-input"
-                    placeholder="+91 98765 43210"
-                    required
-                    value={restForm.phone}
-                    onChange={e => setRestForm({ ...restForm, phone: e.target.value })}
-                  />
-                </div>
+                  <div>
+                    <label className="form-label">Phone Number *</label>
+                    <input
+                      className="form-input"
+                      placeholder="+91 98765 43210"
+                      required
+                      value={restForm.phone}
+                      onChange={e => setRestForm({ ...restForm, phone: e.target.value })}
+                    />
+                  </div>
 
-                <div>
-                  <label className="form-label">Seating Capacity</label>
-                  <input
-                    type="number"
-                    className="form-input"
-                    min="10"
-                    max="200"
-                    value={restForm.capacity}
-                    onChange={e => setRestForm({ ...restForm, capacity: e.target.value })}
-                  />
+                  <div>
+                    <label className="form-label">Seating Capacity</label>
+                    <input
+                      type="number"
+                      className="form-input"
+                      min="10"
+                      max="200"
+                      value={restForm.capacity}
+                      onChange={e => setRestForm({ ...restForm, capacity: e.target.value })}
+                    />
+                  </div>
                 </div>
               </div>
 
-              <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 12 }}>
+              <div className="modal-ft">
                 <button
                   type="button"
-                  className="btn btn-ghost btn-md"
+                  className="btn-action-cancel"
                   onClick={() => setShowAddRestModal(false)}
                   disabled={submittingRest}
                 >
@@ -1384,7 +1201,7 @@ export default function SuperAdmin() {
                 </button>
                 <button
                   type="submit"
-                  className="btn btn-primary btn-md"
+                  className="btn-action-admit"
                   disabled={submittingRest}
                 >
                   {submittingRest ? 'Onboarding...' : 'Onboard & Seed Tables'}
@@ -1398,7 +1215,7 @@ export default function SuperAdmin() {
       {/* ================= MODAL: ONBOARD INSTITUTION ================= */}
       {showInstModal && (
         <div className="modal-overlay" onClick={() => setShowInstModal(false)}>
-          <div className="modal-card" onClick={e => e.stopPropagation()} style={{ maxWidth: 460 }}>
+          <div className="modal-card anim-scale-in" onClick={e => e.stopPropagation()} style={{ maxWidth: 460 }}>
             <div className="modal-hd">
               <div>
                 <h3 className="modal-title font-display">Onboard Academic Institution</h3>
@@ -1445,10 +1262,10 @@ export default function SuperAdmin() {
               </div>
 
               <div className="modal-ft">
-                <button type="button" className="btn btn-ghost btn-sm" onClick={() => setShowInstModal(false)}>
+                <button type="button" className="btn-action-cancel" onClick={() => setShowInstModal(false)}>
                   Cancel
                 </button>
-                <button type="submit" className="btn btn-primary btn-md" disabled={instSubmitting}>
+                <button type="submit" className="btn-action-admit" disabled={instSubmitting}>
                   <Globe size={14} /> {instSubmitting ? 'Registering...' : 'Enable Tenant Gate'}
                 </button>
               </div>

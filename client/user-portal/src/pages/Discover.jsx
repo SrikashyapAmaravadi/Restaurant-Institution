@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import RestaurantCard from '../components/RestaurantCard';
 import InteractiveMap from '../components/InteractiveMap';
@@ -18,12 +18,23 @@ import {
   Star,
   Tag,
   UtensilsCrossed,
-  ArrowUpDown
+  ArrowUpDown,
+  ChevronDown,
+  Check
 } from 'lucide-react';
 
 const CUISINES = ['North Indian', 'Continental', 'Mediterranean', 'Pan-Asian', 'Vegan'];
 const PRICES   = ['₹', '₹₹', '₹₹₹'];
 const RATINGS  = ['Any', '4.0+', '4.5+'];
+
+const SORT_OPTIONS = [
+  { id: 'recommended', label: 'Featured / Recommended' },
+  { id: 'rating-desc', label: 'Top Rated (4.8★+)' },
+  { id: 'distance-asc', label: 'Nearest to Campus' },
+  { id: 'price-asc', label: 'Price: Low to High' },
+  { id: 'price-desc', label: 'Price: High to Low' },
+  { id: 'reviews-desc', label: 'Most Popular' },
+];
 
 export default function Discover() {
   const { restaurants: liveRestaurants } = useDining();
@@ -38,6 +49,19 @@ export default function Discover() {
   const [openOnly, setOpen]       = useState(false);
   const [offersOnly, setOffers]   = useState(false);
   const [sortBy, setSortBy]       = useState('recommended');
+  const [isSortOpen, setIsSortOpen] = useState(false);
+  const sortDropdownRef = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (sortDropdownRef.current && !sortDropdownRef.current.contains(event.target)) {
+        setIsSortOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   const [selectedForBooking, setSelectedForBooking] = useState(null);
   const [selectedOffer, setSelectedOffer] = useState(null);
   const [showMobileFilters, setShowMobileFilters] = useState(false);
@@ -118,25 +142,59 @@ export default function Discover() {
 
           {/* Sort & Segmented View Toggle */}
           <div className="flex items-center gap-2.5 flex-wrap">
-            {/* Sort Selector */}
-            <div className="inline-flex items-center gap-1.5 bg-white border border-slate-200 rounded-xl px-3 py-1.5 shadow-xs">
-              <ArrowUpDown size={13} className="text-[#FF5200] shrink-0" />
-              <select
-                value={sortBy}
-                onChange={e => setSortBy(e.target.value)}
-                className="border-none outline-none bg-transparent text-slate-800 text-xs font-semibold cursor-pointer"
+            {/* Custom Luxury Sort Selector */}
+            <div className="relative" ref={sortDropdownRef}>
+              <button
+                type="button"
+                onClick={() => setIsSortOpen(prev => !prev)}
+                className={`custom-dropdown-trigger ${isSortOpen ? 'open' : ''}`}
+                aria-haspopup="listbox"
+                aria-expanded={isSortOpen}
               >
-                <option value="recommended">Featured / Recommended</option>
-                <option value="rating-desc">Top Rated (4.8★+)</option>
-                <option value="distance-asc">Nearest to Campus</option>
-                <option value="price-asc">Price: Low to High</option>
-                <option value="price-desc">Price: High to Low</option>
-                <option value="reviews-desc">Most Popular</option>
-              </select>
+                <ArrowUpDown size={13} className="text-slate-900 shrink-0" />
+                <span>
+                  {SORT_OPTIONS.find(o => o.id === sortBy)?.label || 'Featured / Recommended'}
+                </span>
+                <ChevronDown
+                  size={13}
+                  className={`text-slate-500 transition-transform duration-300 ${isSortOpen ? 'rotate-180 text-slate-900' : ''}`}
+                />
+              </button>
+
+              {isSortOpen && (
+                <div className="custom-dropdown-panel" role="listbox">
+                  <div className="px-3 py-2 text-[10.5px] font-extrabold uppercase tracking-wider text-slate-400 border-b border-slate-100 mb-1">
+                    Sort Restaurants
+                  </div>
+                  <div className="flex flex-col gap-0.5">
+                    {SORT_OPTIONS.map(opt => {
+                      const isSelected = sortBy === opt.id;
+                      return (
+                        <button
+                          key={opt.id}
+                          type="button"
+                          role="option"
+                          aria-selected={isSelected}
+                          onClick={() => {
+                            setSortBy(opt.id);
+                            setIsSortOpen(false);
+                          }}
+                          className={`custom-dropdown-option ${isSelected ? 'selected' : ''}`}
+                        >
+                          <span>{opt.label}</span>
+                          {isSelected && (
+                            <Check size={14} strokeWidth={2.5} className="text-white shrink-0 ml-2" />
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Segmented Grid / Map Control */}
-            <div style={{ display: 'inline-flex', padding: 4, background: '#F8F9FA', border: '1px solid var(--border)', borderRadius: 12, gap: 4 }}>
+            <div style={{ display: 'inline-flex', padding: 3, background: '#F1F5F9', border: '1px solid #E2E8F0', borderRadius: 12, gap: 2 }}>
               <button
                 type="button"
                 style={{
@@ -150,10 +208,10 @@ export default function Discover() {
                   fontWeight: 700,
                   cursor: 'pointer',
                   border: 'none',
-                  background: viewMode === 'grid' ? '#FFFFFF' : 'transparent',
-                  color: viewMode === 'grid' ? '#FF5200' : '#64748B',
-                  boxShadow: viewMode === 'grid' ? '0 1px 4px rgba(0,0,0,0.08)' : 'none',
-                  transition: 'all 0.15s ease'
+                  background: viewMode === 'grid' ? '#0F172A' : 'transparent',
+                  color: viewMode === 'grid' ? '#FFFFFF' : '#64748B',
+                  boxShadow: viewMode === 'grid' ? '0 2px 8px rgba(15, 23, 42, 0.18)' : 'none',
+                  transition: 'all 0.25s ease'
                 }}
                 onClick={() => setViewMode('grid')}
               >
@@ -173,10 +231,10 @@ export default function Discover() {
                   fontWeight: 700,
                   cursor: 'pointer',
                   border: 'none',
-                  background: viewMode === 'map' ? '#FFFFFF' : 'transparent',
-                  color: viewMode === 'map' ? '#FF5200' : '#64748B',
-                  boxShadow: viewMode === 'map' ? '0 1px 4px rgba(0,0,0,0.08)' : 'none',
-                  transition: 'all 0.15s ease'
+                  background: viewMode === 'map' ? '#0F172A' : 'transparent',
+                  color: viewMode === 'map' ? '#FFFFFF' : '#64748B',
+                  boxShadow: viewMode === 'map' ? '0 2px 8px rgba(15, 23, 42, 0.18)' : 'none',
+                  transition: 'all 0.25s ease'
                 }}
                 onClick={() => setViewMode('map')}
               >
@@ -192,7 +250,7 @@ export default function Discover() {
           <div className="relative flex-1 flex items-center">
             <Search size={16} className="absolute left-3.5 text-slate-400 pointer-events-none" />
             <input
-              className="w-full pl-10 pr-9 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 outline-none transition-all focus:border-[#FF5200] focus:ring-2 focus:ring-orange-500/20 shadow-xs"
+              className="w-full pl-10 pr-9 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 outline-none transition-all focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10 shadow-xs"
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Search by restaurant name, cuisine, or popular dish..."
@@ -218,20 +276,21 @@ export default function Discover() {
               minHeight: 42,
               borderRadius: 12,
               background: '#FFFFFF',
-              border: '1px solid #E2E8F0',
-              color: '#1C1E21',
+              border: '1.5px solid #E2E8F0',
+              color: '#0F172A',
               fontSize: 13,
               fontWeight: 700,
               boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
               cursor: 'pointer',
-              flexShrink: 0
+              flexShrink: 0,
+              transition: 'all 0.2s ease'
             }}
             onClick={() => setShowMobileFilters(true)}
           >
-            <Filter size={14} className="text-slate-500" />
+            <Filter size={14} className="text-slate-700" />
             <span>Filters</span>
             {activeFiltersCount > 0 && (
-              <span style={{ marginLeft: 4, padding: '2px 7px', borderRadius: 99, fontSize: 10.5, fontWeight: 800, background: '#FF5200', color: '#FFFFFF' }}>
+              <span style={{ marginLeft: 4, padding: '2px 8px', borderRadius: 99, fontSize: 10.5, fontWeight: 800, background: '#0F172A', color: '#FFFFFF' }}>
                 {activeFiltersCount}
               </span>
             )}
@@ -253,9 +312,11 @@ export default function Discover() {
               fontWeight: 700,
               cursor: 'pointer',
               flexShrink: 0,
-              border: !openOnly && !offersOnly && cuisines.length === 0 ? '1.5px solid #FF5200' : '1px solid #E2E8F0',
-              background: !openOnly && !offersOnly && cuisines.length === 0 ? '#FF5200' : '#FFFFFF',
-              color: !openOnly && !offersOnly && cuisines.length === 0 ? '#FFFFFF' : '#334155'
+              border: !openOnly && !offersOnly && cuisines.length === 0 ? '1.5px solid #0F172A' : '1.5px solid #E2E8F0',
+              background: !openOnly && !offersOnly && cuisines.length === 0 ? '#0F172A' : '#FFFFFF',
+              color: !openOnly && !offersOnly && cuisines.length === 0 ? '#FFFFFF' : '#334155',
+              boxShadow: !openOnly && !offersOnly && cuisines.length === 0 ? '0 2px 8px rgba(15, 23, 42, 0.18)' : 'none',
+              transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
             }}
             onClick={clearAll}
           >
@@ -276,9 +337,11 @@ export default function Discover() {
               fontWeight: 700,
               cursor: 'pointer',
               flexShrink: 0,
-              border: openOnly ? '1.5px solid #FF5200' : '1px solid #E2E8F0',
-              background: openOnly ? '#FF5200' : '#FFFFFF',
-              color: openOnly ? '#FFFFFF' : '#334155'
+              border: openOnly ? '1.5px solid #0F172A' : '1.5px solid #E2E8F0',
+              background: openOnly ? '#0F172A' : '#FFFFFF',
+              color: openOnly ? '#FFFFFF' : '#334155',
+              boxShadow: openOnly ? '0 2px 8px rgba(15, 23, 42, 0.18)' : 'none',
+              transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
             }}
             onClick={() => setOpen(!openOnly)}
           >
@@ -299,9 +362,11 @@ export default function Discover() {
               fontWeight: 700,
               cursor: 'pointer',
               flexShrink: 0,
-              border: offersOnly ? '1.5px solid #FF5200' : '1px solid #E2E8F0',
-              background: offersOnly ? '#FF5200' : '#FFFFFF',
-              color: offersOnly ? '#FFFFFF' : '#334155'
+              border: offersOnly ? '1.5px solid #0F172A' : '1.5px solid #E2E8F0',
+              background: offersOnly ? '#0F172A' : '#FFFFFF',
+              color: offersOnly ? '#FFFFFF' : '#334155',
+              boxShadow: offersOnly ? '0 2px 8px rgba(15, 23, 42, 0.18)' : 'none',
+              transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
             }}
             onClick={() => setOffers(!offersOnly)}
           >
@@ -326,9 +391,11 @@ export default function Discover() {
                   fontWeight: 700,
                   cursor: 'pointer',
                   flexShrink: 0,
-                  border: isSelected ? '1.5px solid #FF5200' : '1px solid #E2E8F0',
-                  background: isSelected ? '#FF5200' : '#FFFFFF',
-                  color: isSelected ? '#FFFFFF' : '#334155'
+                  border: isSelected ? '1.5px solid #0F172A' : '1.5px solid #E2E8F0',
+                  background: isSelected ? '#0F172A' : '#FFFFFF',
+                  color: isSelected ? '#FFFFFF' : '#334155',
+                  boxShadow: isSelected ? '0 2px 8px rgba(15, 23, 42, 0.18)' : 'none',
+                  transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
                 }}
                 onClick={() => toggle(cuisines, setCuisines, c)}
               >
@@ -432,7 +499,7 @@ export default function Discover() {
                   <span className="text-xs font-bold text-slate-900 uppercase tracking-wider">
                     Radius from Campus
                   </span>
-                  <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-[#FF5200] text-white">
+                  <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-slate-900 text-white">
                     {maxDist} km
                   </span>
                 </div>
@@ -443,7 +510,7 @@ export default function Discover() {
                   step={0.5}
                   value={maxDist}
                   onChange={e => setDist(parseFloat(e.target.value))}
-                  className="w-full accent-[#FF5200] h-2 bg-slate-200 rounded-lg cursor-pointer"
+                  className="w-full accent-slate-900 h-2 bg-slate-200 rounded-lg cursor-pointer"
                 />
                 {/* Distance Presets */}
                 <div className="grid grid-cols-3 gap-2 mt-3">
@@ -458,8 +525,8 @@ export default function Discover() {
                       onClick={() => setDist(p.val)}
                       className={`py-1.5 px-2 rounded-lg text-xs font-semibold border transition-all cursor-pointer text-center ${
                         maxDist === p.val
-                          ? 'bg-[#FF5200] text-white border-[#FF5200] shadow-xs'
-                          : 'bg-white text-slate-600 border-slate-200 hover:border-orange-200'
+                          ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
+                          : 'bg-white text-slate-600 border-slate-200 hover:border-slate-800'
                       }`}
                     >
                       {p.label}
@@ -487,8 +554,8 @@ export default function Discover() {
                         onClick={() => toggle(prices, setPrices, p.id)}
                         className={`py-2.5 px-3 rounded-xl text-xs font-bold border transition-all cursor-pointer text-center ${
                           isSelected
-                            ? 'bg-[#FF5200] text-white border-[#FF5200] shadow-xs'
-                            : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-orange-50/40 hover:border-orange-200'
+                            ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
+                            : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100 hover:border-slate-400'
                         }`}
                       >
                         {p.label}
@@ -513,11 +580,11 @@ export default function Discover() {
                         onClick={() => setRating(r)}
                         className={`py-2.5 px-3 rounded-xl text-xs font-bold border transition-all cursor-pointer text-center flex items-center justify-center gap-1 ${
                           isSelected
-                            ? 'bg-[#FF5200] text-white border-[#FF5200] shadow-xs'
-                            : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-orange-50/40 hover:border-orange-200'
+                            ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
+                            : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100 hover:border-slate-400'
                         }`}
                       >
-                        {r !== 'Any' && <Star size={11} className={isSelected ? 'fill-white text-white' : 'fill-amber-500 text-amber-500'} />}
+                        {r !== 'Any' && <Star size={11} className={isSelected ? 'fill-white text-white' : 'fill-slate-900 text-slate-900'} />}
                         <span>{r}</span>
                       </button>
                     );
@@ -540,11 +607,11 @@ export default function Discover() {
                         onClick={() => toggle(cuisines, setCuisines, c)}
                         className={`py-2 px-3.5 rounded-full text-xs font-semibold border transition-all cursor-pointer flex items-center gap-1.5 ${
                           isSelected
-                            ? 'bg-[#FF5200] text-white border-[#FF5200] shadow-xs'
-                            : 'bg-white text-slate-700 border-slate-200 hover:border-orange-200 hover:bg-orange-50/40'
+                            ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
+                            : 'bg-white text-slate-700 border-slate-200 hover:border-slate-400 hover:bg-slate-50'
                         }`}
                       >
-                        <UtensilsCrossed size={12} className={isSelected ? 'text-white' : 'text-[#FF5200]'} />
+                        <UtensilsCrossed size={12} className={isSelected ? 'text-white' : 'text-slate-800'} />
                         <span>{c}</span>
                       </button>
                     );
@@ -563,15 +630,15 @@ export default function Discover() {
                     onClick={() => setOpen(!openOnly)}
                     className={`w-full p-3 rounded-xl border text-left flex items-center justify-between transition-all cursor-pointer ${
                       openOnly
-                        ? 'bg-emerald-50 border-emerald-300 text-emerald-900 shadow-xs'
+                        ? 'bg-slate-900 border-slate-900 text-white shadow-xs'
                         : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300'
                     }`}
                   >
                     <div className="flex items-center gap-2.5">
-                      <Zap size={16} className={openOnly ? 'text-emerald-700' : 'text-slate-400'} />
+                      <Zap size={16} className={openOnly ? 'text-white' : 'text-slate-400'} />
                       <span className="text-xs font-bold">Open Right Now</span>
                     </div>
-                    <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] ${openOnly ? 'bg-emerald-700 text-white' : 'border border-slate-300'}`}>
+                    <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] ${openOnly ? 'bg-white text-slate-900 font-bold' : 'border border-slate-300'}`}>
                       {openOnly ? '✓' : ''}
                     </span>
                   </button>
@@ -581,15 +648,15 @@ export default function Discover() {
                     onClick={() => setOffers(!offersOnly)}
                     className={`w-full p-3 rounded-xl border text-left flex items-center justify-between transition-all cursor-pointer ${
                       offersOnly
-                        ? 'bg-amber-50 border-amber-300 text-amber-900 shadow-xs'
+                        ? 'bg-slate-900 border-slate-900 text-white shadow-xs'
                         : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300'
                     }`}
                   >
                     <div className="flex items-center gap-2.5">
-                      <Tag size={16} className={offersOnly ? 'text-amber-700' : 'text-slate-400'} />
+                      <Tag size={16} className={offersOnly ? 'text-white' : 'text-slate-400'} />
                       <span className="text-xs font-bold">Campus Privilege Deals</span>
                     </div>
-                    <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] ${offersOnly ? 'bg-amber-700 text-white' : 'border border-slate-300'}`}>
+                    <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] ${offersOnly ? 'bg-white text-slate-900 font-bold' : 'border border-slate-300'}`}>
                       {offersOnly ? '✓' : ''}
                     </span>
                   </button>
@@ -601,18 +668,18 @@ export default function Discover() {
             <div className="p-5 border-t border-slate-100 flex items-center gap-3 bg-slate-50">
               <button
                 type="button"
-                className="btn btn-outline btn-md"
+                className="btn-action-cancel"
                 onClick={clearAll}
-                style={{ borderRadius: 12, padding: '10px 18px', fontSize: 13, fontWeight: 700 }}
+                style={{ padding: '10px 18px', fontSize: 13 }}
               >
                 <RotateCcw size={14} />
                 <span>Reset</span>
               </button>
               <button
                 type="button"
-                className="btn btn-primary btn-md flex-1"
+                className="btn-action-admit flex-1"
                 onClick={() => setShowMobileFilters(false)}
-                style={{ borderRadius: 12, padding: '12px 22px', fontSize: 13.5, fontWeight: 800 }}
+                style={{ padding: '12px 22px', fontSize: 13.5, justifyContent: 'center' }}
               >
                 Show {filtered.length} Restaurants
               </button>

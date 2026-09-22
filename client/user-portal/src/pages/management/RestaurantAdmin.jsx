@@ -93,6 +93,28 @@ export default function RestaurantAdmin() {
     })));
   }, [reservations]);
 
+  // Live reservations search & filter states
+  const [bookingSearch, setBookingSearch] = useState('');
+  const [bookingFilter, setBookingFilter] = useState('ALL');
+
+  const filteredBookings = useMemo(() => {
+    return bookings.filter(b => {
+      if (bookingFilter === 'SEATED' && b.status !== 'SEATED') return false;
+      if (bookingFilter === 'CONFIRMED' && (b.status !== 'CONFIRMED' && b.status !== 'PENDING')) return false;
+      if (bookingFilter === 'CANCELLED' && b.status !== 'CANCELLED') return false;
+      if (bookingFilter === 'COMPLETED' && b.status !== 'COMPLETED') return false;
+
+      if (bookingSearch.trim()) {
+        const q = bookingSearch.toLowerCase().trim();
+        const matchGuest = (b.guest || '').toLowerCase().includes(q);
+        const matchEmail = (b.email || '').toLowerCase().includes(q);
+        const matchId = (b.id || '').toLowerCase().includes(q);
+        return matchGuest || matchEmail || matchId;
+      }
+      return true;
+    });
+  }, [bookings, bookingFilter, bookingSearch]);
+
   // Live menu items loaded from database
   const [menuItems, setMenuItems] = useState([]);
   const [menuLoading, setMenuLoading] = useState(false);
@@ -604,419 +626,645 @@ export default function RestaurantAdmin() {
   };
 
   return (
-    <div className="page-pad">
+    <div className="page-pad" style={{ paddingBottom: 160 }}>
       {/* Restaurant Admin Header */}
-      <div className="anim-fade-up dashboard-hero-banner">
+      <div
+        className="anim-fade-up dashboard-hero-banner"
+        style={{
+          background: 'linear-gradient(135deg, #0F172A 0%, #1E293B 60%, #0F172A 100%)',
+          borderRadius: 20,
+          padding: '28px 32px',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
+          boxShadow: '0 12px 36px rgba(15, 23, 42, 0.16)',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: 20
+        }}
+      >
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          <div style={{ width: 56, height: 56, borderRadius: 'var(--r-sm)', background: 'rgba(255, 255, 255, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
+          <div style={{
+            width: 54,
+            height: 54,
+            borderRadius: 14,
+            background: 'rgba(255, 255, 255, 0.1)',
+            border: '1px solid rgba(255, 255, 255, 0.18)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: '#FFFFFF',
+            boxShadow: '0 4px 14px rgba(0, 0, 0, 0.2)'
+          }}>
             <ChefHat size={28} />
           </div>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span className="badge badge-primary" style={{ background: 'rgba(111, 175, 61, 0.2)', color: '#6FAF3D', border: '1px solid rgba(111, 175, 61, 0.4)' }}>Restaurant Admin Hub</span>
-              <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.85)' }}>Partner Outlet</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+              <span style={{
+                background: 'rgba(255, 255, 255, 0.12)',
+                color: '#FFFFFF',
+                border: '1px solid rgba(255, 255, 255, 0.25)',
+                padding: '3px 10px',
+                borderRadius: 99,
+                fontSize: 11,
+                fontWeight: 800,
+                letterSpacing: '0.04em',
+                textTransform: 'uppercase'
+              }}>
+                Restaurant Admin Hub
+              </span>
+              <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)', fontWeight: 600 }}>
+                Partner Outlet
+              </span>
             </div>
-            <h2 className="font-display" style={{ fontSize: '1.75rem', fontWeight: 800, color: '#fff' }}>
+            <h2 className="font-display" style={{ fontSize: '1.75rem', fontWeight: 900, color: '#FFFFFF', margin: 0, letterSpacing: '-0.02em' }}>
               {restaurant.name} · Operational Desk
             </h2>
-            <div style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.85)' }}>
+            <div style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.75)', marginTop: 3 }}>
               {restaurant.cuisine} Cuisine · Bennett University Approved Dining Partner
             </div>
           </div>
         </div>
 
-        {/* Global Action Button */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        {/* Global Action Button — Crisp White on Dark Banner */}
+        <div>
           <button
-            className="btn btn-primary btn-md"
+            type="button"
+            className="btn-action-dishes"
             style={{
-              background: 'linear-gradient(135deg, #f59e0b, #d97706)',
-              color: '#000',
+              background: '#FFFFFF',
+              color: '#0F172A',
+              border: '1.5px solid #FFFFFF',
+              padding: '12px 24px',
+              fontSize: '13.5px',
+              borderRadius: 99,
               fontWeight: 800,
-              boxShadow: '0 4px 16px rgba(245, 158, 11, 0.4)',
-              display: 'inline-flex',
-              alignItems: 'center',
+              boxShadow: '0 4px 18px rgba(0, 0, 0, 0.25)',
               gap: 8,
-              padding: '11px 22px',
-              minHeight: 44,
-              borderRadius: 12,
-              fontSize: '0.95rem',
-              boxSizing: 'border-box'
+              transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)'
             }}
             onClick={handleOpenAddDish}
           >
-            <Plus size={18} strokeWidth={2.5} /> Add New Menu Dish
+            <Plus size={17} strokeWidth={3} />
+            <span>Add New Menu Dish</span>
           </button>
         </div>
 
-        {/* Tab Switcher Pills */}
-        <div className="tabs-scroll-x" style={{ borderTop: '1px solid rgba(255,255,255,0.15)', paddingTop: 16, width: '100%', gap: 8 }}>
+        {/* Tab Switcher Pills with 0.32s transition */}
+        <div className="tabs-scroll-x" style={{ borderTop: '1px solid rgba(255,255,255,0.12)', paddingTop: 18, width: '100%', gap: 10 }}>
           <button
-            className={`btn btn-sm ${activeTab === 'Reservations' ? 'btn-primary' : 'btn-outline'}`}
-            style={{
-              color: activeTab === 'Reservations' ? '#FFFFFF' : 'var(--t1)',
-              backgroundColor: activeTab === 'Reservations' ? undefined : '#FFFFFF',
-              borderColor: activeTab === 'Reservations' ? 'rgba(255,255,255,0.3)' : '#C8DEC3',
-              fontWeight: 700,
-              flexShrink: 0,
-              padding: '9px 18px',
-              minHeight: 38,
-              borderRadius: 10,
-              boxSizing: 'border-box'
-            }}
+            type="button"
+            className={`btn-tab-pill ${activeTab === 'Reservations' ? 'active' : ''}`}
             onClick={() => setActiveTab('Reservations')}
           >
-            <Calendar size={14} /> Reservations Queue ({bookings.length})
+            <Calendar size={14} />
+            <span>Reservations Queue ({bookings.length})</span>
           </button>
           <button
-            className={`btn btn-sm ${activeTab === 'Menu' ? 'btn-primary' : 'btn-outline'}`}
-            style={{
-              color: activeTab === 'Menu' ? '#FFFFFF' : 'var(--t1)',
-              backgroundColor: activeTab === 'Menu' ? undefined : '#FFFFFF',
-              borderColor: activeTab === 'Menu' ? 'rgba(255,255,255,0.3)' : '#C8DEC3',
-              fontWeight: 700,
-              flexShrink: 0,
-              padding: '9px 18px',
-              minHeight: 38,
-              borderRadius: 10,
-              boxSizing: 'border-box'
-            }}
+            type="button"
+            className={`btn-tab-pill ${activeTab === 'Menu' ? 'active' : ''}`}
             onClick={() => setActiveTab('Menu')}
           >
-            <ChefHat size={14} /> Menu Catalog ({menuItems.length})
+            <ChefHat size={14} />
+            <span>Menu Catalog ({menuItems.length})</span>
           </button>
           <button
-            className={`btn btn-sm ${activeTab === 'PaymentQRs' ? 'btn-primary' : 'btn-outline'}`}
-            style={{
-              color: activeTab === 'PaymentQRs' ? '#FFFFFF' : 'var(--t1)',
-              backgroundColor: activeTab === 'PaymentQRs' ? undefined : '#FFFFFF',
-              borderColor: activeTab === 'PaymentQRs' ? 'rgba(255,255,255,0.3)' : '#C8DEC3',
-              fontWeight: 700,
-              flexShrink: 0,
-              padding: '9px 18px',
-              minHeight: 38,
-              borderRadius: 10,
-              boxSizing: 'border-box'
-            }}
+            type="button"
+            className={`btn-tab-pill ${activeTab === 'PaymentQRs' ? 'active' : ''}`}
             onClick={() => setActiveTab('PaymentQRs')}
           >
-            <QrCode size={14} /> Payment QRs ({paymentQrs.length})
+            <QrCode size={14} />
+            <span>Payment QRs ({paymentQrs.length})</span>
           </button>
           <button
-            className={`btn btn-sm ${activeTab === 'Offers' ? 'btn-primary' : 'btn-outline'}`}
-            style={{
-              color: activeTab === 'Offers' ? '#FFFFFF' : 'var(--t1)',
-              backgroundColor: activeTab === 'Offers' ? undefined : '#FFFFFF',
-              borderColor: activeTab === 'Offers' ? 'rgba(255,255,255,0.3)' : '#C8DEC3',
-              fontWeight: 700,
-              flexShrink: 0,
-              padding: '9px 18px',
-              minHeight: 38,
-              borderRadius: 10,
-              boxSizing: 'border-box'
-            }}
+            type="button"
+            className={`btn-tab-pill ${activeTab === 'Offers' ? 'active' : ''}`}
             onClick={() => setActiveTab('Offers')}
           >
-            <Tag size={14} /> Special Offers ({offersList.length})
+            <Tag size={14} />
+            <span>Special Offers ({offersList.length})</span>
           </button>
           <button
-            className={`btn btn-sm ${activeTab === 'Staff' ? 'btn-primary' : 'btn-outline'}`}
-            style={{
-              color: activeTab === 'Staff' ? '#FFFFFF' : 'var(--t1)',
-              backgroundColor: activeTab === 'Staff' ? undefined : '#FFFFFF',
-              borderColor: activeTab === 'Staff' ? 'rgba(255,255,255,0.3)' : '#C8DEC3',
-              fontWeight: 700,
-              flexShrink: 0,
-              padding: '9px 18px',
-              minHeight: 38,
-              borderRadius: 10,
-              boxSizing: 'border-box'
-            }}
+            type="button"
+            className={`btn-tab-pill ${activeTab === 'Staff' ? 'active' : ''}`}
             onClick={() => setActiveTab('Staff')}
           >
-            <Users size={14} /> Staff Roster ({staffList.length})
+            <Users size={14} />
+            <span>Staff Roster ({staffList.length})</span>
           </button>
           <button
-            className={`btn btn-sm ${activeTab === 'Analytics' ? 'btn-primary' : 'btn-outline'}`}
-            style={{
-              color: activeTab === 'Analytics' ? '#FFFFFF' : 'var(--t1)',
-              backgroundColor: activeTab === 'Analytics' ? undefined : '#FFFFFF',
-              borderColor: activeTab === 'Analytics' ? 'rgba(255,255,255,0.3)' : '#C8DEC3',
-              fontWeight: 700,
-              flexShrink: 0,
-              padding: '9px 18px',
-              minHeight: 38,
-              borderRadius: 10,
-              boxSizing: 'border-box'
-            }}
+            type="button"
+            className={`btn-tab-pill ${activeTab === 'Analytics' ? 'active' : ''}`}
             onClick={() => setActiveTab('Analytics')}
           >
-            <BarChart3 size={14} /> Outlet Analytics
+            <BarChart3 size={14} />
+            <span>Outlet Analytics</span>
           </button>
         </div>
       </div>
 
-      {/* Overview Cards */}
+      {/* Overview KPI Cards with 0.35s hover transitions */}
       <div className="grid-responsive-kpi anim-fade-up delay-1">
-        <div className="card" style={{ padding: 18, background: 'var(--bg-card)' }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--t4)', textTransform: 'uppercase' }}>Active Reservations</div>
-          <div className="font-display" style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--primary)', margin: '4px 0' }}>
-            {bookings.length}
+        <div className="kpi-card-lux">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div>
+              <div style={{ fontSize: 11, fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Active Reservations</div>
+              <div className="font-display" style={{ fontSize: '1.9rem', fontWeight: 900, color: '#0F172A', margin: '4px 0' }}>
+                {bookings.length}
+              </div>
+              <div style={{ fontSize: 12, color: '#475569', fontWeight: 700, display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#0F172A' }} /> Live dining passes
+              </div>
+            </div>
+            <div style={{ width: 40, height: 40, borderRadius: 12, background: '#F8FAFC', color: '#0F172A', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Calendar size={20} />
+            </div>
           </div>
-          <div style={{ fontSize: 11.5, color: '#10B981' }}>Live dining passes</div>
         </div>
 
-        <div className="card" style={{ padding: 18, background: 'var(--bg-card)' }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--t4)', textTransform: 'uppercase' }}>Catalog Dishes</div>
-          <div className="font-display" style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--t1)', margin: '4px 0' }}>
-            {menuItems.length} Dishes
+        <div className="kpi-card-lux">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div>
+              <div style={{ fontSize: 11, fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Catalog Dishes</div>
+              <div className="font-display" style={{ fontSize: '1.9rem', fontWeight: 900, color: '#0F172A', margin: '4px 0' }}>
+                {menuItems.length}
+              </div>
+              <div style={{ fontSize: 12, color: '#475569', fontWeight: 700 }}>
+                {menuItems.filter(m => m.isAvailable !== false).length} In Stock
+              </div>
+            </div>
+            <div style={{ width: 40, height: 40, borderRadius: 12, background: '#F8FAFC', color: '#0F172A', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <ChefHat size={20} />
+            </div>
           </div>
-          <div style={{ fontSize: 11.5, color: '#10B981' }}>{menuItems.filter(m => m.isAvailable !== false).length} In Stock</div>
         </div>
 
-        <div className="card" style={{ padding: 18, background: 'var(--bg-card)' }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--t4)', textTransform: 'uppercase' }}>Active Offers</div>
-          <div className="font-display" style={{ fontSize: '1.8rem', fontWeight: 800, color: '#F59E0B', margin: '4px 0' }}>
-            {offersList.filter(o => o.status === 'ACTIVE').length} Active
+        <div className="kpi-card-lux">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div>
+              <div style={{ fontSize: 11, fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Active Offers</div>
+              <div className="font-display" style={{ fontSize: '1.9rem', fontWeight: 900, color: '#0F172A', margin: '4px 0' }}>
+                {offersList.filter(o => o.status === 'ACTIVE').length}
+              </div>
+              <div style={{ fontSize: 12, color: '#475569', fontWeight: 700 }}>
+                Student discounts live
+              </div>
+            </div>
+            <div style={{ width: 40, height: 40, borderRadius: 12, background: '#F8FAFC', color: '#0F172A', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Tag size={20} />
+            </div>
           </div>
-          <div style={{ fontSize: 11.5, color: 'var(--t3)' }}>Student discounts live</div>
         </div>
 
-        <div className="card" style={{ padding: 18, background: 'var(--bg-card)' }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--t4)', textTransform: 'uppercase' }}>Staff on Duty</div>
-          <div className="font-display" style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--t1)', margin: '4px 0' }}>
-            {staffList.length} Members
+        <div className="kpi-card-lux">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div>
+              <div style={{ fontSize: 11, fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Staff on Duty</div>
+              <div className="font-display" style={{ fontSize: '1.9rem', fontWeight: 900, color: '#0F172A', margin: '4px 0' }}>
+                {staffList.length}
+              </div>
+              <div style={{ fontSize: 12, color: '#475569', fontWeight: 700 }}>
+                Assigned to outlet
+              </div>
+            </div>
+            <div style={{ width: 40, height: 40, borderRadius: 12, background: '#F8FAFC', color: '#0F172A', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Users size={20} />
+            </div>
           </div>
-          <div style={{ fontSize: 11.5, color: 'var(--primary)' }}>Assigned to outlet</div>
         </div>
       </div>
 
       {/* ================= TAB 1: RESERVATIONS ================= */}
       {activeTab === 'Reservations' && (
-        <div className="card anim-fade-up delay-2" style={{ padding: 24, background: 'var(--bg-card)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18, flexWrap: 'wrap', gap: 12 }}>
-            <div>
-              <h3 className="font-display" style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--t1)' }}>
-                Live Diner Passes &amp; Service Orders
-              </h3>
-              <p style={{ fontSize: 12.5, color: 'var(--t3)' }}>
-                1-click admit guests, approve passes, and manage active diners for {restaurant.name}.
-              </p>
+        <div className="card anim-fade-up delay-2" style={{ background: '#FFFFFF', borderRadius: 20, overflow: 'hidden', border: '1px solid #EEF0F3', boxShadow: '0 4px 20px rgba(0, 0, 0, 0.03)' }}>
+          {/* Header & Controls */}
+          <div style={{ padding: '24px 28px', borderBottom: '1px solid #EEF0F3' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 14 }}>
+              <div>
+                <h3 className="font-display" style={{ fontSize: '1.35rem', fontWeight: 800, color: '#0F172A', margin: '0 0 4px', letterSpacing: '-0.02em' }}>
+                  Live Diner Passes &amp; Service Orders
+                </h3>
+                <p style={{ fontSize: 13, color: '#64748B', margin: 0 }}>
+                  1-click admit guests, approve passes, and manage active diners for {restaurant.name}.
+                </p>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <span style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  padding: '6px 14px',
+                  borderRadius: 99,
+                  background: '#F1F5F9',
+                  color: '#0F172A',
+                  fontSize: 12,
+                  fontWeight: 800
+                }}>
+                  <Calendar size={13} className="text-slate-500" />
+                  <span>{filteredBookings.length} Bookings</span>
+                </span>
+              </div>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <span className="badge badge-info">{bookings.length} Bookings</span>
+
+            {/* Filter & Search Toolbar */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginTop: 18, flexWrap: 'wrap' }}>
+              {/* Status Filter Chips */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                {[
+                  { key: 'ALL', label: `All (${bookings.length})` },
+                  { key: 'SEATED', label: `Seated (${bookings.filter(b => b.status === 'SEATED').length})` },
+                  { key: 'CONFIRMED', label: `Confirmed (${bookings.filter(b => b.status === 'CONFIRMED' || b.status === 'PENDING').length})` },
+                  { key: 'CANCELLED', label: `Cancelled (${bookings.filter(b => b.status === 'CANCELLED').length})` }
+                ].map(tab => (
+                  <button
+                    key={tab.key}
+                    type="button"
+                    onClick={() => setBookingFilter(tab.key)}
+                    style={{
+                      padding: '7px 16px',
+                      borderRadius: 99,
+                      fontSize: 12,
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      border: '1px solid',
+                      transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+                      background: bookingFilter === tab.key ? '#0F172A' : '#FFFFFF',
+                      color: bookingFilter === tab.key ? '#FFFFFF' : '#475569',
+                      borderColor: bookingFilter === tab.key ? '#0F172A' : '#E2E8F0',
+                      boxShadow: bookingFilter === tab.key ? '0 2px 8px rgba(15, 23, 42, 0.15)' : 'none'
+                    }}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Search Bar */}
+              <div style={{ position: 'relative', minWidth: 260, flex: '1 1 260px', maxWidth: 360 }}>
+                <Search size={14} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
+                <input
+                  type="text"
+                  placeholder="Filter diners by name, email..."
+                  value={bookingSearch}
+                  onChange={e => setBookingSearch(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '8px 14px 8px 34px',
+                    borderRadius: 10,
+                    border: '1.5px solid #E2E8F0',
+                    background: '#F8FAFC',
+                    fontSize: 12.5,
+                    fontWeight: 600,
+                    color: '#0F172A',
+                    outline: 'none',
+                    transition: 'all 0.25s ease'
+                  }}
+                  onFocus={e => { e.target.style.borderColor = '#0F172A'; e.target.style.background = '#FFFFFF'; }}
+                  onBlur={e => { e.target.style.borderColor = '#E2E8F0'; e.target.style.background = '#F8FAFC'; }}
+                />
+              </div>
             </div>
           </div>
 
           {/* Desktop Table View */}
-          <div className="table-responsive desktop-only-block">
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, textAlign: 'left' }}>
+          <div className="table-responsive desktop-only-block" style={{ overflowX: 'auto' }}>
+            <table className="admin-table">
               <thead>
-                <tr style={{ borderBottom: '2px solid var(--border)', color: 'var(--t4)', textTransform: 'uppercase', fontSize: 11 }}>
-                  <th style={{ padding: '12px 14px' }}>Guest Details</th>
-                  <th style={{ padding: '12px 14px' }}>Time &amp; Date</th>
-                  <th style={{ padding: '12px 14px' }}>Party Size</th>
-                  <th style={{ padding: '12px 14px' }}>Status</th>
-                  <th style={{ padding: '12px 14px', textAlign: 'right' }}>Actions</th>
+                <tr>
+                  <th style={{ width: '28%' }}>Guest Details</th>
+                  <th style={{ width: '18%' }}>Time &amp; Date</th>
+                  <th style={{ width: '15%' }}>Party Size</th>
+                  <th style={{ width: '15%' }}>Status</th>
+                  <th style={{ width: '24%', textAlign: 'right' }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {bookings.length === 0 ? (
+                {filteredBookings.length === 0 ? (
                   <tr>
-                    <td colSpan="5" style={{ padding: 32, textAlign: 'center', color: 'var(--t3)' }}>
-                      No active reservations currently in queue.
+                    <td colSpan="5" style={{ padding: '56px 20px', textAlign: 'center', color: '#64748B' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
+                        <div style={{ width: 48, height: 48, borderRadius: 16, background: '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94A3B8' }}>
+                          <Calendar size={22} />
+                        </div>
+                        <div style={{ fontWeight: 800, fontSize: 14, color: '#1E293B' }}>No reservations found</div>
+                        <div style={{ fontSize: 12.5, color: '#94A3B8' }}>No diner passes match your search filter.</div>
+                      </div>
                     </td>
                   </tr>
                 ) : (
-                  bookings.map(b => (
-                    <tr key={b.id} style={{ borderBottom: '1px solid var(--border)' }}>
-                      <td style={{ padding: '14px' }}>
-                        <div style={{ fontWeight: 700, color: 'var(--t1)' }}>{b.guest}</div>
-                        <div style={{ fontSize: 11.5, color: 'var(--t3)' }}>{b.email}</div>
-                      </td>
-                      <td style={{ padding: '14px', color: 'var(--t2)' }}>
-                        <div>{b.time}</div>
-                        <div style={{ fontSize: 11, color: 'var(--t4)' }}>{b.date}</div>
-                      </td>
-                      <td style={{ padding: '14px', color: 'var(--t2)', fontWeight: 600 }}>
-                        {b.guests} Guests
-                      </td>
-                      <td style={{ padding: '14px' }}>
-                        <span className={`badge ${
-                          b.status === 'CONFIRMED' || b.status === 'SEATED' ? 'badge-success' :
-                          b.status === 'COMPLETED' ? 'badge-primary' : 'badge-neutral'
-                        }`}>
-                          {b.status}
-                        </span>
-                      </td>
-                      <td style={{ padding: '14px', textAlign: 'right' }}>
-                        <div style={{ display: 'inline-flex', gap: 6, alignItems: 'center', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
-                          {b.status === 'PENDING' && (
-                            <button
-                              className="btn btn-xs btn-success"
-                              onClick={() => handleStatusUpdate(b.id, 'CONFIRMED')}
-                            >
-                              <CheckCircle2 size={12} /> Confirm
-                            </button>
+                  filteredBookings.map(b => {
+                    const initials = (b.guest || 'D').split(' ').map(w => w[0]).filter(Boolean).slice(0, 2).join('').toUpperCase();
+                    return (
+                      <tr key={b.id}>
+                        <td>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                            <div style={{
+                              width: 38,
+                              height: 38,
+                              borderRadius: 11,
+                              background: 'linear-gradient(135deg, #F1F5F9 0%, #E2E8F0 100%)',
+                              color: '#0F172A',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              fontWeight: 800,
+                              fontSize: 12.5,
+                              letterSpacing: '0.02em',
+                              border: '1px solid #E2E8F0',
+                              flexShrink: 0
+                            }}>
+                              {initials}
+                            </div>
+                            <div style={{ minWidth: 0 }}>
+                              <div style={{ fontWeight: 800, color: '#0F172A', fontSize: 13.5, letterSpacing: '-0.01em', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                {b.guest}
+                              </div>
+                              <div style={{ fontSize: 11.5, color: '#64748B', marginTop: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                {b.email}
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+                        <td>
+                          <div>
+                            <div style={{ fontWeight: 800, color: '#0F172A', fontSize: 13, display: 'flex', alignItems: 'center', gap: 5 }}>
+                              <Clock size={13} className="text-slate-400" />
+                              <span>{b.time}</span>
+                            </div>
+                            <div style={{ fontSize: 11.5, color: '#64748B', marginTop: 2 }}>
+                              {b.date}
+                            </div>
+                          </div>
+                        </td>
+                        <td>
+                          <div style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 6,
+                            padding: '5px 11px',
+                            borderRadius: 8,
+                            background: '#F8FAFC',
+                            border: '1px solid #E2E8F0',
+                            color: '#1E293B',
+                            fontWeight: 700,
+                            fontSize: 12
+                          }}>
+                            <Users size={12} className="text-slate-400" />
+                            <span>{b.guests} Guests</span>
+                          </div>
+                        </td>
+                        <td>
+                          {b.status === 'SEATED' ? (
+                            <span className="status-pill status-pill-seated">
+                              <span className="status-pill-dot" />
+                              Seated
+                            </span>
+                          ) : b.status === 'CONFIRMED' || b.status === 'PENDING' ? (
+                            <span className="status-pill status-pill-confirmed">
+                              <span className="status-pill-dot" />
+                              Confirmed
+                            </span>
+                          ) : b.status === 'COMPLETED' ? (
+                            <span className="status-pill status-pill-completed">
+                              <span className="status-pill-dot" />
+                              Completed
+                            </span>
+                          ) : (
+                            <span className="status-pill status-pill-cancelled">
+                              <span className="status-pill-dot" />
+                              Cancelled
+                            </span>
                           )}
-                          {(b.status === 'CONFIRMED' || b.status === 'PENDING') && (
-                            <button
-                              className="btn btn-xs btn-primary"
-                              style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontWeight: 700 }}
-                              onClick={() => handleStatusUpdate(b.id, 'SEATED')}
-                              title="Admit guest into restaurant"
-                            >
-                              <CheckCircle2 size={12} /> 1-Click Admit
-                            </button>
-                          )}
-                          {b.status === 'SEATED' && (
-                            <>
+                        </td>
+                        <td style={{ textAlign: 'right' }}>
+                          <div style={{ display: 'inline-flex', gap: 8, alignItems: 'center', justifyContent: 'flex-end', flexWrap: 'nowrap' }}>
+                            {(b.status === 'CONFIRMED' || b.status === 'PENDING') && (
                               <button
-                                className="btn btn-xs btn-outline"
-                                style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontWeight: 700 }}
+                                type="button"
+                                className="btn-action-admit"
+                                onClick={() => handleStatusUpdate(b.id, 'SEATED')}
+                                title="Admit guest into restaurant"
+                              >
+                                <CheckCircle2 size={13} strokeWidth={2.5} />
+                                <span>1-Click Admit</span>
+                              </button>
+                            )}
+                            {b.status === 'SEATED' && (
+                              <>
+                                <button
+                                  type="button"
+                                  className="btn-action-dishes"
+                                  onClick={() => {
+                                    const fullRes = reservations.find(r => r.id === b.id) || b;
+                                    setPaymentModalBooking(fullRes);
+                                  }}
+                                  title="Add dishes to table tab"
+                                >
+                                  <Utensils size={13} />
+                                  <span>Add Dishes</span>
+                                </button>
+                                <button
+                                  type="button"
+                                  className="btn-action-settle"
+                                  onClick={() => {
+                                    const fullRes = reservations.find(r => r.id === b.id) || b;
+                                    setPaymentModalBooking(fullRes);
+                                  }}
+                                  title="Generate bill & settle payment"
+                                >
+                                  <Receipt size={13} />
+                                  <span>Settle Bill</span>
+                                </button>
+                              </>
+                            )}
+                            {b.status === 'COMPLETED' && (
+                              <button
+                                type="button"
+                                className="btn-action-dishes"
                                 onClick={() => {
                                   const fullRes = reservations.find(r => r.id === b.id) || b;
                                   setPaymentModalBooking(fullRes);
                                 }}
-                                title="Add dishes to table tab"
+                                title="View settled invoice"
                               >
-                                <Utensils size={12} /> Add Dishes
+                                <Receipt size={13} />
+                                <span>View Bill</span>
                               </button>
+                            )}
+                            {b.status !== 'CANCELLED' && b.status !== 'COMPLETED' && b.status !== 'SEATED' && (
                               <button
-                                className="btn btn-xs btn-accent"
-                                style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontWeight: 700 }}
-                                onClick={() => {
-                                  const fullRes = reservations.find(r => r.id === b.id) || b;
-                                  setPaymentModalBooking(fullRes);
-                                }}
-                                title="Generate bill & settle payment"
+                                type="button"
+                                className="btn-action-cancel"
+                                onClick={() => handleStatusUpdate(b.id, 'CANCELLED')}
+                                title="Cancel reservation pass"
                               >
-                                <Receipt size={12} /> Settle Bill
+                                <XCircle size={13} />
+                                <span>Cancel</span>
                               </button>
-                            </>
-                          )}
-                          {b.status === 'COMPLETED' && (
-                            <button
-                              className="btn btn-xs btn-secondary"
-                              style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontWeight: 700 }}
-                              onClick={() => {
-                                const fullRes = reservations.find(r => r.id === b.id) || b;
-                                setPaymentModalBooking(fullRes);
-                              }}
-                              title="View settled invoice"
-                            >
-                              <Receipt size={12} /> View Bill
-                            </button>
-                          )}
-                          {b.status !== 'CANCELLED' && b.status !== 'COMPLETED' && b.status !== 'SEATED' && (
-                            <button
-                              className="btn btn-xs btn-outline"
-                              onClick={() => handleStatusUpdate(b.id, 'CANCELLED')}
-                            >
-                              <XCircle size={12} /> Cancel
-                            </button>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  ))
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })
                 )}
               </tbody>
             </table>
           </div>
 
           {/* Mobile Sleek Card View (< 768px) */}
-          <div className="mobile-only-flex" style={{ display: 'none', flexDirection: 'column', gap: 12 }}>
-            {bookings.length === 0 ? (
-              <div style={{ padding: 24, textAlign: 'center', color: 'var(--t3)', background: 'var(--bg-subtle)', borderRadius: 'var(--r-sm)' }}>
-                No active reservations currently in queue.
+          <div className="mobile-only-flex" style={{ flexDirection: 'column', gap: 12 }}>
+            {filteredBookings.length === 0 ? (
+              <div style={{ padding: '36px 20px', textAlign: 'center', color: '#64748B', background: '#F8FAFC', borderRadius: 16, border: '1px solid #E2E8F0' }}>
+                <div style={{ fontWeight: 800, fontSize: 14, color: '#1E293B', marginBottom: 4 }}>No reservations found</div>
+                <div style={{ fontSize: 12, color: '#94A3B8' }}>No diner passes match your search or filter.</div>
               </div>
             ) : (
-              bookings.map(b => (
-                <div key={b.id} className="mobile-reservation-card">
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
-                    <div>
-                      <div style={{ fontWeight: 800, fontSize: 14, color: 'var(--t1)' }}>{b.guest}</div>
-                      <div style={{ fontSize: 11.5, color: 'var(--t3)' }}>{b.email}</div>
+              filteredBookings.map(b => {
+                const initials = (b.guest || 'D').split(' ').map(w => w[0]).filter(Boolean).slice(0, 2).join('').toUpperCase();
+                return (
+                  <div
+                    key={b.id}
+                    style={{
+                      background: '#FFFFFF',
+                      borderRadius: 16,
+                      border: '1px solid #E2E8F0',
+                      padding: '16px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: 12,
+                      boxShadow: '0 2px 8px rgba(15, 23, 42, 0.04)',
+                      transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
+                        <div style={{
+                          width: 38,
+                          height: 38,
+                          borderRadius: 11,
+                          background: 'linear-gradient(135deg, #F1F5F9 0%, #E2E8F0 100%)',
+                          color: '#0F172A',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontWeight: 800,
+                          fontSize: 12.5,
+                          border: '1px solid #E2E8F0',
+                          flexShrink: 0
+                        }}>
+                          {initials}
+                        </div>
+                        <div style={{ minWidth: 0 }}>
+                          <div style={{ fontWeight: 800, fontSize: 14, color: '#0F172A', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            {b.guest}
+                          </div>
+                          <div style={{ fontSize: 11.5, color: '#64748B', marginTop: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            {b.email}
+                          </div>
+                        </div>
+                      </div>
+
+                      {b.status === 'SEATED' ? (
+                        <span className="status-pill status-pill-seated">
+                          <span className="status-pill-dot" />
+                          Seated
+                        </span>
+                      ) : b.status === 'CONFIRMED' || b.status === 'PENDING' ? (
+                        <span className="status-pill status-pill-confirmed">
+                          <span className="status-pill-dot" />
+                          Confirmed
+                        </span>
+                      ) : b.status === 'COMPLETED' ? (
+                        <span className="status-pill status-pill-completed">
+                          <span className="status-pill-dot" />
+                          Completed
+                        </span>
+                      ) : (
+                        <span className="status-pill status-pill-cancelled">
+                          <span className="status-pill-dot" />
+                          Cancelled
+                        </span>
+                      )}
                     </div>
-                    <span className={`badge ${
-                      b.status === 'CONFIRMED' || b.status === 'SEATED' ? 'badge-success' :
-                      b.status === 'COMPLETED' ? 'badge-primary' : 'badge-neutral'
-                    }`}>
-                      {b.status}
-                    </span>
-                  </div>
 
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 12, color: 'var(--t2)', flexWrap: 'wrap' }}>
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><Clock size={12} /> {b.time} · {b.date}</span>
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><Users size={12} /> {b.guests} Guests</span>
-                  </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 12, color: '#64748B', flexWrap: 'wrap', paddingTop: 4, borderTop: '1px solid #F1F5F9' }}>
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontWeight: 700, color: '#1E293B' }}>
+                        <Clock size={13} className="text-slate-400" /> {b.time} · {b.date}
+                      </span>
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '3px 8px', borderRadius: 6, background: '#F8FAFC', border: '1px solid #E2E8F0', fontWeight: 700, color: '#334155' }}>
+                        <Users size={12} className="text-slate-400" /> {b.guests} Guests
+                      </span>
+                    </div>
 
-                  <div className="mobile-full-btn" style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 4 }}>
-                    {b.status === 'PENDING' && (
-                      <button
-                        className="btn btn-xs btn-success"
-                        onClick={() => handleStatusUpdate(b.id, 'CONFIRMED')}
-                      >
-                        <CheckCircle2 size={12} /> Confirm
-                      </button>
-                    )}
-                    {(b.status === 'CONFIRMED' || b.status === 'PENDING') && (
-                      <button
-                        className="btn btn-xs btn-primary"
-                        style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontWeight: 700 }}
-                        onClick={() => handleStatusUpdate(b.id, 'SEATED')}
-                      >
-                        <CheckCircle2 size={12} /> 1-Click Admit
-                      </button>
-                    )}
-                    {b.status === 'SEATED' && (
-                      <>
+                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 2, alignItems: 'center' }}>
+                      {(b.status === 'CONFIRMED' || b.status === 'PENDING') && (
                         <button
-                          className="btn btn-xs btn-outline"
-                          style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontWeight: 700 }}
+                          type="button"
+                          className="btn-action-admit"
+                          onClick={() => handleStatusUpdate(b.id, 'SEATED')}
+                          style={{ flex: '1 1 auto', justifyContent: 'center' }}
+                        >
+                          <CheckCircle2 size={13} strokeWidth={2.5} />
+                          <span>1-Click Admit</span>
+                        </button>
+                      )}
+                      {b.status === 'SEATED' && (
+                        <>
+                          <button
+                            type="button"
+                            className="btn-action-dishes"
+                            onClick={() => {
+                              const fullRes = reservations.find(r => r.id === b.id) || b;
+                              setPaymentModalBooking(fullRes);
+                            }}
+                            style={{ flex: '1 1 auto', justifyContent: 'center' }}
+                          >
+                            <Utensils size={13} />
+                            <span>Add Dishes</span>
+                          </button>
+                          <button
+                            type="button"
+                            className="btn-action-settle"
+                            onClick={() => {
+                              const fullRes = reservations.find(r => r.id === b.id) || b;
+                              setPaymentModalBooking(fullRes);
+                            }}
+                            style={{ flex: '1 1 auto', justifyContent: 'center' }}
+                          >
+                            <Receipt size={13} />
+                            <span>Settle Bill</span>
+                          </button>
+                        </>
+                      )}
+                      {b.status === 'COMPLETED' && (
+                        <button
+                          type="button"
+                          className="btn-action-dishes"
                           onClick={() => {
                             const fullRes = reservations.find(r => r.id === b.id) || b;
                             setPaymentModalBooking(fullRes);
                           }}
+                          style={{ flex: '1 1 auto', justifyContent: 'center' }}
                         >
-                          <Utensils size={12} /> Add Dishes
+                          <Receipt size={13} />
+                          <span>View Bill</span>
                         </button>
+                      )}
+                      {b.status !== 'CANCELLED' && b.status !== 'COMPLETED' && b.status !== 'SEATED' && (
                         <button
-                          className="btn btn-xs btn-accent"
-                          style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontWeight: 700 }}
-                          onClick={() => {
-                            const fullRes = reservations.find(r => r.id === b.id) || b;
-                            setPaymentModalBooking(fullRes);
-                          }}
+                          type="button"
+                          className="btn-action-cancel"
+                          onClick={() => handleStatusUpdate(b.id, 'CANCELLED')}
                         >
-                          <Receipt size={12} /> Settle Bill
+                          <XCircle size={13} />
+                          <span>Cancel</span>
                         </button>
-                      </>
-                    )}
-                    {b.status === 'COMPLETED' && (
-                      <button
-                        className="btn btn-xs btn-secondary"
-                        style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontWeight: 700 }}
-                        onClick={() => {
-                          const fullRes = reservations.find(r => r.id === b.id) || b;
-                          setPaymentModalBooking(fullRes);
-                        }}
-                      >
-                        <Receipt size={12} /> View Bill
-                      </button>
-                    )}
-                    {b.status !== 'CANCELLED' && b.status !== 'COMPLETED' && b.status !== 'SEATED' && (
-                      <button
-                        className="btn btn-xs btn-outline"
-                        onClick={() => handleStatusUpdate(b.id, 'CANCELLED')}
-                      >
-                        <XCircle size={12} /> Cancel
-                      </button>
-                    )}
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))
+                );
+              })
             )}
           </div>
         </div>
@@ -1074,9 +1322,10 @@ export default function RestaurantAdmin() {
                     fontWeight: 700,
                     border: '1px solid',
                     cursor: 'pointer',
-                    background: menuCategory.toLowerCase() === cat.toLowerCase() ? 'var(--primary)' : '#FFFFFF',
-                    color: menuCategory.toLowerCase() === cat.toLowerCase() ? '#FFFFFF' : 'var(--t1)',
-                    borderColor: menuCategory.toLowerCase() === cat.toLowerCase() ? 'var(--primary)' : 'var(--border)'
+                    background: menuCategory.toLowerCase() === cat.toLowerCase() ? '#0F172A' : '#FFFFFF',
+                    color: menuCategory.toLowerCase() === cat.toLowerCase() ? '#FFFFFF' : '#475569',
+                    borderColor: menuCategory.toLowerCase() === cat.toLowerCase() ? '#0F172A' : '#E2E8F0',
+                    transition: 'all 0.25s ease'
                   }}
                 >
                   {cat}
@@ -1593,19 +1842,19 @@ export default function RestaurantAdmin() {
       {/* ================= MODAL: ADD DISH ================= */}
       {showDishModal && (
         <div className="modal-overlay" onClick={() => setShowDishModal(false)}>
-          <div className="modal-card anim-scale-in" onClick={e => e.stopPropagation()} style={{ maxWidth: 480 }}>
+          <div className="modal-card anim-scale-in" onClick={e => e.stopPropagation()} style={{ maxWidth: 520, maxHeight: 'min(90vh, 720px)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
             <div className="modal-hd">
               <div>
-                <h3 className="modal-title font-display">Add New Menu Dish</h3>
+                <h3 className="modal-title font-display">{editingDishId ? 'Edit Menu Dish' : 'Add New Menu Dish'}</h3>
                 <div className="modal-sub">Add to {restaurant.name} catalog</div>
               </div>
-              <button className="modal-close" onClick={() => { setShowDishModal(false); setEditingDishId(null); }}>
+              <button type="button" className="modal-close" onClick={() => { setShowDishModal(false); setEditingDishId(null); }}>
                 <X size={16} />
               </button>
             </div>
 
-            <form onSubmit={handleAddDish}>
-              <div className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <form onSubmit={handleAddDish} style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, overflow: 'hidden', margin: 0 }}>
+              <div className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: 14, overflowY: 'auto', flex: 1, minHeight: 0 }}>
                 {/* Image Upload & Preview */}
                 <div>
                   <label className="form-label" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -1777,19 +2026,19 @@ export default function RestaurantAdmin() {
       {/* ================= MODAL: ADD / EDIT PAYMENT QR ================= */}
       {showQrModal && (
         <div className="modal-overlay" onClick={() => setShowQrModal(false)}>
-          <div className="modal-card anim-scale-in" onClick={e => e.stopPropagation()} style={{ maxWidth: 480 }}>
+          <div className="modal-card anim-scale-in" onClick={e => e.stopPropagation()} style={{ maxWidth: 480, maxHeight: 'min(90vh, 720px)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
             <div className="modal-hd">
               <div>
                 <h3 className="modal-title font-display">{qrForm.id ? 'Edit Payment QR' : 'Upload Outlet Payment QR'}</h3>
                 <div className="modal-sub">Enable direct student UPI payments for {restaurant.name}</div>
               </div>
-              <button className="modal-close" onClick={() => setShowQrModal(false)}>
+              <button type="button" className="modal-close" onClick={() => setShowQrModal(false)}>
                 <X size={16} />
               </button>
             </div>
 
-            <form onSubmit={handleSaveQr}>
-              <div className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <form onSubmit={handleSaveQr} style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, overflow: 'hidden', margin: 0 }}>
+              <div className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: 14, overflowY: 'auto', flex: 1, minHeight: 0 }}>
                 {/* QR Code File Upload & Visual Preview */}
                 <div>
                   <label className="form-label">QR Code Image</label>
@@ -1916,19 +2165,19 @@ export default function RestaurantAdmin() {
       {/* ================= MODAL: CREATE OFFER ================= */}
       {showOfferModal && (
         <div className="modal-overlay" onClick={() => setShowOfferModal(false)}>
-          <div className="modal-card anim-scale-in" onClick={e => e.stopPropagation()} style={{ maxWidth: 480 }}>
+          <div className="modal-card anim-scale-in" onClick={e => e.stopPropagation()} style={{ maxWidth: 480, maxHeight: 'min(90vh, 720px)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
             <div className="modal-hd">
               <div>
                 <h3 className="modal-title font-display">Create Promotional Offer</h3>
                 <div className="modal-sub">Launch targeted student discount for {restaurant.name}</div>
               </div>
-              <button className="modal-close" onClick={() => setShowOfferModal(false)}>
+              <button type="button" className="modal-close" onClick={() => setShowOfferModal(false)}>
                 <X size={16} />
               </button>
             </div>
 
-            <form onSubmit={handleAddOffer}>
-              <div className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <form onSubmit={handleAddOffer} style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, overflow: 'hidden', margin: 0 }}>
+              <div className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: 14, overflowY: 'auto', flex: 1, minHeight: 0 }}>
                 <div>
                   <label className="form-label">Offer Title *</label>
                   <input
@@ -2015,19 +2264,19 @@ export default function RestaurantAdmin() {
       {/* ================= MODAL: ADD STAFF ================= */}
       {showStaffModal && (
         <div className="modal-overlay" onClick={() => setShowStaffModal(false)}>
-          <div className="modal-card anim-scale-in" onClick={e => e.stopPropagation()} style={{ maxWidth: 460 }}>
+          <div className="modal-card anim-scale-in" onClick={e => e.stopPropagation()} style={{ maxWidth: 460, maxHeight: 'min(90vh, 720px)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
             <div className="modal-hd">
               <div>
                 <h3 className="modal-title font-display">Assign Staff Member</h3>
                 <div className="modal-sub">Add team member to {restaurant.name}</div>
               </div>
-              <button className="modal-close" onClick={() => setShowStaffModal(false)}>
+              <button type="button" className="modal-close" onClick={() => setShowStaffModal(false)}>
                 <X size={16} />
               </button>
             </div>
 
-            <form onSubmit={handleAddStaff}>
-              <div className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <form onSubmit={handleAddStaff} style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, overflow: 'hidden', margin: 0 }}>
+              <div className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: 14, overflowY: 'auto', flex: 1, minHeight: 0 }}>
                 <div>
                   <label className="form-label">Full Name *</label>
                   <input

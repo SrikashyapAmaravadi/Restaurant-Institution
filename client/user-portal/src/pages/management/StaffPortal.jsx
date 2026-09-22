@@ -126,150 +126,152 @@ export default function StaffPortal() {
   return (
     <div className="page-pad">
       {/* Front Desk Terminal Header */}
-      <div className="anim-fade-up dashboard-hero-banner">
+      <div className="anim-fade-up dashboard-hero-banner" style={{
+        padding: '24px 28px',
+        borderRadius: 20,
+        background: 'linear-gradient(135deg, #1E293B 0%, #0F172A 100%)',
+        border: '1px solid rgba(255, 255, 255, 0.12)',
+        marginBottom: 24,
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        flexWrap: 'wrap',
+        gap: 18,
+        boxShadow: '0 4px 20px rgba(15, 23, 42, 0.08)'
+      }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-            <span className="badge badge-info">Front Desk Host Terminal</span>
-            <span style={{ fontSize: 12, color: 'var(--t3)' }}>Live Service Queue &amp; Table Management</span>
+            <span style={{
+              background: 'rgba(255, 255, 255, 0.12)',
+              color: '#FFFFFF',
+              border: '1px solid rgba(255, 255, 255, 0.25)',
+              padding: '3px 10px',
+              borderRadius: 99,
+              fontSize: 11,
+              fontWeight: 800,
+              letterSpacing: '0.04em',
+              textTransform: 'uppercase'
+            }}>
+              Front Desk Host Terminal
+            </span>
+            <span style={{ fontSize: 12, color: 'rgba(255, 255, 255, 0.7)' }}>Live Service Queue &amp; Table Management</span>
           </div>
-          <h2 className="font-display" style={{ fontSize: '1.7rem', fontWeight: 800, color: '#fff' }}>
+          <h2 className="font-display" style={{ fontSize: '1.7rem', fontWeight: 800, color: '#FFFFFF', margin: 0 }}>
             {user?.restaurantName || 'Campus Partner Venue'} · Floor &amp; Service Desk
           </h2>
-          <div style={{ fontSize: 12.5, color: 'var(--t2)' }}>
+          <div style={{ fontSize: 12.5, color: 'rgba(255, 255, 255, 0.75)', marginTop: 4 }}>
             Service: Lunch &amp; Dinner Shifts · Bennett University Partner Operations
           </div>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
           <div style={{ textAlign: 'right' }}>
-            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.75)', textTransform: 'uppercase', fontWeight: 700 }}>Active Diners</div>
-            <div className="font-display" style={{ fontSize: '1.6rem', fontWeight: 800, color: '#84C853' }}>
+            <div style={{ fontSize: 11, color: 'rgba(255, 255, 255, 0.75)', textTransform: 'uppercase', fontWeight: 700 }}>Active Diners</div>
+            <div className="font-display" style={{ fontSize: '1.6rem', fontWeight: 800, color: '#FFFFFF' }}>
               {seatedCount} Parties
             </div>
           </div>
           <button
-            className="btn-accent"
+            type="button"
+            className="btn-action-dishes"
             onClick={() => setShowWalkinModal(true)}
             style={{
-              padding: '10px 20px',
-              minHeight: 42,
-              borderRadius: 12,
-              display: 'inline-flex',
-              alignItems: 'center',
+              background: '#FFFFFF',
+              color: '#0F172A',
+              border: '1.5px solid #FFFFFF',
+              padding: '12px 24px',
+              borderRadius: 99,
+              fontWeight: 800,
+              fontSize: '13px',
+              boxShadow: '0 4px 18px rgba(0, 0, 0, 0.25)',
               gap: 8,
-              fontWeight: 700,
-              boxSizing: 'border-box'
+              transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)'
             }}
           >
-            <Plus size={16} /> Check-In Walk-In Guest
+            <Plus size={16} strokeWidth={2.5} /> Check-In Walk-In Guest
           </button>
         </div>
       </div>
 
-      {/* Front Desk Live Pulse Overview */}
-      <div className="anim-fade-up delay-1 dashboard-pulse-grid" style={{ marginBottom: 24 }}>
+      {/* Front Desk Live Pulse Overview — Guaranteed Horizontal Row */}
+      <div className="anim-fade-up delay-1 dashboard-pulse-grid" style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(3, 1fr)',
+        gap: 16,
+        marginBottom: 24,
+        width: '100%',
+        boxSizing: 'border-box'
+      }}>
         <div className="dashboard-pulse-card">
-          <div style={{ width: 44, height: 44, borderRadius: 'var(--r-sm)', background: '#FEF3C7', color: '#D97706', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Clock size={22} />
+          <div style={{ width: 44, height: 44, borderRadius: 12, background: '#F8FAFC', color: '#0F172A', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <Clock size={20} />
           </div>
           <div>
-            <div style={{ fontSize: 11.5, color: 'var(--t4)', textTransform: 'uppercase', fontWeight: 700 }}>Awaiting Check-In</div>
-            <div className="font-display" style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--t1)' }}>{pendingCount}</div>
+            <div style={{ fontSize: 11, color: '#64748B', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.04em' }}>Awaiting Check-In</div>
+            <div className="font-display" style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0F172A' }}>{pendingCount}</div>
           </div>
         </div>
 
         <div className="dashboard-pulse-card">
-          <div style={{ width: 44, height: 44, borderRadius: 'var(--r-sm)', background: 'var(--bg-subtle)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Utensils size={22} />
+          <div style={{ width: 44, height: 44, borderRadius: 12, background: '#0F172A', color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <Utensils size={20} />
           </div>
           <div>
-            <div style={{ fontSize: 11.5, color: 'var(--t4)', textTransform: 'uppercase', fontWeight: 700 }}>Currently Dining</div>
-            <div className="font-display" style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--t1)' }}>{seatedCount}</div>
+            <div style={{ fontSize: 11, color: '#64748B', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.04em' }}>Currently Dining</div>
+            <div className="font-display" style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0F172A' }}>{seatedCount}</div>
           </div>
         </div>
 
         <div className="dashboard-pulse-card">
-          <div style={{ width: 44, height: 44, borderRadius: 'var(--r-sm)', background: '#EFF6FF', color: '#2563EB', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <CheckCircle2 size={22} />
+          <div style={{ width: 44, height: 44, borderRadius: 12, background: '#F8FAFC', color: '#0F172A', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <CheckCircle2 size={20} />
           </div>
           <div>
-            <div style={{ fontSize: 11.5, color: 'var(--t4)', textTransform: 'uppercase', fontWeight: 700 }}>Settled &amp; Paid</div>
-            <div className="font-display" style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--t1)' }}>{completedCount}</div>
+            <div style={{ fontSize: 11, color: '#64748B', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.04em' }}>Settled &amp; Paid</div>
+            <div className="font-display" style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0F172A' }}>{completedCount}</div>
           </div>
         </div>
       </div>
 
       {/* Filter Tabs & Quick Search */}
       <div className="anim-fade-up delay-2" style={{ display: 'flex', flexDirection: 'column', gap: 14, marginBottom: 18 }}>
-        <div className="tabs-scroll-x">
-          <button
-            className={`btn btn-sm ${activeFilter === 'ALL' ? 'btn-primary' : 'btn-outline'}`}
-            style={{
-              flexShrink: 0,
-              padding: '9px 18px',
-              minHeight: 38,
-              borderRadius: 10,
-              fontWeight: 600,
-              fontSize: 13,
-              boxSizing: 'border-box'
-            }}
-            onClick={() => setActiveFilter('ALL')}
-          >
-            All Reservations ({reservations.length})
-          </button>
-          <button
-            className={`btn btn-sm ${activeFilter === 'PENDING_CHECKIN' ? 'btn-primary' : 'btn-outline'}`}
-            style={{
-              flexShrink: 0,
-              padding: '9px 18px',
-              minHeight: 38,
-              borderRadius: 10,
-              fontWeight: 600,
-              fontSize: 13,
-              boxSizing: 'border-box'
-            }}
-            onClick={() => setActiveFilter('PENDING_CHECKIN')}
-          >
-            Awaiting Check-In ({pendingCount})
-          </button>
-          <button
-            className={`btn btn-sm ${activeFilter === 'SEATED' ? 'btn-primary' : 'btn-outline'}`}
-            style={{
-              flexShrink: 0,
-              padding: '9px 18px',
-              minHeight: 38,
-              borderRadius: 10,
-              fontWeight: 600,
-              fontSize: 13,
-              boxSizing: 'border-box'
-            }}
-            onClick={() => setActiveFilter('SEATED')}
-          >
-            Seated Diners ({seatedCount})
-          </button>
-          <button
-            className={`btn btn-sm ${activeFilter === 'COMPLETED' ? 'btn-primary' : 'btn-outline'}`}
-            style={{
-              flexShrink: 0,
-              padding: '9px 18px',
-              minHeight: 38,
-              borderRadius: 10,
-              fontWeight: 600,
-              fontSize: 13,
-              boxSizing: 'border-box'
-            }}
-            onClick={() => setActiveFilter('COMPLETED')}
-          >
-            Completed Sessions ({completedCount})
-          </button>
+        <div className="tabs-scroll-x" style={{ gap: 8 }}>
+          {[
+            { key: 'ALL', label: `All Reservations (${reservations.length})` },
+            { key: 'PENDING_CHECKIN', label: `Awaiting Check-In (${pendingCount})` },
+            { key: 'SEATED', label: `Seated Diners (${seatedCount})` },
+            { key: 'COMPLETED', label: `Completed Sessions (${completedCount})` }
+          ].map(tab => (
+            <button
+              key={tab.key}
+              type="button"
+              onClick={() => setActiveFilter(tab.key)}
+              style={{
+                padding: '8px 18px',
+                borderRadius: 99,
+                fontSize: 12.5,
+                fontWeight: 700,
+                cursor: 'pointer',
+                border: '1.5px solid',
+                transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+                background: activeFilter === tab.key ? '#0F172A' : '#FFFFFF',
+                color: activeFilter === tab.key ? '#FFFFFF' : '#475569',
+                borderColor: activeFilter === tab.key ? '#0F172A' : '#E2E8F0',
+                boxShadow: activeFilter === tab.key ? '0 2px 8px rgba(15, 23, 42, 0.15)' : 'none',
+                whiteSpace: 'nowrap'
+              }}
+            >
+              {tab.label}
+            </button>
+          ))}
         </div>
 
         <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
           <div className="form-input-wrap" style={{ flex: 1, minWidth: 260 }}>
-            <Search size={16} className="form-input-icon text-sky-400" />
+            <Search size={16} className="form-input-icon text-slate-400" />
             <input
               className="form-input"
-              style={{ padding: '13px 18px 13px 44px' }}
+              style={{ padding: '12px 18px 12px 42px', fontSize: 13 }}
               placeholder="Search booking code (e.g. DB-4821), guest name, or table..."
               value={searchCode}
               onChange={e => setSearchCode(e.target.value)}
@@ -281,7 +283,7 @@ export default function StaffPortal() {
       {/* Live Reservation & Dining Queue Cards */}
       <div className="anim-fade-up delay-3" style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
         {filtered.length === 0 ? (
-          <div className="card" style={{ padding: 40, textAlign: 'center', color: 'var(--t3)' }}>
+          <div className="card" style={{ padding: 40, textAlign: 'center', color: '#64748B' }}>
             No reservations found matching the current search or filter.
           </div>
         ) : (
@@ -307,10 +309,10 @@ export default function StaffPortal() {
                   flexWrap: 'wrap',
                   gap: 18,
                   borderLeft: isSeated
-                    ? '4px solid #10B981'
+                    ? '4px solid #0F172A'
                     : isCompleted
-                    ? '4px solid #4F46E5'
-                    : '4px solid var(--accent)'
+                    ? '4px solid #64748B'
+                    : '4px solid #CBD5E1'
                 }}
               >
                 {/* Left: Party badge & Guest info */}
@@ -318,20 +320,18 @@ export default function StaffPortal() {
                   <div style={{
                     width: 52,
                     height: 52,
-                    borderRadius: 'var(--r-sm)',
+                    borderRadius: 14,
                     background: isSeated
-                      ? 'var(--bg-subtle)'
-                      : isCompleted
-                      ? '#EFF6FF'
-                      : '#FEF3C7',
-                    border: '1px solid var(--border)',
+                      ? '#0F172A'
+                      : '#F8FAFC',
+                    border: '1px solid #E2E8F0',
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
                     fontWeight: 800,
                     fontSize: 13,
-                    color: isSeated ? 'var(--primary)' : isCompleted ? '#2563EB' : '#D97706'
+                    color: isSeated ? '#FFFFFF' : '#0F172A'
                   }}>
                     <Users size={18} />
                     <span style={{ fontSize: 10, fontWeight: 700 }}>{item.guests}P</span>
@@ -339,27 +339,38 @@ export default function StaffPortal() {
 
                   <div style={{ minWidth: 0, flex: 1 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4, flexWrap: 'wrap' }}>
-                      <span style={{ fontSize: 15, fontWeight: 800, color: 'var(--t1)' }}>
+                      <span style={{ fontSize: 15, fontWeight: 800, color: '#0F172A' }}>
                         {item.guestName || item.name || 'Student Diner'}
                       </span>
-                      <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--primary)', letterSpacing: '0.05em' }}>
+                      <span style={{ fontSize: 12, fontWeight: 700, color: '#64748B', letterSpacing: '0.05em' }}>
                         {item.id}
                       </span>
-                      {isConfirmed && <span className="badge badge-warning">Awaiting Check-In</span>}
-                      {isSeated && <span className="badge badge-success">● Currently Dining</span>}
+                      {isConfirmed && (
+                        <span className="status-pill status-pill-confirmed">
+                          <span className="status-pill-dot" />
+                          Awaiting Check-In
+                        </span>
+                      )}
+                      {isSeated && (
+                        <span className="status-pill status-pill-seated">
+                          <span className="status-pill-dot" />
+                          Currently Dining
+                        </span>
+                      )}
                       {isCompleted && (
-                        <span className="badge badge-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-                          <Check size={11} /> Completed &amp; Paid
+                        <span className="status-pill status-pill-completed">
+                          <span className="status-pill-dot" />
+                          Settled &amp; Paid
                         </span>
                       )}
                     </div>
 
-                    <div style={{ fontSize: 12.5, color: 'var(--t3)', display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+                    <div style={{ fontSize: 12.5, color: '#64748B', display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
                       <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><Clock size={13} /> {item.time}</span>
                       <span>·</span>
                       <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><Users size={13} /> {item.guests} Diners</span>
                       <span>·</span>
-                      <span style={{ color: 'var(--primary)' }}>{item.guestEmail || 'Student'}</span>
+                      <span style={{ color: '#0F172A', fontWeight: 600 }}>{item.guestEmail || 'Student'}</span>
                       <span>·</span>
                       <span>{item.specialRequest || 'Dining Reservation'}</span>
                     </div>
@@ -367,7 +378,7 @@ export default function StaffPortal() {
                     {/* Order summary pill if items exist */}
                     {item.orders && item.orders.length > 0 && (
                       <div style={{ marginTop: 8, display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                        <span style={{ fontSize: 11, color: 'var(--t4)', fontWeight: 700, textTransform: 'uppercase' }}>
+                        <span style={{ fontSize: 11, color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>
                           Orders ({item.orders.length}):
                         </span>
                         {item.orders.slice(0, 3).map((o, i) => (
@@ -376,9 +387,9 @@ export default function StaffPortal() {
                           </span>
                         ))}
                         {item.orders.length > 3 && (
-                          <span style={{ fontSize: 11, color: 'var(--t4)' }}>+{item.orders.length - 3} more</span>
+                          <span style={{ fontSize: 11, color: '#94A3B8' }}>+{item.orders.length - 3} more</span>
                         )}
-                        <span style={{ fontSize: 12, fontWeight: 800, color: 'var(--primary)', marginLeft: 4 }}>
+                        <span style={{ fontSize: 12, fontWeight: 800, color: '#0F172A', marginLeft: 4 }}>
                           Est. Bill: ₹{netPayable}
                         </span>
                       </div>
@@ -386,72 +397,55 @@ export default function StaffPortal() {
                   </div>
                 </div>
 
-                {/* Right: Staff Action Buttons */}
+                {/* Right: Staff Action Buttons — Clean Monochrome */}
                 <div className="mobile-full-btn" style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
                   {/* STAGE 1: Check in guest */}
                   {isConfirmed && (
                     <button
-                      className="btn-primary"
+                      type="button"
+                      className="btn-action-admit"
                       onClick={() => handleCheckIn(item.id)}
-                      style={{
-                        padding: '9px 18px',
-                        minHeight: 38,
-                        borderRadius: 10,
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: 6,
-                        fontWeight: 600,
-                        fontSize: 13,
-                        boxSizing: 'border-box'
-                      }}
                     >
-                      <UserCheck size={16} /> 1-Click Check-In
+                      <UserCheck size={14} />
+                      <span>1-Click Check-In</span>
                     </button>
                   )}
 
                   {/* STAGE 2: Seated -> Settle Bill */}
                   {isSeated && (
-                    <button
-                      className="btn-accent"
-                      onClick={() => setPaymentModalBooking(item)}
-                      style={{
-                        padding: '9px 18px',
-                        minHeight: 38,
-                        borderRadius: 10,
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: 6,
-                        fontWeight: 700,
-                        fontSize: 13,
-                        boxSizing: 'border-box'
-                      }}
-                    >
-                      <Receipt size={16} /> Settle Bill (₹{netPayable})
-                    </button>
+                    <>
+                      <button
+                        type="button"
+                        className="btn-action-dishes"
+                        onClick={() => setSelectedTableForOrder(item)}
+                      >
+                        <Utensils size={14} />
+                        <span>Manage Tab</span>
+                      </button>
+                      <button
+                        type="button"
+                        className="btn-action-settle"
+                        onClick={() => setPaymentModalBooking(item)}
+                      >
+                        <Receipt size={14} />
+                        <span>Settle Bill (₹{netPayable})</span>
+                      </button>
+                    </>
                   )}
 
                   {/* STAGE 3: Completed -> View Receipt */}
                   {isCompleted && (
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <span className="badge badge-neutral" style={{ padding: '6px 12px', fontSize: 12 }}>
-                        Paid via {item.payment?.method || 'UPI'} (₹{item.payment?.amount || netPayable})
+                      <span className="status-pill status-pill-completed">
+                        Paid via {item.payment?.method || 'UPI'}
                       </span>
                       <button
-                        className="btn-secondary"
-                        style={{
-                          padding: '8px 16px',
-                          minHeight: 36,
-                          borderRadius: 10,
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: 6,
-                          fontWeight: 600,
-                          fontSize: 12.5,
-                          boxSizing: 'border-box'
-                        }}
+                        type="button"
+                        className="btn-action-dishes"
                         onClick={() => setPaymentModalBooking(item)}
                       >
-                        <Receipt size={13} /> View Invoice
+                        <Receipt size={13} />
+                        <span>View Invoice</span>
                       </button>
                     </div>
                   )}
