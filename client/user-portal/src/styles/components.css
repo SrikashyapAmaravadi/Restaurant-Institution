@@ -1153,4 +1153,115 @@ textarea.form-textarea {
   box-shadow: 0 2px 8px rgba(15, 23, 42, 0.2);
 }
 
+/* ── District Executive Search Bar & Filter Controls ────────────────────────── */
+.district-discovery-search-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.district-discovery-search-box {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  height: 48px;
+  padding: 0 16px 0 20px;
+  background: #FFFFFF;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 9999px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+}
+
+.district-discovery-search-box:hover {
+  border-color: #CBD5E1;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.07);
+}
+
+.district-discovery-search-box:focus-within {
+  border-color: #0F172A;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.08), 0 0 0 3px rgba(15, 23, 42, 0.06);
+}
+
+.district-discovery-search-input {
+  flex: 1;
+  border: none !important;
+  outline: none !important;
+  background: transparent !important;
+  font-size: 14.5px !important;
+  font-weight: 500 !important;
+  color: #0F172A !important;
+  font-family: inherit !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  height: 100% !important;
+  min-width: 0;
+}
+
+.district-discovery-search-input::placeholder {
+  color: #94A3B8 !important;
+  font-weight: 450 !important;
+}
+
+.district-discovery-search-clear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: none;
+  background: #F1F5F9;
+  color: #64748B;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.district-discovery-search-clear:hover {
+  background: #E2E8F0;
+  color: #0F172A;
+}
+
+.district-discovery-filter-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 20px;
+  height: 48px;
+  border-radius: 9999px;
+  background: #FFFFFF;
+  border: 1.5px solid #E2E8F0;
+  color: #0F172A;
+  font-size: 13px;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+}
+
+.district-discovery-filter-btn:hover {
+  background: #F8FAFC;
+  border-color: #CBD5E1;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.07);
+  transform: translateY(-1px);
+}
+
+.district-discovery-filter-badge {
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 800;
+  background: #0F172A;
+  color: #FFFFFF;
+  line-height: 1.25;
+}
+
+
 

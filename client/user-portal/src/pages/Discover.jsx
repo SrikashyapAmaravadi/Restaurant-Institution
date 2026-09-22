@@ -245,22 +245,25 @@ export default function Discover() {
           </div>
         </div>
 
-        {/* Search Bar & Mobile Filter Trigger */}
-        <div className="flex items-center gap-2.5">
-          <div className="relative flex-1 flex items-center">
-            <Search size={16} className="absolute left-3.5 text-slate-400 pointer-events-none" />
+        {/* District Executive Search Bar & Filter Modal Trigger */}
+        <div className="district-discovery-search-container">
+          <div className="district-discovery-search-box">
+            <Search size={18} className="text-slate-400 shrink-0" />
             <input
-              className="w-full pl-10 pr-9 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 outline-none transition-all focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10 shadow-xs"
+              type="text"
+              className="district-discovery-search-input"
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Search by restaurant name, cuisine, or popular dish..."
             />
             {search && (
               <button
+                type="button"
                 onClick={() => setSearch('')}
-                className="absolute right-3 text-slate-400 hover:text-slate-600 cursor-pointer"
+                className="district-discovery-search-clear"
+                title="Clear search"
               >
-                <X size={15} />
+                <X size={14} />
               </button>
             )}
           </div>
@@ -268,29 +271,13 @@ export default function Discover() {
           {/* Filter Modal Trigger */}
           <button
             type="button"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 7,
-              padding: '10px 18px',
-              minHeight: 42,
-              borderRadius: 12,
-              background: '#FFFFFF',
-              border: '1.5px solid #E2E8F0',
-              color: '#0F172A',
-              fontSize: 13,
-              fontWeight: 700,
-              boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
-              cursor: 'pointer',
-              flexShrink: 0,
-              transition: 'all 0.2s ease'
-            }}
+            className="district-discovery-filter-btn"
             onClick={() => setShowMobileFilters(true)}
           >
-            <Filter size={14} className="text-slate-700" />
+            <Filter size={15} className="text-slate-800 shrink-0" />
             <span>Filters</span>
             {activeFiltersCount > 0 && (
-              <span style={{ marginLeft: 4, padding: '2px 8px', borderRadius: 99, fontSize: 10.5, fontWeight: 800, background: '#0F172A', color: '#FFFFFF' }}>
+              <span className="district-discovery-filter-badge">
                 {activeFiltersCount}
               </span>
             )}
