@@ -526,10 +526,9 @@ export default function RestaurantDetail() {
               {/* Badges Row */}
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 12 }}>
                 <span style={{
-                  background: 'rgba(255, 255, 255, 0.16)',
-                  backdropFilter: 'blur(8px)',
-                  border: '1px solid rgba(255, 255, 255, 0.25)',
-                  color: '#FFFFFF',
+                  background: '#064E3B',
+                  border: '1px solid rgba(167, 243, 208, 0.4)',
+                  color: '#ECFDF5',
                   fontSize: 11,
                   fontWeight: 700,
                   padding: '3px 10px',
@@ -538,12 +537,11 @@ export default function RestaurantDetail() {
                   alignItems: 'center',
                   gap: 5
                 }}>
-                  <GraduationCap size={13} className="text-emerald-400" /> Bennett Verified Partner
+                  <GraduationCap size={13} /> Bennett Verified Partner
                 </span>
 
                 <span style={{
-                  background: restaurant.isOpen ? 'rgba(5, 150, 105, 0.9)' : 'rgba(220, 38, 38, 0.9)',
-                  backdropFilter: 'blur(8px)',
+                  background: restaurant.isOpen ? 'rgba(16, 185, 129, 0.9)' : 'rgba(239, 68, 68, 0.9)',
                   color: '#FFFFFF',
                   fontSize: 11,
                   fontWeight: 700,
@@ -558,8 +556,7 @@ export default function RestaurantDetail() {
 
                 {restaurant.hasOffer && (
                   <span style={{
-                    background: 'rgba(217, 119, 6, 0.9)',
-                    backdropFilter: 'blur(8px)',
+                    background: '#D97706',
                     color: '#FFFFFF',
                     fontSize: 11,
                     fontWeight: 700,
@@ -577,7 +574,7 @@ export default function RestaurantDetail() {
                   <span
                     key={t}
                     style={{
-                      background: 'rgba(255, 255, 255, 0.15)',
+                      background: 'rgba(255, 255, 255, 0.2)',
                       backdropFilter: 'blur(8px)',
                       color: '#FFFFFF',
                       fontSize: 11,
@@ -628,18 +625,18 @@ export default function RestaurantDetail() {
                 className="btn btn-primary btn-lg"
                 onClick={() => setShowBookingModal(true)}
                 style={{
-                  borderRadius: 12,
+                  borderRadius: 14,
                   padding: '13px 28px',
                   fontSize: 14.5,
                   fontWeight: 800,
-                  boxShadow: '0 8px 24px rgba(255, 82, 0, 0.35)',
+                  boxShadow: '0 8px 20px rgba(21, 128, 61, 0.4)',
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: 8,
                   minHeight: 48
                 }}
               >
-                <Sparkles size={18} /> Reserve Table Pass
+                <Sparkles size={18} /> Book Table Pass
               </button>
             </div>
           </div>
@@ -987,8 +984,8 @@ export default function RestaurantDetail() {
                             padding: '7px 14px',
                             fontSize: 12,
                             fontWeight: 700,
-                            borderColor: '#FF5200',
-                            color: '#FF5200',
+                            borderColor: '#15803D',
+                            color: '#15803D',
                             minHeight: 32
                           }}
                         >
@@ -1364,7 +1361,7 @@ export default function RestaurantDetail() {
         <div className="booking-rail-card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
             <div>
-              <span style={{ fontSize: 11, fontWeight: 700, color: '#FF5200', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <span style={{ fontSize: 11, fontWeight: 700, color: '#15803D', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Instant Seating
               </span>
               <h3 className="font-display" style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--t1)', margin: '2px 0 0' }}>
@@ -1372,9 +1369,8 @@ export default function RestaurantDetail() {
               </h3>
             </div>
             <span style={{
-              background: '#FFF5EE',
-              color: '#FF5200',
-              border: '1px solid #FFD8CC',
+              background: '#ECFDF5',
+              color: '#065F46',
               fontSize: 11,
               fontWeight: 800,
               padding: '3px 8px',
@@ -1409,7 +1405,7 @@ export default function RestaurantDetail() {
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--t2)' }}>
               <span>Campus Discount:</span>
-              <strong style={{ color: '#FF5200' }}>20% OFF Available</strong>
+              <strong style={{ color: '#15803D' }}>20% OFF Available</strong>
             </div>
           </div>
 

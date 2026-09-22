@@ -187,111 +187,73 @@ export default function Login() {
   };
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: '#FAFAFB' }}>
-      {/* Desktop Left Hero Panel (District Light Theme) */}
-      <div
-        className="mobile-hide"
-        style={{
-          flex: 1,
-          background: 'linear-gradient(135deg, #FFF1F2 0%, #F5F3FF 100%)',
-          borderRight: '1px solid #EEF0F3',
-          padding: '60px 48px',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-        }}
-      >
+    <div className="login-split-layout">
+      {/* Desktop Left Hero Panel */}
+      <div className="login-hero-panel">
         <div>
           {/* Brand Header */}
-          <div style={{ display: 'flex', flexDirection: 'column', marginBottom: 44 }}>
-            <span
-              style={{
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                fontSize: 32,
-                fontWeight: 800,
-                letterSpacing: '-0.04em',
-                color: '#000000',
-                lineHeight: 1,
-              }}
-            >
-              district
-            </span>
-            <span
-              style={{
-                fontSize: 10.5,
-                fontWeight: 800,
-                letterSpacing: '0.14em',
-                color: '#64748B',
-                textTransform: 'uppercase',
-                marginTop: 4,
-              }}
-            >
-              CAMPUS DINING · BY BENNETT
-            </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 44 }}>
+            <div style={{
+              width: 50,
+              height: 50,
+              borderRadius: 14,
+              background: 'linear-gradient(135deg, #064E3B 0%, #15803D 100%)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 8px 20px rgba(6, 78, 59, 0.4)',
+              border: '1px solid rgba(167, 243, 208, 0.3)'
+            }}>
+              <UtensilsCrossed size={24} color="#FFFFFF" />
+            </div>
+            <div>
+              <div className="font-display" style={{ fontSize: '1.6rem', fontWeight: 900, color: '#FFFFFF', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
+                Dine@Bennett
+              </div>
+              <div style={{ fontSize: 11, color: '#A7F3D0', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                Bennett University Dining Network
+              </div>
+            </div>
           </div>
 
           {/* Hero Content */}
           <div style={{ maxWidth: 480 }}>
-            <div
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 6,
-                padding: '6px 16px',
-                borderRadius: 99,
-                background: '#FFE4E6',
-                color: '#BE185D',
-                fontSize: 12.5,
-                fontWeight: 700,
-                marginBottom: 20,
-              }}
-            >
-              <Sparkles size={14} /> Official Campus Dining Network
+            <div style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              padding: '5px 14px',
+              borderRadius: 99,
+              background: 'rgba(255, 255, 255, 0.15)',
+              border: '1px solid rgba(255, 255, 255, 0.25)',
+              color: '#A7F3D0',
+              fontSize: 12,
+              fontWeight: 800,
+              marginBottom: 20
+            }}>
+              <GraduationCap size={14} /> Official Campus Dining Access
             </div>
-            <h2
-              style={{
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                fontSize: '2.4rem',
-                fontWeight: 800,
-                lineHeight: 1.15,
-                color: '#0F172A',
-                marginBottom: 16,
-                letterSpacing: '-0.03em',
-              }}
-            >
-              Campus Dining, Tables &amp; Passes—
-              <span style={{ color: '#4F46E5', fontStyle: 'italic' }}>all in one place.</span>
+            <h2 className="font-display" style={{ fontSize: '2.4rem', fontWeight: 900, lineHeight: 1.15, color: '#FFFFFF', marginBottom: 16 }}>
+              Campus Dining &amp; Table Passes, Seamlessly Connected.
             </h2>
-            <p style={{ fontSize: 14.5, color: '#475569', lineHeight: 1.6, marginBottom: 36 }}>
-              Sign in with your Bennett credentials to access guaranteed priority reservations, student dining subsidies, and instant digital QR passes.
+            <p style={{ fontSize: 14.5, color: '#D1FAE5', lineHeight: 1.6, marginBottom: 36, opacity: 0.95 }}>
+              Sign in with your university credentials or 6-digit passkey to access guaranteed priority reservations, student dining subsidies, and digital QR entry passes.
             </p>
 
             {/* Feature Bullets */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
               {[
-                { title: 'Verified Student Clearance', desc: 'Automatic 20% campus dining subsidy at participating Bennett partner outlets.' },
-                { title: 'Digital QR Entry Pass', desc: 'Instant scannable boarding ticket on your device for rapid front-desk check-in.' },
-                { title: 'Zero Queue Priority Seating', desc: 'Advance meal slot reservation with optional kitchen pre-order.' },
+                { title: 'Verified Institutional Clearance', desc: 'Automatic 20% dining discount across participating Bennett TechZone partner restaurants.' },
+                { title: 'Digital Apple Wallet Entry Pass', desc: 'Instant scannable QR ticket ready on your device for rapid front-desk host entry.' },
+                { title: 'Zero Queue Priority Seating', desc: 'Advance lunch & dinner slot reservation with optional kitchen pre-order.' }
               ].map((f, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-                  <div
-                    style={{
-                      width: 22,
-                      height: 22,
-                      borderRadius: '50%',
-                      background: '#FFE4E6',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      flexShrink: 0,
-                      marginTop: 2,
-                    }}
-                  >
-                    <CheckCircle2 size={14} color="#BE185D" />
+                  <div style={{ width: 22, height: 22, borderRadius: '50%', background: '#10B981', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 2 }}>
+                    <CheckCircle2 size={13} color="#064E3B" />
                   </div>
                   <div>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: '#0F172A' }}>{f.title}</div>
-                    <div style={{ fontSize: 12.5, color: '#64748B', marginTop: 2 }}>{f.desc}</div>
+                    <div style={{ fontSize: 14, fontWeight: 800, color: '#FFFFFF' }}>{f.title}</div>
+                    <div style={{ fontSize: 12.5, color: '#A7F3D0', marginTop: 2 }}>{f.desc}</div>
                   </div>
                 </div>
               ))}
@@ -300,55 +262,63 @@ export default function Login() {
         </div>
 
         {/* Hero Footer */}
-        <div style={{ fontSize: 12, color: '#94A3B8', borderTop: '1px solid #E2E8F0', paddingTop: 20, marginTop: 40 }}>
-          Bennett University · Official Institutional Dining System
+        <div style={{ fontSize: 11.5, color: '#A7F3D0', borderTop: '1px solid rgba(255,255,255,0.15)', paddingTop: 20, marginTop: 40, opacity: 0.9 }}>
+          Bennett University · TechZone II, Greater Noida · Official Partner Dining System
         </div>
       </div>
 
       {/* Right Side: Interactive Form Container */}
-      <div
-        style={{
-          flex: 1,
+      <div style={{
+        flex: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '32px 20px',
+        backgroundColor: 'var(--bg-main)'
+      }}>
+        {/* Mobile Brand Header */}
+        <div style={{
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          justifyContent: 'center',
-          padding: '32px 20px',
-          background: '#FFFFFF',
-        }}
-      >
-        {/* Mobile Brand Header */}
-        <div
-          style={{
+          gap: 8,
+          marginBottom: 20,
+          textAlign: 'center'
+        }} className="md:hidden">
+          <div style={{
+            width: 44,
+            height: 44,
+            borderRadius: 12,
+            background: 'linear-gradient(135deg, #064E3B 0%, #15803D 100%)',
             display: 'flex',
-            flexDirection: 'column',
             alignItems: 'center',
-            marginBottom: 24,
-            textAlign: 'center',
-          }}
-          className="md:hidden"
-        >
-          <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 26, fontWeight: 800, color: '#000' }}>
-            district
-          </span>
-          <span style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.12em', color: '#64748B' }}>
-            CAMPUS DINING
-          </span>
+            justifyContent: 'center',
+            boxShadow: '0 4px 14px rgba(21, 128, 61, 0.25)',
+            color: '#FFFFFF'
+          }}>
+            <UtensilsCrossed size={22} />
+          </div>
+          <div>
+            <div className="font-display" style={{ fontSize: '1.4rem', fontWeight: 900, color: 'var(--t1)', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
+              Dine@Bennett
+            </div>
+            <div style={{ fontSize: 11, color: 'var(--primary)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              Bennett University Dining Network
+            </div>
+          </div>
         </div>
 
         {/* Form Card */}
-        <div
-          style={{
-            width: '100%',
-            maxWidth: 440,
-            padding: 'clamp(22px, 5vw, 36px) clamp(16px, 4vw, 30px)',
-            background: '#FFFFFF',
-            border: '1px solid #E2E8F0',
-            borderRadius: 20,
-            boxShadow: '0 8px 30px rgba(0, 0, 0, 0.05)',
-          }}
-        >
-
+        <div className="card anim-scale-in" style={{
+          width: '100%',
+          maxWidth: 460,
+          padding: 'clamp(22px, 5vw, 32px) clamp(16px, 4vw, 28px)',
+          background: '#FFFFFF',
+          border: '1px solid var(--border)',
+          borderRadius: 'var(--r-lg)',
+          boxShadow: 'var(--shadow-md)'
+        }}>
           {/* Mode Switcher Tabs */}
           <div style={{
             display: 'flex',

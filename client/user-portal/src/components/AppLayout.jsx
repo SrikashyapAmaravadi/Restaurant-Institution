@@ -14,9 +14,12 @@ import {
   ChefHat,
   ConciergeBell,
   Building2,
+  Menu,
   X,
   LogOut,
+  Sparkles,
   ShieldCheck,
+  UtensilsCrossed
 } from 'lucide-react';
 
 export default function AppLayout() {
@@ -38,50 +41,63 @@ export default function AppLayout() {
   const safeReservations = Array.isArray(reservations) ? reservations : [];
   const safeNotifications = Array.isArray(notifications) ? notifications : [];
 
+  // Dynamic badge counts from real Supabase DB
   const activeBookingsCount = safeReservations.filter(b => b?.status === 'CONFIRMED' || b?.status === 'PENDING').length;
   const unreadNotifsCount = safeNotifications.filter(n => !n?.read).length;
 
+  // Scroll listener for dynamic hide-on-scroll
   useEffect(() => {
     const handleScroll = () => {
-      const y = window.scrollY || document.documentElement.scrollTop;
-      if (y > 60 && y > lastScrollY.current + 10) setNavVisible(false);
-      else if (y < lastScrollY.current - 8 || y < 40) setNavVisible(true);
-      lastScrollY.current = y;
+      const currentScrollY = window.scrollY || document.documentElement.scrollTop;
+      if (currentScrollY > 60 && currentScrollY > lastScrollY.current + 10) {
+        setNavVisible(false);
+      } else if (currentScrollY < lastScrollY.current - 8 || currentScrollY < 40) {
+        setNavVisible(true);
+      }
+      lastScrollY.current = currentScrollY;
     };
+
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  useEffect(() => { setMobileDrawerOpen(false); }, [location.pathname]);
+  // Close mobile drawer on route change
+  useEffect(() => {
+    setMobileDrawerOpen(false);
+  }, [location.pathname]);
 
   if (!user) return <Outlet />;
 
+  // Dynamic role-based navigation configuration - strictly scoped to user role
   const getNavItems = () => {
     switch (user?.role) {
       case 'RESTAURANT_ADMIN':
         return [
-          { to: '/management/admin', label: 'Operations', icon: ChefHat },
-          { to: '/management/staff', label: 'Host Desk', icon: ConciergeBell },
-          { to: '/profile', label: 'Profile', icon: User }
+          { to: '/management/admin', label: 'Admin Hub', icon: ChefHat },
+          { to: '/management/staff', label: 'Front Desk', icon: ConciergeBell },
+          { to: '/profile',          label: 'Profile',    icon: User }
         ];
+
       case 'RESTAURANT_STAFF':
         return [
-          { to: '/management/staff', label: 'Host Desk', icon: ConciergeBell },
-          { to: '/profile', label: 'Profile', icon: User }
+          { to: '/management/staff', label: 'Host Desk',  icon: ConciergeBell },
+          { to: '/profile',          label: 'Profile',    icon: User }
         ];
+
       case 'SUPER_ADMIN':
         return [
           { to: '/management/superadmin', label: 'Governance', icon: Building2 },
-          { to: '/profile', label: 'Profile', icon: User }
+          { to: '/profile',               label: 'Profile',    icon: User }
         ];
+
       case 'STUDENT':
       default:
         return [
-          { to: '/dashboard', label: 'Dining', icon: LayoutDashboard },
-          { to: '/discover', label: 'Outlets', icon: Compass },
-          { to: '/bookings', label: 'Passes', icon: CalendarDays, badge: activeBookingsCount },
-          { to: '/notifications', label: 'Alerts', icon: Bell, badge: unreadNotifsCount },
-          { to: '/profile', label: 'Profile', icon: User }
+          { to: '/dashboard',     label: 'Home',      icon: LayoutDashboard },
+          { to: '/discover',      label: 'Discover',  icon: Compass },
+          { to: '/bookings',      label: 'Bookings',  icon: CalendarDays, badge: activeBookingsCount },
+          { to: '/notifications', label: 'Alerts',    icon: Bell,         badge: unreadNotifsCount },
+          { to: '/profile',       label: 'Profile',   icon: User }
         ];
     }
   };
@@ -89,7 +105,8 @@ export default function AppLayout() {
   const navItems = getNavItems();
 
   return (
-    <div className="app-layout" style={{ background: '#FFFFFF', minHeight: '100vh' }}>
+    <div className="app-layout">
+      {/* Desktop Sidebar (visible on screens >= 1024px) */}
       <Sidebar />
 
       <div className="main-area">
@@ -99,80 +116,33 @@ export default function AppLayout() {
         </main>
       </div>
 
-      {/* Floating Modern Pill Dock for Mobile (100% Light Theme) */}
+      {/* Dynamic Floating Glassmorphic Mobile Bottom Dock */}
       <nav
-        className="mobile-bottom-dock"
-        style={{
-          position: 'fixed',
-          bottom: 18,
-          left: '50%',
-          transform: `translateX(-50%) translateY(${navVisible ? '0' : '100px'})`,
-          transition: 'transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.28s ease',
-          opacity: navVisible ? 1 : 0,
-          width: 'calc(100% - 32px)',
-          maxWidth: 400,
-          background: 'rgba(255, 255, 255, 0.94)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
-          borderRadius: 99,
-          padding: '6px 10px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-around',
-          boxShadow: '0 12px 32px rgba(15, 23, 42, 0.12)',
-          border: '1px solid #E2E8F0',
-          zIndex: 90,
-        }}
+        className={`mobile-bottom-nav ${!navVisible ? 'nav-hidden' : ''}`}
+        aria-label="Mobile Navigation"
       >
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = location.pathname.startsWith(item.to);
+
           return (
             <NavLink
               key={item.to}
               to={item.to}
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 2,
-                textDecoration: 'none',
-                position: 'relative',
-                padding: '6px 14px',
-                borderRadius: 99,
-                color: isActive ? '#BE185D' : '#64748B',
-                background: isActive ? '#FFE4E6' : 'transparent',
-                transition: 'all 0.18s ease',
-              }}
+              className={`mobile-nav-item ${isActive ? 'active' : ''}`}
             >
-              <div style={{ position: 'relative' }}>
-                <Icon size={19} color={isActive ? '#BE185D' : 'currentColor'} strokeWidth={isActive ? 2.4 : 1.8} />
+              {isActive && <div className="mobile-nav-active-bg" />}
+
+              <div className="mobile-nav-icon-wrap">
+                <Icon size={20} />
                 {item.badge > 0 && (
-                  <span
-                    style={{
-                      position: 'absolute',
-                      top: -4,
-                      right: -8,
-                      minWidth: 16,
-                      height: 16,
-                      padding: '0 4px',
-                      borderRadius: 8,
-                      background: '#E11D48',
-                      color: '#FFF',
-                      fontSize: 9.5,
-                      fontWeight: 700,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      lineHeight: 1,
-                    }}
-                  >
+                  <span className="mobile-nav-badge">
                     {item.badge}
                   </span>
                 )}
               </div>
-              <span style={{ fontSize: 10, fontWeight: isActive ? 700 : 500 }}>
+
+              <span className="mobile-nav-label">
                 {item.label}
               </span>
             </NavLink>
@@ -180,137 +150,72 @@ export default function AppLayout() {
         })}
       </nav>
 
-      {/* Mobile Drawer (100% Light Theme) */}
+      {/* Mobile Slide-out Drawer Sheet */}
       {mobileDrawerOpen && (
-        <div
-          className="mobile-drawer-overlay"
-          onClick={() => setMobileDrawerOpen(false)}
-          style={{
-            position: 'fixed',
-            inset: 0,
-            background: 'rgba(15, 23, 42, 0.4)',
-            backdropFilter: 'blur(4px)',
-            zIndex: 100,
-            display: 'flex',
-            justifyContent: 'flex-start',
-          }}
-        >
-          <div
-            onClick={e => e.stopPropagation()}
-            style={{
-              width: '84%',
-              maxWidth: 320,
-              height: '100%',
-              background: '#FFFFFF',
-              color: '#0F172A',
-              padding: '24px 20px',
-              display: 'flex',
-              flexDirection: 'column',
-              boxShadow: '10px 0 40px rgba(0, 0, 0, 0.1)',
-            }}
-          >
-            {/* Drawer Header */}
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                paddingBottom: 18,
-                borderBottom: '1px solid #EEF0F3',
-                marginBottom: 20,
-              }}
-            >
-              <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 22, fontWeight: 800, color: '#000' }}>
-                  district
-                </span>
-                <span style={{ fontSize: 9.5, fontWeight: 800, letterSpacing: '0.12em', color: '#64748B' }}>
-                  CAMPUS DINING
-                </span>
+        <div className="mobile-drawer-overlay" onClick={() => setMobileDrawerOpen(false)}>
+          <div className="mobile-drawer-sheet flex flex-col h-full bg-white p-5" onClick={(e) => e.stopPropagation()}>
+            <div className="flex justify-between items-center mb-5 pb-4 border-b border-slate-100">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-emerald-700 text-white flex items-center justify-center font-bold shadow-xs">
+                  <UtensilsCrossed size={18} />
+                </div>
+                <div>
+                  <div className="font-bold text-base text-slate-900 leading-tight">Dine@Bennett</div>
+                  <div className="text-[11px] font-semibold text-emerald-700 uppercase tracking-wider">Bennett University</div>
+                </div>
               </div>
               <button
-                style={{
-                  width: 34,
-                  height: 34,
-                  borderRadius: '50%',
-                  border: '1px solid #E2E8F0',
-                  background: '#F8FAFC',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer',
-                  color: '#64748B',
-                }}
+                className="w-8 h-8 rounded-lg border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-slate-100 cursor-pointer transition-colors"
                 onClick={() => setMobileDrawerOpen(false)}
+                aria-label="Close menu"
               >
                 <X size={16} />
               </button>
             </div>
 
-            {/* User Profile */}
-            <div
-              style={{
-                padding: '12px 14px',
-                borderRadius: 14,
-                background: '#F8FAFC',
-                border: '1px solid #E2E8F0',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 12,
-                marginBottom: 20,
-              }}
-            >
-              <img
-                src={user.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80'}
-                alt={user.name}
-                style={{ width: 40, height: 40, borderRadius: '50%', objectFit: 'cover' }}
-              />
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 13.5, fontWeight: 700, color: '#0F172A', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
-                  {user.name}
-                </div>
-                <div style={{ fontSize: 11, color: '#059669', display: 'flex', alignItems: 'center', gap: 4, fontWeight: 600 }}>
-                  <ShieldCheck size={12} />
-                  <span>Campus Verified</span>
+            {/* Current User Card */}
+            <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/80 mb-5">
+              <div className="flex items-center gap-3">
+                <img
+                  src={user.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80'}
+                  alt={user.name}
+                  className="w-10 h-10 rounded-full object-cover border-2 border-emerald-600/30"
+                />
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-bold text-slate-900 truncate">
+                    {user.name}
+                  </div>
+                  <div className="text-xs font-semibold text-emerald-700 truncate">
+                    {user.roleLabel?.split('(')[0] || user.role}
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Nav Links */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6, flex: 1, overflowY: 'auto' }}>
+            {/* Drawer Navigation Links */}
+            <div className="flex flex-col gap-1.5 flex-1 overflow-y-auto">
+              <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1 px-1">
+                Navigation
+              </div>
               {navItems.map((item) => {
                 const Icon = item.icon;
                 return (
                   <NavLink
                     key={item.to}
                     to={item.to}
-                    style={({ isActive }) => ({
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 12,
-                      padding: '11px 16px',
-                      borderRadius: 99,
-                      fontSize: 13.5,
-                      textDecoration: 'none',
-                      color: isActive ? '#BE185D' : '#334155',
-                      background: isActive ? '#FFE4E6' : 'transparent',
-                      fontWeight: isActive ? 700 : 500,
-                    })}
+                    className={({ isActive }) =>
+                      `flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+                        isActive
+                          ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                          : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 border border-transparent'
+                      }`
+                    }
                     onClick={() => setMobileDrawerOpen(false)}
                   >
                     <Icon size={18} />
-                    <span style={{ flex: 1 }}>{item.label}</span>
+                    <span>{item.label}</span>
                     {item.badge > 0 && (
-                      <span
-                        style={{
-                          padding: '2px 7px',
-                          borderRadius: 99,
-                          background: '#E11D48',
-                          color: '#FFF',
-                          fontSize: 10,
-                          fontWeight: 700,
-                        }}
-                      >
+                      <span className="ml-auto px-2 py-0.5 rounded-full text-xs font-bold bg-amber-500 text-white">
                         {item.badge}
                       </span>
                     )}
@@ -319,39 +224,31 @@ export default function AppLayout() {
               })}
             </div>
 
-            {/* Logout */}
-            <div style={{ borderTop: '1px solid #EEF0F3', paddingTop: 16, marginTop: 'auto' }}>
+            {/* Logout Footer */}
+            <div className="border-t border-slate-100 pt-4 mt-auto">
               <button
-                style={{
-                  width: '100%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: 8,
-                  padding: '11px 16px',
-                  borderRadius: 99,
-                  border: '1px solid #E2E8F0',
-                  background: '#FFFFFF',
-                  color: '#DC2626',
-                  fontSize: 13,
-                  fontWeight: 600,
-                  cursor: 'pointer',
+                className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl border border-red-200 text-red-600 hover:bg-red-50 text-sm font-semibold cursor-pointer transition-colors"
+                onClick={() => {
+                  logout();
+                  navigate('/login');
                 }}
-                onClick={() => { logout(); navigate('/login'); }}
               >
-                <LogOut size={16} /> Sign out
+                <LogOut size={16} /> Sign Out
               </button>
             </div>
           </div>
         </div>
       )}
 
+      {/* Global Camera Scanner Modal accessible across entire app */}
       <CameraScannerModal
         isOpen={Boolean(scannerModalOpen)}
         onClose={closeScanner}
         reservations={safeReservations}
         onScanSuccess={(code, matched) => {
-          if (matched && staffCheckInGuest) staffCheckInGuest(matched.id, matched.tableAssigned || 'T-01');
+          if (matched && staffCheckInGuest) {
+            staffCheckInGuest(matched.id, matched.tableAssigned || 'T-01');
+          }
         }}
       />
     </div>

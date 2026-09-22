@@ -87,35 +87,39 @@ export default function Bookings() {
       <div className="anim-fade-up" style={{ marginBottom: 28, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16 }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-            <h1 className="font-display" style={{ fontSize: 'clamp(1.5rem, 4vw, 2rem)', fontWeight: 800, color: '#1C1E21', margin: 0 }}>
+            <h1 className="font-display" style={{ fontSize: 'clamp(1.5rem, 4vw, 2rem)', fontWeight: 800, color: 'var(--t1)', margin: 0 }}>
               My Dining Reservations
             </h1>
             <span style={{
-              background: '#FFF5EE',
-              border: '1px solid #FFD8CC',
-              color: '#FF5200',
+              background: '#ECFDF5',
+              border: '1px solid #A7F3D0',
+              color: '#065F46',
               fontSize: 11,
               fontWeight: 700,
-              padding: '3px 10px',
+              padding: '2px 8px',
               borderRadius: 99
             }}>
               Bennett Pass Network
             </span>
           </div>
-          <p style={{ fontSize: 13.5, color: '#64748B', margin: 0 }}>
-            Manage campus partner reservations, access digital entry passes, and settle bills.
+          <p style={{ fontSize: 13.5, color: 'var(--t3)', margin: 0 }}>
+            Manage campus partner bookings, access scannable QR passes, and settle dining checks.
           </p>
         </div>
 
         <button
           type="button"
-          className="btn btn-primary btn-sm"
+          className="btn btn-outline btn-sm"
           onClick={openScanner}
           style={{
-            borderRadius: 10,
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
+            borderRadius: 12,
             fontWeight: 700,
-            padding: '9px 18px',
-            fontSize: 12.5
+            padding: '8px 16px',
+            borderColor: '#15803D',
+            color: '#15803D'
           }}
           title="Open camera to scan dining pass"
         >
@@ -133,13 +137,11 @@ export default function Bookings() {
               className={`tab-btn ${isActive ? 'active' : ''}`}
               onClick={() => setActiveTab(tab)}
               style={{
-                borderRadius: 10,
+                borderRadius: 12,
                 fontWeight: 700,
                 padding: '10px 20px',
                 minHeight: 40,
-                fontSize: 13,
-                background: isActive ? '#FF5200' : 'transparent',
-                color: isActive ? '#FFFFFF' : '#475569'
+                fontSize: 13
               }}
             >
               {tab}
@@ -150,8 +152,8 @@ export default function Bookings() {
                   fontWeight: 800,
                   padding: '2px 7px',
                   borderRadius: 99,
-                  background: isActive ? '#FFFFFF' : '#FFF5EE',
-                  color: '#FF5200'
+                  background: isActive ? '#FFFFFF' : '#ECFDF5',
+                  color: '#065F46'
                 }}>
                   {upcomingList.length}
                 </span>
@@ -164,7 +166,7 @@ export default function Bookings() {
                   padding: '2px 7px',
                   borderRadius: 99,
                   background: isActive ? '#FFFFFF' : '#F1F5F9',
-                  color: isActive ? '#FF5200' : '#475569'
+                  color: 'var(--t3)'
                 }}>
                   {pastList.length}
                 </span>
@@ -198,7 +200,7 @@ export default function Bookings() {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#F8FAFC', padding: '6px 12px', borderRadius: 99, border: '1px solid var(--border)' }}>
-          <ArrowUpDown size={13} className="text-[#FF5200]" />
+          <ArrowUpDown size={13} className="text-emerald-700" />
           <select
             style={{
               border: 'none',
@@ -302,7 +304,7 @@ export default function Bookings() {
                 {/* Details */}
                 <div style={{ flex: 1, minWidth: 'min(100%, 240px)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                    <span style={{ fontSize: 12, fontWeight: 800, color: '#0F172A', fontFamily: 'monospace', letterSpacing: '0.04em' }}>
+                    <span style={{ fontSize: 12, fontWeight: 800, color: '#15803D', fontFamily: 'monospace', letterSpacing: '0.04em' }}>
                       {b.id}
                     </span>
 
@@ -310,7 +312,7 @@ export default function Bookings() {
                       <span style={{
                         background: '#ECFDF5',
                         border: '1px solid #A7F3D0',
-                        color: '#047857',
+                        color: '#065F46',
                         fontSize: 10.5,
                         fontWeight: 800,
                         padding: '2px 8px',
@@ -319,7 +321,7 @@ export default function Bookings() {
                         alignItems: 'center',
                         gap: 3
                       }}>
-                        ● Confirmed Table Pass
+                        ● Confirmed Pass
                       </span>
                     )}
 
@@ -381,13 +383,13 @@ export default function Bookings() {
 
                   <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 14, fontSize: 12.5, color: 'var(--t2)' }}>
                     <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                      <Calendar size={13} className="text-[#FF5200]" /> {b.date}
+                      <Calendar size={13} className="text-emerald-700" /> {b.date}
                     </span>
                     <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                      <Clock size={13} className="text-[#FF5200]" /> {b.time}
+                      <Clock size={13} className="text-emerald-700" /> {b.time}
                     </span>
                     <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                      <Users size={13} className="text-[#FF5200]" /> {b.guests} Diners
+                      <Users size={13} className="text-emerald-700" /> {b.guests} Diners
                     </span>
                   </div>
 
