@@ -66,6 +66,21 @@ export default function Discover() {
   const [selectedOffer, setSelectedOffer] = useState(null);
   const [showMobileFilters, setShowMobileFilters] = useState(false);
 
+  // Close filter modal on ESC and lock body scroll
+  useEffect(() => {
+    const handleKeyDown = e => {
+      if (e.key === 'Escape') setShowMobileFilters(false);
+    };
+    if (showMobileFilters) {
+      document.addEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = 'hidden';
+    }
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = '';
+    };
+  }, [showMobileFilters]);
+
   const toggle = (arr, set, v) => set(a => (a.includes(v) ? a.filter(x => x !== v) : [...a, v]));
 
   const filtered = useMemo(() => {
@@ -448,29 +463,78 @@ export default function Discover() {
         )}
       </div>
 
-      {/* Luxury Slide-Over Filter Drawer */}
+      {/* Executive Filter Pop-up Modal (District Design System) */}
       {showMobileFilters && (
         <div
-          className="fixed inset-0 z-50 bg-slate-950/50 backdrop-blur-xs flex justify-end transition-opacity"
+          className="district-filter-overlay"
           onClick={() => setShowMobileFilters(false)}
         >
           <div
-            className="bg-white w-full max-w-md h-full shadow-2xl flex flex-col border-l border-slate-200 animate-in slide-in-from-right duration-200"
+            className="district-filter-modal"
             onClick={e => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="filter-modal-title"
           >
-            {/* Drawer Header */}
-            <div className="flex justify-between items-center p-6 border-b border-slate-100">
+            {/* Modal Header */}
+            <div className="district-filter-header">
               <div>
-                <div className="flex items-center gap-2">
-                  <SlidersHorizontal size={17} className="text-slate-900" />
-                  <h3 className="font-bold text-lg text-slate-900">Filters &amp; Preferences</h3>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+                  <div style={{
+                    width: 32,
+                    height: 32,
+                    borderRadius: 10,
+                    background: '#0F172A',
+                    color: '#FFFFFF',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}>
+                    <SlidersHorizontal size={16} />
+                  </div>
+                  <h3 id="filter-modal-title" style={{ fontSize: 17, fontWeight: 800, color: '#0F172A', margin: 0 }}>
+                    Filters &amp; Preferences
+                  </h3>
+                  {activeFiltersCount > 0 && (
+                    <span style={{
+                      padding: '2px 8px',
+                      borderRadius: 99,
+                      fontSize: 11,
+                      fontWeight: 800,
+                      background: '#F1F5F9',
+                      color: '#0F172A'
+                    }}>
+                      {activeFiltersCount} Active
+                    </span>
+                  )}
                 </div>
-                <p className="text-xs text-slate-500 mt-0.5">
+                <p style={{ fontSize: 12.5, color: '#64748B', margin: '4px 0 0', fontWeight: 500 }}>
                   Tailor your dining results near Bennett University
                 </p>
               </div>
               <button
-                className="w-9 h-9 rounded-full border border-slate-200 hover:bg-slate-100 flex items-center justify-center text-slate-500 hover:text-slate-900 cursor-pointer transition-colors"
+                type="button"
+                style={{
+                  width: 34,
+                  height: 34,
+                  borderRadius: '50%',
+                  border: '1px solid #E2E8F0',
+                  background: '#FFFFFF',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  color: '#64748B',
+                  transition: 'all 0.2s ease'
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.background = '#F1F5F9';
+                  e.currentTarget.style.color = '#0F172A';
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.background = '#FFFFFF';
+                  e.currentTarget.style.color = '#64748B';
+                }}
                 onClick={() => setShowMobileFilters(false)}
                 aria-label="Close filters"
               >
@@ -478,15 +542,15 @@ export default function Discover() {
               </button>
             </div>
 
-            {/* Drawer Scrollable Content */}
-            <div className="flex-1 overflow-y-auto p-6 space-y-6">
-              {/* Distance Slider & Presets */}
+            {/* Modal Scrollable Body */}
+            <div className="district-filter-body">
+              {/* 1. Distance Slider & Presets */}
               <div>
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                  <span style={{ fontSize: 11.5, fontWeight: 800, color: '#0F172A', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                     Radius from Campus
                   </span>
-                  <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-slate-900 text-white">
+                  <span style={{ fontSize: 11.5, fontWeight: 800, padding: '3px 10px', borderRadius: 99, background: '#0F172A', color: '#FFFFFF' }}>
                     {maxDist} km
                   </span>
                 </div>
@@ -497,53 +561,33 @@ export default function Discover() {
                   step={0.5}
                   value={maxDist}
                   onChange={e => setDist(parseFloat(e.target.value))}
-                  className="w-full accent-slate-900 h-2 bg-slate-200 rounded-lg cursor-pointer"
+                  style={{ width: '100%', accentColor: '#0F172A', height: 6, borderRadius: 6, cursor: 'pointer' }}
                 />
                 {/* Distance Presets */}
-                <div className="grid grid-cols-3 gap-2 mt-3">
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginTop: 10 }}>
                   {[
                     { label: 'Walk (1km)', val: 1 },
                     { label: 'TechZone (5km)', val: 5 },
                     { label: 'All (10km)', val: 10 }
-                  ].map(p => (
-                    <button
-                      key={p.val}
-                      type="button"
-                      onClick={() => setDist(p.val)}
-                      className={`py-1.5 px-2 rounded-lg text-xs font-semibold border transition-all cursor-pointer text-center ${
-                        maxDist === p.val
-                          ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
-                          : 'bg-white text-slate-600 border-slate-200 hover:border-slate-800'
-                      }`}
-                    >
-                      {p.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Price Category */}
-              <div>
-                <span className="block text-xs font-bold text-slate-900 uppercase tracking-wider mb-2.5">
-                  Price Tier
-                </span>
-                <div className="grid grid-cols-3 gap-2">
-                  {[
-                    { id: '₹', label: '₹ Casual' },
-                    { id: '₹₹', label: '₹₹ Mid' },
-                    { id: '₹₹₹', label: '₹₹₹ Fine' }
                   ].map(p => {
-                    const isSelected = prices.includes(p.id);
+                    const isSelected = maxDist === p.val;
                     return (
                       <button
-                        key={p.id}
+                        key={p.val}
                         type="button"
-                        onClick={() => toggle(prices, setPrices, p.id)}
-                        className={`py-2.5 px-3 rounded-xl text-xs font-bold border transition-all cursor-pointer text-center ${
-                          isSelected
-                            ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
-                            : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100 hover:border-slate-400'
-                        }`}
+                        onClick={() => setDist(p.val)}
+                        style={{
+                          padding: '7px 12px',
+                          borderRadius: 99,
+                          fontSize: 12,
+                          fontWeight: 700,
+                          cursor: 'pointer',
+                          border: isSelected ? '1.5px solid #0F172A' : '1.5px solid #E2E8F0',
+                          background: isSelected ? '#0F172A' : '#FFFFFF',
+                          color: isSelected ? '#FFFFFF' : '#475569',
+                          boxShadow: isSelected ? '0 2px 6px rgba(15, 23, 42, 0.15)' : 'none',
+                          transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)'
+                        }}
                       >
                         {p.label}
                       </button>
@@ -552,39 +596,91 @@ export default function Discover() {
                 </div>
               </div>
 
-              {/* Minimum Rating */}
-              <div>
-                <span className="block text-xs font-bold text-slate-900 uppercase tracking-wider mb-2.5">
-                  Minimum Rating
-                </span>
-                <div className="grid grid-cols-3 gap-2">
-                  {RATINGS.map(r => {
-                    const isSelected = minRating === r;
-                    return (
-                      <button
-                        key={r}
-                        type="button"
-                        onClick={() => setRating(r)}
-                        className={`py-2.5 px-3 rounded-xl text-xs font-bold border transition-all cursor-pointer text-center flex items-center justify-center gap-1 ${
-                          isSelected
-                            ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
-                            : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100 hover:border-slate-400'
-                        }`}
-                      >
-                        {r !== 'Any' && <Star size={11} className={isSelected ? 'fill-white text-white' : 'fill-slate-900 text-slate-900'} />}
-                        <span>{r}</span>
-                      </button>
-                    );
-                  })}
+              {/* 2. Side-by-Side Grid: Price Category & Minimum Rating */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16 }}>
+                {/* Price Tier */}
+                <div>
+                  <span style={{ display: 'block', fontSize: 11.5, fontWeight: 800, color: '#0F172A', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8 }}>
+                    Price Tier
+                  </span>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 6 }}>
+                    {[
+                      { id: '₹', label: '₹ Casual' },
+                      { id: '₹₹', label: '₹₹ Mid' },
+                      { id: '₹₹₹', label: '₹₹₹ Fine' }
+                    ].map(p => {
+                      const isSelected = prices.includes(p.id);
+                      return (
+                        <button
+                          key={p.id}
+                          type="button"
+                          onClick={() => toggle(prices, setPrices, p.id)}
+                          style={{
+                            padding: '8px 4px',
+                            borderRadius: 10,
+                            fontSize: 12,
+                            fontWeight: 700,
+                            cursor: 'pointer',
+                            textAlign: 'center',
+                            border: isSelected ? '1.5px solid #0F172A' : '1.5px solid #E2E8F0',
+                            background: isSelected ? '#0F172A' : '#F8FAFC',
+                            color: isSelected ? '#FFFFFF' : '#475569',
+                            boxShadow: isSelected ? '0 2px 6px rgba(15, 23, 42, 0.15)' : 'none',
+                            transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)'
+                          }}
+                        >
+                          {p.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Minimum Rating */}
+                <div>
+                  <span style={{ display: 'block', fontSize: 11.5, fontWeight: 800, color: '#0F172A', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8 }}>
+                    Minimum Rating
+                  </span>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 6 }}>
+                    {RATINGS.map(r => {
+                      const isSelected = minRating === r;
+                      return (
+                        <button
+                          key={r}
+                          type="button"
+                          onClick={() => setRating(r)}
+                          style={{
+                            padding: '8px 4px',
+                            borderRadius: 10,
+                            fontSize: 12,
+                            fontWeight: 700,
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: 4,
+                            border: isSelected ? '1.5px solid #0F172A' : '1.5px solid #E2E8F0',
+                            background: isSelected ? '#0F172A' : '#F8FAFC',
+                            color: isSelected ? '#FFFFFF' : '#475569',
+                            boxShadow: isSelected ? '0 2px 6px rgba(15, 23, 42, 0.15)' : 'none',
+                            transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)'
+                          }}
+                        >
+                          {r !== 'Any' && <Star size={11} className={isSelected ? 'fill-white text-white' : 'fill-slate-900 text-slate-900'} />}
+                          <span>{r}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
 
-              {/* Cuisines Pill Toggle (No Raw Checkboxes) */}
+              {/* 3. Cuisines & Specialties Pills */}
               <div>
-                <span className="block text-xs font-bold text-slate-900 uppercase tracking-wider mb-2.5">
+                <span style={{ display: 'block', fontSize: 11.5, fontWeight: 800, color: '#0F172A', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8 }}>
                   Cuisines &amp; Specialties
                 </span>
-                <div className="flex flex-wrap gap-2">
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                   {CUISINES.map(c => {
                     const isSelected = cuisines.includes(c);
                     return (
@@ -592,13 +688,23 @@ export default function Discover() {
                         key={c}
                         type="button"
                         onClick={() => toggle(cuisines, setCuisines, c)}
-                        className={`py-2 px-3.5 rounded-full text-xs font-semibold border transition-all cursor-pointer flex items-center gap-1.5 ${
-                          isSelected
-                            ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
-                            : 'bg-white text-slate-700 border-slate-200 hover:border-slate-400 hover:bg-slate-50'
-                        }`}
+                        style={{
+                          padding: '7px 14px',
+                          borderRadius: 99,
+                          fontSize: 12.5,
+                          fontWeight: 650,
+                          cursor: 'pointer',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 6,
+                          border: isSelected ? '1.5px solid #0F172A' : '1.5px solid #E2E8F0',
+                          background: isSelected ? '#0F172A' : '#FFFFFF',
+                          color: isSelected ? '#FFFFFF' : '#334155',
+                          boxShadow: isSelected ? '0 2px 6px rgba(15, 23, 42, 0.15)' : 'none',
+                          transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)'
+                        }}
                       >
-                        <UtensilsCrossed size={12} className={isSelected ? 'text-white' : 'text-slate-800'} />
+                        <UtensilsCrossed size={12} className={isSelected ? 'text-white' : 'text-slate-700'} />
                         <span>{c}</span>
                       </button>
                     );
@@ -606,26 +712,47 @@ export default function Discover() {
                 </div>
               </div>
 
-              {/* Status & Perks Toggles */}
+              {/* 4. Privileges & Availability (Interactive Cards) */}
               <div>
-                <span className="block text-xs font-bold text-slate-900 uppercase tracking-wider mb-2.5">
+                <span style={{ display: 'block', fontSize: 11.5, fontWeight: 800, color: '#0F172A', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8 }}>
                   Privileges &amp; Availability
                 </span>
-                <div className="space-y-2">
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 10 }}>
                   <button
                     type="button"
                     onClick={() => setOpen(!openOnly)}
-                    className={`w-full p-3 rounded-xl border text-left flex items-center justify-between transition-all cursor-pointer ${
-                      openOnly
-                        ? 'bg-slate-900 border-slate-900 text-white shadow-xs'
-                        : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300'
-                    }`}
+                    style={{
+                      padding: '12px 14px',
+                      borderRadius: 14,
+                      border: openOnly ? '1.5px solid #0F172A' : '1.5px solid #E2E8F0',
+                      background: openOnly ? '#0F172A' : '#FFFFFF',
+                      color: openOnly ? '#FFFFFF' : '#1E293B',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                      boxShadow: openOnly ? '0 2px 8px rgba(15, 23, 42, 0.18)' : 'none',
+                      transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)'
+                    }}
                   >
-                    <div className="flex items-center gap-2.5">
-                      <Zap size={16} className={openOnly ? 'text-white' : 'text-slate-400'} />
-                      <span className="text-xs font-bold">Open Right Now</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+                      <Zap size={16} className={openOnly ? 'text-white' : 'text-slate-500'} />
+                      <span style={{ fontSize: 13, fontWeight: 700 }}>Open Right Now</span>
                     </div>
-                    <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] ${openOnly ? 'bg-white text-slate-900 font-bold' : 'border border-slate-300'}`}>
+                    <span style={{
+                      width: 18,
+                      height: 18,
+                      borderRadius: '50%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: 11,
+                      fontWeight: 800,
+                      background: openOnly ? '#FFFFFF' : 'transparent',
+                      color: '#0F172A',
+                      border: openOnly ? 'none' : '1.5px solid #CBD5E1'
+                    }}>
                       {openOnly ? '✓' : ''}
                     </span>
                   </button>
@@ -633,17 +760,38 @@ export default function Discover() {
                   <button
                     type="button"
                     onClick={() => setOffers(!offersOnly)}
-                    className={`w-full p-3 rounded-xl border text-left flex items-center justify-between transition-all cursor-pointer ${
-                      offersOnly
-                        ? 'bg-slate-900 border-slate-900 text-white shadow-xs'
-                        : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300'
-                    }`}
+                    style={{
+                      padding: '12px 14px',
+                      borderRadius: 14,
+                      border: offersOnly ? '1.5px solid #0F172A' : '1.5px solid #E2E8F0',
+                      background: offersOnly ? '#0F172A' : '#FFFFFF',
+                      color: offersOnly ? '#FFFFFF' : '#1E293B',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                      boxShadow: offersOnly ? '0 2px 8px rgba(15, 23, 42, 0.18)' : 'none',
+                      transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)'
+                    }}
                   >
-                    <div className="flex items-center gap-2.5">
-                      <Tag size={16} className={offersOnly ? 'text-white' : 'text-slate-400'} />
-                      <span className="text-xs font-bold">Campus Privilege Deals</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+                      <Tag size={16} className={offersOnly ? 'text-white' : 'text-slate-500'} />
+                      <span style={{ fontSize: 13, fontWeight: 700 }}>Campus Privilege Deals</span>
                     </div>
-                    <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] ${offersOnly ? 'bg-white text-slate-900 font-bold' : 'border border-slate-300'}`}>
+                    <span style={{
+                      width: 18,
+                      height: 18,
+                      borderRadius: '50%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: 11,
+                      fontWeight: 800,
+                      background: offersOnly ? '#FFFFFF' : 'transparent',
+                      color: '#0F172A',
+                      border: offersOnly ? 'none' : '1.5px solid #CBD5E1'
+                    }}>
                       {offersOnly ? '✓' : ''}
                     </span>
                   </button>
@@ -651,22 +799,30 @@ export default function Discover() {
               </div>
             </div>
 
-            {/* Drawer Sticky Footer */}
-            <div className="p-5 border-t border-slate-100 flex items-center gap-3 bg-slate-50">
+            {/* Modal Footer */}
+            <div className="district-filter-footer">
               <button
                 type="button"
                 className="btn-action-cancel"
                 onClick={clearAll}
-                style={{ padding: '10px 18px', fontSize: 13 }}
+                style={{ padding: '10px 18px', fontSize: 13, minHeight: 42, borderRadius: 12 }}
               >
                 <RotateCcw size={14} />
-                <span>Reset</span>
+                <span>Reset All</span>
               </button>
               <button
                 type="button"
-                className="btn-action-admit flex-1"
+                className="btn-action-admit"
                 onClick={() => setShowMobileFilters(false)}
-                style={{ padding: '12px 22px', fontSize: 13.5, justifyContent: 'center' }}
+                style={{
+                  flex: 1,
+                  padding: '12px 24px',
+                  fontSize: 13.5,
+                  fontWeight: 800,
+                  minHeight: 44,
+                  borderRadius: 12,
+                  justifyContent: 'center'
+                }}
               >
                 Show {filtered.length} Restaurants
               </button>
