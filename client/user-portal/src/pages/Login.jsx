@@ -446,6 +446,25 @@ export default function Login() {
                       <div style={{ fontSize: 11.5, color: 'var(--t4)', marginTop: 5, display: 'flex', alignItems: 'center', gap: 4 }}>
                         <Building2 size={12} /> Accepts @bennett.edu.in &amp; partner university domains
                       </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 8, flexWrap: 'wrap' }}>
+                        <span style={{ fontSize: 11, color: 'var(--t3)', fontWeight: 600 }}>1-Click Fill:</span>
+                        <button
+                          type="button"
+                          onClick={() => setOtpEmail('priya.sharma@bennett.edu.in')}
+                          style={{
+                            fontSize: 11,
+                            padding: '3px 9px',
+                            borderRadius: 99,
+                            border: '1px solid #A7F3D0',
+                            background: '#ECFDF5',
+                            color: '#065F46',
+                            fontWeight: 700,
+                            cursor: 'pointer'
+                          }}
+                        >
+                          Priya Sharma (Student)
+                        </button>
+                      </div>
                     </div>
 
                     <button
@@ -664,6 +683,54 @@ export default function Login() {
                       onChange={e => setPwdPass(e.target.value)}
                       disabled={submitting}
                     />
+                  </div>
+                </div>
+
+                {/* 1-Click Demo Credentials */}
+                <div>
+                  <div style={{ fontSize: 11, color: 'var(--t3)', fontWeight: 700, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                    1-Click Demo Fill:
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 6 }}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setPwdEmail('owner@spicegarden.com');
+                        setPwdPass('password123');
+                        setErrorMsg('');
+                      }}
+                      className="btn btn-outline btn-xs"
+                      style={{ fontSize: 11, borderRadius: 8, padding: '7px 4px', justifyContent: 'center', gap: 4 }}
+                      title="Vikram Singhania - Restaurant Owner"
+                    >
+                      <ChefHat size={12} /> Owner
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setPwdEmail('staff@spicegarden.com');
+                        setPwdPass('password123');
+                        setErrorMsg('');
+                      }}
+                      className="btn btn-outline btn-xs"
+                      style={{ fontSize: 11, borderRadius: 8, padding: '7px 4px', justifyContent: 'center', gap: 4 }}
+                      title="Rajesh Kumar - Front Desk Host"
+                    >
+                      <ConciergeBell size={12} /> Front Desk
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setPwdEmail('superadmin@bennett.edu.in');
+                        setPwdPass('password123');
+                        setErrorMsg('');
+                      }}
+                      className="btn btn-outline btn-xs"
+                      style={{ fontSize: 11, borderRadius: 8, padding: '7px 4px', justifyContent: 'center', gap: 4 }}
+                      title="Dr. A. K. Sharma - Governance Super Admin"
+                    >
+                      <Shield size={12} /> Super Admin
+                    </button>
                   </div>
                 </div>
 
