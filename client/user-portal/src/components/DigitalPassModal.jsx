@@ -3,22 +3,22 @@ import {
   X,
   Calendar,
   Clock,
-  MapPin,
   Users,
   CheckCircle2,
   Download,
-  Share2,
   GraduationCap,
   Camera,
-  QrCode,
   ShieldCheck,
   UtensilsCrossed,
   Navigation
 } from 'lucide-react';
 import { useDining } from '../context/DiningContext';
+import { useAuth } from '../context/AuthContext';
 
 export default function DigitalPassModal({ booking, onClose }) {
   const { openScanner } = useDining() || {};
+  const { user } = useAuth() || {};
+  const canScan = user?.role === 'RESTAURANT_STAFF' || user?.role === 'RESTAURANT_ADMIN' || user?.role === 'SUPER_ADMIN';
   const [downloading, setDownloading] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -72,10 +72,14 @@ export default function DigitalPassModal({ booking, onClose }) {
       <div
         className="wallet-card modal-bottom-sheet anim-scale-in"
         style={{
-          maxWidth: 420,
+          maxWidth: 400,
           width: '100%',
           margin: 'auto',
-          position: 'relative'
+          position: 'relative',
+          background: '#FFFFFF',
+          border: '1px solid #E8E2D5',
+          borderRadius: 18,
+          boxShadow: '0 20px 40px rgba(0, 0, 0, 0.12)'
         }}
       >
         {/* Floating Close Button */}
@@ -86,86 +90,86 @@ export default function DigitalPassModal({ booking, onClose }) {
             position: 'absolute',
             top: 14,
             right: 14,
-            width: 32,
-            height: 32,
+            width: 30,
+            height: 30,
             borderRadius: '50%',
-            background: 'rgba(0, 0, 0, 0.35)',
-            color: '#FFFFFF',
-            border: 'none',
+            background: '#F6F2EA',
+            color: '#565449',
+            border: '1px solid #E8E2D5',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             cursor: 'pointer',
             zIndex: 10,
-            transition: 'background 0.15s ease'
           }}
         >
-          <X size={16} />
+          <X size={15} />
         </button>
 
         {/* ── Apple Wallet Card Header ── */}
-        <div className="wallet-card-header">
+        <div className="wallet-card-header" style={{ padding: '20px 22px 16px', background: '#FFFFFF' }}>
           {/* Institutional Top Bar */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <div style={{
-                width: 28,
-                height: 28,
-                borderRadius: 8,
-                background: 'rgba(255, 255, 255, 0.18)',
+                width: 26,
+                height: 26,
+                borderRadius: 6,
+                background: '#11120D',
+                color: '#FFFFFF',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center'
               }}>
-                <GraduationCap size={16} color="#FFFFFF" />
+                <GraduationCap size={15} />
               </div>
               <div>
-                <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#FDE68A' }}>
+                <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', color: '#11120D' }}>
                   Bennett University
                 </div>
-                <div style={{ fontSize: 9.5, color: '#94A3B8', opacity: 0.95 }}>
+                <div style={{ fontSize: 9.5, color: '#565449' }}>
                   Verified Hospitality Pass
                 </div>
               </div>
             </div>
 
             <span style={{
-              background: 'rgba(217, 119, 6, 0.2)',
-              border: '1px solid rgba(245, 158, 11, 0.4)',
-              color: '#FEF3C7',
-              fontSize: 10.5,
-              fontWeight: 700,
-              padding: '3px 9px',
+              background: '#F6F2EA',
+              border: '1px solid #E8E2D5',
+              color: '#11120D',
+              fontSize: 10,
+              fontWeight: 600,
+              padding: '2px 8px',
               borderRadius: 99,
               display: 'inline-flex',
               alignItems: 'center',
               gap: 4
             }}>
-              <ShieldCheck size={12} className="text-amber-400" /> Priority Seating
+              <ShieldCheck size={11} /> Priority Seating
             </span>
           </div>
 
           {/* Venue & Reference */}
-          <div style={{ marginTop: 6 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: '#F59E0B', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+          <div style={{ marginTop: 4 }}>
+            <div style={{ fontSize: 10, fontWeight: 600, color: '#565449', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
               RESTAURANT PARTNER
             </div>
-            <h2 className="font-display" style={{ fontSize: '1.45rem', fontWeight: 800, color: '#FFFFFF', lineHeight: 1.2, margin: '2px 0 6px' }}>
+            <h2 style={{ fontFamily: "'Newsreader', 'Playfair Display', Georgia, serif", fontSize: '1.4rem', fontWeight: 600, color: '#11120D', lineHeight: 1.25, margin: '2px 0 6px' }}>
               {booking.restaurantName || 'Campus Partner'}
             </h2>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ fontSize: 12, color: '#CBD5E1', fontFamily: 'monospace', letterSpacing: '0.04em' }}>
+              <span style={{ fontSize: 11.5, color: '#565449', fontFamily: 'monospace', letterSpacing: '0.04em' }}>
                 REF: {booking.id}
               </span>
               <button
                 type="button"
                 onClick={handleCopyCode}
                 style={{
-                  background: 'rgba(255, 255, 255, 0.15)',
-                  border: 'none',
-                  color: '#FFFFFF',
-                  borderRadius: 4,
-                  padding: '2px 7px',
+                  background: '#F6F2EA',
+                  border: '1px solid #E8E2D5',
+                  color: '#11120D',
+                  borderRadius: 99,
+                  padding: '3px 10px',
                   fontSize: 10,
                   cursor: 'pointer',
                   fontWeight: 600
@@ -183,41 +187,59 @@ export default function DigitalPassModal({ booking, onClose }) {
         </div>
 
         {/* ── Ticket Body ── */}
-        <div className="wallet-card-body">
+        <div className="wallet-card-body" style={{ background: '#F6F2EA', padding: '18px 22px 22px' }}>
           {/* Key Metrics Grid */}
           <div style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: 12,
-            paddingBottom: 16,
-            borderBottom: '1px solid #F1F5F9'
+            gap: 10,
+            paddingBottom: 14,
+            borderBottom: '1px solid #E8E2D5'
           }}>
-            <div>
-              <div style={{ fontSize: 10.5, color: '#64748B', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+            <div style={{
+              background: '#FFFFFF',
+              padding: '8px',
+              borderRadius: 8,
+              border: '1px solid #E8E2D5',
+              textAlign: 'center'
+            }}>
+              <div style={{ fontSize: 9.5, color: '#565449', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Date
               </div>
-              <div style={{ fontSize: 13, fontWeight: 700, color: '#1C1E21', marginTop: 2, display: 'flex', alignItems: 'center', gap: 4 }}>
-                <Calendar size={13} className="text-[#FF5200]" />
+              <div style={{ fontSize: 12, fontWeight: 600, color: '#11120D', marginTop: 3, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
+                <Calendar size={12} color="#11120D" />
                 <span>{booking.date || 'Today'}</span>
               </div>
             </div>
 
-            <div>
-              <div style={{ fontSize: 10.5, color: '#64748B', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+            <div style={{
+              background: '#FFFFFF',
+              padding: '8px',
+              borderRadius: 8,
+              border: '1px solid #E8E2D5',
+              textAlign: 'center'
+            }}>
+              <div style={{ fontSize: 9.5, color: '#565449', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Time Slot
               </div>
-              <div style={{ fontSize: 13, fontWeight: 700, color: '#1C1E21', marginTop: 2, display: 'flex', alignItems: 'center', gap: 4 }}>
-                <Clock size={13} className="text-[#FF5200]" />
+              <div style={{ fontSize: 12, fontWeight: 600, color: '#11120D', marginTop: 3, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
+                <Clock size={12} color="#11120D" />
                 <span>{booking.time || '1:00 PM'}</span>
               </div>
             </div>
 
-            <div>
-              <div style={{ fontSize: 10.5, color: '#64748B', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+            <div style={{
+              background: '#FFFFFF',
+              padding: '8px',
+              borderRadius: 8,
+              border: '1px solid #E8E2D5',
+              textAlign: 'center'
+            }}>
+              <div style={{ fontSize: 9.5, color: '#565449', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Guests
               </div>
-              <div style={{ fontSize: 13, fontWeight: 700, color: '#1C1E21', marginTop: 2, display: 'flex', alignItems: 'center', gap: 4 }}>
-                <Users size={13} className="text-[#FF5200]" />
+              <div style={{ fontSize: 12, fontWeight: 600, color: '#11120D', marginTop: 3, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
+                <Users size={12} color="#11120D" />
                 <span>{booking.guests || 2} Diners</span>
               </div>
             </div>
@@ -228,77 +250,79 @@ export default function DigitalPassModal({ booking, onClose }) {
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            padding: '12px 0',
-            borderBottom: '1px solid #F1F5F9'
+            padding: '10px 0',
+            borderBottom: '1px solid #E8E2D5'
           }}>
-            <div style={{ fontSize: 12, color: '#475569' }}>
-              <span style={{ fontWeight: 600 }}>Table: </span>
-              <span style={{ fontWeight: 800, color: '#FF5200' }}>{booking.tableAssigned || 'Priority Host Seating'}</span>
+            <div style={{ fontSize: 12, color: '#565449' }}>
+              <span style={{ fontWeight: 500 }}>Table: </span>
+              <span style={{ fontWeight: 700, color: '#11120D' }}>{booking.tableAssigned || 'Priority Host Seating'}</span>
             </div>
             <div style={{
-              fontSize: 11,
-              fontWeight: 700,
-              padding: '3px 10px',
+              fontSize: 10.5,
+              fontWeight: 600,
+              padding: '2px 8px',
               borderRadius: 99,
-              background: '#ECFDF5',
-              color: '#047857',
-              border: '1px solid #A7F3D0',
+              background: '#F0FDF4',
+              color: '#16A34A',
+              border: '1px solid #BBF7D0',
               display: 'inline-flex',
               alignItems: 'center',
               gap: 4
             }}>
-              <CheckCircle2 size={12} /> {booking.status || 'CONFIRMED'}
+              <CheckCircle2 size={11} /> {booking.status || 'CONFIRMED'}
             </div>
           </div>
 
           {/* Pre-Ordered Items Summary if present */}
           {hasOrders && (
             <div style={{
-              background: '#FFF8F4',
-              border: '1px solid #FFE4D6',
-              borderRadius: 12,
-              padding: '10px 12px',
-              margin: '12px 0',
-              fontSize: 12
+              background: '#FFFFFF',
+              border: '1px solid #E8E2D5',
+              borderRadius: 8,
+              padding: '8px 12px',
+              margin: '10px 0',
+              fontSize: 11.5,
             }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontWeight: 700, color: '#FF5200', marginBottom: 4 }}>
-                <UtensilsCrossed size={12} className="text-[#FF5200]" />
+              <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontWeight: 600, color: '#11120D', marginBottom: 3 }}>
+                <UtensilsCrossed size={12} color="#11120D" />
                 <span>Pre-Ordered Dishes ({booking.orders.length})</span>
               </div>
-              <div style={{ color: '#475569', fontSize: 11.5 }}>
+              <div style={{ color: '#565449', fontSize: 11 }}>
                 {booking.orders.map(o => `${o.name} (x${o.qty || 1})`).join(', ')}
               </div>
             </div>
           )}
 
-          {/* ── High-Contrast Host QR Scanner Container ── */}
-          <div style={{ textAlign: 'center', margin: '16px 0 14px' }}>
+          {/* QR Scanner Container */}
+          <div style={{ textAlign: 'center', margin: '14px 0 12px' }}>
             <div className="wallet-qr-container">
               <img
                 src={booking.qrCode || `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${booking.id}-BENNETT-VERIFIED`}
                 alt="Pass QR Code"
                 style={{
-                  width: 150,
-                  height: 150,
+                  width: 140,
+                  height: 140,
                   display: 'block',
-                  borderRadius: 8
+                  borderRadius: 6,
+                  background: '#FFFFFF',
+                  padding: 4
                 }}
               />
               <div style={{
                 marginTop: 8,
-                fontSize: 10,
-                fontWeight: 800,
-                color: '#0F172A',
-                letterSpacing: '0.08em',
-                textTransform: 'uppercase'
+                fontSize: 9.5,
+                fontWeight: 600,
+                color: '#565449',
+                letterSpacing: '0.04em',
+                textTransform: 'uppercase',
               }}>
                 Scan At Front Desk For Table Entry
               </div>
             </div>
           </div>
 
-          {/* ── Action Buttons ── */}
-          <div style={{ display: 'flex', gap: 10, marginBottom: 8 }}>
+          {/* Action Buttons */}
+          <div style={{ display: 'flex', gap: 8, marginBottom: 6 }}>
             <button
               type="button"
               className="btn btn-outline btn-sm"
@@ -306,18 +330,18 @@ export default function DigitalPassModal({ booking, onClose }) {
               disabled={downloading}
               style={{
                 flex: 1,
-                padding: '11px 18px',
-                minHeight: 42,
-                borderRadius: 12,
-                fontSize: 12.5,
-                fontWeight: 700,
+                padding: '9px 18px',
+                minHeight: 38,
+                borderRadius: 99,
+                fontSize: 12,
+                fontWeight: 600,
                 display: 'inline-flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: 6
+                gap: 5
               }}
             >
-              <Download size={14} />
+              <Download size={13} />
               <span>{downloading ? 'Saving...' : 'Save Pass'}</span>
             </button>
 
@@ -327,42 +351,44 @@ export default function DigitalPassModal({ booking, onClose }) {
               onClick={handleDirections}
               style={{
                 flex: 1,
-                padding: '11px 18px',
-                minHeight: 42,
-                borderRadius: 12,
-                fontSize: 12.5,
-                fontWeight: 700,
+                padding: '9px 18px',
+                minHeight: 38,
+                borderRadius: 99,
+                fontSize: 12,
+                fontWeight: 600,
                 display: 'inline-flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: 6
+                gap: 5
               }}
             >
-              <Navigation size={14} />
+              <Navigation size={13} />
               <span>Directions</span>
             </button>
           </div>
 
-          <button
-            type="button"
-            className="btn btn-ghost btn-xs"
-            onClick={handleScanPass}
-            style={{
-              width: '100%',
-              fontSize: 12,
-              fontWeight: 600,
-              color: '#64748B',
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 6,
-              padding: '8px 14px',
-              borderRadius: 8
-            }}
-          >
-            <Camera size={13} />
-            <span>Host Desk Scanner Shortcut</span>
-          </button>
+          {canScan && (
+            <button
+              type="button"
+              className="btn btn-ghost btn-xs"
+              onClick={handleScanPass}
+              style={{
+                width: '100%',
+                fontSize: 11.5,
+                fontWeight: 500,
+                color: '#565449',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 5,
+                padding: '7px 16px',
+                borderRadius: 99
+              }}
+            >
+              <Camera size={12} />
+              <span>Host Desk Scanner Shortcut</span>
+            </button>
+          )}
         </div>
       </div>
     </div>

@@ -309,7 +309,7 @@ export default function PaymentModal({
   return (
     <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
       <div
-        className="modal-card anim-scale-in"
+        className="modal-card modal-bottom-sheet anim-scale-in"
         style={{
           maxWidth: 680,
           maxHeight: '92vh',
@@ -363,7 +363,7 @@ export default function PaymentModal({
                   fontWeight: 600,
                   padding: '7px 14px',
                   minHeight: 32,
-                  borderRadius: 8,
+                  borderRadius: 99,
                   boxSizing: 'border-box'
                 }}
                 onClick={() => setActiveView(v => (v === 'OFFICIAL_BILL' ? 'SETTLEMENT' : 'OFFICIAL_BILL'))}
@@ -515,9 +515,9 @@ export default function PaymentModal({
                         gap: 6,
                         fontWeight: 700,
                         fontSize: 12,
-                        padding: '6px 14px',
+                        padding: '6px 16px',
                         minHeight: 32,
-                        borderRadius: 8,
+                        borderRadius: 99,
                         boxSizing: 'border-box',
                         backgroundColor: showAddDishPanel ? 'var(--primary)' : '#FFFFFF',
                         color: showAddDishPanel ? '#FFFFFF' : 'var(--primary)',
@@ -787,7 +787,7 @@ export default function PaymentModal({
                           fontSize: 11.5,
                           fontWeight: 700,
                           whiteSpace: 'nowrap',
-                          borderRadius: 8,
+                          borderRadius: 99,
                           boxSizing: 'border-box'
                         }}
                       >
@@ -992,9 +992,9 @@ export default function PaymentModal({
                             type="button"
                             onClick={() => setSelectedUpiApp(app)}
                             style={{
-                              padding: '7px 14px',
+                              padding: '7px 16px',
                               minHeight: 32,
-                              borderRadius: 8,
+                              borderRadius: 99,
                               fontSize: 12,
                               fontWeight: 700,
                               background: selectedUpiApp === app ? 'var(--primary)' : '#FFFFFF',
@@ -1094,9 +1094,9 @@ export default function PaymentModal({
                           style={{
                             fontSize: 12,
                             fontWeight: 700,
-                            padding: '6px 14px',
+                            padding: '6px 16px',
                             minHeight: 32,
-                            borderRadius: 8,
+                            borderRadius: 99,
                             boxSizing: 'border-box'
                           }}
                           onClick={() => setCashTendered(amt)}
@@ -1284,7 +1284,7 @@ export default function PaymentModal({
                   style={{
                     padding: '10px 20px',
                     minHeight: 42,
-                    borderRadius: 12,
+                    borderRadius: 99,
                     fontWeight: 600,
                     boxSizing: 'border-box'
                   }}
@@ -1302,7 +1302,7 @@ export default function PaymentModal({
                       gap: 6,
                       padding: '10px 20px',
                       minHeight: 42,
-                      borderRadius: 12,
+                      borderRadius: 99,
                       fontWeight: 600,
                       boxSizing: 'border-box'
                     }}
@@ -1319,7 +1319,7 @@ export default function PaymentModal({
                       gap: 6,
                       padding: '10px 22px',
                       minHeight: 42,
-                      borderRadius: 12,
+                      borderRadius: 99,
                       fontWeight: 700,
                       boxSizing: 'border-box'
                     }}
@@ -1505,7 +1505,7 @@ export default function PaymentModal({
                 style={{
                   padding: '10px 20px',
                   minHeight: 42,
-                  borderRadius: 12,
+                  borderRadius: 99,
                   fontWeight: 600,
                   boxSizing: 'border-box'
                 }}
@@ -1523,7 +1523,7 @@ export default function PaymentModal({
                     gap: 6,
                     padding: '10px 20px',
                     minHeight: 42,
-                    borderRadius: 12,
+                    borderRadius: 99,
                     fontWeight: 600,
                     boxSizing: 'border-box'
                   }}
@@ -1540,7 +1540,7 @@ export default function PaymentModal({
                     gap: 8,
                     padding: '12px 26px',
                     minHeight: 46,
-                    borderRadius: 12,
+                    borderRadius: 99,
                     fontWeight: 700,
                     fontSize: 14,
                     boxSizing: 'border-box'
@@ -1564,7 +1564,7 @@ export default function PaymentModal({
                   gap: 6,
                   padding: '10px 20px',
                   minHeight: 42,
-                  borderRadius: 12,
+                  borderRadius: 99,
                   fontWeight: 600,
                   boxSizing: 'border-box'
                 }}
@@ -1581,7 +1581,7 @@ export default function PaymentModal({
                   gap: 6,
                   padding: '10px 22px',
                   minHeight: 42,
-                  borderRadius: 12,
+                  borderRadius: 99,
                   fontWeight: 700,
                   boxSizing: 'border-box'
                 }}

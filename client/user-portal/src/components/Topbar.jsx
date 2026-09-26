@@ -9,9 +9,9 @@ import {
   ChevronDown,
   User as UserIcon,
 } from 'lucide-react';
-import DistrictSearchModal from './DistrictSearchModal';
+import NivixSearchModal from './NivixSearchModal';
 
-const DISTRICT_NAV_TABS = [
+const NIVIX_NAV_TABS = [
   { id: 'foryou', label: 'For you', path: '/dashboard' },
   { id: 'dining', label: 'Dining', path: '/dashboard' },
   { id: 'outlets', label: 'Outlets', path: '/discover' },
@@ -33,10 +33,12 @@ export default function Topbar({ onOpenMobileDrawer }) {
     <>
       <header
         style={{
-          height: 72,
-          padding: '0 clamp(16px, 3vw, 36px)',
-          background: '#FFFFFF',
-          borderBottom: '1px solid #EEF0F3',
+          height: 68,
+          padding: '0 clamp(12px, 3vw, 36px)',
+          background: 'rgba(255, 251, 244, 0.94)',
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
+          borderBottom: '1px solid #E8E2D5',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
@@ -46,99 +48,105 @@ export default function Topbar({ onOpenMobileDrawer }) {
         }}
       >
         {/* Left: District Logo + Location Picker */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(8px, 2.5vw, 20px)' }}>
           {/* Mobile Menu Trigger */}
           <button
             className="mobile-menu-trigger"
             onClick={onOpenMobileDrawer}
             style={{
-              width: 38,
-              height: 38,
-              borderRadius: 10,
-              border: '1px solid #E2E8F0',
+              width: 36,
+              height: 36,
+              borderRadius: 8,
+              border: '1px solid #E8E2D5',
               background: '#FFFFFF',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               cursor: 'pointer',
-              color: '#0F172A',
+              color: '#11120D',
+              flexShrink: 0,
             }}
             aria-label="Toggle navigation"
           >
             <Menu size={18} />
           </button>
 
-          {/* District Logo (Exact Screenshot 1 Style) */}
+          {/* Logo — Nivix Dine-In */}
           <div
             onClick={() => navigate('/dashboard')}
-            style={{ display: 'flex', flexDirection: 'column', cursor: 'pointer' }}
+            style={{ display: 'flex', flexDirection: 'column', cursor: 'pointer', flexShrink: 0 }}
           >
             <span
               style={{
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                fontSize: 22,
-                fontWeight: 800,
-                letterSpacing: '-0.04em',
-                color: '#000000',
-                lineHeight: 1,
+                fontFamily: "'Newsreader', 'Playfair Display', Georgia, serif",
+                fontSize: 'clamp(19px, 4.5vw, 23px)',
+                fontWeight: 600,
+                fontStyle: 'italic',
+                letterSpacing: '-0.02em',
+                color: '#11120D',
+                lineHeight: 1.05,
               }}
             >
-              district
+              nivix-dine-in
             </span>
             <span
               style={{
-                fontSize: 9,
-                fontWeight: 800,
-                letterSpacing: '0.14em',
-                color: '#475569',
+                fontSize: 8.5,
+                fontWeight: 700,
+                letterSpacing: '0.12em',
+                color: '#A3A3A3',
                 textTransform: 'uppercase',
-                marginTop: 2,
+                marginTop: 3,
               }}
             >
-              BY BENNETT
+              CAMPUS DINING · BENNETT
             </span>
           </div>
 
-          {/* District Location Picker (Purple Pin + City/Area) */}
+          {/* Location Picker with Responsive Text */}
           <div
+            className="header-location-pill"
             onClick={() => navigate('/discover')}
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: 8,
+              gap: 7,
               cursor: 'pointer',
-              padding: '6px 10px',
+              padding: '6px 12px',
               borderRadius: 8,
-              transition: 'background 0.15s ease',
+              border: '1px solid #E8E2D5',
+              background: '#FFFFFF',
+              transition: 'all 0.45s cubic-bezier(0.16, 1, 0.3, 1)',
+              flexShrink: 0,
             }}
-            onMouseEnter={e => e.currentTarget.style.background = '#F8FAFC'}
-            onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+            title="Bennett Campus, Greater Noida"
+            onMouseEnter={e => {
+              e.currentTarget.style.borderColor = '#11120D';
+              e.currentTarget.style.transform = 'translateY(-1.5px)';
+              e.currentTarget.style.boxShadow = '0 6px 16px rgba(17, 18, 13, 0.08)';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.borderColor = '#E8E2D5';
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = 'none';
+            }}
           >
-            <div
-              style={{
-                color: '#6D28D9',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <MapPin size={19} strokeWidth={2.4} />
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.15 }}>
+            <MapPin size={15} color="#565449" />
+            <div className="header-location-text" style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.15 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
-                <span style={{ fontSize: 13.5, fontWeight: 700, color: '#0F172A' }}>
+                <span style={{ fontSize: 12.5, fontWeight: 600, color: '#11120D' }}>
                   Bennett Campus
                 </span>
-                <ChevronDown size={13} color="#64748B" />
+                <ChevronDown size={12} color="#565449" />
               </div>
-              <span style={{ fontSize: 11, color: '#64748B', fontWeight: 500 }}>
+              <span style={{ fontSize: 10.5, color: '#A3A3A3', fontWeight: 500 }}>
                 Greater Noida
               </span>
             </div>
           </div>
         </div>
 
-        {/* Center: Top Category Tabs (Screenshot 1: "For you", "Dining" pill, "Movies"...) */}
+        {/* Center: Top Category Tabs */}
         <nav
           className="mobile-hide"
           style={{
@@ -147,28 +155,36 @@ export default function Topbar({ onOpenMobileDrawer }) {
             gap: 4,
           }}
         >
-          {DISTRICT_NAV_TABS.map(tab => {
-            const isDining = tab.id === 'dining';
+          {NIVIX_NAV_TABS.map(tab => {
+            const isDining = tab.id === 'dining' && pathname === '/dashboard';
             return (
               <button
                 key={tab.id}
                 onClick={() => navigate(tab.path)}
                 style={{
-                  padding: '7px 16px',
+                  padding: '6px 14px',
                   borderRadius: 99,
-                  fontSize: 13.5,
-                  fontWeight: isDining ? 700 : 500,
-                  color: isDining ? '#BE185D' : '#334155',
-                  background: isDining ? '#FFE4E6' : 'transparent',
-                  border: 'none',
+                  fontSize: 12.5,
+                  fontWeight: isDining ? 600 : 500,
+                  color: isDining ? '#FFFBF4' : '#565449',
+                  background: isDining ? '#565449' : 'transparent',
+                  border: `1px solid ${isDining ? '#565449' : 'transparent'}`,
                   cursor: 'pointer',
-                  transition: 'all 0.15s ease',
+                  transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
                 }}
                 onMouseEnter={e => {
-                  if (!isDining) e.currentTarget.style.background = '#F1F5F9';
+                  if (!isDining) {
+                    e.currentTarget.style.background = '#F6F2EA';
+                    e.currentTarget.style.color = '#11120D';
+                    e.currentTarget.style.transform = 'translateY(-1px)';
+                  }
                 }}
                 onMouseLeave={e => {
-                  if (!isDining) e.currentTarget.style.background = 'transparent';
+                  if (!isDining) {
+                    e.currentTarget.style.background = 'transparent';
+                    e.currentTarget.style.color = '#565449';
+                    e.currentTarget.style.transform = 'translateY(0)';
+                  }
                 }}
               >
                 {tab.label}
@@ -177,47 +193,68 @@ export default function Topbar({ onOpenMobileDrawer }) {
           })}
         </nav>
 
-        {/* Right: Search Icon Button + Avatar */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          {/* Search Trigger (Opens District Search Modal) */}
+        {/* Right: Search Button + Avatar */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          {/* Search Trigger */}
           <button
             onClick={() => setSearchModalOpen(true)}
             style={{
-              width: 40,
-              height: 40,
+              width: 36,
+              height: 36,
               borderRadius: '50%',
-              border: 'none',
-              background: '#F8FAFC',
+              border: '1px solid #E8E2D5',
+              background: '#FFFFFF',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               cursor: 'pointer',
-              color: '#6D28D9',
-              transition: 'background 0.15s ease',
+              color: '#11120D',
+              transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
             }}
             title="Search restaurants"
-            onMouseEnter={e => e.currentTarget.style.background = '#F1F5F9'}
-            onMouseLeave={e => e.currentTarget.style.background = '#F8FAFC'}
+            onMouseEnter={e => {
+              e.currentTarget.style.borderColor = '#11120D';
+              e.currentTarget.style.background = '#F6F2EA';
+              e.currentTarget.style.transform = 'scale(1.08)';
+              e.currentTarget.style.boxShadow = '0 4px 12px rgba(17, 18, 13, 0.08)';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.borderColor = '#E8E2D5';
+              e.currentTarget.style.background = '#FFFFFF';
+              e.currentTarget.style.transform = 'scale(1.0)';
+              e.currentTarget.style.boxShadow = 'none';
+            }}
           >
-            <Search size={19} strokeWidth={2.2} />
+            <Search size={16} />
           </button>
 
           {/* User Profile Avatar */}
           <div
             onClick={() => navigate('/profile')}
             style={{
-              width: 38,
-              height: 38,
+              width: 36,
+              height: 36,
               borderRadius: '50%',
-              background: '#E2E8F0',
+              background: '#F6F2EA',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               cursor: 'pointer',
               overflow: 'hidden',
-              border: '1.5px solid #CBD5E1',
+              border: '1px solid #E8E2D5',
+              transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
             }}
             title={user?.name || 'Profile'}
+            onMouseEnter={e => {
+              e.currentTarget.style.borderColor = '#11120D';
+              e.currentTarget.style.transform = 'scale(1.08)';
+              e.currentTarget.style.boxShadow = '0 4px 12px rgba(17, 18, 13, 0.12)';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.borderColor = '#E8E2D5';
+              e.currentTarget.style.transform = 'scale(1.0)';
+              e.currentTarget.style.boxShadow = 'none';
+            }}
           >
             {user?.avatar ? (
               <img
@@ -226,14 +263,14 @@ export default function Topbar({ onOpenMobileDrawer }) {
                 style={{ width: '100%', height: '100%', objectFit: 'cover' }}
               />
             ) : (
-              <UserIcon size={20} color="#64748B" />
+              <UserIcon size={18} color="#11120D" />
             )}
           </div>
         </div>
       </header>
 
-      {/* District Search Modal Overlay */}
-      <DistrictSearchModal
+      {/* Nivix Search Modal Overlay */}
+      <NivixSearchModal
         isOpen={searchModalOpen}
         onClose={() => setSearchModalOpen(false)}
       />

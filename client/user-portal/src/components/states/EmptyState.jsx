@@ -105,9 +105,9 @@ export default function EmptyState({
             display: 'inline-flex',
             alignItems: 'center',
             gap: 8,
-            padding: '11px 24px',
+            padding: '11px 26px',
             minHeight: 42,
-            borderRadius: 12,
+            borderRadius: 99,
             fontWeight: 700,
             fontSize: 14,
             boxSizing: 'border-box'

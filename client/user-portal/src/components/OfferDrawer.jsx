@@ -29,19 +29,19 @@ export default function OfferDrawer({ offer, onClose, onApplyOffer }) {
 
         <div className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
           <div style={{
-            background: '#FFFBEB',
-            border: '1px solid #FDE68A',
-            borderRadius: 'var(--r)',
-            padding: 20,
-            textAlign: 'center'
+            background: '#F6F2EA',
+            border: '1px solid #E8E2D5',
+            borderRadius: 16,
+            padding: 24,
+            textAlign: 'center',
           }}>
-            <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#565449', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 4 }}>
               {offer.restaurantName || 'Campus Partner'}
             </div>
-            <h3 className="font-display" style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--t1)', marginBottom: 6 }}>
+            <h3 className="font-display" style={{ fontSize: '1.4rem', fontWeight: 600, color: '#11120D', marginBottom: 6 }}>
               {offer.title}
             </h3>
-            <p style={{ fontSize: 13, color: 'var(--t3)' }}>{offer.description}</p>
+            <p style={{ fontSize: 13, color: '#565449', lineHeight: 1.5 }}>{offer.description}</p>
 
             {/* Coupon Box */}
             <div
@@ -49,31 +49,31 @@ export default function OfferDrawer({ offer, onClose, onApplyOffer }) {
               style={{
                 marginTop: 18,
                 background: '#FFFFFF',
-                border: '2px dashed var(--accent)',
-                borderRadius: 'var(--r-sm)',
+                border: '1px dashed #18181B',
+                borderRadius: 12,
                 padding: '12px 18px',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'space-between'
+                justifyContent: 'space-between',
               }}
             >
               <div>
-                <div style={{ fontSize: 10, color: 'var(--t3)', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.08em' }}>
+                <div style={{ fontSize: 10, color: '#565449', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.08em' }}>
                   PROMO CODE
                 </div>
-                <div style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--t1)', letterSpacing: '0.1em' }}>
+                <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#11120D', letterSpacing: '0.12em', fontFamily: 'monospace' }}>
                   {codeToCopy}
                 </div>
               </div>
               <button
                 type="button"
-                className="btn btn-accent btn-sm"
+                className="btn btn-primary btn-sm"
                 onClick={copyCode}
                 style={{
-                  padding: '9px 18px',
+                  padding: '9px 20px',
                   minHeight: 38,
-                  borderRadius: 10,
-                  fontWeight: 700,
+                  borderRadius: 99,
+                  fontWeight: 600,
                   fontSize: 13,
                   display: 'inline-flex',
                   alignItems: 'center',
@@ -113,9 +113,9 @@ export default function OfferDrawer({ offer, onClose, onApplyOffer }) {
             className="btn btn-ghost btn-md"
             onClick={onClose}
             style={{
-              padding: '10px 20px',
+              padding: '10px 22px',
               minHeight: 42,
-              borderRadius: 12,
+              borderRadius: 99,
               fontWeight: 600,
               boxSizing: 'border-box'
             }}
@@ -133,9 +133,9 @@ export default function OfferDrawer({ offer, onClose, onApplyOffer }) {
               display: 'inline-flex',
               alignItems: 'center',
               gap: 6,
-              padding: '10px 22px',
+              padding: '10px 24px',
               minHeight: 42,
-              borderRadius: 12,
+              borderRadius: 99,
               fontWeight: 700,
               boxSizing: 'border-box'
             }}

@@ -1,8 +1,25 @@
-/* Card gradient backgrounds */
-.bg-sage  { background: linear-gradient(140deg, #5B7B6F 0%, #2C4A40 100%); }
-.bg-amber { background: linear-gradient(140deg, #C8906A 0%, #8A5A30 100%); }
-.bg-slate { background: linear-gradient(140deg, #6888A8 0%, #3A5878 100%); }
-.bg-mauve { background: linear-gradient(140deg, #8878A8 0%, #584878 100%); }
-.bg-dusty { background: linear-gradient(140deg, #A89870 0%, #786840 100%); }
-.bg-green { background: linear-gradient(140deg, #6A9E78 0%, #3A6E48 100%); }
-.bg-rose  { background: linear-gradient(140deg, #A87878 0%, #784848 100%); }
+/* 4-Color Palette: Smoky Black (#11120D), Olive Drab (#565449), Bone (#D8CFBC), Floral White (#FFFBF4) */
+.bg-sage  { background: #F6F2EA; border: 1px solid #E8E2D5; }
+.bg-amber { background: #F6F2EA; border: 1px solid #E8E2D5; }
+.bg-slate { background: #F6F2EA; border: 1px solid #E8E2D5; }
+.bg-mauve { background: #F6F2EA; border: 1px solid #E8E2D5; }
+.bg-dusty { background: #F6F2EA; border: 1px solid #E8E2D5; }
+.bg-green { background: #F6F2EA; border: 1px solid #E8E2D5; }
+.bg-rose  { background: #F6F2EA; border: 1px solid #E8E2D5; }
+
+/* Clean Minimalist Utilities */
+.neon-glow-cyan {
+  box-shadow: 0 1px 3px rgba(17, 18, 13, 0.04);
+}
+.neon-glow-pink {
+  box-shadow: 0 1px 3px rgba(17, 18, 13, 0.04);
+}
+.neon-glow-purple {
+  box-shadow: 0 1px 3px rgba(17, 18, 13, 0.04);
+}
+.neon-border-cyan {
+  border: 1px solid #11120D;
+}
+.neon-border-pink {
+  border: 1px solid #11120D;
+}

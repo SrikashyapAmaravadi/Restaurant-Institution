@@ -111,7 +111,7 @@ export default function Profile() {
           className="digital-id-card anim-fade-up"
           style={{
             borderRadius: 'var(--r-lg)',
-            padding: 28,
+            padding: 'clamp(18px, 4vw, 28px)',
             position: 'relative',
             overflow: 'hidden'
           }}
@@ -129,7 +129,7 @@ export default function Profile() {
           }} />
 
           {/* Card Top Branding */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20, flexWrap: 'wrap', gap: 12 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               <div style={{ width: 44, height: 44, borderRadius: 'var(--r-sm)', background: 'rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
                 <GraduationCap size={22} />
@@ -150,8 +150,8 @@ export default function Profile() {
           </div>
 
           {/* Card Middle: Photo + Info */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 24, flexWrap: 'wrap' }}>
-            <div style={{ position: 'relative', width: 92, height: 92, flexShrink: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(14px, 3vw, 24px)', flexWrap: 'wrap' }}>
+            <div style={{ position: 'relative', width: 88, height: 88, flexShrink: 0 }}>
               <img
                 src={avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=240&q=80'}
                 alt={user?.name || 'User Avatar'}
@@ -221,7 +221,7 @@ export default function Profile() {
         </div>
 
         {/* Stats and Badges */}
-        <div className="anim-fade-up delay-1" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16 }}>
+        <div className="anim-fade-up delay-1" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 240px), 1fr))', gap: 16 }}>
           <div className="card card-hover stat-tile-interactive" style={{ padding: 18, display: 'flex', alignItems: 'center', gap: 14 }}>
             <div style={{ width: 44, height: 44, borderRadius: 'var(--r-sm)', background: 'rgba(245, 158, 11, 0.12)', color: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Award size={22} />
@@ -257,7 +257,7 @@ export default function Profile() {
         </div>
 
         {/* Profile Settings Form */}
-        <div className="card anim-fade-up delay-2" style={{ padding: 28 }}>
+        <div className="card anim-fade-up delay-2" style={{ padding: 'clamp(18px, 4vw, 28px)' }}>
           <h3 className="font-display" style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--t1)', marginBottom: 6 }}>
             Personal Details &amp; Profile Photo
           </h3>
@@ -290,7 +290,7 @@ export default function Profile() {
                   <button
                     type="button"
                     className="btn btn-primary btn-sm"
-                    style={{ borderRadius: 10 }}
+                    style={{ borderRadius: 99, padding: '8px 18px' }}
                     onClick={() => fileInputRef.current?.click()}
                   >
                     <Upload size={14} /> Upload Photo
@@ -326,7 +326,7 @@ export default function Profile() {
               </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 18 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 240px), 1fr))', gap: 16 }}>
               <div>
                 <label className="form-label">Full Name</label>
                 <div className="form-input-wrap">
@@ -407,14 +407,19 @@ export default function Profile() {
               </div>
             )}
 
-            <div style={{ display: 'flex', gap: 12, marginTop: 10, flexWrap: 'wrap' }}>
-              <button type="submit" className="btn btn-primary btn-md" style={{ borderRadius: 12 }} disabled={isSaving}>
-                <Save size={16} /> {isSaving ? 'Saving Changes...' : 'Save Profile Changes'}
+            <div style={{ display: 'flex', gap: 10, marginTop: 10, flexWrap: 'wrap' }}>
+              <button
+                type="submit"
+                className="btn btn-primary btn-md"
+                style={{ borderRadius: 99, padding: '10px 22px', touchAction: 'manipulation' }}
+                disabled={isSaving}
+              >
+                <Save size={15} /> {isSaving ? 'Saving Changes...' : 'Save Profile Changes'}
               </button>
               <button
                 type="button"
                 className="btn btn-secondary btn-md"
-                style={{ borderRadius: 12 }}
+                style={{ borderRadius: 99, padding: '10px 20px', touchAction: 'manipulation' }}
                 onClick={() => alert(`Password reset verification link sent to ${user?.email || 'your email'}`)}
               >
                 Reset Password

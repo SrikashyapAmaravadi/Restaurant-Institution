@@ -1,17 +1,13 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import RestaurantCard from '../components/RestaurantCard';
-import InteractiveMap from '../components/InteractiveMap';
+import RestaurantCircularGallery from '../components/RestaurantCircularGallery';
 import BookingModal from '../components/BookingModal';
 import OfferDrawer from '../components/OfferDrawer';
+import BranchedMenu from '../components/BranchedMenu';
 import { useDining } from '../context/DiningContext';
 import {
   Search,
   SlidersHorizontal,
-  Map,
-  Grid,
   RotateCcw,
-  Sparkles,
   Zap,
   Filter,
   X,
@@ -40,7 +36,6 @@ export default function Discover() {
   const { restaurants: liveRestaurants } = useDining();
   const restaurantList = liveRestaurants || [];
 
-  const [viewMode, setViewMode]   = useState('grid'); // 'grid' | 'map'
   const [search, setSearch]       = useState('');
   const [cuisines, setCuisines]   = useState([]);
   const [prices, setPrices]       = useState([]);
@@ -122,6 +117,89 @@ export default function Discover() {
     return list;
   }, [filtered, sortBy]);
 
+  const filterMenuItems = useMemo(() => [
+    {
+      label: 'Cuisines & Dining Style',
+      value: 'sec-cuisines',
+      count: cuisines.length > 0 ? `${cuisines.length} selected` : undefined,
+      children: CUISINES.map(c => ({
+        value: `cuisine:${c}`,
+        label: c,
+        checked: cuisines.includes(c),
+        badge: cuisines.includes(c) ? '✓' : undefined,
+        icon: <UtensilsCrossed size={13} color={cuisines.includes(c) ? '#11120D' : '#565449'} />
+      }))
+    },
+    {
+      label: 'Price Tier',
+      value: 'sec-prices',
+      count: prices.length > 0 ? `${prices.length} selected` : undefined,
+      children: [
+        { value: 'price:₹', label: '₹ Casual Dining', checked: prices.includes('₹'), badge: prices.includes('₹') ? '✓' : undefined },
+        { value: 'price:₹₹', label: '₹₹ Mid-Range Experience', checked: prices.includes('₹₹'), badge: prices.includes('₹₹') ? '✓' : undefined },
+        { value: 'price:₹₹₹', label: '₹₹₹ Premium Fine Dining', checked: prices.includes('₹₹₹'), badge: prices.includes('₹₹₹') ? '✓' : undefined },
+      ]
+    },
+    {
+      label: 'Minimum Rating',
+      value: 'sec-rating',
+      count: minRating !== 'Any' ? minRating : undefined,
+      children: RATINGS.map(r => ({
+        value: `rating:${r}`,
+        label: r === 'Any' ? 'Any Rating' : `${r} Stars or higher`,
+        checked: minRating === r,
+        badge: minRating === r ? '✓' : undefined,
+        icon: <Star size={13} fill={minRating === r ? '#11120D' : 'none'} color="#11120D" />
+      }))
+    },
+    {
+      label: 'Campus Privileges & Hours',
+      value: 'sec-privileges',
+      count: (openOnly ? 1 : 0) + (offersOnly ? 1 : 0) > 0 ? `${(openOnly ? 1 : 0) + (offersOnly ? 1 : 0)} active` : undefined,
+      children: [
+        {
+          value: 'privilege:open',
+          label: 'Open Right Now',
+          checked: openOnly,
+          badge: openOnly ? 'Live' : undefined,
+          icon: <Zap size={13} color={openOnly ? '#11120D' : '#565449'} />
+        },
+        {
+          value: 'privilege:offers',
+          label: 'Campus Privilege Deals',
+          checked: offersOnly,
+          badge: offersOnly ? 'Offer' : undefined,
+          icon: <Tag size={13} color={offersOnly ? '#11120D' : '#565449'} />
+        }
+      ]
+    }
+  ], [cuisines, prices, minRating, openOnly, offersOnly]);
+
+  const activeFilterKeys = useMemo(() => [
+    ...cuisines.map(c => `cuisine:${c}`),
+    ...prices.map(p => `price:${p}`),
+    `rating:${minRating}`,
+    ...(openOnly ? ['privilege:open'] : []),
+    ...(offersOnly ? ['privilege:offers'] : []),
+  ], [cuisines, prices, minRating, openOnly, offersOnly]);
+
+  const handleFilterSelect = (val) => {
+    if (val.startsWith('cuisine:')) {
+      const c = val.replace('cuisine:', '');
+      toggle(cuisines, setCuisines, c);
+    } else if (val.startsWith('price:')) {
+      const p = val.replace('price:', '');
+      toggle(prices, setPrices, p);
+    } else if (val.startsWith('rating:')) {
+      const r = val.replace('rating:', '');
+      setRating(r);
+    } else if (val === 'privilege:open') {
+      setOpen(prev => !prev);
+    } else if (val === 'privilege:offers') {
+      setOffers(prev => !prev);
+    }
+  };
+
   const clearAll = () => {
     setSearch('');
     setCuisines([]);
@@ -143,42 +221,45 @@ export default function Discover() {
   return (
     <div className="page-pad pb-24">
       {/* Header & Controls Section */}
-      <div className="flex flex-col gap-4 mb-6">
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginBottom: 32 }}>
         {/* Title & View Switcher */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">
-              Campus Radar &amp; Discovery
+            <h1 style={{ fontFamily: "'Newsreader', 'Playfair Display', Georgia, serif", fontSize: 26, fontWeight: 600, color: '#11120D' }}>
+              Discover Restaurants
             </h1>
-            <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-              Explore <strong>{sortedAndFiltered.length}</strong> partner dining spots around Bennett University
-            </p>
           </div>
 
-          {/* Sort & Segmented View Toggle */}
+          {/* Sort Dropdown */}
           <div className="flex items-center gap-2.5 flex-wrap">
-            {/* Custom Luxury Sort Selector */}
+            {/* Custom Sort Selector */}
             <div className="relative" ref={sortDropdownRef}>
               <button
                 type="button"
                 onClick={() => setIsSortOpen(prev => !prev)}
                 className={`custom-dropdown-trigger ${isSortOpen ? 'open' : ''}`}
+                style={{
+                  background: '#FFFFFF',
+                  border: `1px solid ${isSortOpen ? '#11120D' : '#E8E2D5'}`,
+                  color: '#11120D',
+                }}
                 aria-haspopup="listbox"
                 aria-expanded={isSortOpen}
               >
-                <ArrowUpDown size={13} className="text-slate-900 shrink-0" />
-                <span>
+                <ArrowUpDown size={13} style={{ color: '#11120D' }} className="shrink-0" />
+                <span style={{ color: '#11120D' }}>
                   {SORT_OPTIONS.find(o => o.id === sortBy)?.label || 'Featured / Recommended'}
                 </span>
                 <ChevronDown
                   size={13}
-                  className={`text-slate-500 transition-transform duration-300 ${isSortOpen ? 'rotate-180 text-slate-900' : ''}`}
+                  style={{ color: '#565449' }}
+                  className={`transition-transform duration-200 ${isSortOpen ? 'rotate-180' : ''}`}
                 />
               </button>
 
               {isSortOpen && (
-                <div className="custom-dropdown-panel" role="listbox">
-                  <div className="px-3 py-2 text-[10.5px] font-extrabold uppercase tracking-wider text-slate-400 border-b border-slate-100 mb-1">
+                <div className="custom-dropdown-panel" role="listbox" style={{ background: '#FFFFFF', border: '1px solid #E8E2D5' }}>
+                  <div className="px-3 py-2 text-[10.5px] font-bold uppercase tracking-wider border-b mb-1" style={{ color: '#565449', borderColor: '#E8E2D5' }}>
                     Sort Restaurants
                   </div>
                   <div className="flex flex-col gap-0.5">
@@ -195,10 +276,14 @@ export default function Discover() {
                             setIsSortOpen(false);
                           }}
                           className={`custom-dropdown-option ${isSelected ? 'selected' : ''}`}
+                          style={{
+                            background: isSelected ? '#11120D' : 'transparent',
+                            color: isSelected ? '#FFFBF4' : '#11120D',
+                          }}
                         >
                           <span>{opt.label}</span>
                           {isSelected && (
-                            <Check size={14} strokeWidth={2.5} className="text-white shrink-0 ml-2" />
+                            <Check size={14} strokeWidth={2.5} style={{ color: '#FFFBF4' }} className="shrink-0 ml-2" />
                           )}
                         </button>
                       );
@@ -207,69 +292,20 @@ export default function Discover() {
                 </div>
               )}
             </div>
-
-            {/* Segmented Grid / Map Control */}
-            <div style={{ display: 'inline-flex', padding: 3, background: '#F1F5F9', border: '1px solid #E2E8F0', borderRadius: 12, gap: 2 }}>
-              <button
-                type="button"
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 6,
-                  padding: '7px 16px',
-                  minHeight: 34,
-                  borderRadius: 10,
-                  fontSize: 12.5,
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                  border: 'none',
-                  background: viewMode === 'grid' ? '#0F172A' : 'transparent',
-                  color: viewMode === 'grid' ? '#FFFFFF' : '#64748B',
-                  boxShadow: viewMode === 'grid' ? '0 2px 8px rgba(15, 23, 42, 0.18)' : 'none',
-                  transition: 'all 0.25s ease'
-                }}
-                onClick={() => setViewMode('grid')}
-              >
-                <Grid size={14} />
-                <span>Grid</span>
-              </button>
-              <button
-                type="button"
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 6,
-                  padding: '7px 16px',
-                  minHeight: 34,
-                  borderRadius: 10,
-                  fontSize: 12.5,
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                  border: 'none',
-                  background: viewMode === 'map' ? '#0F172A' : 'transparent',
-                  color: viewMode === 'map' ? '#FFFFFF' : '#64748B',
-                  boxShadow: viewMode === 'map' ? '0 2px 8px rgba(15, 23, 42, 0.18)' : 'none',
-                  transition: 'all 0.25s ease'
-                }}
-                onClick={() => setViewMode('map')}
-              >
-                <Map size={14} />
-                <span>Map</span>
-              </button>
-            </div>
           </div>
         </div>
 
         {/* District Executive Search Bar & Filter Modal Trigger */}
         <div className="district-discovery-search-container">
-          <div className="district-discovery-search-box">
-            <Search size={18} className="text-slate-400 shrink-0" />
+          <div className="district-discovery-search-box" style={{ background: '#FFFFFF', border: '1px solid #E8E2D5' }}>
+            <Search size={18} style={{ color: '#565449' }} className="shrink-0" />
             <input
               type="text"
               className="district-discovery-search-input"
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Search by restaurant name, cuisine, or popular dish..."
+              style={{ color: '#11120D' }}
             />
             {search && (
               <button
@@ -277,6 +313,7 @@ export default function Discover() {
                 onClick={() => setSearch('')}
                 className="district-discovery-search-clear"
                 title="Clear search"
+                style={{ color: '#565449' }}
               >
                 <X size={14} />
               </button>
@@ -288,178 +325,50 @@ export default function Discover() {
             type="button"
             className="district-discovery-filter-btn"
             onClick={() => setShowMobileFilters(true)}
+            style={{
+              background: '#FFFFFF',
+              border: '1px solid #E8E2D5',
+              color: '#11120D',
+            }}
           >
-            <Filter size={15} className="text-slate-800 shrink-0" />
+            <Filter size={15} style={{ color: '#11120D' }} className="shrink-0" />
             <span>Filters</span>
             {activeFiltersCount > 0 && (
-              <span className="district-discovery-filter-badge">
+              <span className="district-discovery-filter-badge" style={{ background: '#11120D', color: '#FFFBF4' }}>
                 {activeFiltersCount}
               </span>
             )}
           </button>
         </div>
-
-        {/* Quick Filter Horizontal Scroll Stream */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
-          <button
-            type="button"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 6,
-              padding: '8px 16px',
-              minHeight: 36,
-              borderRadius: 99,
-              fontSize: 12.5,
-              fontWeight: 700,
-              cursor: 'pointer',
-              flexShrink: 0,
-              border: !openOnly && !offersOnly && cuisines.length === 0 ? '1.5px solid #0F172A' : '1.5px solid #E2E8F0',
-              background: !openOnly && !offersOnly && cuisines.length === 0 ? '#0F172A' : '#FFFFFF',
-              color: !openOnly && !offersOnly && cuisines.length === 0 ? '#FFFFFF' : '#334155',
-              boxShadow: !openOnly && !offersOnly && cuisines.length === 0 ? '0 2px 8px rgba(15, 23, 42, 0.18)' : 'none',
-              transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
-            }}
-            onClick={clearAll}
-          >
-            <Sparkles size={13} />
-            <span>All ({restaurantList.length})</span>
-          </button>
-
-          <button
-            type="button"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 6,
-              padding: '8px 16px',
-              minHeight: 36,
-              borderRadius: 99,
-              fontSize: 12.5,
-              fontWeight: 700,
-              cursor: 'pointer',
-              flexShrink: 0,
-              border: openOnly ? '1.5px solid #0F172A' : '1.5px solid #E2E8F0',
-              background: openOnly ? '#0F172A' : '#FFFFFF',
-              color: openOnly ? '#FFFFFF' : '#334155',
-              boxShadow: openOnly ? '0 2px 8px rgba(15, 23, 42, 0.18)' : 'none',
-              transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
-            }}
-            onClick={() => setOpen(!openOnly)}
-          >
-            <Zap size={13} />
-            <span>Open Now</span>
-          </button>
-
-          <button
-            type="button"
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 6,
-              padding: '8px 16px',
-              minHeight: 36,
-              borderRadius: 99,
-              fontSize: 12.5,
-              fontWeight: 700,
-              cursor: 'pointer',
-              flexShrink: 0,
-              border: offersOnly ? '1.5px solid #0F172A' : '1.5px solid #E2E8F0',
-              background: offersOnly ? '#0F172A' : '#FFFFFF',
-              color: offersOnly ? '#FFFFFF' : '#334155',
-              boxShadow: offersOnly ? '0 2px 8px rgba(15, 23, 42, 0.18)' : 'none',
-              transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
-            }}
-            onClick={() => setOffers(!offersOnly)}
-          >
-            <Tag size={13} />
-            <span>Campus Deals</span>
-          </button>
-
-          {CUISINES.map(c => {
-            const isSelected = cuisines.includes(c);
-            return (
-              <button
-                key={c}
-                type="button"
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 6,
-                  padding: '8px 16px',
-                  minHeight: 36,
-                  borderRadius: 99,
-                  fontSize: 12.5,
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                  flexShrink: 0,
-                  border: isSelected ? '1.5px solid #0F172A' : '1.5px solid #E2E8F0',
-                  background: isSelected ? '#0F172A' : '#FFFFFF',
-                  color: isSelected ? '#FFFFFF' : '#334155',
-                  boxShadow: isSelected ? '0 2px 8px rgba(15, 23, 42, 0.18)' : 'none',
-                  transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
-                }}
-                onClick={() => toggle(cuisines, setCuisines, c)}
-              >
-                <UtensilsCrossed size={12} />
-                <span>{c}</span>
-              </button>
-            );
-          })}
-        </div>
       </div>
 
-      {/* Main Discover Layout (Grid or Map) */}
-      <div>
-        {viewMode === 'map' ? (
-          <InteractiveMap
-            restaurants={sortedAndFiltered}
-            onSelectRestaurant={rest => setSelectedForBooking(rest)}
-          />
-        ) : (
-          <div>
-            {sortedAndFiltered.length === 0 ? (
-              <div className="bg-white border border-slate-200 rounded-2xl p-12 text-center shadow-xs">
-                <div className="w-12 h-12 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center mx-auto mb-4 text-slate-500">
-                  <UtensilsCrossed size={22} />
-                </div>
-                <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-1">
-                  No Restaurants Found
-                </h3>
-                <p className="text-xs sm:text-sm text-slate-500 max-w-sm mx-auto mb-5">
-                  Try adjusting your radius slider, clearing search keywords, or selecting different cuisines.
-                </p>
-                <button
-                  type="button"
-                  className="px-4 py-2 text-xs sm:text-sm font-semibold rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 transition-colors cursor-pointer"
-                  onClick={clearAll}
-                >
-                  Reset All Filters
-                </button>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                <AnimatePresence mode="popLayout">
-                  {sortedAndFiltered.map((r, idx) => (
-                    <motion.div
-                      key={r.id}
-                      layout
-                      initial={{ opacity: 0, y: 14 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, scale: 0.96 }}
-                      transition={{ duration: 0.2, delay: Math.min(idx * 0.03, 0.2) }}
-                    >
-                      <RestaurantCard
-                        restaurant={r}
-                        onQuickReserve={rest => setSelectedForBooking(rest)}
-                        onViewOffer={offer => setSelectedOffer(offer)}
-                      />
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
-              </div>
-            )}
+      {/* Main Discover 3D Circular Showcase */}
+      <div style={{ marginTop: 8 }}>
+        {sortedAndFiltered.length === 0 ? (
+          <div className="bg-white border border-slate-200 rounded-2xl p-12 text-center shadow-xs">
+            <div className="w-12 h-12 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center mx-auto mb-4 text-slate-500">
+              <UtensilsCrossed size={22} />
+            </div>
+            <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-1">
+              No Restaurants Found
+            </h3>
+            <p className="text-xs sm:text-sm text-slate-500 max-w-sm mx-auto mb-5">
+              Try adjusting your radius slider, clearing search keywords, or selecting different cuisines.
+            </p>
+            <button
+              type="button"
+              className="px-4 py-2 text-xs sm:text-sm font-semibold rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 transition-colors cursor-pointer"
+              onClick={clearAll}
+            >
+              Reset All Filters
+            </button>
           </div>
+        ) : (
+          <RestaurantCircularGallery
+            restaurants={sortedAndFiltered}
+            onQuickReserve={rest => setSelectedForBooking(rest)}
+            onViewOffer={offer => setSelectedOffer(offer)}
+          />
         )}
       </div>
 
@@ -477,22 +386,22 @@ export default function Discover() {
             aria-labelledby="filter-modal-title"
           >
             {/* Modal Header */}
-            <div className="district-filter-header">
+            <div className="district-filter-header" style={{ borderBottom: '1px solid #E8E2D5', padding: '16px 20px' }}>
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
                   <div style={{
                     width: 32,
                     height: 32,
                     borderRadius: 10,
-                    background: '#0F172A',
-                    color: '#FFFFFF',
+                    background: '#11120D',
+                    color: '#FFFBF4',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center'
                   }}>
                     <SlidersHorizontal size={16} />
                   </div>
-                  <h3 id="filter-modal-title" style={{ fontSize: 17, fontWeight: 800, color: '#0F172A', margin: 0 }}>
+                  <h3 id="filter-modal-title" style={{ fontSize: 17, fontWeight: 700, color: '#11120D', margin: 0, fontFamily: "'Newsreader', 'Playfair Display', Georgia, serif" }}>
                     Filters &amp; Preferences
                   </h3>
                   {activeFiltersCount > 0 && (
@@ -500,15 +409,15 @@ export default function Discover() {
                       padding: '2px 8px',
                       borderRadius: 99,
                       fontSize: 11,
-                      fontWeight: 800,
-                      background: '#F1F5F9',
-                      color: '#0F172A'
+                      fontWeight: 700,
+                      background: '#11120D',
+                      color: '#FFFBF4'
                     }}>
                       {activeFiltersCount} Active
                     </span>
                   )}
                 </div>
-                <p style={{ fontSize: 12.5, color: '#64748B', margin: '4px 0 0', fontWeight: 500 }}>
+                <p style={{ fontSize: 12.5, color: '#565449', margin: '4px 0 0', fontWeight: 500 }}>
                   Tailor your dining results near Bennett University
                 </p>
               </div>
@@ -518,22 +427,22 @@ export default function Discover() {
                   width: 34,
                   height: 34,
                   borderRadius: '50%',
-                  border: '1px solid #E2E8F0',
+                  border: '1px solid #E8E2D5',
                   background: '#FFFFFF',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   cursor: 'pointer',
-                  color: '#64748B',
+                  color: '#565449',
                   transition: 'all 0.2s ease'
                 }}
                 onMouseEnter={e => {
-                  e.currentTarget.style.background = '#F1F5F9';
-                  e.currentTarget.style.color = '#0F172A';
+                  e.currentTarget.style.background = '#F6F2EA';
+                  e.currentTarget.style.color = '#11120D';
                 }}
                 onMouseLeave={e => {
                   e.currentTarget.style.background = '#FFFFFF';
-                  e.currentTarget.style.color = '#64748B';
+                  e.currentTarget.style.color = '#565449';
                 }}
                 onClick={() => setShowMobileFilters(false)}
                 aria-label="Close filters"
@@ -543,14 +452,14 @@ export default function Discover() {
             </div>
 
             {/* Modal Scrollable Body */}
-            <div className="district-filter-body">
+            <div className="district-filter-body" style={{ padding: '20px', overflowY: 'auto', flex: '1 1 auto', minHeight: 0 }}>
               {/* 1. Distance Slider & Presets */}
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                  <span style={{ fontSize: 11.5, fontWeight: 800, color: '#0F172A', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                  <span style={{ fontSize: 11.5, fontWeight: 700, color: '#11120D', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                     Radius from Campus
                   </span>
-                  <span style={{ fontSize: 11.5, fontWeight: 800, padding: '3px 10px', borderRadius: 99, background: '#0F172A', color: '#FFFFFF' }}>
+                  <span style={{ fontSize: 11.5, fontWeight: 700, padding: '3px 10px', borderRadius: 99, background: '#11120D', color: '#FFFBF4' }}>
                     {maxDist} km
                   </span>
                 </div>
@@ -561,7 +470,7 @@ export default function Discover() {
                   step={0.5}
                   value={maxDist}
                   onChange={e => setDist(parseFloat(e.target.value))}
-                  style={{ width: '100%', accentColor: '#0F172A', height: 6, borderRadius: 6, cursor: 'pointer' }}
+                  style={{ width: '100%', accentColor: '#11120D', height: 6, borderRadius: 6, cursor: 'pointer' }}
                 />
                 {/* Distance Presets */}
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginTop: 10 }}>
@@ -582,11 +491,10 @@ export default function Discover() {
                           fontSize: 12,
                           fontWeight: 700,
                           cursor: 'pointer',
-                          border: isSelected ? '1.5px solid #0F172A' : '1.5px solid #E2E8F0',
-                          background: isSelected ? '#0F172A' : '#FFFFFF',
-                          color: isSelected ? '#FFFFFF' : '#475569',
-                          boxShadow: isSelected ? '0 2px 6px rgba(15, 23, 42, 0.15)' : 'none',
-                          transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)'
+                          border: isSelected ? '1.5px solid #11120D' : '1.5px solid #E8E2D5',
+                          background: isSelected ? '#11120D' : '#FFFFFF',
+                          color: isSelected ? '#FFFBF4' : '#565449',
+                          transition: 'all 0.15s ease'
                         }}
                       >
                         {p.label}
@@ -596,206 +504,196 @@ export default function Discover() {
                 </div>
               </div>
 
-              {/* 2. Side-by-Side Grid: Price Category & Minimum Rating */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16 }}>
-                {/* Price Tier */}
-                <div>
-                  <span style={{ display: 'block', fontSize: 11.5, fontWeight: 800, color: '#0F172A', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8 }}>
-                    Price Tier
+              {/* 2. Interactive BranchedMenu Filter Hierarchy */}
+              <div style={{ marginTop: 22 }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+                  <span style={{ fontSize: 11.5, fontWeight: 700, color: '#11120D', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    Interactive Filter Directory
                   </span>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 6 }}>
-                    {[
-                      { id: '₹', label: '₹ Casual' },
-                      { id: '₹₹', label: '₹₹ Mid' },
-                      { id: '₹₹₹', label: '₹₹₹ Fine' }
-                    ].map(p => {
-                      const isSelected = prices.includes(p.id);
-                      return (
-                        <button
-                          key={p.id}
-                          type="button"
-                          onClick={() => toggle(prices, setPrices, p.id)}
-                          style={{
-                            padding: '8px 4px',
-                            borderRadius: 10,
-                            fontSize: 12,
-                            fontWeight: 700,
-                            cursor: 'pointer',
-                            textAlign: 'center',
-                            border: isSelected ? '1.5px solid #0F172A' : '1.5px solid #E2E8F0',
-                            background: isSelected ? '#0F172A' : '#F8FAFC',
-                            color: isSelected ? '#FFFFFF' : '#475569',
-                            boxShadow: isSelected ? '0 2px 6px rgba(15, 23, 42, 0.15)' : 'none',
-                            transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)'
-                          }}
-                        >
-                          {p.label}
-                        </button>
-                      );
-                    })}
-                  </div>
+                  <span style={{ fontSize: 11, color: '#565449', fontWeight: 500 }}>
+                    Click branches to toggle
+                  </span>
                 </div>
 
-                {/* Minimum Rating */}
-                <div>
-                  <span style={{ display: 'block', fontSize: 11.5, fontWeight: 800, color: '#0F172A', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8 }}>
-                    Minimum Rating
-                  </span>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 6 }}>
-                    {RATINGS.map(r => {
-                      const isSelected = minRating === r;
-                      return (
-                        <button
-                          key={r}
-                          type="button"
-                          onClick={() => setRating(r)}
-                          style={{
-                            padding: '8px 4px',
-                            borderRadius: 10,
-                            fontSize: 12,
-                            fontWeight: 700,
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: 4,
-                            border: isSelected ? '1.5px solid #0F172A' : '1.5px solid #E2E8F0',
-                            background: isSelected ? '#0F172A' : '#F8FAFC',
-                            color: isSelected ? '#FFFFFF' : '#475569',
-                            boxShadow: isSelected ? '0 2px 6px rgba(15, 23, 42, 0.15)' : 'none',
-                            transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)'
-                          }}
-                        >
-                          {r !== 'Any' && <Star size={11} className={isSelected ? 'fill-white text-white' : 'fill-slate-900 text-slate-900'} />}
-                          <span>{r}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
+                <div
+                  style={{
+                    background: '#FFFBF4',
+                    border: '1px solid #E8E2D5',
+                    borderRadius: 16,
+                    padding: '16px 18px',
+                    boxShadow: 'inset 0 1px 4px rgba(17, 18, 13, 0.02)'
+                  }}
+                >
+                  <BranchedMenu
+                    items={filterMenuItems}
+                    defaultOpen={[0, 1, 2, 3]}
+                    activeValue={activeFilterKeys}
+                    onSelect={handleFilterSelect}
+                    color="#11120D"
+                    accentColor="#11120D"
+                    lineColor="#D8CFBC"
+                    width="100%"
+                    rowHeight={34}
+                    indent={38}
+                    trunk={14}
+                    radius={10}
+                    lineWidth={1.5}
+                    fontSize={13}
+                    drawDuration={320}
+                    foldDuration={260}
+                  />
                 </div>
-              </div>
 
-              {/* 3. Cuisines & Specialties Pills */}
-              <div>
-                <span style={{ display: 'block', fontSize: 11.5, fontWeight: 800, color: '#0F172A', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8 }}>
-                  Cuisines &amp; Specialties
-                </span>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                  {CUISINES.map(c => {
-                    const isSelected = cuisines.includes(c);
-                    return (
+                {/* Selected Active Filter Tags */}
+                {activeFiltersCount > 0 && (
+                  <div style={{ marginTop: 16 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                      <span style={{ fontSize: 11, fontWeight: 700, color: '#565449', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                        Active Criteria ({activeFiltersCount})
+                      </span>
                       <button
-                        key={c}
                         type="button"
-                        onClick={() => toggle(cuisines, setCuisines, c)}
+                        onClick={clearAll}
                         style={{
-                          padding: '7px 14px',
-                          borderRadius: 99,
-                          fontSize: 12.5,
-                          fontWeight: 650,
+                          background: 'none',
+                          border: 'none',
+                          color: '#565449',
+                          fontSize: 11,
+                          fontWeight: 600,
                           cursor: 'pointer',
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: 6,
-                          border: isSelected ? '1.5px solid #0F172A' : '1.5px solid #E2E8F0',
-                          background: isSelected ? '#0F172A' : '#FFFFFF',
-                          color: isSelected ? '#FFFFFF' : '#334155',
-                          boxShadow: isSelected ? '0 2px 6px rgba(15, 23, 42, 0.15)' : 'none',
-                          transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)'
+                          textDecoration: 'underline',
+                          padding: 0
                         }}
                       >
-                        <UtensilsCrossed size={12} className={isSelected ? 'text-white' : 'text-slate-700'} />
-                        <span>{c}</span>
+                        Clear All
                       </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* 4. Privileges & Availability (Interactive Cards) */}
-              <div>
-                <span style={{ display: 'block', fontSize: 11.5, fontWeight: 800, color: '#0F172A', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8 }}>
-                  Privileges &amp; Availability
-                </span>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 10 }}>
-                  <button
-                    type="button"
-                    onClick={() => setOpen(!openOnly)}
-                    style={{
-                      padding: '12px 14px',
-                      borderRadius: 14,
-                      border: openOnly ? '1.5px solid #0F172A' : '1.5px solid #E2E8F0',
-                      background: openOnly ? '#0F172A' : '#FFFFFF',
-                      color: openOnly ? '#FFFFFF' : '#1E293B',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      cursor: 'pointer',
-                      textAlign: 'left',
-                      boxShadow: openOnly ? '0 2px 8px rgba(15, 23, 42, 0.18)' : 'none',
-                      transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)'
-                    }}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
-                      <Zap size={16} className={openOnly ? 'text-white' : 'text-slate-500'} />
-                      <span style={{ fontSize: 13, fontWeight: 700 }}>Open Right Now</span>
                     </div>
-                    <span style={{
-                      width: 18,
-                      height: 18,
-                      borderRadius: '50%',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: 11,
-                      fontWeight: 800,
-                      background: openOnly ? '#FFFFFF' : 'transparent',
-                      color: '#0F172A',
-                      border: openOnly ? 'none' : '1.5px solid #CBD5E1'
-                    }}>
-                      {openOnly ? '✓' : ''}
-                    </span>
-                  </button>
 
-                  <button
-                    type="button"
-                    onClick={() => setOffers(!offersOnly)}
-                    style={{
-                      padding: '12px 14px',
-                      borderRadius: 14,
-                      border: offersOnly ? '1.5px solid #0F172A' : '1.5px solid #E2E8F0',
-                      background: offersOnly ? '#0F172A' : '#FFFFFF',
-                      color: offersOnly ? '#FFFFFF' : '#1E293B',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      cursor: 'pointer',
-                      textAlign: 'left',
-                      boxShadow: offersOnly ? '0 2px 8px rgba(15, 23, 42, 0.18)' : 'none',
-                      transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)'
-                    }}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
-                      <Tag size={16} className={offersOnly ? 'text-white' : 'text-slate-500'} />
-                      <span style={{ fontSize: 13, fontWeight: 700 }}>Campus Privilege Deals</span>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                      {cuisines.map(c => (
+                        <button
+                          key={c}
+                          type="button"
+                          onClick={() => toggle(cuisines, setCuisines, c)}
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 5,
+                            padding: '4px 10px',
+                            borderRadius: 99,
+                            fontSize: 11.5,
+                            fontWeight: 600,
+                            background: '#11120D',
+                            color: '#FFFBF4',
+                            border: 'none',
+                            cursor: 'pointer',
+                            transition: 'all 0.15s ease'
+                          }}
+                        >
+                          <span>{c}</span>
+                          <X size={11} />
+                        </button>
+                      ))}
+
+                      {prices.map(p => (
+                        <button
+                          key={p}
+                          type="button"
+                          onClick={() => toggle(prices, setPrices, p)}
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 5,
+                            padding: '4px 10px',
+                            borderRadius: 99,
+                            fontSize: 11.5,
+                            fontWeight: 600,
+                            background: '#11120D',
+                            color: '#FFFBF4',
+                            border: 'none',
+                            cursor: 'pointer',
+                            transition: 'all 0.15s ease'
+                          }}
+                        >
+                          <span>{p} Tier</span>
+                          <X size={11} />
+                        </button>
+                      ))}
+
+                      {minRating !== 'Any' && (
+                        <button
+                          type="button"
+                          onClick={() => setRating('Any')}
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 5,
+                            padding: '4px 10px',
+                            borderRadius: 99,
+                            fontSize: 11.5,
+                            fontWeight: 600,
+                            background: '#11120D',
+                            color: '#FFFBF4',
+                            border: 'none',
+                            cursor: 'pointer',
+                            transition: 'all 0.15s ease'
+                          }}
+                        >
+                          <span>★ {minRating}</span>
+                          <X size={11} />
+                        </button>
+                      )}
+
+                      {openOnly && (
+                        <button
+                          type="button"
+                          onClick={() => setOpen(false)}
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 5,
+                            padding: '4px 10px',
+                            borderRadius: 99,
+                            fontSize: 11.5,
+                            fontWeight: 600,
+                            background: '#11120D',
+                            color: '#FFFBF4',
+                            border: 'none',
+                            cursor: 'pointer',
+                            transition: 'all 0.15s ease'
+                          }}
+                        >
+                          <span>Open Right Now</span>
+                          <X size={11} />
+                        </button>
+                      )}
+
+                      {offersOnly && (
+                        <button
+                          type="button"
+                          onClick={() => setOffers(false)}
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 5,
+                            padding: '4px 10px',
+                            borderRadius: 99,
+                            fontSize: 11.5,
+                            fontWeight: 600,
+                            background: '#11120D',
+                            color: '#FFFBF4',
+                            border: 'none',
+                            cursor: 'pointer',
+                            transition: 'all 0.15s ease'
+                          }}
+                        >
+                          <span>Privilege Deals</span>
+                          <X size={11} />
+                        </button>
+                      )}
                     </div>
-                    <span style={{
-                      width: 18,
-                      height: 18,
-                      borderRadius: '50%',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: 11,
-                      fontWeight: 800,
-                      background: offersOnly ? '#FFFFFF' : 'transparent',
-                      color: '#0F172A',
-                      border: offersOnly ? 'none' : '1.5px solid #CBD5E1'
-                    }}>
-                      {offersOnly ? '✓' : ''}
-                    </span>
-                  </button>
-                </div>
+                  </div>
+                )}
               </div>
             </div>
 

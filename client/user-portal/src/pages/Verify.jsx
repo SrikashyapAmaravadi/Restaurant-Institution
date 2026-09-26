@@ -13,7 +13,7 @@ import {
   Sparkles,
   Loader2
 } from 'lucide-react';
-import { SuccessState } from '../components/states';
+import GlacierDoodleBackground from '../components/GlacierDoodleBackground';
 
 export default function Verify() {
   const navigate = useNavigate();
@@ -107,29 +107,129 @@ export default function Verify() {
     return (
       <div
         style={{
+          position: 'relative',
           minHeight: '100vh',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: 'var(--bg-main)',
-          padding: '40px 20px'
+          padding: '16px',
+          boxSizing: 'border-box',
+          overflow: 'hidden',
         }}
       >
-        <SuccessState
-          title="Institutional Verification Complete"
-          description="Your Bennett University identity has been verified. You now have full access to campus dining privileges, pre-booking, and partner offers."
-          referenceCode={otp.join('')}
-          referenceLabel="Verified Security Passkey"
-          details={[
-            { label: 'Institutional Email', value: email },
-            { label: 'Access Tier', value: 'Tier-1 Bennett Member' },
-            { label: 'Status', value: 'Active & Verified' }
-          ]}
-          actionLabel="Explore Restaurants"
-          actionPath="/discover"
-          secondaryLabel="View Profile"
-          secondaryPath="/profile"
-        />
+        <GlacierDoodleBackground theme="light" />
+
+        <div className="auth-card" style={{ textAlign: 'center' }}>
+          <div
+            style={{
+              width: 44,
+              height: 44,
+              borderRadius: '50%',
+              background: '#F0FDF4',
+              border: '1.5px solid #BBF7D0',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              margin: '0 auto 12px',
+              color: '#16A34A',
+            }}
+          >
+            <CheckCircle2 size={24} />
+          </div>
+
+          <div
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 5,
+              padding: '3px 10px',
+              borderRadius: 99,
+              background: '#F6F2EA',
+              border: '1px solid #E8E2D5',
+              color: '#565449',
+              fontSize: 10,
+              fontWeight: 700,
+              letterSpacing: '0.08em',
+              textTransform: 'uppercase',
+              marginBottom: 8,
+            }}
+          >
+            <Sparkles size={10} color="#565449" />
+            <span>Bennett University</span>
+          </div>
+
+          <h2
+            className="auth-card-title"
+            style={{
+              fontFamily: "'Newsreader', 'Playfair Display', Georgia, serif",
+              fontSize: 21,
+              fontWeight: 600,
+              color: '#11120D',
+              margin: '4px 0 6px',
+            }}
+          >
+            Verification Complete
+          </h2>
+
+          <p
+            className="auth-card-subtitle"
+            style={{
+              fontSize: 11.5,
+              color: '#565449',
+              lineHeight: 1.45,
+              marginBottom: 16,
+            }}
+          >
+            Your Bennett University identity is verified. You now have full access to campus dining privileges.
+          </p>
+
+          <div
+            style={{
+              background: '#F6F2EA',
+              border: '1px solid #E8E2D5',
+              borderRadius: 12,
+              padding: '10px 12px',
+              marginBottom: 16,
+              fontSize: 11,
+              textAlign: 'left',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 4,
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', color: '#565449' }}>
+              <span>Account:</span>
+              <strong style={{ color: '#11120D' }}>{email}</strong>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', color: '#565449' }}>
+              <span>Access Tier:</span>
+              <strong style={{ color: '#11120D' }}>Tier-1 Member</strong>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', color: '#565449' }}>
+              <span>Status:</span>
+              <strong style={{ color: '#16A34A' }}>Active &amp; Verified</strong>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => navigate('/discover')}
+            className="btn btn-primary auth-card-btn"
+            style={{
+              width: '100%',
+              borderRadius: 99,
+              fontWeight: 600,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 6,
+              touchAction: 'manipulation',
+            }}
+          >
+            <span>Explore Restaurants</span>
+            <ArrowRight size={13} />
+          </button>
+        </div>
       </div>
     );
   }
@@ -137,142 +237,172 @@ export default function Verify() {
   return (
     <div
       style={{
+        position: 'relative',
         minHeight: '100vh',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: 'var(--bg-main)',
-        padding: 'clamp(20px, 5vw, 40px) clamp(12px, 4vw, 20px)',
-        boxSizing: 'border-box'
+        padding: '16px',
+        boxSizing: 'border-box',
+        overflow: 'hidden',
       }}
     >
-      <div
-        className="card anim-scale-in"
-        style={{
-          width: '100%',
-          maxWidth: 520,
-          boxSizing: 'border-box',
-          padding: 'clamp(24px, 5vw, 36px) clamp(16px, 4vw, 36px)',
-          textAlign: 'center',
-          border: '1px solid var(--border)',
-          borderRadius: 'var(--r-lg)',
-          background: 'var(--bg-card)',
-          boxShadow: 'var(--shadow-md)'
-        }}
-      >
-        {/* Shield Icon */}
+      {/* Hand-drawn Doodles Canvas */}
+      <GlacierDoodleBackground theme="light" />
+
+      {/* Ultra-compact Auth Card */}
+      <div className="auth-card" style={{ textAlign: 'center' }}>
+        {/* Emblem */}
         <div
           style={{
-            width: 60,
-            height: 60,
+            width: 40,
+            height: 40,
             borderRadius: '50%',
-            background: 'var(--primary-subtle)',
-            border: '1.5px solid #BFDBFE',
+            background: '#F6F2EA',
+            border: '1.5px solid #D8CFBC',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            margin: '0 auto 16px',
-            color: 'var(--primary)',
-            boxShadow: 'var(--shadow-sm)'
+            margin: '0 auto 10px',
+            color: '#11120D',
           }}
         >
-          <ShieldCheck size={30} />
+          <ShieldCheck size={20} />
         </div>
 
-        <h2 className="font-display" style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--t1)', marginBottom: 6 }}>
-          Institutional Verification
+        {/* Badge Pill */}
+        <div
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 5,
+            padding: '3px 10px',
+            borderRadius: 99,
+            background: '#F6F2EA',
+            border: '1px solid #E8E2D5',
+            color: '#565449',
+            fontSize: 10,
+            fontWeight: 700,
+            letterSpacing: '0.08em',
+            textTransform: 'uppercase',
+            marginBottom: 6,
+          }}
+        >
+          <Sparkles size={10} color="#565449" />
+          <span>Institutional Verification</span>
+        </div>
+
+        <h2
+          className="auth-card-title"
+          style={{
+            fontFamily: "'Newsreader', 'Playfair Display', Georgia, serif",
+            fontSize: 21,
+            fontWeight: 600,
+            color: '#11120D',
+            margin: '4px 0 4px',
+          }}
+        >
+          Security Passkey
         </h2>
 
-        <p style={{ fontSize: 13.5, color: 'var(--t3)', maxWidth: 380, margin: '0 auto 20px', lineHeight: 1.5 }}>
-          Enter the 6-digit security clearance code issued by the <strong>Super Admin Governance Office</strong> for:<br />
-          <strong style={{ color: 'var(--accent)' }}>{email}</strong>
+        <p
+          className="auth-card-subtitle"
+          style={{
+            fontSize: 11,
+            color: '#565449',
+            lineHeight: 1.45,
+            marginBottom: 14,
+          }}
+        >
+          Enter the 6-digit code issued for <strong style={{ color: '#11120D' }}>{email || 'your account'}</strong>.
         </p>
 
-        {/* Super Admin Code Notification Banner */}
-        {issuedCode ? (
+        {/* Issued Code Auto-Fill Banner */}
+        {issuedCode && (
           <div
             style={{
-              background: '#ECFDF5',
-              border: '1.5px solid #A7F3D0',
-              borderRadius: 'var(--r-sm)',
-              padding: '14px 16px',
-              marginBottom: 24,
-              textAlign: 'left',
+              background: '#F0FDF4',
+              border: '1px solid #BBF7D0',
+              borderRadius: 12,
+              padding: '8px 10px',
+              marginBottom: 14,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              gap: 12
+              gap: 8,
+              fontSize: 11,
+              textAlign: 'left',
             }}
           >
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700, color: '#059669' }}>
-                <KeyRound size={14} /> Super Admin Issued Code
+              <div style={{ color: '#15803D', fontWeight: 700, fontSize: 10.5, display: 'flex', alignItems: 'center', gap: 4 }}>
+                <KeyRound size={12} /> Issued Passkey
               </div>
-              <div style={{ fontSize: 13, color: 'var(--t1)', marginTop: 2 }}>
-                Passkey: <strong style={{ color: 'var(--accent)', fontSize: 15, letterSpacing: '0.08em', fontFamily: 'monospace' }}>{issuedCode}</strong>
+              <div style={{ color: '#11120D', fontWeight: 700, fontFamily: 'monospace', letterSpacing: '0.06em', fontSize: 13 }}>
+                {issuedCode}
               </div>
             </div>
             <button
               type="button"
-              className="btn btn-primary btn-sm cursor-pointer"
               onClick={handleApplyIssuedCode}
-              style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
+              style={{
+                background: '#15803D',
+                color: '#FFFBF4',
+                border: 'none',
+                borderRadius: 99,
+                padding: '4px 10px',
+                fontSize: 10.5,
+                fontWeight: 600,
+                cursor: 'pointer',
+                touchAction: 'manipulation',
+              }}
             >
-              <Sparkles size={13} />
-              <span>1-Click Fill</span>
+              Fill
             </button>
-          </div>
-        ) : (
-          <div
-            style={{
-              background: '#FFFBEB',
-              border: '1px solid #FDE68A',
-              borderRadius: 'var(--r-sm)',
-              padding: '12px 16px',
-              marginBottom: 20,
-              fontSize: 12.5,
-              color: 'var(--t2)',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 10
-            }}
-          >
-            <div style={{ textAlign: 'left' }}>
-              <span style={{ color: 'var(--accent)', fontWeight: 700 }}>Awaiting Admin Clearance</span>
-              <div style={{ fontSize: 11.5, color: 'var(--t3)', marginTop: 2 }}>
-                Your clearance passkey will be issued by the University Super Admin once your enrollment is verified.
-              </div>
-            </div>
           </div>
         )}
 
+        {/* 6-Digit OTP Box Grid */}
         <form onSubmit={handleVerify}>
-          {/* 6 Digit Inputs */}
-          <div style={{ display: 'flex', justifyContent: 'center', gap: 'clamp(4px, 1.8vw, 10px)', marginBottom: 20 }}>
-            {otp.map((val, idx) => (
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              gap: 6,
+              marginBottom: 14,
+            }}
+          >
+            {otp.map((digit, idx) => (
               <input
                 key={idx}
                 id={`otp-${idx}`}
                 type="text"
                 maxLength={1}
-                value={val}
+                value={digit}
                 onChange={e => handleChange(idx, e.target.value)}
-                style={{
-                  flex: 1,
-                  minWidth: 0,
-                  maxWidth: 48,
-                  height: 'clamp(42px, 12vw, 56px)',
-                  borderRadius: 'var(--r-sm)',
-                  background: 'var(--bg-surface)',
-                  border: `2px solid ${val ? '#6FAF3D' : 'var(--border)'}`,
-                  fontSize: 'clamp(16px, 4.5vw, 22px)',
-                  fontWeight: 800,
-                  color: 'var(--t1)',
-                  textAlign: 'center',
-                  outline: 'none',
-                  boxShadow: val ? '0 0 0 3px rgba(111, 175, 61, 0.25)' : 'none',
-                  transition: 'all 0.15s ease'
+                onKeyDown={e => {
+                  if (e.key === 'Backspace' && !digit && idx > 0) {
+                    const prevInput = document.getElementById(`otp-${idx - 1}`);
+                    if (prevInput) prevInput.focus();
+                  }
                 }}
+                style={{
+                  width: 35,
+                  height: 40,
+                  textAlign: 'center',
+                  fontSize: 16,
+                  fontWeight: 700,
+                  color: '#11120D',
+                  background: '#FFFFFF',
+                  border: `1.5px solid ${digit ? '#11120D' : '#E8E2D5'}`,
+                  borderRadius: 10,
+                  outline: 'none',
+                  boxSizing: 'border-box',
+                  transition: 'border-color 0.2s ease',
+                  padding: 0,
+                }}
+                onFocus={e => (e.target.style.borderColor = '#11120D')}
+                onBlur={e => (e.target.style.borderColor = digit ? '#11120D' : '#E8E2D5')}
               />
             ))}
           </div>
@@ -280,59 +410,57 @@ export default function Verify() {
           {errorMsg && (
             <div
               style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 6,
-                color: '#EF4444',
-                fontSize: 12.5,
-                marginBottom: 16
+                color: '#B91C1C',
+                fontSize: 11,
+                background: '#FEF2F2',
+                border: '1px solid #FECACA',
+                borderRadius: 8,
+                padding: '6px 8px',
+                marginBottom: 12,
               }}
             >
-              <AlertCircle size={14} />
-              <span>{errorMsg}</span>
+              {errorMsg}
             </div>
           )}
 
-          <div style={{ fontSize: 13, color: 'var(--t3)', marginBottom: 22 }}>
-            {timer > 0 ? (
-              <span>Resend code in <strong style={{ color: 'var(--accent)' }}>0:{timer < 10 ? `0${timer}` : timer}</strong></span>
-            ) : (
-              <button
-                type="button"
-                onClick={() => setTimer(59)}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  color: 'var(--accent)',
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 4
-                }}
-              >
-                <RotateCcw size={13} />
-                <span>Resend OTP Code</span>
-              </button>
-            )}
-          </div>
-
           <button
             type="submit"
-            className="btn btn-primary btn-lg btn-fw cursor-pointer"
             disabled={verifying}
-            style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
+            className="btn btn-primary auth-card-btn"
+            style={{
+              width: '100%',
+              borderRadius: 99,
+              fontWeight: 600,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 6,
+              touchAction: 'manipulation',
+            }}
           >
             {verifying ? (
-              <><Loader2 size={16} className="animate-spin" /> Validating Passkey...</>
+              <>
+                <Loader2 size={13} className="animate-spin" />
+                <span>Verifying...</span>
+              </>
             ) : (
-              <><span>Complete Verification & Continue</span> <ArrowRight size={16} /></>
+              <>
+                <span>Verify Passkey</span>
+                <ArrowRight size={13} />
+              </>
             )}
           </button>
         </form>
 
-        <div style={{ marginTop: 24, fontSize: 12, color: 'var(--t4)', borderTop: '1px solid var(--border)', paddingTop: 16 }}>
-          Official institutional passkeys are issued by the Office of Platform Governance upon student ID verification.
+        <div style={{ marginTop: 12, fontSize: 11, color: '#565449' }}>
+          <span>Didn't receive a passkey? </span>
+          <Link
+            to="/pending-approval"
+            state={{ email }}
+            style={{ color: '#11120D', fontWeight: 600, textDecoration: 'none' }}
+          >
+            Check Status
+          </Link>
         </div>
       </div>
     </div>

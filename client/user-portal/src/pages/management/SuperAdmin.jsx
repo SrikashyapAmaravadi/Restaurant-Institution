@@ -464,18 +464,18 @@ export default function SuperAdmin() {
           title="Click to view Partner Restaurants"
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
-            <span style={{ fontSize: 11, fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            <span style={{ fontSize: 11, fontWeight: 800, color: '#565449', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               Partner Restaurants
             </span>
-            <div style={{ width: 28, height: 28, borderRadius: 8, background: '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0F172A' }}>
+            <div style={{ width: 28, height: 28, borderRadius: 8, background: '#F6F2EA', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#11120D' }}>
               <Store size={14} />
             </div>
           </div>
-          <div className="font-display" style={{ fontSize: '1.85rem', fontWeight: 800, color: '#0F172A', margin: '2px 0 6px' }}>
-            {restaurantsList.length} <span style={{ fontSize: '1rem', fontWeight: 600, color: '#64748B' }}>Active</span>
+          <div className="font-display" style={{ fontSize: '1.85rem', fontWeight: 800, color: '#11120D', margin: '2px 0 6px' }}>
+            {restaurantsList.length} <span style={{ fontSize: '1rem', fontWeight: 600, color: '#565449' }}>Active</span>
           </div>
-          <div style={{ fontSize: 11.5, color: '#0F172A', display: 'flex', alignItems: 'center', gap: 5, fontWeight: 700 }}>
-            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#0F172A', display: 'inline-block' }}></span>
+          <div style={{ fontSize: 11.5, color: '#11120D', display: 'flex', alignItems: 'center', gap: 5, fontWeight: 700 }}>
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#11120D', display: 'inline-block' }}></span>
             Live PostgreSQL DB →
           </div>
         </div>
@@ -487,18 +487,18 @@ export default function SuperAdmin() {
           title="Click to view Live Bookings"
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
-            <span style={{ fontSize: 11, fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            <span style={{ fontSize: 11, fontWeight: 800, color: '#565449', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               Active Bookings
             </span>
-            <div style={{ width: 28, height: 28, borderRadius: 8, background: '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0F172A' }}>
+            <div style={{ width: 28, height: 28, borderRadius: 8, background: '#F6F2EA', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#11120D' }}>
               <Calendar size={14} />
             </div>
           </div>
-          <div className="font-display" style={{ fontSize: '1.85rem', fontWeight: 800, color: '#0F172A', margin: '2px 0 6px' }}>
+          <div className="font-display" style={{ fontSize: '1.85rem', fontWeight: 800, color: '#11120D', margin: '2px 0 6px' }}>
             {reservations.length}
           </div>
-          <div style={{ fontSize: 11.5, color: '#0F172A', display: 'flex', alignItems: 'center', gap: 5, fontWeight: 700 }}>
-            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#0F172A', display: 'inline-block' }}></span>
+          <div style={{ fontSize: 11.5, color: '#11120D', display: 'flex', alignItems: 'center', gap: 5, fontWeight: 700 }}>
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#11120D', display: 'inline-block' }}></span>
             Real-time reservations →
           </div>
         </div>
@@ -510,18 +510,18 @@ export default function SuperAdmin() {
           title="Click to view Institutions"
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
-            <span style={{ fontSize: 11, fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            <span style={{ fontSize: 11, fontWeight: 800, color: '#565449', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               Platform Institutions
             </span>
-            <div style={{ width: 28, height: 28, borderRadius: 8, background: '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0F172A' }}>
+            <div style={{ width: 28, height: 28, borderRadius: 8, background: '#F6F2EA', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#11120D' }}>
               <Globe size={14} />
             </div>
           </div>
-          <div className="font-display" style={{ fontSize: '1.85rem', fontWeight: 800, color: '#0F172A', margin: '2px 0 6px' }}>
+          <div className="font-display" style={{ fontSize: '1.85rem', fontWeight: 800, color: '#11120D', margin: '2px 0 6px' }}>
             {institutions.length}
           </div>
-          <div style={{ fontSize: 11.5, color: '#0F172A', display: 'flex', alignItems: 'center', gap: 5, fontWeight: 700 }}>
-            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#0F172A', display: 'inline-block' }}></span>
+          <div style={{ fontSize: 11.5, color: '#11120D', display: 'flex', alignItems: 'center', gap: 5, fontWeight: 700 }}>
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#11120D', display: 'inline-block' }}></span>
             Multi-tenant campus gates →
           </div>
         </div>
@@ -532,10 +532,10 @@ export default function SuperAdmin() {
         <div className="card anim-fade-up delay-2" style={{ padding: 24, background: '#FFFFFF', border: '1px solid #EEF0F3', borderRadius: 16 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18, flexWrap: 'wrap', gap: 12 }}>
             <div>
-              <h3 className="font-display" style={{ fontSize: '1.3rem', fontWeight: 800, color: '#0F172A' }}>
+              <h3 className="font-display" style={{ fontSize: '1.3rem', fontWeight: 800, color: '#11120D' }}>
                 Institutional Partner Establishments
               </h3>
-              <p style={{ fontSize: 12.5, color: '#64748B' }}>
+              <p style={{ fontSize: 12.5, color: '#565449' }}>
                 Authorized dining outlets for Bennett University students and faculty members.
               </p>
             </div>
@@ -552,7 +552,7 @@ export default function SuperAdmin() {
           </div>
 
           {restSuccessMsg && (
-            <div style={{ padding: '10px 14px', borderRadius: 10, background: '#F8FAFC', border: '1px solid #CBD5E1', color: '#0F172A', marginBottom: 16, fontSize: 13, fontWeight: 600 }}>
+            <div style={{ padding: '10px 14px', borderRadius: 10, background: '#F6F2EA', border: '1px solid #CBD5E1', color: '#11120D', marginBottom: 16, fontSize: 13, fontWeight: 600 }}>
               {restSuccessMsg}
             </div>
           )}
@@ -563,12 +563,12 @@ export default function SuperAdmin() {
                 <img src={r.image} alt={r.name} style={{ width: 80, height: 80, borderRadius: 10, objectFit: 'cover', flexShrink: 0 }} />
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div style={{ fontWeight: 800, fontSize: 15, color: '#0F172A' }}>{r.name}</div>
+                    <div style={{ fontWeight: 800, fontSize: 15, color: '#11120D' }}>{r.name}</div>
                     <span className="status-pill">
                       {r.isOpen ? '● Open' : '○ Suspended'}
                     </span>
                   </div>
-                  <div style={{ fontSize: 12, color: '#64748B', margin: '3px 0' }}>{r.cuisine} · {r.price || '₹450 for two'} · {r.hours || '11:00 AM - 11:00 PM'}</div>
+                  <div style={{ fontSize: 12, color: '#565449', margin: '3px 0' }}>{r.cuisine} · {r.price || '₹450 for two'} · {r.hours || '11:00 AM - 11:00 PM'}</div>
                   <div style={{ fontSize: 11.5, color: '#94A3B8', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{r.address}</div>
                   <div style={{ display: 'flex', gap: 8, marginTop: 12, flexWrap: 'wrap' }}>
                     <button
@@ -598,10 +598,10 @@ export default function SuperAdmin() {
         <div className="card anim-fade-up delay-2" style={{ padding: 24, background: '#FFFFFF', border: '1px solid #EEF0F3', borderRadius: 16 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18, flexWrap: 'wrap', gap: 12 }}>
             <div>
-              <h3 className="font-display" style={{ fontSize: '1.3rem', fontWeight: 800, color: '#0F172A' }}>
+              <h3 className="font-display" style={{ fontSize: '1.3rem', fontWeight: 800, color: '#11120D' }}>
                 Platform User Directory &amp; RBAC Roles
               </h3>
-              <p style={{ fontSize: 12.5, color: '#64748B' }}>
+              <p style={{ fontSize: 12.5, color: '#565449' }}>
                 Manage institutional users, promote roles, assign staff to restaurants, and control verification status.
               </p>
             </div>
@@ -624,7 +624,7 @@ export default function SuperAdmin() {
             </div>
 
             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-              <span style={{ fontSize: 12, color: '#64748B', fontWeight: 600 }}>Role:</span>
+              <span style={{ fontSize: 12, color: '#565449', fontWeight: 600 }}>Role:</span>
               <select
                 className="form-select"
                 style={{ height: 38, width: 170, fontSize: 12 }}
@@ -641,7 +641,7 @@ export default function SuperAdmin() {
             </div>
 
             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-              <span style={{ fontSize: 12, color: '#64748B', fontWeight: 600 }}>Status:</span>
+              <span style={{ fontSize: 12, color: '#565449', fontWeight: 600 }}>Status:</span>
               <select
                 className="form-select"
                 style={{ height: 38, width: 150, fontSize: 12 }}
@@ -670,13 +670,13 @@ export default function SuperAdmin() {
               <tbody>
                 {loadingUsers ? (
                   <tr>
-                    <td colSpan="5" style={{ padding: 32, textAlign: 'center', color: '#64748B' }}>
+                    <td colSpan="5" style={{ padding: 32, textAlign: 'center', color: '#565449' }}>
                       Loading platform users from PostgreSQL...
                     </td>
                   </tr>
                 ) : usersList.length === 0 ? (
                   <tr>
-                    <td colSpan="5" style={{ padding: 32, textAlign: 'center', color: '#64748B' }}>
+                    <td colSpan="5" style={{ padding: 32, textAlign: 'center', color: '#565449' }}>
                       No users match the selected filters.
                     </td>
                   </tr>
@@ -684,15 +684,15 @@ export default function SuperAdmin() {
                   usersList.map(u => (
                     <tr key={u.id}>
                       <td>
-                        <div style={{ fontWeight: 700, color: '#0F172A' }}>{u.name}</div>
-                        <div style={{ fontSize: 11.5, color: '#64748B' }}>{u.email}</div>
+                        <div style={{ fontWeight: 700, color: '#11120D' }}>{u.name}</div>
+                        <div style={{ fontSize: 11.5, color: '#565449' }}>{u.email}</div>
                       </td>
                       <td>
-                        <span className="status-pill" style={{ background: '#F8FAFC', color: '#0F172A', border: '1px solid #E2E8F0' }}>
+                        <span className="status-pill" style={{ background: '#F6F2EA', color: '#11120D', border: '1px solid #E8E2D5' }}>
                           {u.role.replace('_', ' ')}
                         </span>
                       </td>
-                      <td style={{ color: '#475569' }}>
+                      <td style={{ color: '#565449' }}>
                         <div>{u.department || 'Student Body'}</div>
                         {u.rollNumber && <div style={{ fontSize: 11, color: '#94A3B8' }}>Roll: {u.rollNumber}</div>}
                       </td>
@@ -749,10 +749,10 @@ export default function SuperAdmin() {
         <div className="card anim-fade-up delay-2" style={{ padding: 24, background: '#FFFFFF', border: '1px solid #EEF0F3', borderRadius: 16 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, flexWrap: 'wrap', gap: 12 }}>
             <div>
-              <h3 className="font-display" style={{ fontSize: '1.3rem', fontWeight: 800, color: '#0F172A' }}>
+              <h3 className="font-display" style={{ fontSize: '1.3rem', fontWeight: 800, color: '#11120D' }}>
                 Institutional Tenant Governance &amp; Email Domains
               </h3>
-              <p style={{ fontSize: 12.5, color: '#64748B' }}>
+              <p style={{ fontSize: 12.5, color: '#565449' }}>
                 Manage participating universities and approved institutional email domain gates.
               </p>
             </div>
@@ -770,7 +770,7 @@ export default function SuperAdmin() {
                   padding: 18,
                   borderRadius: 14,
                   background: '#FFFFFF',
-                  border: inst.isPrimary ? '1.5px solid #0F172A' : '1px solid #EEF0F3',
+                  border: inst.isPrimary ? '1.5px solid #11120D' : '1px solid #EEF0F3',
                   display: 'flex',
                   justifyContent: 'space-between',
                   alignItems: 'center',
@@ -779,16 +779,16 @@ export default function SuperAdmin() {
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                  <div style={{ width: 44, height: 44, borderRadius: 12, background: '#F8FAFC', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0F172A', flexShrink: 0 }}>
+                  <div style={{ width: 44, height: 44, borderRadius: 12, background: '#F6F2EA', border: '1px solid #E8E2D5', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#11120D', flexShrink: 0 }}>
                     <GraduationCap size={22} />
                   </div>
                   <div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <span style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0F172A' }}>{inst.name}</span>
-                      {inst.isPrimary && <span className="status-pill" style={{ background: '#0F172A', color: '#FFFFFF' }}>Primary Tenant</span>}
+                      <span style={{ fontSize: '1.1rem', fontWeight: 800, color: '#11120D' }}>{inst.name}</span>
+                      {inst.isPrimary && <span className="status-pill" style={{ background: '#11120D', color: '#FFFFFF' }}>Primary Tenant</span>}
                       <span className="status-pill">{inst.status}</span>
                     </div>
-                    <div style={{ fontSize: 12, color: '#64748B', fontWeight: 600, marginTop: 2 }}>
+                    <div style={{ fontSize: 12, color: '#565449', fontWeight: 600, marginTop: 2 }}>
                       Allowed Domain Gate: {inst.domain} · {inst.location}
                     </div>
                   </div>
@@ -797,11 +797,11 @@ export default function SuperAdmin() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
                   <div style={{ textAlign: 'right' }}>
                     <div style={{ fontSize: 11, color: '#94A3B8', textTransform: 'uppercase', fontWeight: 700 }}>Verified Members</div>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: '#0F172A' }}>{inst.activeUsers?.toLocaleString() || 0}</div>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: '#11120D' }}>{inst.activeUsers?.toLocaleString() || 0}</div>
                   </div>
                   <div style={{ textAlign: 'right' }}>
                     <div style={{ fontSize: 11, color: '#94A3B8', textTransform: 'uppercase', fontWeight: 700 }}>Partners</div>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: '#0F172A' }}>{inst.partnerRestaurants || 0} Restaurants</div>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: '#11120D' }}>{inst.partnerRestaurants || 0} Restaurants</div>
                   </div>
                   {!inst.isPrimary && (
                     <button
@@ -825,10 +825,10 @@ export default function SuperAdmin() {
         <div className="card anim-fade-up delay-2" style={{ padding: 24, background: '#FFFFFF', border: '1px solid #EEF0F3', borderRadius: 16 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18, flexWrap: 'wrap', gap: 12 }}>
             <div>
-              <h3 className="font-display" style={{ fontSize: '1.3rem', fontWeight: 800, color: '#0F172A' }}>
+              <h3 className="font-display" style={{ fontSize: '1.3rem', fontWeight: 800, color: '#11120D' }}>
                 Live Campus Dining Reservations &amp; Queue
               </h3>
-              <p style={{ fontSize: 12.5, color: '#64748B' }}>
+              <p style={{ fontSize: 12.5, color: '#565449' }}>
                 Unified real-time feed of table bookings across all Bennett University partner restaurants.
               </p>
             </div>
@@ -850,28 +850,28 @@ export default function SuperAdmin() {
               <tbody>
                 {reservations.length === 0 ? (
                   <tr>
-                    <td colSpan="6" style={{ padding: 32, textAlign: 'center', color: '#64748B' }}>
+                    <td colSpan="6" style={{ padding: 32, textAlign: 'center', color: '#565449' }}>
                       No table bookings currently recorded across partner restaurants.
                     </td>
                   </tr>
                 ) : (
                   reservations.map(b => (
                     <tr key={b.id}>
-                      <td style={{ fontWeight: 800, color: '#0F172A' }}>
+                      <td style={{ fontWeight: 800, color: '#11120D' }}>
                         {b.id}
                       </td>
                       <td>
-                        <div style={{ fontWeight: 700, color: '#0F172A' }}>{b.guestName || b.guest || 'Campus Member'}</div>
-                        <div style={{ fontSize: 11.5, color: '#64748B' }}>{b.guestEmail || b.email || 'student@bennett.edu.in'}</div>
+                        <div style={{ fontWeight: 700, color: '#11120D' }}>{b.guestName || b.guest || 'Campus Member'}</div>
+                        <div style={{ fontSize: 11.5, color: '#565449' }}>{b.guestEmail || b.email || 'student@bennett.edu.in'}</div>
                       </td>
                       <td style={{ fontWeight: 600, color: '#334155' }}>
                         {b.restaurantName || 'The Spice Garden'}
                       </td>
-                      <td style={{ color: '#475569' }}>
+                      <td style={{ color: '#565449' }}>
                         <div>{b.date} · {b.time}</div>
                         <div style={{ fontSize: 11, color: '#94A3B8' }}>{b.guests || 2} Guests</div>
                       </td>
-                      <td style={{ fontWeight: 700, color: '#0F172A' }}>
+                      <td style={{ fontWeight: 700, color: '#11120D' }}>
                         {b.tableAssigned || 'T-01'}
                       </td>
                       <td>
@@ -893,10 +893,10 @@ export default function SuperAdmin() {
         <div className="card anim-fade-up delay-2" style={{ padding: 24, background: '#FFFFFF', border: '1px solid #EEF0F3', borderRadius: 16 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, flexWrap: 'wrap', gap: 12 }}>
             <div>
-              <h3 className="font-display" style={{ fontSize: '1.3rem', fontWeight: 800, color: '#0F172A' }}>
+              <h3 className="font-display" style={{ fontSize: '1.3rem', fontWeight: 800, color: '#11120D' }}>
                 Platform Operational Analytics &amp; KPIs
               </h3>
-              <p style={{ fontSize: 12.5, color: '#64748B' }}>
+              <p style={{ fontSize: 12.5, color: '#565449' }}>
                 Aggregated performance metrics across university partners, dining conversions, and operations.
               </p>
             </div>
@@ -907,35 +907,35 @@ export default function SuperAdmin() {
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16 }}>
             <div className="kpi-card-lux">
-              <div style={{ fontSize: 11, color: '#64748B', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.05em' }}>Total Registered Users</div>
-              <div className="font-display" style={{ fontSize: '1.85rem', fontWeight: 800, color: '#0F172A', marginTop: 4 }}>
+              <div style={{ fontSize: 11, color: '#565449', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.05em' }}>Total Registered Users</div>
+              <div className="font-display" style={{ fontSize: '1.85rem', fontWeight: 800, color: '#11120D', marginTop: 4 }}>
                 {platformStats?.totalUsers ?? '3,420'}
               </div>
-              <div style={{ fontSize: 11.5, color: '#0F172A', marginTop: 4, fontWeight: 600 }}>Active campus directory</div>
+              <div style={{ fontSize: 11.5, color: '#11120D', marginTop: 4, fontWeight: 600 }}>Active campus directory</div>
             </div>
 
             <div className="kpi-card-lux">
-              <div style={{ fontSize: 11, color: '#64748B', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.05em' }}>Partner Dining Outlets</div>
-              <div className="font-display" style={{ fontSize: '1.85rem', fontWeight: 800, color: '#0F172A', marginTop: 4 }}>
+              <div style={{ fontSize: 11, color: '#565449', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.05em' }}>Partner Dining Outlets</div>
+              <div className="font-display" style={{ fontSize: '1.85rem', fontWeight: 800, color: '#11120D', marginTop: 4 }}>
                 {platformStats?.totalRestaurants ?? restaurantsList.length}
               </div>
-              <div style={{ fontSize: 11.5, color: '#0F172A', marginTop: 4, fontWeight: 600 }}>Approved campus vendors</div>
+              <div style={{ fontSize: 11.5, color: '#11120D', marginTop: 4, fontWeight: 600 }}>Approved campus vendors</div>
             </div>
 
             <div className="kpi-card-lux">
-              <div style={{ fontSize: 11, color: '#64748B', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.05em' }}>Total Dining Volume</div>
-              <div className="font-display" style={{ fontSize: '1.85rem', fontWeight: 800, color: '#0F172A', marginTop: 4 }}>
+              <div style={{ fontSize: 11, color: '#565449', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.05em' }}>Total Dining Volume</div>
+              <div className="font-display" style={{ fontSize: '1.85rem', fontWeight: 800, color: '#11120D', marginTop: 4 }}>
                 {platformStats?.totalBookings ?? '840'}
               </div>
-              <div style={{ fontSize: 11.5, color: '#0F172A', marginTop: 4, fontWeight: 600 }}>98.2% fulfillment rate</div>
+              <div style={{ fontSize: 11.5, color: '#11120D', marginTop: 4, fontWeight: 600 }}>98.2% fulfillment rate</div>
             </div>
 
             <div className="kpi-card-lux">
-              <div style={{ fontSize: 11, color: '#64748B', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.05em' }}>Audit Events Logged</div>
-              <div className="font-display" style={{ fontSize: '1.85rem', fontWeight: 800, color: '#0F172A', marginTop: 4 }}>
+              <div style={{ fontSize: 11, color: '#565449', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.05em' }}>Audit Events Logged</div>
+              <div className="font-display" style={{ fontSize: '1.85rem', fontWeight: 800, color: '#11120D', marginTop: 4 }}>
                 {platformStats?.auditEventsCount ?? '1,240'}
               </div>
-              <div style={{ fontSize: 11.5, color: '#0F172A', marginTop: 4, fontWeight: 600 }}>Security &amp; access logs</div>
+              <div style={{ fontSize: 11.5, color: '#11120D', marginTop: 4, fontWeight: 600 }}>Security &amp; access logs</div>
             </div>
           </div>
         </div>
@@ -946,10 +946,10 @@ export default function SuperAdmin() {
         <div className="card anim-fade-up delay-2" style={{ padding: 24, background: '#FFFFFF', border: '1px solid #EEF0F3', borderRadius: 16 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18, flexWrap: 'wrap', gap: 12 }}>
             <div>
-              <h3 className="font-display" style={{ fontSize: '1.3rem', fontWeight: 800, color: '#0F172A' }}>
+              <h3 className="font-display" style={{ fontSize: '1.3rem', fontWeight: 800, color: '#11120D' }}>
                 Campus Dining Reviews Moderation Gate
               </h3>
-              <p style={{ fontSize: 12.5, color: '#64748B' }}>
+              <p style={{ fontSize: 12.5, color: '#565449' }}>
                 Super Admin authority to hide or approve feedback according to institutional community standards.
               </p>
             </div>
@@ -959,9 +959,9 @@ export default function SuperAdmin() {
           </div>
 
           {moderationReviews.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '40px 20px', color: '#64748B' }}>
+            <div style={{ textAlign: 'center', padding: '40px 20px', color: '#565449' }}>
               <ShieldAlert size={36} style={{ margin: '0 auto 12px', color: '#94A3B8' }} />
-              <div style={{ fontSize: 14, fontWeight: 700, color: '#0F172A' }}>No Reviews Available</div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: '#11120D' }}>No Reviews Available</div>
               <div style={{ fontSize: 12 }}>There are currently no reviews submitted across partner restaurants.</div>
             </div>
           ) : (
@@ -984,15 +984,15 @@ export default function SuperAdmin() {
                 >
                   <div style={{ flex: 1, minWidth: 260 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                      <span style={{ fontSize: 13, fontWeight: 700, color: '#0F172A' }}>{rev.restaurant}</span>
-                      <span style={{ fontSize: 11, color: '#0F172A', display: 'inline-flex', alignItems: 'center', gap: 3, fontWeight: 700 }}>
-                        <Star size={12} fill="#0F172A" /> {rev.rating}/5
+                      <span style={{ fontSize: 13, fontWeight: 700, color: '#11120D' }}>{rev.restaurant}</span>
+                      <span style={{ fontSize: 11, color: '#11120D', display: 'inline-flex', alignItems: 'center', gap: 3, fontWeight: 700 }}>
+                        <Star size={12} fill="#11120D" /> {rev.rating}/5
                       </span>
                       <span className="status-pill">
                         {rev.status}
                       </span>
                       {rev.flagged && (
-                        <span className="status-pill" style={{ background: '#F1F5F9', border: '1px solid #94A3B8' }}>
+                        <span className="status-pill" style={{ background: '#F6F2EA', border: '1px solid #94A3B8' }}>
                           <AlertTriangle size={12} /> Hidden/Flagged
                         </span>
                       )}
@@ -1026,10 +1026,10 @@ export default function SuperAdmin() {
         <div className="card anim-fade-up delay-2" style={{ padding: 24, background: '#FFFFFF', border: '1px solid #EEF0F3', borderRadius: 16 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18, flexWrap: 'wrap', gap: 12 }}>
             <div>
-              <h3 className="font-display" style={{ fontSize: '1.3rem', fontWeight: 800, color: '#0F172A' }}>
+              <h3 className="font-display" style={{ fontSize: '1.3rem', fontWeight: 800, color: '#11120D' }}>
                 System-Wide Audit Trail &amp; Compliance Log
               </h3>
-              <p style={{ fontSize: 12.5, color: '#64748B' }}>
+              <p style={{ fontSize: 12.5, color: '#565449' }}>
                 Immutable records of administrative operations, role assignments, security actions, and dining changes.
               </p>
             </div>
@@ -1053,35 +1053,35 @@ export default function SuperAdmin() {
               <tbody>
                 {loadingAudit ? (
                   <tr>
-                    <td colSpan="6" style={{ padding: 32, textAlign: 'center', color: '#64748B' }}>
+                    <td colSpan="6" style={{ padding: 32, textAlign: 'center', color: '#565449' }}>
                       Loading audit records...
                     </td>
                   </tr>
                 ) : auditLogs.length === 0 ? (
                   <tr>
-                    <td colSpan="6" style={{ padding: 32, textAlign: 'center', color: '#64748B' }}>
+                    <td colSpan="6" style={{ padding: 32, textAlign: 'center', color: '#565449' }}>
                       No audit log entries recorded yet.
                     </td>
                   </tr>
                 ) : (
                   auditLogs.map(log => (
                     <tr key={log.id}>
-                      <td style={{ whiteSpace: 'nowrap', color: '#64748B', fontSize: 11.5 }}>
+                      <td style={{ whiteSpace: 'nowrap', color: '#565449', fontSize: 11.5 }}>
                         {new Date(log.createdAt).toLocaleString()}
                       </td>
                       <td>
-                        <div style={{ fontWeight: 600, color: '#0F172A' }}>{log.userName || 'System Service'}</div>
+                        <div style={{ fontWeight: 600, color: '#11120D' }}>{log.userName || 'System Service'}</div>
                         <div style={{ fontSize: 10.5, color: '#94A3B8' }}>{log.userRole || 'ANONYMOUS'}</div>
                       </td>
                       <td>
-                        <span className="status-pill" style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', fontSize: 11 }}>
+                        <span className="status-pill" style={{ background: '#F6F2EA', border: '1px solid #E8E2D5', fontSize: 11 }}>
                           {log.action}
                         </span>
                       </td>
                       <td style={{ color: '#334155' }}>
                         {log.entityType} {log.entityId && <span style={{ fontSize: 10.5, color: '#94A3B8' }}>({log.entityId.slice(0, 8)}...)</span>}
                       </td>
-                      <td style={{ color: '#64748B', maxWidth: 260, textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+                      <td style={{ color: '#565449', maxWidth: 260, textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
                         {log.detailsJson || '—'}
                       </td>
                       <td style={{ fontSize: 11, color: '#94A3B8' }}>

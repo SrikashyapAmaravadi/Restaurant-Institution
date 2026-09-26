@@ -4,6 +4,7 @@ import { useDining } from '../../context/DiningContext';
 import { useAuth } from '../../context/AuthContext';
 import PaymentModal from '../../components/PaymentModal';
 import CameraScannerModal from '../../components/CameraScannerModal';
+import RubberSegment from '../../components/RubberSegment';
 import api from '../../services/api';
 import {
   Search,
@@ -129,7 +130,7 @@ export default function StaffPortal() {
       <div className="anim-fade-up dashboard-hero-banner" style={{
         padding: '24px 28px',
         borderRadius: 20,
-        background: 'linear-gradient(135deg, #1E293B 0%, #0F172A 100%)',
+        background: 'linear-gradient(135deg, #1E293B 0%, #11120D 100%)',
         border: '1px solid rgba(255, 255, 255, 0.12)',
         marginBottom: 24,
         display: 'flex',
@@ -177,7 +178,7 @@ export default function StaffPortal() {
             onClick={() => setShowWalkinModal(true)}
             style={{
               background: '#FFFFFF',
-              color: '#0F172A',
+              color: '#11120D',
               border: '1.5px solid #FFFFFF',
               padding: '12px 24px',
               borderRadius: 99,
@@ -203,67 +204,58 @@ export default function StaffPortal() {
         boxSizing: 'border-box'
       }}>
         <div className="dashboard-pulse-card">
-          <div style={{ width: 44, height: 44, borderRadius: 12, background: '#F8FAFC', color: '#0F172A', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <div style={{ width: 44, height: 44, borderRadius: 12, background: '#F6F2EA', color: '#11120D', border: '1px solid #E8E2D5', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             <Clock size={20} />
           </div>
           <div>
-            <div style={{ fontSize: 11, color: '#64748B', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.04em' }}>Awaiting Check-In</div>
-            <div className="font-display" style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0F172A' }}>{pendingCount}</div>
+            <div style={{ fontSize: 11, color: '#565449', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.04em' }}>Awaiting Check-In</div>
+            <div className="font-display" style={{ fontSize: '1.5rem', fontWeight: 800, color: '#11120D' }}>{pendingCount}</div>
           </div>
         </div>
 
         <div className="dashboard-pulse-card">
-          <div style={{ width: 44, height: 44, borderRadius: 12, background: '#0F172A', color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <div style={{ width: 44, height: 44, borderRadius: 12, background: '#11120D', color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             <Utensils size={20} />
           </div>
           <div>
-            <div style={{ fontSize: 11, color: '#64748B', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.04em' }}>Currently Dining</div>
-            <div className="font-display" style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0F172A' }}>{seatedCount}</div>
+            <div style={{ fontSize: 11, color: '#565449', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.04em' }}>Currently Dining</div>
+            <div className="font-display" style={{ fontSize: '1.5rem', fontWeight: 800, color: '#11120D' }}>{seatedCount}</div>
           </div>
         </div>
 
         <div className="dashboard-pulse-card">
-          <div style={{ width: 44, height: 44, borderRadius: 12, background: '#F8FAFC', color: '#0F172A', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <div style={{ width: 44, height: 44, borderRadius: 12, background: '#F6F2EA', color: '#11120D', border: '1px solid #E8E2D5', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             <CheckCircle2 size={20} />
           </div>
           <div>
-            <div style={{ fontSize: 11, color: '#64748B', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.04em' }}>Settled &amp; Paid</div>
-            <div className="font-display" style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0F172A' }}>{completedCount}</div>
+            <div style={{ fontSize: 11, color: '#565449', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.04em' }}>Settled &amp; Paid</div>
+            <div className="font-display" style={{ fontSize: '1.5rem', fontWeight: 800, color: '#11120D' }}>{completedCount}</div>
           </div>
         </div>
       </div>
 
       {/* Filter Tabs & Quick Search */}
       <div className="anim-fade-up delay-2" style={{ display: 'flex', flexDirection: 'column', gap: 14, marginBottom: 18 }}>
-        <div className="tabs-scroll-x" style={{ gap: 8 }}>
-          {[
-            { key: 'ALL', label: `All Reservations (${reservations.length})` },
-            { key: 'PENDING_CHECKIN', label: `Awaiting Check-In (${pendingCount})` },
-            { key: 'SEATED', label: `Seated Diners (${seatedCount})` },
-            { key: 'COMPLETED', label: `Completed Sessions (${completedCount})` }
-          ].map(tab => (
-            <button
-              key={tab.key}
-              type="button"
-              onClick={() => setActiveFilter(tab.key)}
-              style={{
-                padding: '8px 18px',
-                borderRadius: 99,
-                fontSize: 12.5,
-                fontWeight: 700,
-                cursor: 'pointer',
-                border: '1.5px solid',
-                transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
-                background: activeFilter === tab.key ? '#0F172A' : '#FFFFFF',
-                color: activeFilter === tab.key ? '#FFFFFF' : '#475569',
-                borderColor: activeFilter === tab.key ? '#0F172A' : '#E2E8F0',
-                boxShadow: activeFilter === tab.key ? '0 2px 8px rgba(15, 23, 42, 0.15)' : 'none',
-                whiteSpace: 'nowrap'
-              }}
-            >
-              {tab.label}
-            </button>
-          ))}
+        <div className="tabs-scroll-x" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch', paddingBottom: 2 }}>
+          <RubberSegment
+            items={[
+              { value: 'ALL', label: `All Reservations (${reservations.length})` },
+              { value: 'PENDING_CHECKIN', label: `Awaiting Check-In (${pendingCount})` },
+              { value: 'SEATED', label: `Seated Diners (${seatedCount})` },
+              { value: 'COMPLETED', label: `Completed Sessions (${completedCount})` }
+            ]}
+            value={activeFilter}
+            onChange={(val) => setActiveFilter(val)}
+            trackColor="#F6F2EA"
+            thumbColor="#11120D"
+            textColor="#565449"
+            activeTextColor="#FFFBF4"
+            size="md"
+            radius={99}
+            inset={3}
+            equalSlots={false}
+            aria-label="Staff reservation status filter"
+          />
         </div>
 
         <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
@@ -283,7 +275,7 @@ export default function StaffPortal() {
       {/* Live Reservation & Dining Queue Cards */}
       <div className="anim-fade-up delay-3" style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
         {filtered.length === 0 ? (
-          <div className="card" style={{ padding: 40, textAlign: 'center', color: '#64748B' }}>
+          <div className="card" style={{ padding: 40, textAlign: 'center', color: '#565449' }}>
             No reservations found matching the current search or filter.
           </div>
         ) : (
@@ -309,9 +301,9 @@ export default function StaffPortal() {
                   flexWrap: 'wrap',
                   gap: 18,
                   borderLeft: isSeated
-                    ? '4px solid #0F172A'
+                    ? '4px solid #11120D'
                     : isCompleted
-                    ? '4px solid #64748B'
+                    ? '4px solid #565449'
                     : '4px solid #CBD5E1'
                 }}
               >
@@ -322,16 +314,16 @@ export default function StaffPortal() {
                     height: 52,
                     borderRadius: 14,
                     background: isSeated
-                      ? '#0F172A'
-                      : '#F8FAFC',
-                    border: '1px solid #E2E8F0',
+                      ? '#11120D'
+                      : '#F6F2EA',
+                    border: '1px solid #E8E2D5',
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
                     fontWeight: 800,
                     fontSize: 13,
-                    color: isSeated ? '#FFFFFF' : '#0F172A'
+                    color: isSeated ? '#FFFFFF' : '#11120D'
                   }}>
                     <Users size={18} />
                     <span style={{ fontSize: 10, fontWeight: 700 }}>{item.guests}P</span>
@@ -339,10 +331,10 @@ export default function StaffPortal() {
 
                   <div style={{ minWidth: 0, flex: 1 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4, flexWrap: 'wrap' }}>
-                      <span style={{ fontSize: 15, fontWeight: 800, color: '#0F172A' }}>
+                      <span style={{ fontSize: 15, fontWeight: 800, color: '#11120D' }}>
                         {item.guestName || item.name || 'Student Diner'}
                       </span>
-                      <span style={{ fontSize: 12, fontWeight: 700, color: '#64748B', letterSpacing: '0.05em' }}>
+                      <span style={{ fontSize: 12, fontWeight: 700, color: '#565449', letterSpacing: '0.05em' }}>
                         {item.id}
                       </span>
                       {isConfirmed && (
@@ -365,12 +357,12 @@ export default function StaffPortal() {
                       )}
                     </div>
 
-                    <div style={{ fontSize: 12.5, color: '#64748B', display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+                    <div style={{ fontSize: 12.5, color: '#565449', display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
                       <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><Clock size={13} /> {item.time}</span>
                       <span>·</span>
                       <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><Users size={13} /> {item.guests} Diners</span>
                       <span>·</span>
-                      <span style={{ color: '#0F172A', fontWeight: 600 }}>{item.guestEmail || 'Student'}</span>
+                      <span style={{ color: '#11120D', fontWeight: 600 }}>{item.guestEmail || 'Student'}</span>
                       <span>·</span>
                       <span>{item.specialRequest || 'Dining Reservation'}</span>
                     </div>
@@ -378,7 +370,7 @@ export default function StaffPortal() {
                     {/* Order summary pill if items exist */}
                     {item.orders && item.orders.length > 0 && (
                       <div style={{ marginTop: 8, display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                        <span style={{ fontSize: 11, color: '#64748B', fontWeight: 700, textTransform: 'uppercase' }}>
+                        <span style={{ fontSize: 11, color: '#565449', fontWeight: 700, textTransform: 'uppercase' }}>
                           Orders ({item.orders.length}):
                         </span>
                         {item.orders.slice(0, 3).map((o, i) => (
@@ -389,7 +381,7 @@ export default function StaffPortal() {
                         {item.orders.length > 3 && (
                           <span style={{ fontSize: 11, color: '#94A3B8' }}>+{item.orders.length - 3} more</span>
                         )}
-                        <span style={{ fontSize: 12, fontWeight: 800, color: '#0F172A', marginLeft: 4 }}>
+                        <span style={{ fontSize: 12, fontWeight: 800, color: '#11120D', marginLeft: 4 }}>
                           Est. Bill: ₹{netPayable}
                         </span>
                       </div>

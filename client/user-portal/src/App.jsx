@@ -37,10 +37,10 @@ export default function App() {
             <Route path="/landing" element={<Landing />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signin" element={<Navigate to="/login" replace />} />
-            <Route path="/register" element={<Navigate to="/login" replace />} />
-            <Route path="/signup" element={<Navigate to="/login" replace />} />
-            <Route path="/verify" element={<Navigate to="/login" replace />} />
-            <Route path="/pending-approval" element={<Navigate to="/login" replace />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/signup" element={<Navigate to="/register" replace />} />
+            <Route path="/verify" element={<Verify />} />
+            <Route path="/pending-approval" element={<PendingApproval />} />
 
           {/* Authenticated Layout with RBAC Route Gates */}
           <Route element={<AppLayout />}>

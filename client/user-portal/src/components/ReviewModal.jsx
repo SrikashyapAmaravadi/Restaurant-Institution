@@ -46,17 +46,39 @@ export default function ReviewModal({ restaurant, onClose, onReviewSubmitted }) 
 
   return (
     <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
-      <div className="modal-card anim-scale-in" style={{ maxWidth: 520, background: '#FFFFFF' }}>
-        <div className="modal-hd">
+      <div
+        className="modal-card modal-bottom-sheet anim-scale-in"
+        style={{
+          maxWidth: 520,
+          width: '100%',
+          maxHeight: '92vh',
+          borderRadius: 24,
+          overflow: 'hidden',
+          background: '#FFFBF4',
+          border: '1px solid #D8CFBC',
+          boxShadow: '0 20px 50px rgba(17, 18, 13, 0.15)',
+        }}
+      >
+        <div className="modal-hd" style={{ padding: '22px 28px 18px', background: '#FFFFFF', borderBottom: '1px solid #E8E2D5' }}>
           <div>
-            <div className="modal-title font-display" style={{ color: 'var(--t1)' }}>Write a Verified Review</div>
-            <div className="modal-sub">{restaurant.name} · Bennett Dining Network</div>
+            <div className="modal-title font-display" style={{ color: '#11120D', fontSize: '1.4rem' }}>Write a Verified Review</div>
+            <div className="modal-sub" style={{ color: '#565449', fontSize: 12.5 }}>{restaurant.name} · Bennett Dining Network</div>
           </div>
           <button className="modal-close" onClick={onClose}><X size={18} /></button>
         </div>
 
         <form onSubmit={handleSubmit}>
-          <div className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+          <div
+            className="modal-body"
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 20,
+              padding: '24px 28px',
+              background: '#FFFBF4',
+              boxSizing: 'border-box'
+            }}
+          >
             {errorMsg && (
               <div style={{ padding: '10px 14px', borderRadius: 'var(--r-xs)', background: '#FEF2F2', border: '1px solid #FCA5A5', color: '#991B1B', fontSize: 12.5, display: 'flex', alignItems: 'center', gap: 8 }}>
                 <AlertCircle size={16} />
@@ -72,8 +94,16 @@ export default function ReviewModal({ restaurant, onClose, onReviewSubmitted }) 
             )}
 
             {/* Interactive Stars */}
-            <div style={{ textAlign: 'center', padding: '8px 0' }}>
-              <div style={{ fontSize: 13, color: 'var(--t3)', marginBottom: 8 }}>Rate your dining experience</div>
+            <div
+              style={{
+                textAlign: 'center',
+                padding: '14px 16px',
+                background: '#F6F2EA',
+                borderRadius: 16,
+                border: '1px solid #E8E2D5',
+              }}
+            >
+              <div style={{ fontSize: 13, color: '#565449', marginBottom: 8, fontWeight: 500 }}>Rate your dining experience</div>
               <div style={{ display: 'flex', justifyContent: 'center', gap: 8 }}>
                 {[1, 2, 3, 4, 5].map(star => {
                   const active = (hoverRating || rating) >= star;
@@ -109,7 +139,9 @@ export default function ReviewModal({ restaurant, onClose, onReviewSubmitted }) 
 
             {/* Dish selection */}
             <div>
-              <label className="form-label">What dish did you try?</label>
+              <label className="form-label" style={{ color: '#11120D', fontWeight: 600, marginBottom: 8, display: 'block' }}>
+                What dish did you try?
+              </label>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                 {popularDishes.map(d => (
                   <button
@@ -134,7 +166,9 @@ export default function ReviewModal({ restaurant, onClose, onReviewSubmitted }) 
 
             {/* Comments */}
             <div>
-              <label className="form-label">Your Review & Food Feedback *</label>
+              <label className="form-label" style={{ color: '#11120D', fontWeight: 600, marginBottom: 8, display: 'block' }}>
+                Your Review &amp; Food Feedback *
+              </label>
               <textarea
                 className="form-input"
                 rows={4}
@@ -142,25 +176,45 @@ export default function ReviewModal({ restaurant, onClose, onReviewSubmitted }) 
                 value={comment}
                 onChange={e => setComment(e.target.value)}
                 placeholder="Share your thoughts on food quality, service speed, ambience, and discount auto-application..."
+                style={{
+                  borderRadius: 12,
+                  padding: '12px 14px',
+                  border: '1px solid #E8E2D5',
+                  width: '100%',
+                  boxSizing: 'border-box',
+                  background: '#FFFFFF',
+                  color: '#11120D',
+                }}
               />
             </div>
 
-            <div style={{ fontSize: 11.5, color: 'var(--t3)', display: 'flex', alignItems: 'center', gap: 6 }}>
+            <div style={{ fontSize: 11.5, color: '#565449', display: 'flex', alignItems: 'center', gap: 6 }}>
               <Sparkles size={14} color="#D97706" />
               <span>Reviews are verified with your official @bennett.edu.in profile.</span>
             </div>
           </div>
 
-          <div className="modal-ft">
+          <div
+            className="modal-ft"
+            style={{
+              padding: '16px 28px',
+              background: '#F6F2EA',
+              borderTop: '1px solid #E8E2D5',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'flex-end',
+              gap: 12,
+            }}
+          >
             <button
               type="button"
               className="btn btn-ghost btn-md"
               onClick={onClose}
               disabled={isSubmitting}
               style={{
-                padding: '10px 20px',
+                padding: '10px 22px',
                 minHeight: 42,
-                borderRadius: 12,
+                borderRadius: 99,
                 fontWeight: 600,
                 boxSizing: 'border-box'
               }}
@@ -175,9 +229,9 @@ export default function ReviewModal({ restaurant, onClose, onReviewSubmitted }) 
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: 8,
-                padding: '10px 22px',
+                padding: '10px 24px',
                 minHeight: 42,
-                borderRadius: 12,
+                borderRadius: 99,
                 fontWeight: 700,
                 boxSizing: 'border-box'
               }}

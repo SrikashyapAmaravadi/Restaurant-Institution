@@ -18,13 +18,17 @@ import {
   UploadCloud,
   Check,
   RotateCcw,
-  RefreshCw
+  RefreshCw,
+  Lock,
+  ShieldCheck
 } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 /**
  * CameraScannerModal
  * Production-grade WebRTC camera scanner for student dining passes and reservation QR codes.
- * Uses jsQR + BarcodeDetector for 100% universal QR code decoding across all browsers & devices.
+ * Restricted strictly to staff and restaurant owners.
+ * Styled in our 4-colour editorial palette.
  */
 export default function CameraScannerModal({
   isOpen,
@@ -32,6 +36,11 @@ export default function CameraScannerModal({
   onScanSuccess,
   reservations = []
 }) {
+  const { user } = useAuth() || {};
+  const isStaff = user?.role === 'RESTAURANT_STAFF';
+  const isOwner = user?.role === 'RESTAURANT_ADMIN';
+  const isSuper = user?.role === 'SUPER_ADMIN';
+  const isAuthorized = isStaff || isOwner || isSuper;
   const videoRef = useRef(null);
   const streamRef = useRef(null);
   const canvasRef = useRef(null);
@@ -349,7 +358,7 @@ export default function CameraScannerModal({
 
   // Camera initialization and teardown on open/close
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && isAuthorized) {
       setScannedResult(null);
       startCamera();
     } else {
@@ -358,7 +367,7 @@ export default function CameraScannerModal({
     return () => {
       stopCamera();
     };
-  }, [isOpen]);
+  }, [isOpen, isAuthorized]);
 
   // Real-time continuous QR scanning loop using jsQR + canvas
   useEffect(() => {
@@ -414,13 +423,123 @@ export default function CameraScannerModal({
 
   if (!isOpen) return null;
 
+  if (!isAuthorized) {
+    return (
+      <div
+        className="modal-overlay"
+        style={{
+          zIndex: 1050,
+          backgroundColor: 'rgba(17, 18, 13, 0.65)',
+          backdropFilter: 'blur(12px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '16px'
+        }}
+        onClick={(e) => e.target === e.currentTarget && onClose()}
+      >
+        <div
+          className="modal-card anim-scale-in"
+          style={{
+            width: '100%',
+            maxWidth: 440,
+            background: '#FFFBF4',
+            border: '1.5px solid #D8CFBC',
+            borderRadius: 24,
+            overflow: 'hidden',
+            boxShadow: '0 24px 60px rgba(17, 18, 13, 0.2)',
+            padding: '32px 28px',
+            textAlign: 'center',
+          }}
+        >
+          <div
+            style={{
+              width: 56,
+              height: 56,
+              borderRadius: '50%',
+              background: '#F6F2EA',
+              border: '1px solid #D8CFBC',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              margin: '0 auto 16px',
+              color: '#11120D',
+            }}
+          >
+            <Lock size={26} />
+          </div>
+          <h3
+            style={{
+              fontFamily: "'Newsreader', Georgia, serif",
+              fontSize: 22,
+              fontWeight: 600,
+              color: '#11120D',
+              margin: '0 0 8px',
+            }}
+          >
+            Staff &amp; Owner Access Only
+          </h3>
+          <p
+            style={{
+              fontSize: 13,
+              color: '#565449',
+              lineHeight: 1.5,
+              margin: '0 0 18px',
+            }}
+          >
+            Pass scanning is reserved exclusively for restaurant hosts, staff, and owners to verify student admission and settle dining passes.
+          </p>
+          <div
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              padding: '6px 14px',
+              borderRadius: 9999,
+              background: '#F6F2EA',
+              border: '1px solid #E8E2D5',
+              fontSize: 12,
+              color: '#565449',
+              marginBottom: 24,
+            }}
+          >
+            <span>Current role:</span>
+            <strong style={{ color: '#11120D' }}>{user?.role || 'Student Diner'}</strong>
+          </div>
+          <div>
+            <button
+              type="button"
+              onClick={onClose}
+              style={{
+                width: '100%',
+                padding: '11px 24px',
+                borderRadius: 9999,
+                background: '#11120D',
+                color: '#FFFBF4',
+                border: 'none',
+                fontSize: 13,
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
+              }}
+              onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1.5px)'}
+              onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
+            >
+              Close Scanner
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div
       className="modal-overlay"
       style={{
         zIndex: 1050,
-        backgroundColor: 'rgba(7, 18, 12, 0.88)',
-        backdropFilter: 'blur(10px)',
+        backgroundColor: 'rgba(17, 18, 13, 0.65)',
+        backdropFilter: 'blur(12px)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -429,50 +548,62 @@ export default function CameraScannerModal({
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       <div
-        className="modal-card anim-scale-in"
+        className="modal-card modal-bottom-sheet anim-scale-in"
         style={{
           width: '100%',
           maxWidth: 480,
-          background: '#0D2318',
-          border: '1.5px solid rgba(111, 175, 61, 0.35)',
+          maxHeight: '94vh',
+          background: '#FFFBF4',
+          border: '1.5px solid #D8CFBC',
           borderRadius: 24,
           overflow: 'hidden',
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.85), 0 0 35px rgba(111, 175, 61, 0.25)',
-          color: '#F1F7EC'
+          boxShadow: '0 24px 60px rgba(17, 18, 13, 0.2)',
+          color: '#11120D',
+          display: 'flex',
+          flexDirection: 'column',
         }}
       >
         {/* Modal Header */}
         <div
           style={{
-            padding: '16px 20px',
+            padding: '18px 22px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            borderBottom: '1px solid rgba(231, 241, 225, 0.12)',
-            background: 'rgba(0, 0, 0, 0.25)'
+            borderBottom: '1px solid #E8E2D5',
+            background: '#FFFFFF'
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <div
               style={{
                 width: 38,
                 height: 38,
                 borderRadius: '12px',
-                background: 'rgba(111, 175, 61, 0.2)',
-                border: '1px solid #6FAF3D',
+                background: '#F6F2EA',
+                border: '1px solid #D8CFBC',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: '#6FAF3D'
+                color: '#11120D'
               }}
             >
               <Camera size={20} />
             </div>
             <div>
-              <div style={{ fontWeight: 800, fontSize: 16, color: '#FFFFFF', letterSpacing: '-0.01em' }}>
+              <div
+                style={{
+                  fontFamily: "'Newsreader', Georgia, serif",
+                  fontWeight: 600,
+                  fontSize: 18,
+                  color: '#11120D',
+                  letterSpacing: '-0.02em',
+                  lineHeight: 1.2
+                }}
+              >
                 Scan Digital Pass
               </div>
-              <div style={{ fontSize: 11.5, color: '#A9C5A2' }}>
+              <div style={{ fontSize: 11.5, color: '#565449', marginTop: 2 }}>
                 Host Desk Live Pass Scanner
               </div>
             </div>
@@ -483,12 +614,14 @@ export default function CameraScannerModal({
               <button
                 type="button"
                 onClick={toggleTorch}
-                className="btn btn-ghost btn-xs"
                 style={{
-                  color: torchOn ? '#FBBF24' : '#E7F1E1',
-                  background: torchOn ? 'rgba(251, 191, 36, 0.2)' : 'rgba(255,255,255,0.08)',
+                  color: torchOn ? '#D97706' : '#565449',
+                  background: torchOn ? '#FEF3C7' : '#F6F2EA',
+                  border: '1px solid #E8E2D5',
                   padding: '6px 10px',
-                  borderRadius: '99px'
+                  borderRadius: 9999,
+                  cursor: 'pointer',
+                  transition: 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)'
                 }}
                 title={torchOn ? 'Turn flashlight off' : 'Turn flashlight on'}
               >
@@ -499,14 +632,26 @@ export default function CameraScannerModal({
             <button
               type="button"
               onClick={flipCamera}
-              className="btn btn-ghost btn-xs"
               style={{
-                color: '#E7F1E1',
-                background: 'rgba(255,255,255,0.08)',
+                color: '#565449',
+                background: '#F6F2EA',
+                border: '1px solid #E8E2D5',
                 padding: '6px 10px',
-                borderRadius: '99px'
+                borderRadius: 9999,
+                cursor: 'pointer',
+                transition: 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)'
               }}
               title="Flip camera (Front / Rear)"
+              onMouseEnter={e => {
+                e.currentTarget.style.background = '#11120D';
+                e.currentTarget.style.color = '#FFFBF4';
+                e.currentTarget.style.borderColor = '#11120D';
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.background = '#F6F2EA';
+                e.currentTarget.style.color = '#565449';
+                e.currentTarget.style.borderColor = '#E8E2D5';
+              }}
             >
               <FlipHorizontal size={14} />
             </button>
@@ -514,14 +659,26 @@ export default function CameraScannerModal({
             <button
               type="button"
               onClick={() => startCamera(facingMode)}
-              className="btn btn-ghost btn-xs"
               style={{
-                color: '#E7F1E1',
-                background: 'rgba(255,255,255,0.08)',
+                color: '#565449',
+                background: '#F6F2EA',
+                border: '1px solid #E8E2D5',
                 padding: '6px 10px',
-                borderRadius: '99px'
+                borderRadius: 9999,
+                cursor: 'pointer',
+                transition: 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)'
               }}
               title="Restart camera stream"
+              onMouseEnter={e => {
+                e.currentTarget.style.background = '#11120D';
+                e.currentTarget.style.color = '#FFFBF4';
+                e.currentTarget.style.borderColor = '#11120D';
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.background = '#F6F2EA';
+                e.currentTarget.style.color = '#565449';
+                e.currentTarget.style.borderColor = '#E8E2D5';
+              }}
             >
               <RefreshCw size={14} />
             </button>
@@ -530,9 +687,9 @@ export default function CameraScannerModal({
               type="button"
               onClick={onClose}
               style={{
-                background: 'rgba(255,255,255,0.1)',
-                border: 'none',
-                color: '#E7F1E1',
+                background: '#F6F2EA',
+                border: '1px solid #E8E2D5',
+                color: '#565449',
                 width: 32,
                 height: 32,
                 borderRadius: '50%',
@@ -540,9 +697,20 @@ export default function CameraScannerModal({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                marginLeft: 4
+                marginLeft: 2,
+                transition: 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)'
               }}
               title="Close Scanner"
+              onMouseEnter={e => {
+                e.currentTarget.style.background = '#11120D';
+                e.currentTarget.style.color = '#FFFBF4';
+                e.currentTarget.style.borderColor = '#11120D';
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.background = '#F6F2EA';
+                e.currentTarget.style.color = '#565449';
+                e.currentTarget.style.borderColor = '#E8E2D5';
+              }}
             >
               <X size={16} />
             </button>
@@ -550,7 +718,7 @@ export default function CameraScannerModal({
         </div>
 
         {/* Viewfinder Container */}
-        <div style={{ position: 'relative', width: '100%', height: 280, background: '#05120B', overflow: 'hidden' }}>
+        <div style={{ position: 'relative', width: '100%', height: 280, background: '#11120D', overflow: 'hidden' }}>
           {/* Live Camera Video Feed */}
           <video
             ref={videoRef}
@@ -578,13 +746,13 @@ export default function CameraScannerModal({
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                background: 'rgba(5, 18, 11, 0.85)',
-                color: '#A9C5A2',
+                background: 'rgba(17, 18, 13, 0.85)',
+                color: '#FFFBF4',
                 gap: 10,
                 zIndex: 2
               }}
             >
-              <RefreshCw size={24} className="anim-spin" style={{ color: '#6FAF3D' }} />
+              <RefreshCw size={24} className="anim-spin" style={{ color: '#D8CFBC' }} />
               <span style={{ fontSize: 13, fontWeight: 600 }}>Connecting camera stream...</span>
             </div>
           )}
@@ -601,7 +769,7 @@ export default function CameraScannerModal({
                 justifyContent: 'center',
                 padding: 24,
                 textAlign: 'center',
-                background: 'rgba(5, 18, 11, 0.95)',
+                background: 'rgba(17, 18, 13, 0.95)',
                 zIndex: 3
               }}
             >
@@ -621,20 +789,32 @@ export default function CameraScannerModal({
               >
                 <AlertCircle size={24} />
               </div>
-              <div style={{ fontWeight: 700, fontSize: 14, color: '#F1F7EC', marginBottom: 4 }}>
+              <div style={{ fontWeight: 700, fontSize: 14, color: '#FFFBF4', marginBottom: 4 }}>
                 Live Camera Feed Offline
               </div>
-              <p style={{ fontSize: 12, color: '#A9C5A2', maxWidth: 320, lineHeight: 1.45, margin: '0 0 12px' }}>
+              <p style={{ fontSize: 12, color: '#D8CFBC', maxWidth: 320, lineHeight: 1.45, margin: '0 0 14px' }}>
                 {cameraError || 'Device camera could not be started. Use QR image upload or quick simulators below.'}
               </p>
               <button
                 type="button"
-                className="btn btn-outline btn-xs"
                 onClick={() => startCamera(facingMode)}
-                style={{ background: '#FFFFFF', color: 'var(--t1)', fontWeight: 700, borderColor: 'var(--border)' }}
+                style={{
+                  background: '#FFFBF4',
+                  color: '#11120D',
+                  fontWeight: 700,
+                  border: 'none',
+                  borderRadius: 9999,
+                  padding: '7px 18px',
+                  fontSize: 12,
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  transition: 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)'
+                }}
               >
-                <RefreshCw size={12} style={{ marginRight: 4, color: 'var(--t1)' }} />
-                <span style={{ color: 'var(--t1)', fontWeight: 700 }}>Try Camera Again</span>
+                <RefreshCw size={12} />
+                <span>Try Camera Again</span>
               </button>
             </div>
           )}
@@ -658,17 +838,17 @@ export default function CameraScannerModal({
                   position: 'relative',
                   width: 190,
                   height: 190,
-                  borderRadius: 18,
-                  border: '2px dashed rgba(111, 175, 61, 0.6)',
-                  boxShadow: '0 0 0 4000px rgba(5, 18, 11, 0.55)',
+                  borderRadius: 20,
+                  border: '2px dashed rgba(255, 251, 244, 0.4)',
+                  boxShadow: '0 0 0 4000px rgba(17, 18, 13, 0.55)',
                   overflow: 'hidden'
                 }}
               >
                 {/* 4 Corner Targeting L-Brackets */}
-                <div style={{ position: 'absolute', top: 0, left: 0, width: 22, height: 22, borderTop: '4px solid #6FAF3D', borderLeft: '4px solid #6FAF3D', borderTopLeftRadius: 12 }} />
-                <div style={{ position: 'absolute', top: 0, right: 0, width: 22, height: 22, borderTop: '4px solid #6FAF3D', borderRight: '4px solid #6FAF3D', borderTopRightRadius: 12 }} />
-                <div style={{ position: 'absolute', bottom: 0, left: 0, width: 22, height: 22, borderBottom: '4px solid #6FAF3D', borderLeft: '4px solid #6FAF3D', borderBottomLeftRadius: 12 }} />
-                <div style={{ position: 'absolute', bottom: 0, right: 0, width: 22, height: 22, borderBottom: '4px solid #6FAF3D', borderRight: '4px solid #6FAF3D', borderBottomRightRadius: 12 }} />
+                <div style={{ position: 'absolute', top: 0, left: 0, width: 24, height: 24, borderTop: '4px solid #FFFBF4', borderLeft: '4px solid #FFFBF4', borderTopLeftRadius: 14 }} />
+                <div style={{ position: 'absolute', top: 0, right: 0, width: 24, height: 24, borderTop: '4px solid #FFFBF4', borderRight: '4px solid #FFFBF4', borderTopRightRadius: 14 }} />
+                <div style={{ position: 'absolute', bottom: 0, left: 0, width: 24, height: 24, borderBottom: '4px solid #FFFBF4', borderLeft: '4px solid #FFFBF4', borderBottomLeftRadius: 14 }} />
+                <div style={{ position: 'absolute', bottom: 0, right: 0, width: 24, height: 24, borderBottom: '4px solid #FFFBF4', borderRight: '4px solid #FFFBF4', borderBottomRightRadius: 14 }} />
 
                 {/* Animated Laser Scanning Line */}
                 {!scannedResult && (
@@ -678,8 +858,8 @@ export default function CameraScannerModal({
                       left: 0,
                       right: 0,
                       height: 3,
-                      background: 'linear-gradient(90deg, transparent, #54C030, #6FAF3D, #54C030, transparent)',
-                      boxShadow: '0 0 14px #6FAF3D, 0 0 28px #54C030',
+                      background: 'linear-gradient(90deg, transparent, #FFFBF4, #D8CFBC, #FFFBF4, transparent)',
+                      boxShadow: '0 0 14px rgba(255, 251, 244, 0.9), 0 0 24px rgba(216, 207, 188, 0.8)',
                       animation: 'scannerLaser 2s ease-in-out infinite'
                     }}
                   />
@@ -688,16 +868,16 @@ export default function CameraScannerModal({
 
               <div
                 style={{
-                  marginTop: 12,
-                  fontSize: 12,
+                  marginTop: 14,
+                  fontSize: 11.5,
                   fontWeight: 600,
-                  color: '#FFFFFF',
-                  background: 'rgba(0, 0, 0, 0.6)',
-                  padding: '4px 12px',
-                  borderRadius: 99,
-                  backdropFilter: 'blur(4px)',
+                  color: '#FFFBF4',
+                  background: 'rgba(17, 18, 13, 0.85)',
+                  padding: '4px 14px',
+                  borderRadius: 9999,
+                  backdropFilter: 'blur(6px)',
                   letterSpacing: '0.02em',
-                  border: '1px solid rgba(255,255,255,0.1)'
+                  border: '1px solid rgba(216, 207, 188, 0.3)'
                 }}
               >
                 Center student QR pass in frame
@@ -707,65 +887,82 @@ export default function CameraScannerModal({
         </div>
 
         {/* Modal Body / Results & Quick Actions */}
-        <div style={{ padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <div style={{ padding: '20px 22px', display: 'flex', flexDirection: 'column', gap: 16 }}>
           {/* Scanned Result Banner */}
           {scannedResult ? (
             <div
               className="anim-fade-up"
               style={{
-                background: 'rgba(111, 175, 61, 0.14)',
-                border: '1.5px solid #6FAF3D',
-                borderRadius: 16,
-                padding: '14px 16px',
-                color: '#F1F7EC'
+                background: '#FFFFFF',
+                border: '1.5px solid #11120D',
+                borderRadius: 18,
+                padding: '16px',
+                color: '#11120D',
+                boxShadow: '0 4px 16px rgba(17, 18, 13, 0.06)'
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#6FAF3D', fontWeight: 800, fontSize: 13 }}>
-                  <CheckCircle2 size={18} />
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 7, color: '#16A34A', fontWeight: 700, fontSize: 13 }}>
+                  <CheckCircle2 size={17} />
                   <span>Digital Pass Verified</span>
                 </div>
-                <span style={{ fontSize: 11, color: '#A9C5A2' }}>{scannedResult.timestamp}</span>
+                <span style={{ fontSize: 11, color: '#565449', background: '#F6F2EA', padding: '2px 8px', borderRadius: 99, border: '1px solid #E8E2D5' }}>
+                  {scannedResult.timestamp}
+                </span>
               </div>
 
-              <div style={{ fontSize: 16, fontWeight: 800, color: '#FFFFFF', marginBottom: 6 }}>
-                Pass Code: <span style={{ color: '#54C030' }}>{scannedResult.code}</span>
+              <div style={{ fontSize: 17, fontWeight: 700, color: '#11120D', marginBottom: 8, letterSpacing: '-0.01em' }}>
+                Pass Code: <span style={{ color: '#11120D' }}>{scannedResult.code}</span>
               </div>
 
               {scannedResult.reservation ? (
-                <div style={{ background: 'rgba(0,0,0,0.3)', borderRadius: 12, padding: 12, marginBottom: 10 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, marginBottom: 4 }}>
-                    <span style={{ color: '#A9C5A2', display: 'flex', alignItems: 'center', gap: 5 }}>
+                <div style={{ background: '#F6F2EA', border: '1px solid #E8E2D5', borderRadius: 14, padding: 12, marginBottom: 12 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, marginBottom: 6 }}>
+                    <span style={{ color: '#565449', display: 'flex', alignItems: 'center', gap: 5 }}>
                       <User size={13} /> Guest:
                     </span>
-                    <strong style={{ color: '#FFFFFF' }}>{scannedResult.reservation.guestName}</strong>
+                    <strong style={{ color: '#11120D' }}>{scannedResult.reservation.guestName}</strong>
                   </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, marginBottom: 4 }}>
-                    <span style={{ color: '#A9C5A2', display: 'flex', alignItems: 'center', gap: 5 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, marginBottom: 6 }}>
+                    <span style={{ color: '#565449', display: 'flex', alignItems: 'center', gap: 5 }}>
                       <Armchair size={13} /> Table Assigned:
                     </span>
-                    <strong style={{ color: '#54C030' }}>{scannedResult.reservation.tableAssigned || 'T-01'}</strong>
+                    <strong style={{ color: '#11120D' }}>{scannedResult.reservation.tableAssigned || 'T-01'}</strong>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13 }}>
-                    <span style={{ color: '#A9C5A2', display: 'flex', alignItems: 'center', gap: 5 }}>
+                    <span style={{ color: '#565449', display: 'flex', alignItems: 'center', gap: 5 }}>
                       <Clock size={13} /> Party &amp; Time:
                     </span>
-                    <span style={{ color: '#F1F7EC' }}>
+                    <span style={{ color: '#565449' }}>
                       {scannedResult.reservation.guests} Diners · {scannedResult.reservation.time}
                     </span>
                   </div>
                 </div>
               ) : (
-                <div style={{ fontSize: 12, color: '#FBBF24', marginBottom: 10, background: 'rgba(251, 191, 36, 0.1)', padding: '8px 10px', borderRadius: 8 }}>
+                <div style={{ fontSize: 12, color: '#92400E', marginBottom: 12, background: '#FEF3C7', border: '1px solid #FDE68A', padding: '10px 12px', borderRadius: 10 }}>
                   Code captured. No exact pre-booked reservation found for {scannedResult.code}, or student has an unassigned pass.
                 </div>
               )}
 
-              <div style={{ display: 'flex', gap: 8 }}>
+              <div style={{ display: 'flex', gap: 10 }}>
                 <button
                   type="button"
-                  className="btn btn-primary btn-sm"
-                  style={{ flex: 2, background: '#6FAF3D', borderColor: '#6FAF3D', color: '#05120B', fontWeight: 800 }}
+                  style={{
+                    flex: 2,
+                    background: '#11120D',
+                    color: '#FFFBF4',
+                    border: 'none',
+                    borderRadius: 9999,
+                    fontWeight: 700,
+                    padding: '10px 20px',
+                    fontSize: 13,
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 6,
+                    transition: 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)'
+                  }}
                   onClick={() => {
                     if (onScanSuccess) {
                       const resToPass = scannedResult.reservation || {
@@ -778,25 +975,49 @@ export default function CameraScannerModal({
                     }
                     onClose();
                   }}
+                  onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1.5px)'}
+                  onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
                 >
-                  <Check size={14} style={{ marginRight: 5 }} />
-                  {scannedResult.reservation ? 'Seat Guest Now' : 'Check-In Student'}
+                  <Check size={14} />
+                  <span>{scannedResult.reservation ? 'Seat Guest Now' : 'Check-In Student'}</span>
                 </button>
                 <button
                   type="button"
-                  className="btn btn-outline btn-sm"
-                  style={{ flex: 1, background: '#FFFFFF', color: 'var(--t1)', fontWeight: 700 }}
+                  style={{
+                    flex: 1,
+                    background: '#FFFFFF',
+                    border: '1px solid #D8CFBC',
+                    color: '#11120D',
+                    borderRadius: 9999,
+                    fontWeight: 600,
+                    padding: '10px 16px',
+                    fontSize: 12.5,
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 5,
+                    transition: 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)'
+                  }}
                   onClick={() => setScannedResult(null)}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.background = '#F6F2EA';
+                    e.currentTarget.style.transform = 'translateY(-1.5px)';
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.background = '#FFFFFF';
+                    e.currentTarget.style.transform = 'translateY(0)';
+                  }}
                 >
-                  <RotateCcw size={13} style={{ marginRight: 4, color: 'var(--t1)' }} />
-                  <span style={{ color: 'var(--t1)', fontWeight: 700 }}>Scan Next</span>
+                  <RotateCcw size={13} />
+                  <span>Scan Next</span>
                 </button>
               </div>
             </div>
           ) : (
             <>
               {/* Secondary Options: File Upload & Manual Search */}
-              <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
                 <input
                   type="file"
                   accept="image/*"
@@ -806,33 +1027,42 @@ export default function CameraScannerModal({
                 />
                 <button
                   type="button"
-                  className="btn btn-outline btn-sm"
                   style={{
                     flex: 1,
-                    display: 'flex',
+                    display: 'inline-flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     gap: 6,
                     background: '#FFFFFF',
-                    color: 'var(--t1)',
-                    fontWeight: 700,
-                    borderColor: 'var(--border)',
+                    color: '#11120D',
+                    fontWeight: 600,
+                    border: '1px solid #D8CFBC',
                     fontSize: 12.5,
                     padding: '8px 16px',
                     minHeight: 38,
-                    borderRadius: 10,
-                    boxSizing: 'border-box'
+                    borderRadius: 9999,
+                    cursor: 'pointer',
+                    boxSizing: 'border-box',
+                    transition: 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)'
                   }}
                   onClick={() => fileInputRef.current?.click()}
                   disabled={isProcessingUpload}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.background = '#F6F2EA';
+                    e.currentTarget.style.transform = 'translateY(-1.5px)';
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.background = '#FFFFFF';
+                    e.currentTarget.style.transform = 'translateY(0)';
+                  }}
                 >
-                  <UploadCloud size={15} style={{ color: 'var(--t1)' }} />
-                  <span style={{ color: 'var(--t1)', fontWeight: 700 }}>
+                  <UploadCloud size={15} style={{ color: '#11120D' }} />
+                  <span>
                     {isProcessingUpload ? 'Scanning Image...' : 'Upload Pass QR'}
                   </span>
                 </button>
 
-                <form onSubmit={handleManualSubmit} style={{ flex: 1.5, display: 'flex', gap: 6 }}>
+                <form onSubmit={handleManualSubmit} style={{ flex: 1.4, display: 'flex', gap: 6 }}>
                   <input
                     type="text"
                     value={manualCode}
@@ -840,27 +1070,35 @@ export default function CameraScannerModal({
                     placeholder="Enter pass code..."
                     style={{
                       flex: 1,
-                      background: 'rgba(255,255,255,0.06)',
-                      border: '1px solid rgba(255,255,255,0.15)',
-                      borderRadius: 10,
-                      padding: '8px 12px',
-                      color: '#FFFFFF',
-                      fontSize: 12.5
+                      background: '#FFFFFF',
+                      border: '1px solid #D8CFBC',
+                      borderRadius: 9999,
+                      padding: '8px 14px',
+                      color: '#11120D',
+                      fontSize: 12.5,
+                      outline: 'none',
+                      boxSizing: 'border-box',
+                      transition: 'border-color 0.2s ease'
                     }}
+                    onFocus={e => e.target.style.borderColor = '#11120D'}
+                    onBlur={e => e.target.style.borderColor = '#D8CFBC'}
                   />
                   <button
                     type="submit"
-                    className="btn btn-primary btn-sm"
                     style={{
-                      background: '#6FAF3D',
-                      borderColor: '#6FAF3D',
-                      color: '#05120B',
+                      background: '#11120D',
+                      color: '#FFFBF4',
+                      border: 'none',
                       fontWeight: 700,
-                      padding: '8px 16px',
+                      padding: '8px 18px',
                       minHeight: 38,
-                      borderRadius: 10,
-                      boxSizing: 'border-box'
+                      borderRadius: 9999,
+                      fontSize: 12.5,
+                      cursor: 'pointer',
+                      transition: 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)'
                     }}
+                    onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1.5px)'}
+                    onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
                   >
                     Match
                   </button>
@@ -869,8 +1107,8 @@ export default function CameraScannerModal({
 
               {/* Quick 1-Click Pass Simulators for Rapid Verification */}
               <div>
-                <div style={{ fontSize: 11, color: '#A9C5A2', fontWeight: 600, marginBottom: 6 }}>
-                  Quick Simulator (Tap to test scan without physical paper):
+                <div style={{ fontSize: 11.5, color: '#565449', fontWeight: 600, marginBottom: 8 }}>
+                  Quick Simulator (Tap to test scan without physical pass):
                 </div>
                 <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                   {(reservations && reservations.length > 0 ? reservations.slice(0, 3) : [
@@ -883,21 +1121,34 @@ export default function CameraScannerModal({
                       type="button"
                       onClick={() => handleMatchedPass(r.id)}
                       style={{
-                        background: 'rgba(111, 175, 61, 0.15)',
-                        border: '1px solid rgba(111, 175, 61, 0.35)',
-                        color: '#E7F1E1',
-                        borderRadius: 8,
-                        padding: '6px 12px',
-                        minHeight: 30,
+                        background: '#F6F2EA',
+                        border: '1px solid #D8CFBC',
+                        color: '#11120D',
+                        borderRadius: 9999,
+                        padding: '6px 14px',
+                        minHeight: 32,
                         fontSize: 11.5,
                         cursor: 'pointer',
                         display: 'inline-flex',
                         alignItems: 'center',
-                        gap: 5,
-                        boxSizing: 'border-box'
+                        gap: 6,
+                        boxSizing: 'border-box',
+                        transition: 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)'
+                      }}
+                      onMouseEnter={e => {
+                        e.currentTarget.style.background = '#11120D';
+                        e.currentTarget.style.color = '#FFFBF4';
+                        e.currentTarget.style.borderColor = '#11120D';
+                        e.currentTarget.style.transform = 'translateY(-1.5px)';
+                      }}
+                      onMouseLeave={e => {
+                        e.currentTarget.style.background = '#F6F2EA';
+                        e.currentTarget.style.color = '#11120D';
+                        e.currentTarget.style.borderColor = '#D8CFBC';
+                        e.currentTarget.style.transform = 'translateY(0)';
                       }}
                     >
-                      <QrCode size={12} style={{ color: '#54C030' }} />
+                      <QrCode size={12} />
                       <strong>{r.id}</strong> {r.guestName ? `(${r.guestName.split(' ')[0]})` : ''}
                     </button>
                   ))}

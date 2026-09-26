@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDining } from '../context/DiningContext';
+import RubberSegment from '../components/RubberSegment';
 import {
   Bell,
   CalendarCheck,
@@ -56,10 +57,10 @@ export default function Notifications() {
       {/* Header */}
       <div className="anim-fade-up" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, flexWrap: 'wrap', gap: 14 }}>
         <div>
-          <h2 className="font-display" style={{ fontSize: 'clamp(1.4rem, 4.5vw, 1.8rem)', fontWeight: 800, color: 'var(--t1)' }}>
+          <h2 style={{ fontFamily: "'Newsreader', 'Playfair Display', Georgia, serif", fontSize: 'clamp(1.5rem, 4.5vw, 1.9rem)', fontWeight: 600, color: '#11120D', margin: '0 0 4px' }}>
             Notification Center
           </h2>
-          <p style={{ fontSize: 13, color: 'var(--t3)' }}>
+          <p style={{ fontSize: 13, color: '#565449', margin: 0 }}>
             Real-time reservation updates, flash dining deals, and institutional clearance notices.
           </p>
         </div>
@@ -67,22 +68,50 @@ export default function Notifications() {
         <button
           className="btn btn-outline btn-sm"
           onClick={markAllRead}
+          style={{
+            borderRadius: 99,
+            padding: '7px 16px',
+            fontSize: 12,
+            fontWeight: 600,
+            background: '#FFFFFF',
+            border: '1px solid #E8E2D5',
+            color: '#11120D',
+            touchAction: 'manipulation',
+          }}
         >
           <Check size={14} /> Mark all as read
         </button>
       </div>
 
-      {/* Tabs */}
-      <div className="tab-bar anim-fade-up delay-1 tabs-scroll-x" style={{ marginBottom: 24 }}>
-        {TABS.map(t => (
-          <button
-            key={t}
-            className={`tab-btn ${activeTab === t ? 'active' : ''}`}
-            onClick={() => setActiveTab(t)}
-          >
-            {t}
-          </button>
-        ))}
+      {/* Rubber Segment Category Filter */}
+      <div style={{ marginBottom: 24, overflowX: 'auto', WebkitOverflowScrolling: 'touch', paddingBottom: 4 }}>
+        <RubberSegment
+          items={TABS.map(t => {
+            const count =
+              t === 'Bookings'
+                ? notifications.filter(n => n.type === 'booking').length
+                : t === 'Campus Deals'
+                ? notifications.filter(n => n.type === 'offer').length
+                : t === 'System'
+                ? notifications.filter(n => n.type === 'system' || n.type === 'reminder').length
+                : notifications.length;
+            return {
+              value: t,
+              label: count > 0 ? `${t} (${count})` : t
+            };
+          })}
+          value={activeTab}
+          onChange={(val) => setActiveTab(val)}
+          trackColor="#F6F2EA"
+          thumbColor="#11120D"
+          textColor="#565449"
+          activeTextColor="#FFFBF4"
+          size="md"
+          radius={99}
+          inset={3}
+          equalSlots={false}
+          aria-label="Notification categories"
+        />
       </div>
 
       {/* Notifications List */}

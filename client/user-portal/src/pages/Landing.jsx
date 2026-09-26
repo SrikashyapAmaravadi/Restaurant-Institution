@@ -1,45 +1,69 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { useDining } from '../context/DiningContext';
-import api from '../services/api';
 import {
   ArrowRight,
-  ShieldCheck,
-  Star,
-  QrCode,
-  Clock,
-  ChevronRight,
-  Search,
-  MapPin,
-  Calendar,
   Sparkles,
-  UtensilsCrossed,
   Tag,
-  Heart,
+  Zap,
+  Clock,
+  Check,
+  Copy,
+  GraduationCap,
+  ChevronRight,
+  Compass
 } from 'lucide-react';
-import DistrictSearchModal from '../components/DistrictSearchModal';
-import RestaurantCard from '../components/RestaurantCard';
+import BookingModal from '../components/BookingModal';
+import OfferDrawer from '../components/OfferDrawer';
 
-const DISTRICT_NAV_TABS = [
-  { id: 'foryou', label: 'For you' },
-  { id: 'dining', label: 'Dining', active: true },
-  { id: 'cafeteria', label: 'Cafeteria' },
-  { id: 'hostels', label: 'Hostels' },
-  { id: 'events', label: 'Events' },
-  { id: 'night', label: 'Night Canteen' },
+const PROMO_DEALS = [
+  {
+    id: 'scholar-subsidy',
+    badge: 'Semester Exclusive',
+    discount: 'FLAT 20% OFF',
+    title: 'Bennett Scholar Dining Subsidy',
+    description: 'Auto-applied on all dine-in tabs across partner outlets upon digital pass check-in.',
+    code: 'BENNETT20',
+    validity: 'Valid across all TechZone II campus partners',
+    color: '#11120D',
+  },
+  {
+    id: 'midnight-fuel',
+    badge: '10:00 PM – 2:00 AM',
+    discount: 'BOGO TREATS',
+    title: 'Midnight Exam & Tuck Fuel',
+    description: 'Buy-one-get-one on beverages and late-night munchies with gate pickup support.',
+    code: 'NIGHTOWL',
+    validity: 'Active daily at campus tuck shops & night canteens',
+    color: '#565449',
+  },
+  {
+    id: 'rush-priority',
+    badge: '1:00 PM Lunch Rush',
+    discount: 'VIP FASTPASS',
+    title: 'Zero-Wait Table FastPass',
+    description: 'Skip long physical queues between lab blocks. Table pre-held and waiting for your group.',
+    code: 'PRIORITY',
+    validity: 'Guaranteed seat reservation during rush hour',
+    color: '#11120D',
+  }
 ];
 
 export default function Landing() {
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
-  const { restaurants: contextRestaurants = [] } = useDining() || {};
 
-  const [restaurants, setRestaurants] = useState(contextRestaurants);
-  const [loadingRestaurants, setLoadingRestaurants] = useState(false);
-  const [searchModalOpen, setSearchModalOpen] = useState(false);
+  const [copiedCode, setCopiedCode] = useState(null);
+  const [selectedForBooking, setSelectedForBooking] = useState(null);
+  const [selectedOffer, setSelectedOffer] = useState(null);
 
-  useEffect(() => {
+  const handleCopyCode = (code) => {
+    navigator.clipboard?.writeText(code);
+    setCopiedCode(code);
+    setTimeout(() => setCopiedCode(null), 2000);
+  };
+
+  const handlePortalEntry = () => {
     if (isAuthenticated) {
       const target = user?.homePath || (
         user?.role === 'RESTAURANT_ADMIN'
@@ -50,41 +74,23 @@ export default function Landing() {
           ? '/management/superadmin'
           : '/dashboard'
       );
-      navigate(target, { replace: true });
+      navigate(target);
+    } else {
+      navigate('/login');
     }
-  }, [isAuthenticated, user, navigate]);
-
-  useEffect(() => {
-    if (contextRestaurants.length > 0) {
-      setRestaurants(contextRestaurants);
-      return;
-    }
-    setLoadingRestaurants(true);
-    api.restaurants.getAll()
-      .then(res => {
-        if (res?.success && Array.isArray(res.data)) setRestaurants(res.data);
-      })
-      .catch(() => {})
-      .finally(() => setLoadingRestaurants(false));
-  }, [contextRestaurants]);
-
-  const displayList = restaurants.length > 0 ? restaurants.slice(0, 6) : [
-    { id: 1, name: 'The Spice Garden', cuisine: 'North Indian', rating: 4.8, reviews: 142, distance: 0.8, price: '₹₹', offerLabel: '20% OFF', image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80' },
-    { id: 2, name: 'The Deli Corner', cuisine: 'Artisan Cafe', rating: 4.7, reviews: 215, distance: 0.5, price: '₹₹', offerLabel: 'BOGO', image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80' },
-    { id: 3, name: 'Mezze & More', cuisine: 'Mediterranean', rating: 4.6, reviews: 98, distance: 1.2, price: '₹₹₹', offerLabel: 'Student Deal', image: 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80' },
-    { id: 4, name: 'Wok & Roll', cuisine: 'Pan-Asian', rating: 4.4, reviews: 84, distance: 1.5, price: '₹₹', offerLabel: '15% OFF', image: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=800&q=80' },
-  ];
+  };
 
   return (
-    <div style={{ minHeight: '100vh', background: '#FFFFFF', color: '#0F172A', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100vh', background: '#FFFBF4', color: '#11120D', display: 'flex', flexDirection: 'column' }}>
 
-      {/* ── 1. DISTRICT EXACT TOPBAR (Screenshot 1) ── */}
+      {/* ── Minimalist Topbar ── */}
       <header
         style={{
-          height: 76,
-          padding: '0 clamp(16px, 4vw, 48px)',
-          background: '#FFFFFF',
-          borderBottom: '1px solid #F1F5F9',
+          height: 68,
+          padding: '0 clamp(16px, 4vw, 40px)',
+          background: 'rgba(255, 251, 244, 0.95)',
+          backdropFilter: 'blur(10px)',
+          borderBottom: '1px solid #E8E2D5',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
@@ -93,227 +99,337 @@ export default function Landing() {
           zIndex: 50,
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
-          {/* District Logo */}
-          <div
-            onClick={() => navigate('/login')}
-            style={{ display: 'flex', flexDirection: 'column', cursor: 'pointer' }}
-          >
-            <span
-              style={{
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                fontSize: 24,
-                fontWeight: 800,
-                letterSpacing: '-0.04em',
-                color: '#000000',
-                lineHeight: 1,
-              }}
-            >
-              district
-            </span>
-            <span
-              style={{
-                fontSize: 9.5,
-                fontWeight: 800,
-                letterSpacing: '0.12em',
-                color: '#64748B',
-                textTransform: 'uppercase',
-                marginTop: 2,
-              }}
-            >
-              BY BENNETT
-            </span>
-          </div>
-
-          {/* Location Picker with Purple Pin */}
-          <div
-            onClick={() => setSearchModalOpen(true)}
+        {/* Brand */}
+        <div
+          onClick={() => navigate('/')}
+          style={{ display: 'flex', alignItems: 'baseline', gap: 8, cursor: 'pointer' }}
+        >
+          <span
             style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-              cursor: 'pointer',
-              padding: '6px 12px',
-              borderRadius: 8,
-              transition: 'background 0.15s ease',
+              fontFamily: "'Newsreader', 'Playfair Display', Georgia, serif",
+              fontSize: 24,
+              fontWeight: 600,
+              fontStyle: 'italic',
+              color: '#11120D',
+              lineHeight: 1,
             }}
-            onMouseEnter={e => e.currentTarget.style.background = '#F8FAFC'}
-            onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
           >
-            <MapPin size={20} color="#6D28D9" strokeWidth={2.4} />
-            <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.15 }}>
-              <span style={{ fontSize: 13.5, fontWeight: 700, color: '#0F172A' }}>
-                Bennett Campus
-              </span>
-              <span style={{ fontSize: 11, color: '#64748B', fontWeight: 500 }}>
-                Greater Noida
-              </span>
-            </div>
-          </div>
+            nivix-dine-in
+          </span>
+          <span
+            style={{
+              fontSize: 10,
+              fontWeight: 700,
+              letterSpacing: '0.08em',
+              color: '#565449',
+              textTransform: 'uppercase',
+            }}
+          >
+            Bennett
+          </span>
         </div>
 
-        {/* Category Navigation Pills (Screenshot 1) */}
-        <nav className="mobile-hide" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          {DISTRICT_NAV_TABS.map(tab => (
-            <button
-              key={tab.id}
-              onClick={() => navigate('/login')}
-              style={{
-                padding: '7px 18px',
-                borderRadius: 99,
-                fontSize: 13.5,
-                fontWeight: tab.active ? 700 : 500,
-                color: tab.active ? '#BE185D' : '#334155',
-                background: tab.active ? '#FFE4E6' : 'transparent',
-                border: 'none',
-                cursor: 'pointer',
-              }}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </nav>
-
-        {/* Right Search & Sign In */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+        {/* Actions */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <button
-            onClick={() => setSearchModalOpen(true)}
+            type="button"
+            onClick={() => navigate('/discover')}
             style={{
-              width: 40,
-              height: 40,
-              borderRadius: '50%',
-              border: 'none',
-              background: '#F8FAFC',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
+              padding: '7px 16px',
+              borderRadius: 99,
+              fontSize: 13,
+              fontWeight: 600,
+              color: '#11120D',
+              background: 'transparent',
+              border: '1px solid #E8E2D5',
               cursor: 'pointer',
-              color: '#6D28D9',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              transition: 'all 0.2s ease',
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.background = '#F6F2EA';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.background = 'transparent';
             }}
           >
-            <Search size={19} strokeWidth={2.2} />
+            <Compass size={14} />
+            <span>Discover</span>
           </button>
 
-          <button
-            onClick={() => navigate('/login')}
-            className="btn btn-primary btn-sm"
-            style={{ borderRadius: 99, padding: '9px 20px', fontWeight: 700 }}
-          >
-            Sign In
-          </button>
+          {isAuthenticated ? (
+            <button
+              onClick={handlePortalEntry}
+              className="btn btn-primary btn-sm"
+              style={{
+                borderRadius: 99,
+                padding: '7px 16px',
+                fontWeight: 600,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6
+              }}
+            >
+              <GraduationCap size={14} />
+              <span>Dashboard</span>
+            </button>
+          ) : (
+            <button
+              onClick={() => navigate('/login')}
+              className="btn btn-primary btn-sm"
+              style={{
+                borderRadius: 99,
+                padding: '7px 18px',
+                fontWeight: 600
+              }}
+            >
+              Sign In
+            </button>
+          )}
         </div>
       </header>
 
-      {/* ── 2. DISTRICT EXACT HEADLINE (Screenshot 1) ── */}
-      <section style={{ padding: 'clamp(36px, 6vw, 64px) 20px 28px', textAlign: 'center' }}>
-        <h1
+      {/* ── Promotional Hero Section ── */}
+      <section style={{ padding: 'clamp(36px, 5vw, 64px) 20px 24px', textAlign: 'center', maxWidth: 880, margin: '0 auto' }}>
+        <div
           style={{
-            fontFamily: "'Plus Jakarta Sans', sans-serif",
-            fontSize: 'clamp(2rem, 4.5vw, 3.2rem)',
-            fontWeight: 800,
-            color: '#0F172A',
-            letterSpacing: '-0.03em',
-            lineHeight: 1.18,
-            maxWidth: 900,
-            margin: '0 auto',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 7,
+            padding: '4px 14px',
+            borderRadius: 99,
+            background: '#F6F2EA',
+            border: '1px solid #E8E2D5',
+            color: '#11120D',
+            fontSize: 11.5,
+            fontWeight: 700,
+            textTransform: 'uppercase',
+            letterSpacing: '0.08em',
+            marginBottom: 16,
           }}
         >
-          Discover restaurants, explore menus, book tables, pay bills—
+          <Sparkles size={12} color="#565449" />
+          <span>Official Campus Dining Privileges</span>
+        </div>
+
+        <h1
+          className="font-display"
+          style={{
+            fontSize: 'clamp(2.3rem, 5vw, 3.8rem)',
+            fontWeight: 600,
+            color: '#11120D',
+            letterSpacing: '-0.025em',
+            lineHeight: 1.12,
+            margin: '0 auto 16px',
+          }}
+        >
+          Savor More. Spend Less.
           <span
             style={{
-              color: '#4F46E5',
               fontStyle: 'italic',
-              fontWeight: 700,
-              display: 'inline-block',
-              marginLeft: 8,
+              fontWeight: 400,
+              color: '#565449',
+              display: 'block',
+              marginTop: 4,
             }}
           >
-            all in one place.
+            Exclusive Dining Subsidies &amp; Instant Table Access.
           </span>
         </h1>
+
+        <p
+          style={{
+            fontSize: 'clamp(14px, 1.8vw, 15.5px)',
+            color: '#565449',
+            maxWidth: 580,
+            margin: '0 auto 28px',
+            lineHeight: 1.6,
+          }}
+        >
+          Automatic 20% scholar discounts, midnight exam fuel perks, and zero-wait fast-pass reservations across all partner outlets near Bennett.
+        </p>
+
+        {/* Hero Actions */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, flexWrap: 'wrap' }}>
+          <button
+            type="button"
+            onClick={handlePortalEntry}
+            className="btn btn-primary"
+            style={{
+              borderRadius: 99,
+              padding: '11px 26px',
+              fontSize: 14,
+              fontWeight: 600,
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8,
+              boxShadow: '0 4px 16px rgba(17, 18, 13, 0.14)',
+            }}
+          >
+            <span>Claim Student Pass</span>
+            <ArrowRight size={15} />
+          </button>
+
+          <button
+            type="button"
+            onClick={() => navigate('/discover')}
+            style={{
+              borderRadius: 99,
+              padding: '11px 24px',
+              fontSize: 14,
+              fontWeight: 600,
+              background: '#FFFFFF',
+              border: '1px solid #E8E2D5',
+              color: '#11120D',
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8,
+              transition: 'all 0.2s ease',
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.background = '#F6F2EA';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.background = '#FFFFFF';
+            }}
+          >
+            <Compass size={15} />
+            <span>Discover Outlets</span>
+          </button>
+        </div>
       </section>
 
-      {/* ── 3. DISTRICT EXACT HERO BANNER CARD (Screenshot 1) ── */}
-      <section style={{ padding: '0 clamp(16px, 4vw, 48px) 60px' }}>
-        <div className="district-hero-canvas">
-          <div className="district-hero-art">
-            {/* Illustrated Culinary Graphic Elements (Simulated with SVGs) */}
+      {/* ── Featured Promotional Voucher / Pass Ticket ── */}
+      <section style={{ maxWidth: 860, margin: '10px auto 44px', padding: '0 20px', width: '100%' }}>
+        <div
+          style={{
+            background: '#11120D',
+            color: '#FFFBF4',
+            borderRadius: 22,
+            padding: 'clamp(20px, 4vw, 32px)',
+            display: 'flex',
+            flexDirection: 'column',
+            position: 'relative',
+            overflow: 'hidden',
+            boxShadow: '0 12px 36px rgba(17, 18, 13, 0.16)',
+            border: '1px solid rgba(216, 207, 188, 0.2)',
+          }}
+        >
+          {/* Subtle Ambient Radial Glow */}
+          <div
+            style={{
+              position: 'absolute',
+              top: '-30%',
+              right: '-10%',
+              width: 320,
+              height: 320,
+              borderRadius: '50%',
+              background: 'radial-gradient(circle, rgba(216, 207, 188, 0.15) 0%, transparent 70%)',
+              pointerEvents: 'none',
+            }}
+          />
+
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              flexWrap: 'wrap',
+              gap: 16,
+              position: 'relative',
+              zIndex: 2,
+            }}
+          >
+            <div>
+              <div
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  padding: '3px 10px',
+                  borderRadius: 99,
+                  background: 'rgba(255, 251, 244, 0.12)',
+                  fontSize: 10.5,
+                  fontWeight: 700,
+                  letterSpacing: '0.08em',
+                  textTransform: 'uppercase',
+                  marginBottom: 10,
+                  color: '#D8CFBC',
+                }}
+              >
+                <Tag size={12} />
+                <span>Semester-Long University Voucher</span>
+              </div>
+
+              <div
+                style={{
+                  fontFamily: "'Newsreader', 'Playfair Display', Georgia, serif",
+                  fontSize: 'clamp(1.8rem, 4vw, 2.6rem)',
+                  fontWeight: 600,
+                  lineHeight: 1.15,
+                  margin: '4px 0 6px',
+                }}
+              >
+                Flat 20% Off Dine-In Tabs
+              </div>
+
+              <p style={{ fontSize: 13.5, color: '#D8CFBC', margin: 0, maxWidth: 440, lineHeight: 1.5 }}>
+                Pre-authorized for all registered Bennett scholar IDs. Simply show your digital QR pass upon arrival at any partner restaurant.
+              </p>
+            </div>
+
+            {/* Promo Code Box */}
             <div
               style={{
-                position: 'absolute',
-                inset: 0,
-                backgroundImage: `radial-gradient(circle at 10% 20%, rgba(244, 63, 94, 0.25) 0%, transparent 40%),
-                                  radial-gradient(circle at 90% 80%, rgba(99, 102, 241, 0.3) 0%, transparent 50%)`,
-                pointerEvents: 'none',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'flex-start',
+                gap: 8,
+                background: 'rgba(255, 251, 244, 0.08)',
+                padding: '12px 18px',
+                borderRadius: 14,
+                border: '1px dashed rgba(216, 207, 188, 0.35)',
               }}
-            />
-
-            {/* Subtle Illustrated Food Icons on canvas perimeter */}
-            <div style={{ position: 'absolute', top: 20, left: 30, opacity: 0.85 }}>
-              <span style={{ fontSize: 44 }}>🍝</span>
-            </div>
-            <div style={{ position: 'absolute', top: 20, right: 30, opacity: 0.85 }}>
-              <span style={{ fontSize: 44 }}>🍕</span>
-            </div>
-            <div style={{ position: 'absolute', bottom: 24, left: 30, opacity: 0.85 }}>
-              <span style={{ fontSize: 44 }}>🥗</span>
-            </div>
-            <div style={{ position: 'absolute', bottom: 24, right: 30, opacity: 0.85 }}>
-              <span style={{ fontSize: 44 }}>🍷</span>
-            </div>
-
-            {/* Centered Serif Title */}
-            <div style={{ position: 'relative', zIndex: 2 }}>
-              <div
-                style={{
-                  fontFamily: "'Playfair Display', Georgia, serif",
-                  fontStyle: 'italic',
-                  fontSize: 'clamp(1.4rem, 3vw, 2.2rem)',
-                  color: '#FBCFE8',
-                  lineHeight: 1.2,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: 8,
-                }}
-              >
-                <span>Seamlessly Crafted</span>
-                <Sparkles size={18} color="#FDE047" />
-              </div>
-              <div
-                style={{
-                  fontFamily: "'Playfair Display', Georgia, serif",
-                  fontSize: 'clamp(2.2rem, 5.5vw, 4rem)',
-                  fontWeight: 600,
-                  fontStyle: 'italic',
-                  color: '#FFFFFF',
-                  letterSpacing: '-0.02em',
-                  marginTop: 4,
-                }}
-              >
-                Dining Experiences
-              </div>
-
-              {/* Floating White Search Bar Pill (Screenshot 1) */}
-              <div
-                className="district-search-bar"
-                onClick={() => setSearchModalOpen(true)}
-              >
-                <Search size={20} color="#64748B" />
-                <span
+            >
+              <span style={{ fontSize: 10, fontWeight: 700, color: '#D8CFBC', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                Promo Voucher Code
+              </span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <span style={{ fontSize: 18, fontWeight: 800, letterSpacing: '0.12em', color: '#FFFBF4' }}>
+                  BENNETT20
+                </span>
+                <button
+                  type="button"
+                  onClick={() => handleCopyCode('BENNETT20')}
                   style={{
-                    flex: 1,
-                    textAlign: 'left',
-                    fontSize: 15,
-                    color: '#94A3B8',
-                    fontWeight: 500,
-                    paddingLeft: 12,
+                    background: copiedCode === 'BENNETT20' ? '#16A34A' : '#FFFBF4',
+                    color: copiedCode === 'BENNETT20' ? '#FFFFFF' : '#11120D',
+                    border: 'none',
+                    borderRadius: 99,
+                    padding: '5px 12px',
+                    fontSize: 11,
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 4,
+                    transition: 'all 0.2s ease',
                   }}
                 >
-                  Search for a restaurant name
-                </span>
-                <button className="district-search-btn">
-                  <ArrowRight size={18} />
+                  {copiedCode === 'BENNETT20' ? (
+                    <>
+                      <Check size={12} />
+                      <span>Copied!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy size={12} />
+                      <span>Copy</span>
+                    </>
+                  )}
                 </button>
               </div>
             </div>
@@ -321,135 +437,182 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ── 4. DISTRICT EXACT FEATURE SHOWCASE SPLIT (Screenshot 2) ── */}
-      <section style={{ maxWidth: 1120, margin: '0 auto', padding: '40px 24px 80px', width: '100%' }}>
+      {/* ── Curated Promotional Deals Grid ── */}
+      <section style={{ maxWidth: 860, margin: '0 auto 56px', padding: '0 20px', width: '100%' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 }}>
+          <h2 style={{ fontFamily: "'Newsreader', Georgia, serif", fontSize: 21, fontWeight: 600, color: '#11120D', margin: 0 }}>
+            Featured Campus Perks
+          </h2>
+          <span style={{ fontSize: 12, color: '#565449', fontWeight: 500 }}>
+            Auto-applied with verified student login
+          </span>
+        </div>
+
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-            gap: 'clamp(32px, 6vw, 64px)',
-            alignItems: 'center',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+            gap: 16,
           }}
         >
-          {/* Left: Romantic/Warm Restaurant Photography */}
-          <div style={{ position: 'relative', borderRadius: 28, overflow: 'hidden', boxShadow: '0 16px 40px rgba(0,0,0,0.08)' }}>
-            <img
-              src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80"
-              alt="Restaurant table setup"
+          {PROMO_DEALS.map(deal => (
+            <div
+              key={deal.id}
               style={{
-                width: '100%',
-                height: 480,
-                objectFit: 'cover',
-                display: 'block',
+                background: '#FFFFFF',
+                border: '1px solid #E8E2D5',
+                borderRadius: 18,
+                padding: '20px',
+                display: 'flex',
+                flexDirection: 'column',
+                transition: 'all 0.25s ease',
+                boxShadow: '0 2px 10px rgba(17, 18, 13, 0.03)',
               }}
-            />
-          </div>
-
-          {/* Right: Feature Timeline (Screenshot 2 exact copy) */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-            <h2
-              style={{
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                fontSize: 'clamp(1.8rem, 3.5vw, 2.4rem)',
-                fontWeight: 800,
-                color: '#0F172A',
-                letterSpacing: '-0.03em',
-                lineHeight: 1.2,
+              onMouseEnter={e => {
+                e.currentTarget.style.borderColor = '#11120D';
+                e.currentTarget.style.transform = 'translateY(-2px)';
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.borderColor = '#E8E2D5';
+                e.currentTarget.style.transform = 'translateY(0)';
               }}
             >
-              Explore dining experiences{' '}
-              <span style={{ color: '#4F46E5', fontStyle: 'italic', fontWeight: 700 }}>
-                tailored to your mood.
-              </span>
-            </h2>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+                <span
+                  style={{
+                    fontSize: 10,
+                    fontWeight: 700,
+                    padding: '2px 8px',
+                    borderRadius: 99,
+                    background: '#F6F2EA',
+                    color: '#565449',
+                    border: '1px solid #E8E2D5',
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  {deal.badge}
+                </span>
+                <span style={{ fontSize: 13, fontWeight: 800, color: '#11120D' }}>
+                  {deal.discount}
+                </span>
+              </div>
 
-            {/* Bullet list with timeline dots */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 20, position: 'relative', paddingLeft: 18 }}>
-              {/* Timeline guide line */}
+              <h3 style={{ fontSize: 15.5, fontWeight: 700, color: '#11120D', margin: '0 0 6px' }}>
+                {deal.title}
+              </h3>
+
+              <p style={{ fontSize: 12.5, color: '#565449', lineHeight: 1.5, margin: '0 0 16px', flex: 1 }}>
+                {deal.description}
+              </p>
+
               <div
                 style={{
-                  position: 'absolute',
-                  left: 5,
-                  top: 8,
-                  bottom: 8,
-                  width: 2,
-                  background: '#E2E8F0',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  paddingTop: 12,
+                  borderTop: '1px solid #F6F2EA',
                 }}
-              />
+              >
+                <span style={{ fontSize: 11, color: '#565449', fontWeight: 600 }}>
+                  Code: <strong style={{ color: '#11120D' }}>{deal.code}</strong>
+                </span>
 
-              {[
-                "15+ institutional eateries across Bennett campus - from late night tuck shops to executive dining",
-                "Curated lists for every mood: study group sips, quick lunch breaks, midnight exam treats",
-                "Browse by mood, cuisine, block proximity, occasion, or what's on student offer tonight",
-                "Full live menus, food photos, and real campus vibes - no guesswork, no surprises",
-                "Loved and reviewed by scholars, faculty, and diners everywhere you go"
-              ].map((text, i) => (
-                <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 14, position: 'relative' }}>
-                  <div
-                    style={{
-                      width: 8,
-                      height: 8,
-                      borderRadius: '50%',
-                      background: '#CBD5E1',
-                      marginTop: 7,
-                      flexShrink: 0,
-                      zIndex: 2,
-                    }}
-                  />
-                  <p style={{ fontSize: 14.5, color: '#475569', lineHeight: 1.55, fontWeight: 500 }}>
-                    {text}
-                  </p>
-                </div>
-              ))}
+                <button
+                  type="button"
+                  onClick={() => navigate('/discover')}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 4,
+                    background: 'none',
+                    border: 'none',
+                    color: '#11120D',
+                    fontSize: 12,
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    padding: 0,
+                  }}
+                >
+                  <span>Explore</span>
+                  <ChevronRight size={13} />
+                </button>
+              </div>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── 5. DISTRICT "BOOK" SHOWCASE SECTION (Screenshot 2) ── */}
-      <section style={{ maxWidth: 1120, margin: '0 auto', padding: '0 24px 80px', width: '100%' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 28 }}>
-          <Calendar size={28} color="#0F172A" />
-          <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 28, fontWeight: 800, color: '#0F172A' }}>
-            Book
-          </h2>
-        </div>
-
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
-            gap: 24,
-          }}
-        >
-          {displayList.map(item => (
-            <RestaurantCard
-              key={item.id}
-              restaurant={item}
-              onQuickReserve={() => navigate('/login')}
-              onViewOffer={() => navigate('/login')}
-            />
           ))}
         </div>
       </section>
 
-      {/* ── 6. PURE LIGHT FOOTER ── */}
-      <footer style={{ borderTop: '1px solid #EEF0F3', padding: '40px 24px', textAlign: 'center', background: '#FAFAFB', marginTop: 'auto' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 20, fontWeight: 800, color: '#000' }}>
-            district
-          </span>
-          <p style={{ fontSize: 13, color: '#64748B' }}>
-            © 2026 DISTRICT BY BENNETT · Institutional Campus Dining Ecosystem
+      {/* ── Promotional CTA Banner ── */}
+      <section style={{ maxWidth: 860, margin: '0 auto 60px', padding: '0 20px', width: '100%' }}>
+        <div
+          style={{
+            background: '#F6F2EA',
+            border: '1px solid #E8E2D5',
+            borderRadius: 20,
+            padding: '28px 24px',
+            textAlign: 'center',
+          }}
+        >
+          <h2 style={{ fontFamily: "'Newsreader', Georgia, serif", fontSize: 22, fontWeight: 600, color: '#11120D', margin: '0 0 8px' }}>
+            Ready to Experience Campus Dining Privileges?
+          </h2>
+          <p style={{ fontSize: 13.5, color: '#565449', margin: '0 auto 18px', maxWidth: 460 }}>
+            Sign in with your university credentials to unlock verified student rates, digital passes, and instant bookings.
           </p>
+          <button
+            type="button"
+            onClick={handlePortalEntry}
+            className="btn btn-primary"
+            style={{
+              borderRadius: 99,
+              padding: '10px 24px',
+              fontSize: 13.5,
+              fontWeight: 600,
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+            }}
+          >
+            <span>{isAuthenticated ? 'Go to Scholar Dashboard' : 'Sign In with Student ID'}</span>
+            <ArrowRight size={14} />
+          </button>
+        </div>
+      </section>
+
+      {/* ── Minimalist Clean Footer ── */}
+      <footer style={{ borderTop: '1px solid #E8E2D5', padding: '24px 20px', textAlign: 'center', background: '#FFFFFF', marginTop: 'auto' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, flexWrap: 'wrap', fontSize: 12, color: '#565449' }}>
+          <span style={{ fontFamily: "'Newsreader', serif", fontStyle: 'italic', fontWeight: 600, color: '#11120D', fontSize: 14 }}>
+            nivix-dine-in
+          </span>
+          <span>&middot;</span>
+          <span>Bennett University Campus Dining Privileges</span>
+          <span>&middot;</span>
+          <span>&copy; {new Date().getFullYear()}</span>
         </div>
       </footer>
 
-      {/* District Search Modal Overlay */}
-      <DistrictSearchModal
-        isOpen={searchModalOpen}
-        onClose={() => setSearchModalOpen(false)}
-      />
+      {/* Interactive Booking & Offer Modals */}
+      {selectedForBooking && (
+        <BookingModal
+          restaurant={selectedForBooking}
+          isOpen={!!selectedForBooking}
+          onClose={() => setSelectedForBooking(null)}
+        />
+      )}
+
+      {selectedOffer && (
+        <OfferDrawer
+          offer={selectedOffer}
+          onClose={() => setSelectedOffer(null)}
+          onApplyOffer={offer => {
+            if (offer?.restaurantId) {
+              navigate('/discover');
+            }
+          }}
+        />
+      )}
     </div>
   );
 }

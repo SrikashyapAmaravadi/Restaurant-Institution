@@ -3,22 +3,20 @@ import { useNavigate } from 'react-router-dom';
 import {
   Star,
   MapPin,
-  Sparkles,
   ChevronRight,
   Tag,
   CalendarDays,
   Heart,
-  Zap,
 } from 'lucide-react';
 
 export default function RestaurantCard({ restaurant, onQuickReserve, onViewOffer }) {
   const navigate = useNavigate();
   const [isLiked, setIsLiked] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
   const {
     id,
     name,
-    tagline,
     cuisine,
     price = '₹₹',
     rating = 4.8,
@@ -28,7 +26,6 @@ export default function RestaurantCard({ restaurant, onQuickReserve, onViewOffer
     hasOffer = true,
     offerLabel = '20% OFF',
     image,
-    popularDishes = []
   } = restaurant || {};
 
   const activeOffer =
@@ -47,12 +44,12 @@ export default function RestaurantCard({ restaurant, onQuickReserve, onViewOffer
 
   const handleCardClick = () => navigate(`/restaurant/${id}`);
 
-  const handleBookClick = (e, slotTime = null) => {
+  const handleBookClick = (e) => {
     e.stopPropagation();
     if (onQuickReserve) {
-      onQuickReserve({ ...restaurant, defaultTime: slotTime });
+      onQuickReserve(restaurant);
     } else {
-      navigate(`/restaurant/${id}?reserve=true${slotTime ? `&time=${slotTime}` : ''}`);
+      navigate(`/restaurant/${id}?reserve=true`);
     }
   };
 
@@ -77,35 +74,30 @@ export default function RestaurantCard({ restaurant, onQuickReserve, onViewOffer
     ? reviews
     : (Array.isArray(reviews) ? reviews.length : 142);
 
-  const quickSlots = ['12:30 PM', '1:15 PM', '7:30 PM', '8:15 PM'];
-
   return (
     <div
       onClick={handleCardClick}
-      className="district-card"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className="nivix-card district-card"
       style={{
         background: '#FFFFFF',
-        borderRadius: 20,
-        border: '1px solid #EEF0F3',
-        boxShadow: '0 2px 10px rgba(0, 0, 0, 0.04)',
+        borderRadius: 14,
+        border: `1px solid ${isHovered ? '#11120D' : '#E8E2D5'}`,
+        boxShadow: isHovered
+          ? '0 22px 42px -10px rgba(17, 18, 13, 0.14), 0 8px 18px -4px rgba(17, 18, 13, 0.05)'
+          : '0 1px 3px rgba(0, 0, 0, 0.04)',
+        transform: isHovered ? 'translateY(-6px)' : 'translateY(0)',
         overflow: 'hidden',
         cursor: 'pointer',
         display: 'flex',
         flexDirection: 'column',
         position: 'relative',
-        transition: 'transform 0.22s cubic-bezier(0.16,1,0.3,1), box-shadow 0.22s ease',
-      }}
-      onMouseEnter={e => {
-        e.currentTarget.style.transform = 'translateY(-5px)';
-        e.currentTarget.style.boxShadow = '0 14px 32px rgba(15, 23, 42, 0.09)';
-      }}
-      onMouseLeave={e => {
-        e.currentTarget.style.transform = 'translateY(0)';
-        e.currentTarget.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.04)';
+        transition: 'transform 0.55s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.55s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.45s ease',
       }}
     >
-      {/* ── Image & Badges Container ── */}
-      <div style={{ position: 'relative', width: '100%', height: 200, overflow: 'hidden', background: '#F1F5F9' }}>
+      {/* Image & Badges Container */}
+      <div style={{ position: 'relative', width: '100%', height: 180, overflow: 'hidden', background: '#FFFFFF' }}>
         <img
           src={
             image ||
@@ -116,19 +108,25 @@ export default function RestaurantCard({ restaurant, onQuickReserve, onViewOffer
             width: '100%',
             height: '100%',
             objectFit: 'cover',
-            transition: 'transform 0.35s ease',
+            filter: isHovered
+              ? 'brightness(1.18) contrast(0.80) saturate(0.86)'
+              : 'brightness(1.24) contrast(0.74) saturate(0.80)',
+            opacity: isHovered ? 0.95 : 0.88,
+            transform: isHovered ? 'scale(1.06)' : 'scale(1.0)',
+            transition: 'transform 0.75s cubic-bezier(0.16, 1, 0.3, 1), filter 0.45s ease, opacity 0.45s ease',
           }}
-          onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
-          onMouseLeave={e => e.currentTarget.style.transform = 'scale(1.0)'}
         />
 
-        {/* Subtle Bottom Shade */}
+        {/* Soft luminous ambient wash to decrease contrast between dashboard and picture */}
         <div
           style={{
             position: 'absolute',
             inset: 0,
-            background: 'linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0) 50%, rgba(0,0,0,0.65) 100%)',
+            background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.32) 0%, rgba(255, 255, 255, 0.12) 45%, rgba(255, 255, 255, 0.45) 100%)',
             pointerEvents: 'none',
+            zIndex: 1,
+            transition: 'opacity 0.45s ease',
+            opacity: isHovered ? 0.75 : 1,
           }}
         />
 
@@ -145,7 +143,7 @@ export default function RestaurantCard({ restaurant, onQuickReserve, onViewOffer
             zIndex: 2,
           }}
         >
-          {/* Rating Pill */}
+          {/* Rating Pill - Softened glass pill with Floral White text */}
           <div
             style={{
               display: 'inline-flex',
@@ -153,15 +151,17 @@ export default function RestaurantCard({ restaurant, onQuickReserve, onViewOffer
               gap: 4,
               padding: '4px 10px',
               borderRadius: 99,
-              background: '#059669',
-              color: '#FFFFFF',
-              fontSize: 12,
+              background: 'rgba(28, 27, 23, 0.76)',
+              backdropFilter: 'blur(8px)',
+              WebkitBackdropFilter: 'blur(8px)',
+              border: '1px solid rgba(255, 255, 255, 0.18)',
+              color: '#FFFBF4',
+              fontSize: 11.5,
               fontWeight: 700,
-              boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
             }}
           >
             <span>{rating}</span>
-            <Star size={11} fill="#FFF" color="#FFF" />
+            <Star size={10} fill="#FFFBF4" color="#FFFBF4" />
           </div>
 
           {/* Favorite Heart Button */}
@@ -173,22 +173,33 @@ export default function RestaurantCard({ restaurant, onQuickReserve, onViewOffer
             style={{
               width: 32,
               height: 32,
-              borderRadius: '50%',
-              background: 'rgba(255, 255, 255, 0.9)',
-              border: 'none',
+              borderRadius: 99,
+              background: 'rgba(255, 251, 244, 0.92)',
+              backdropFilter: 'blur(4px)',
+              border: '1px solid #D8CFBC',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               cursor: 'pointer',
-              color: isLiked ? '#E11D48' : '#475569',
-              boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+              color: isLiked ? '#B91C1C' : '#565449',
+              transition: 'all 0.45s cubic-bezier(0.16, 1, 0.3, 1)',
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.transform = 'scale(1.18)';
+              e.currentTarget.style.borderColor = '#11120D';
+              e.currentTarget.style.boxShadow = '0 4px 12px rgba(17, 18, 13, 0.12)';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.transform = 'scale(1.0)';
+              e.currentTarget.style.borderColor = '#D8CFBC';
+              e.currentTarget.style.boxShadow = 'none';
             }}
           >
-            <Heart size={15} fill={isLiked ? '#E11D48' : 'none'} />
+            <Heart size={14} fill={isLiked ? '#B91C1C' : 'none'} color={isLiked ? '#B91C1C' : '#565449'} />
           </button>
         </div>
 
-        {/* Bottom Image Overlay Text */}
+        {/* Bottom Image Overlay Tag */}
         <div
           style={{
             position: 'absolute',
@@ -198,21 +209,36 @@ export default function RestaurantCard({ restaurant, onQuickReserve, onViewOffer
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            color: '#FFFFFF',
             zIndex: 2,
           }}
         >
-          <span style={{ fontSize: 12, fontWeight: 600 }}>
-            {price} · Approx ₹250 for two
-          </span>
           <span
             style={{
               fontSize: 11,
+              fontWeight: 600,
+              padding: '4px 10px',
+              borderRadius: 99,
+              background: 'rgba(28, 27, 23, 0.72)',
+              backdropFilter: 'blur(8px)',
+              WebkitBackdropFilter: 'blur(8px)',
+              border: '1px solid rgba(255, 255, 255, 0.16)',
+              color: '#FFFBF4',
+            }}
+          >
+            {price} · Approx ₹250
+          </span>
+          <span
+            style={{
+              fontSize: 10.5,
               fontWeight: 700,
-              padding: '3px 8px',
-              borderRadius: 6,
-              background: isOpen ? 'rgba(5, 150, 105, 0.9)' : 'rgba(220, 38, 38, 0.9)',
-              color: '#FFFFFF',
+              padding: '4px 10px',
+              borderRadius: 99,
+              background: isOpen ? 'rgba(86, 84, 73, 0.82)' : '#FEF2F2',
+              backdropFilter: isOpen ? 'blur(8px)' : 'none',
+              WebkitBackdropFilter: isOpen ? 'blur(8px)' : 'none',
+              color: isOpen ? '#FFFBF4' : '#B91C1C',
+              border: `1px solid ${isOpen ? 'rgba(255, 255, 255, 0.22)' : '#FECACA'}`,
+              letterSpacing: '0.02em',
             }}
           >
             {isOpen ? 'Open Now' : 'Closed'}
@@ -220,17 +246,17 @@ export default function RestaurantCard({ restaurant, onQuickReserve, onViewOffer
         </div>
       </div>
 
-      {/* ── Card Content (100% Light Theme) ── */}
-      <div style={{ padding: '16px 18px', display: 'flex', flexDirection: 'column', gap: 12 }}>
-        {/* Name & Distance */}
+      {/* Card Content */}
+      <div style={{ padding: '18px 20px 20px', display: 'flex', flexDirection: 'column', gap: 14 }}>
+        {/* Name & Cuisine */}
         <div>
           <h3
             style={{
-              fontFamily: "'Plus Jakarta Sans', sans-serif",
-              fontSize: 16.5,
-              fontWeight: 700,
-              color: '#0F172A',
-              letterSpacing: '-0.02em',
+              fontFamily: "'Newsreader', 'Playfair Display', Georgia, serif",
+              fontSize: 17,
+              fontWeight: 600,
+              color: '#11120D',
+              letterSpacing: '-0.01em',
               lineHeight: 1.25,
             }}
           >
@@ -243,23 +269,23 @@ export default function RestaurantCard({ restaurant, onQuickReserve, onViewOffer
               alignItems: 'center',
               gap: 6,
               marginTop: 4,
-              fontSize: 12.5,
-              color: '#64748B',
+              fontSize: 12,
+              color: '#565449',
               flexWrap: 'wrap',
             }}
           >
-            <span style={{ fontWeight: 500 }}>{cuisine || 'Multi-Cuisine'}</span>
-            <span>•</span>
+            <span style={{ fontWeight: 500, color: '#11120D' }}>{cuisine || 'Multi-Cuisine'}</span>
+            <span style={{ color: '#D8CFBC' }}>•</span>
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3 }}>
-              <MapPin size={11} color="#6D28D9" />
-              {distance} km · 4 min walk
+              <MapPin size={11} color="#565449" />
+              {distance} km
             </span>
-            <span>•</span>
+            <span style={{ color: '#D8CFBC' }}>•</span>
             <span>{displayReviewCount} reviews</span>
           </div>
         </div>
 
-        {/* ── District Coupon Ribbon (Light Theme) ── */}
+        {/* Coupon Ribbon */}
         {activeOffer && (
           <div
             onClick={handleOfferClick}
@@ -267,129 +293,79 @@ export default function RestaurantCard({ restaurant, onQuickReserve, onViewOffer
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              padding: '8px 12px',
-              borderRadius: 10,
-              background: '#FFF1F2',
-              border: '1px dashed #FB7185',
+              padding: '7px 12px',
+              borderRadius: 99,
+              background: 'rgba(86, 84, 73, 0.06)',
+              border: '1px dashed #565449',
               cursor: 'pointer',
+              transition: 'all 0.35s ease',
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.borderColor = '#11120D';
+              e.currentTarget.style.background = 'rgba(86, 84, 73, 0.12)';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.borderColor = '#565449';
+              e.currentTarget.style.background = 'rgba(86, 84, 73, 0.06)';
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <Tag size={13} color="#E11D48" />
-              <span style={{ fontSize: 11.5, fontWeight: 700, color: '#BE185D' }}>
+              <Tag size={12} color="#565449" />
+              <span
+                style={{
+                  fontSize: 10.5,
+                  fontWeight: 700,
+                  background: '#11120D',
+                  color: '#FFFBF4',
+                  padding: '2px 8px',
+                  borderRadius: 99,
+                }}
+              >
                 {activeOffer.discount || '20% OFF'}
               </span>
-              <span style={{ fontSize: 11, color: '#881337', fontWeight: 500 }}>
-                · Code: <strong>{activeOffer.promoCode || 'CAMPUS20'}</strong>
+              <span style={{ fontSize: 11, color: '#565449' }}>
+                · Code: <strong style={{ color: '#11120D' }}>{activeOffer.promoCode || 'CAMPUS20'}</strong>
               </span>
             </div>
-            <span style={{ fontSize: 11, fontWeight: 700, color: '#E11D48' }}>
-              APPLY ▾
-            </span>
+            <ChevronRight size={13} color="#565449" />
           </div>
         )}
 
-        {/* ── Instant Slot Booking Row (Light Theme) ── */}
-        <div>
-          <div
-            style={{
-              fontSize: 10.5,
-              fontWeight: 700,
-              color: '#94A3B8',
-              textTransform: 'uppercase',
-              letterSpacing: '0.04em',
-              marginBottom: 6,
-              display: 'flex',
-              alignItems: 'center',
-              gap: 4,
-            }}
-          >
-            <Zap size={11} color="#E11D48" />
-            <span>Instant Seats Today</span>
-          </div>
-
-          <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 2 }} className="scrollbar-none">
-            {quickSlots.map(slot => (
-              <button
-                key={slot}
-                onClick={(e) => handleBookClick(e, slot)}
-                style={{
-                  padding: '5px 10px',
-                  borderRadius: 8,
-                  background: '#F8FAFC',
-                  border: '1px solid #E2E8F0',
-                  color: '#334155',
-                  fontSize: 11,
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  whiteSpace: 'nowrap',
-                  transition: 'all 0.15s ease',
-                  flexShrink: 0,
-                }}
-                onMouseEnter={e => {
-                  e.currentTarget.style.background = '#FFE4E6';
-                  e.currentTarget.style.color = '#BE185D';
-                  e.currentTarget.style.borderColor = '#FDA4AF';
-                }}
-                onMouseLeave={e => {
-                  e.currentTarget.style.background = '#F8FAFC';
-                  e.currentTarget.style.color = '#334155';
-                  e.currentTarget.style.borderColor = '#E2E8F0';
-                }}
-              >
-                {slot}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* ── Action Buttons Row ── */}
-        <div style={{ display: 'flex', gap: 8, paddingTop: 4, borderTop: '1px solid #F1F5F9' }}>
+        {/* Single Primary Action: Book Table */}
+        <div style={{ paddingTop: 8, borderTop: '1px solid #F6F2EA' }}>
           <button
             onClick={handleBookClick}
             style={{
-              flex: 1,
-              padding: '9px 14px',
+              width: '100%',
+              padding: '11px 20px',
               borderRadius: 99,
-              background: '#E11D48',
-              color: '#FFFFFF',
-              border: 'none',
-              fontSize: 12.5,
-              fontWeight: 700,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 6,
-              cursor: 'pointer',
-              boxShadow: '0 2px 8px rgba(225, 29, 72, 0.25)',
-              transition: 'all 0.15s ease',
-            }}
-            onMouseEnter={e => e.currentTarget.style.background = '#BE123C'}
-            onMouseLeave={e => e.currentTarget.style.background = '#E11D48'}
-          >
-            <CalendarDays size={13} />
-            <span>Book Table</span>
-          </button>
-
-          <button
-            onClick={handleCardClick}
-            style={{
-              padding: '9px 14px',
-              borderRadius: 99,
-              background: '#F1F5F9',
-              color: '#334155',
-              border: '1px solid #E2E8F0',
-              fontSize: 12.5,
+              background: '#11120D',
+              color: '#FFFBF4',
+              border: '1px solid #11120D',
+              fontSize: 13,
               fontWeight: 600,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: 4,
+              gap: 7,
               cursor: 'pointer',
+              minHeight: 42,
+              touchAction: 'manipulation',
+              transition: 'all 0.45s cubic-bezier(0.16, 1, 0.3, 1)',
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.transform = 'translateY(-2px)';
+              e.currentTarget.style.background = '#2A2B23';
+              e.currentTarget.style.boxShadow = '0 6px 18px rgba(17, 18, 13, 0.24)';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.background = '#11120D';
+              e.currentTarget.style.boxShadow = 'none';
             }}
           >
-            <span>Menu</span>
-            <ChevronRight size={13} />
+            <CalendarDays size={14} />
+            <span>Book Table</span>
           </button>
         </div>
       </div>

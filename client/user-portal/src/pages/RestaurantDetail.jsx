@@ -3,8 +3,19 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import BookingModal from '../components/BookingModal';
 import ReviewModal from '../components/ReviewModal';
 import OfferDrawer from '../components/OfferDrawer';
+import MenuCard from '../components/MenuCard';
+import CustomSelect from '../components/CustomSelect';
+import RubberSegment from '../components/RubberSegment';
 import { useDining } from '../context/DiningContext';
 import api from '../services/api';
+
+const DISH_SORT_OPTIONS = [
+  { value: 'default', label: 'Sort: Default' },
+  { value: 'veg-first', label: 'Veg First' },
+  { value: 'price-low', label: 'Price: Low to High' },
+  { value: 'price-high', label: 'Price: High to Low' },
+  { value: 'name-az', label: 'Dish Name (A-Z)' },
+];
 import {
   ArrowLeft,
   Star,
@@ -33,7 +44,7 @@ import {
   ExternalLink
 } from 'lucide-react';
 
-const TABS = ['Menu Catalog', 'Active Offers', 'Student Reviews', 'About & Location'];
+const TABS = ['Menu Card', 'Menu Catalog', 'Active Offers', 'Student Reviews', 'About & Location'];
 
 const CURATED_FALLBACK_MENUS = {
   1: {
@@ -187,7 +198,7 @@ export default function RestaurantDetail() {
   const { restaurants: liveRestaurants = [] } = useDining() || {};
 
   const [restaurantData, setRestaurantData] = useState(null);
-  const [activeTab, setActiveTab] = useState('Menu Catalog');
+  const [activeTab, setActiveTab] = useState('Menu Card');
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [selectedOffer, setSelectedOffer] = useState(null);
@@ -381,7 +392,7 @@ export default function RestaurantDetail() {
         <div style={{
           width: 44,
           height: 44,
-          border: '3px solid #E2E8F0',
+          border: '3px solid #E8E2D5',
           borderTopColor: '#15803D',
           borderRadius: '50%',
           animation: 'spin 0.8s linear infinite',
@@ -400,7 +411,7 @@ export default function RestaurantDetail() {
           position: 'fixed',
           bottom: 24,
           right: 24,
-          background: '#0F172A',
+          background: '#11120D',
           color: '#FFFFFF',
           padding: '10px 18px',
           borderRadius: 12,
@@ -424,17 +435,17 @@ export default function RestaurantDetail() {
           className="btn btn-ghost btn-sm"
           style={{
             borderRadius: 99,
-            padding: '8px 16px',
-            fontWeight: 700,
-            color: 'var(--t2)',
+            padding: '8px 18px',
+            fontWeight: 600,
+            color: '#11120D',
             background: '#FFFFFF',
-            border: '1px solid var(--border)',
+            border: '1px solid #E8E2D5',
             display: 'inline-flex',
             alignItems: 'center',
             gap: 6
           }}
         >
-          <ArrowLeft size={16} /> Back to Discover
+          <ArrowLeft size={16} style={{ color: '#11120D' }} /> Back to Discover
         </button>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -446,9 +457,9 @@ export default function RestaurantDetail() {
             }}
             title={isFavorited ? 'Saved to favorites' : 'Save to favorites'}
             style={{
-              color: isFavorited ? '#EF4444' : 'var(--t3)',
+              color: isFavorited ? '#11120D' : '#565449',
               background: '#FFFFFF',
-              border: '1px solid var(--border)',
+              border: '1px solid #E8E2D5',
               width: 38,
               height: 38,
               borderRadius: '50%',
@@ -458,7 +469,7 @@ export default function RestaurantDetail() {
               cursor: 'pointer'
             }}
           >
-            <Heart size={17} fill={isFavorited ? '#EF4444' : 'none'} />
+            <Heart size={17} fill={isFavorited ? '#11120D' : 'none'} />
           </button>
           <button
             className="icon-btn"
@@ -468,9 +479,9 @@ export default function RestaurantDetail() {
             }}
             title="Share"
             style={{
-              color: 'var(--t2)',
+              color: '#11120D',
               background: '#FFFFFF',
-              border: '1px solid var(--border)',
+              border: '1px solid #E8E2D5',
               width: 38,
               height: 38,
               borderRadius: '50%',
@@ -490,11 +501,11 @@ export default function RestaurantDetail() {
         className="anim-fade-up"
         style={{
           position: 'relative',
-          borderRadius: 24,
+          borderRadius: 20,
           overflow: 'hidden',
           marginBottom: 32,
-          border: '1px solid var(--border)',
-          boxShadow: '0 10px 30px -5px rgba(15, 23, 42, 0.08)'
+          border: '1px solid #E8E2D5',
+          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.04)'
         }}
       >
         <div style={{ position: 'relative', height: 'clamp(280px, 42vw, 420px)', width: '100%' }}>
@@ -503,11 +514,11 @@ export default function RestaurantDetail() {
             alt={restaurant.name}
             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
           />
-          {/* Elegant Dark Ambient Gradient Overlay */}
+          {/* Subtle Ambient Gradient Overlay */}
           <div style={{
             position: 'absolute',
             inset: 0,
-            background: 'linear-gradient(180deg, rgba(15, 23, 42, 0.2) 0%, rgba(15, 23, 42, 0.88) 100%)'
+            background: 'linear-gradient(180deg, rgba(0, 0, 0, 0.15) 0%, rgba(0, 0, 0, 0.78) 100%)'
           }} />
 
           {/* Hero Content Overlay */}
@@ -526,27 +537,27 @@ export default function RestaurantDetail() {
               {/* Badges Row */}
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 12 }}>
                 <span style={{
-                  background: 'rgba(255, 255, 255, 0.16)',
+                  background: 'rgba(0, 0, 0, 0.65)',
                   backdropFilter: 'blur(8px)',
-                  border: '1px solid rgba(255, 255, 255, 0.25)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
                   color: '#FFFFFF',
                   fontSize: 11,
-                  fontWeight: 700,
+                  fontWeight: 600,
                   padding: '3px 10px',
                   borderRadius: 99,
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: 5
                 }}>
-                  <GraduationCap size={13} className="text-emerald-400" /> Bennett Verified Partner
+                  <GraduationCap size={13} /> Bennett Partner
                 </span>
 
                 <span style={{
-                  background: restaurant.isOpen ? 'rgba(5, 150, 105, 0.9)' : 'rgba(220, 38, 38, 0.9)',
+                  background: restaurant.isOpen ? 'rgba(0, 0, 0, 0.75)' : 'rgba(220, 38, 38, 0.85)',
                   backdropFilter: 'blur(8px)',
                   color: '#FFFFFF',
                   fontSize: 11,
-                  fontWeight: 700,
+                  fontWeight: 600,
                   padding: '3px 10px',
                   borderRadius: 99,
                   display: 'inline-flex',
@@ -558,9 +569,8 @@ export default function RestaurantDetail() {
 
                 {restaurant.hasOffer && (
                   <span style={{
-                    background: 'rgba(217, 119, 6, 0.9)',
-                    backdropFilter: 'blur(8px)',
-                    color: '#FFFFFF',
+                    background: '#FFFFFF',
+                    color: '#11120D',
                     fontSize: 11,
                     fontWeight: 700,
                     padding: '3px 10px',
@@ -577,11 +587,11 @@ export default function RestaurantDetail() {
                   <span
                     key={t}
                     style={{
-                      background: 'rgba(255, 255, 255, 0.15)',
+                      background: 'rgba(255, 255, 255, 0.18)',
                       backdropFilter: 'blur(8px)',
                       color: '#FFFFFF',
                       fontSize: 11,
-                      fontWeight: 600,
+                      fontWeight: 500,
                       padding: '3px 10px',
                       borderRadius: 99
                     }}
@@ -593,7 +603,7 @@ export default function RestaurantDetail() {
 
               <h1 className="font-display" style={{
                 fontSize: 'clamp(1.75rem, 5vw, 2.75rem)',
-                fontWeight: 800,
+                fontWeight: 600,
                 color: '#FFFFFF',
                 lineHeight: 1.15,
                 marginBottom: 8
@@ -601,16 +611,16 @@ export default function RestaurantDetail() {
                 {restaurant.name}
               </h1>
 
-              <p style={{ fontSize: 14, color: '#E2E8F0', marginBottom: 14, lineHeight: 1.5, maxWidth: 560 }}>
+              <p style={{ fontSize: 14, color: 'rgba(255, 255, 255, 0.85)', marginBottom: 14, lineHeight: 1.5, maxWidth: 560 }}>
                 {restaurant.tagline || restaurant.description}
               </p>
 
-              <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 14, fontSize: 13, color: '#CBD5E1' }}>
-                <span style={{ display: 'flex', alignItems: 'center', gap: 4, color: '#FBBF24', fontWeight: 700 }}>
-                  <Star size={15} fill="#FBBF24" /> {restaurant.rating} ({displayReviewsCount} verified reviews)
+              <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 14, fontSize: 13, color: 'rgba(255, 255, 255, 0.85)' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 4, color: '#FFFFFF', fontWeight: 700 }}>
+                  <Star size={15} fill="#FFFFFF" /> {restaurant.rating} ({displayReviewsCount} reviews)
                 </span>
                 <span>·</span>
-                <span style={{ display: 'flex', alignItems: 'center', gap: 4, color: '#A7F3D0', fontWeight: 600 }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                   <MapPin size={14} /> {restaurant.distance} km from Bennett Campus
                 </span>
                 <span>·</span>
@@ -628,77 +638,121 @@ export default function RestaurantDetail() {
                 className="btn btn-primary btn-lg"
                 onClick={() => setShowBookingModal(true)}
                 style={{
-                  borderRadius: 12,
-                  padding: '13px 28px',
-                  fontSize: 14.5,
-                  fontWeight: 800,
-                  boxShadow: '0 8px 24px rgba(255, 82, 0, 0.35)',
+                  borderRadius: 99,
+                  padding: '12px 26px',
+                  fontSize: 14,
+                  fontWeight: 600,
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: 8,
-                  minHeight: 48
+                  minHeight: 46
                 }}
               >
-                <Sparkles size={18} /> Reserve Table Pass
+                <Sparkles size={16} /> Reserve Table Pass
               </button>
             </div>
           </div>
         </div>
       </div>
 
-      {/* ── Main Layout: Tabs & Sticky Rail ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) min(320px, 100%)', gap: 32, alignItems: 'start' }}>
+      {/* ── Main Layout: Tabs & Sticky Rail (Responsive Grid) ── */}
+      <div className="restaurant-detail-grid">
         {/* Left Column: Navigation Tabs & Tab Content */}
         <div>
-          {/* Tabs Bar */}
-          <div className="tab-bar anim-fade-up delay-1" style={{ marginBottom: 28, background: '#FFFFFF', padding: 4, borderRadius: 14, border: '1px solid var(--border)' }}>
-            {TABS.map(tab => (
-              <button
-                key={tab}
-                className={`tab-btn ${activeTab === tab ? 'active' : ''}`}
-                onClick={() => setActiveTab(tab)}
-                style={{
-                  borderRadius: 10,
-                  fontWeight: 700,
-                  padding: '10px 20px',
-                  minHeight: 38
-                }}
-              >
-                {tab}
-                {tab === 'Active Offers' && offers.length > 0 && (
-                  <span style={{
-                    marginLeft: 6,
-                    fontSize: 10.5,
-                    fontWeight: 800,
-                    padding: '2px 7px',
-                    borderRadius: 99,
-                    background: '#FEF3C7',
-                    color: '#92400E'
-                  }}>
-                    {offers.length}
-                  </span>
-                )}
-              </button>
-            ))}
+          {/* Rubber Segment Navigation Tabs */}
+          <div
+            className="anim-fade-up delay-1 tabs-scroll-x"
+            style={{
+              marginBottom: 24,
+              overflowX: 'auto',
+              WebkitOverflowScrolling: 'touch',
+              paddingBottom: 4,
+            }}
+          >
+            <RubberSegment
+              items={TABS.map(tab => ({
+                value: tab,
+                label: tab === 'Active Offers' && offers.length > 0 ? `${tab} (${offers.length})` : tab
+              }))}
+              value={activeTab}
+              onChange={(val) => setActiveTab(val)}
+              trackColor="#F6F2EA"
+              thumbColor="#11120D"
+              textColor="#565449"
+              activeTextColor="#FFFBF4"
+              size="md"
+              radius={99}
+              inset={3}
+              equalSlots={false}
+              aria-label="Restaurant details navigation"
+            />
           </div>
+
+          {/* ── TAB: MENU CARD (TRADITIONAL ITEMS & PRICES) ── */}
+          {activeTab === 'Menu Card' && (
+            <MenuCard
+              restaurant={restaurant}
+              menu={menu}
+              onViewCatalog={() => setActiveTab('Menu Catalog')}
+            />
+          )}
 
           {/* ── TAB 1: MENU CATALOG ── */}
           {activeTab === 'Menu Catalog' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+              {/* Quick Bar to Jump to Menu Card */}
+              <div
+                style={{
+                  background: '#F6F2EA',
+                  border: '1px solid #E8E2D5',
+                  borderRadius: 12,
+                  padding: '10px 16px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  gap: 12,
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12.5, color: '#565449' }}>
+                  <Sparkles size={14} color="#11120D" />
+                  <span>Looking for items and rates only? View the traditional <strong>Menu Card</strong>.</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('Menu Card')}
+                  style={{
+                    background: '#11120D',
+                    color: '#FFFBF4',
+                    border: 'none',
+                    padding: '6px 14px',
+                    borderRadius: 99,
+                    fontSize: 11.5,
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    whiteSpace: 'nowrap',
+                    transition: 'all 0.35s cubic-bezier(0.16, 1, 0.3, 1)',
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-1.5px)'}
+                  onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
+                >
+                  View Menu Card
+                </button>
+              </div>
               {/* Dish Filter Toolbar */}
               <div style={{
                 background: '#FFFFFF',
-                border: '1px solid var(--border)',
+                border: '1px solid #E8E2D5',
                 borderRadius: 16,
                 padding: '14px 16px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 flexWrap: 'wrap',
-                gap: 12
+                gap: 12,
+                boxShadow: '0 1px 3px rgba(0, 0, 0, 0.04)'
               }}>
                 <div style={{ flex: 1, minWidth: 220, position: 'relative' }}>
-                  <Search size={15} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
+                  <Search size={15} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#565449' }} />
                   <input
                     className="form-input"
                     placeholder="Search dishes or ingredients..."
@@ -710,36 +764,14 @@ export default function RestaurantDetail() {
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
                   {/* Sort Selector */}
-                  <div style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 6,
-                    background: '#F8FAFC',
-                    padding: '6px 12px',
-                    borderRadius: 99,
-                    border: '1px solid var(--border)'
-                  }}>
-                    <ArrowUpDown size={13} className="text-emerald-700" />
-                    <select
-                      value={dishSort}
-                      onChange={e => setDishSort(e.target.value)}
-                      style={{
-                        border: 'none',
-                        outline: 'none',
-                        background: 'transparent',
-                        color: 'var(--t1)',
-                        fontSize: 12,
-                        fontWeight: 700,
-                        cursor: 'pointer'
-                      }}
-                    >
-                      <option value="default">Sort: Default</option>
-                      <option value="veg-first">Veg First</option>
-                      <option value="price-low">Price: Low to High</option>
-                      <option value="price-high">Price: High to Low</option>
-                      <option value="name-az">Dish Name (A-Z)</option>
-                    </select>
-                  </div>
+                  <CustomSelect
+                    icon={ArrowUpDown}
+                    options={DISH_SORT_OPTIONS}
+                    value={dishSort}
+                    onChange={setDishSort}
+                    align="right"
+                    ariaLabel="Sort dishes"
+                  />
 
                   {/* Pure Veg Toggle */}
                   <label style={{
@@ -747,68 +779,42 @@ export default function RestaurantDetail() {
                     alignItems: 'center',
                     gap: 6,
                     fontSize: 12.5,
-                    fontWeight: 700,
-                    color: vegOnly ? '#065F46' : 'var(--t2)',
+                    fontWeight: 600,
+                    color: vegOnly ? '#FFFFFF' : '#565449',
                     cursor: 'pointer',
-                    background: vegOnly ? '#ECFDF5' : '#F8FAFC',
-                    padding: '6px 12px',
+                    background: vegOnly ? '#11120D' : '#F6F2EA',
+                    padding: '6px 14px',
                     borderRadius: 99,
-                    border: `1px solid ${vegOnly ? '#A7F3D0' : 'var(--border)'}`
+                    border: '1px solid #E8E2D5',
+                    transition: 'all 0.15s ease'
                   }}>
                     <input
                       type="checkbox"
                       checked={vegOnly}
                       onChange={e => setVegOnly(e.target.checked)}
-                      style={{ accentColor: '#15803D' }}
+                      style={{ accentColor: '#11120D' }}
                     />
                     Pure Veg
                   </label>
 
-                  {/* Grid vs List View Switcher */}
-                  <div style={{ display: 'inline-flex', background: '#F8FAFC', borderRadius: 99, padding: 3, border: '1px solid var(--border)' }}>
-                    <button
-                      type="button"
-                      onClick={() => setViewMode('grid')}
-                      style={{
-                        border: 'none',
-                        background: viewMode === 'grid' ? '#FFFFFF' : 'transparent',
-                        color: viewMode === 'grid' ? 'var(--t1)' : 'var(--t3)',
-                        borderRadius: 99,
-                        padding: '6px 14px',
-                        minHeight: 32,
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 5,
-                        fontSize: 12,
-                        fontWeight: 700,
-                        boxShadow: viewMode === 'grid' ? 'var(--shadow-sm)' : 'none'
-                      }}
-                    >
-                      <LayoutGrid size={13} /> Grid
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setViewMode('list')}
-                      style={{
-                        border: 'none',
-                        background: viewMode === 'list' ? '#FFFFFF' : 'transparent',
-                        color: viewMode === 'list' ? 'var(--t1)' : 'var(--t3)',
-                        borderRadius: 99,
-                        padding: '6px 14px',
-                        minHeight: 32,
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 5,
-                        fontSize: 12,
-                        fontWeight: 700,
-                        boxShadow: viewMode === 'list' ? 'var(--shadow-sm)' : 'none'
-                      }}
-                    >
-                      <List size={13} /> List
-                    </button>
-                  </div>
+                  {/* Grid vs List View Switcher with RubberSegment */}
+                  <RubberSegment
+                    items={[
+                      { value: 'grid', label: 'Grid', icon: <LayoutGrid size={13} /> },
+                      { value: 'list', label: 'List', icon: <List size={13} /> }
+                    ]}
+                    value={viewMode}
+                    onChange={(val) => setViewMode(val)}
+                    trackColor="#F6F2EA"
+                    thumbColor="#11120D"
+                    textColor="#565449"
+                    activeTextColor="#FFFBF4"
+                    size="sm"
+                    radius={99}
+                    inset={2.5}
+                    equalSlots
+                    aria-label="Menu catalog layout"
+                  />
                 </div>
               </div>
 
@@ -825,11 +831,11 @@ export default function RestaurantDetail() {
                         style={{
                           padding: '7px 16px',
                           borderRadius: 99,
-                          border: `1.5px solid ${isSelected ? '#15803D' : '#E2E8F0'}`,
-                          background: isSelected ? '#ECFDF5' : '#FFFFFF',
-                          color: isSelected ? '#065F46' : 'var(--t2)',
+                          border: `1px solid ${isSelected ? '#11120D' : '#E8E2D5'}`,
+                          background: isSelected ? '#11120D' : '#FFFFFF',
+                          color: isSelected ? '#FFFFFF' : '#565449',
                           fontSize: 12,
-                          fontWeight: 700,
+                          fontWeight: 600,
                           cursor: 'pointer',
                           whiteSpace: 'nowrap',
                           transition: 'all 0.15s ease'
@@ -846,12 +852,12 @@ export default function RestaurantDetail() {
               {displayedDishes.length === 0 ? (
                 <div style={{
                   background: '#FFFFFF',
-                  border: '1px solid var(--border)',
+                  border: '1px solid #E8E2D5',
                   borderRadius: 16,
                   padding: '48px 20px',
-                  textAlign: 'center'
+                  textAlign: 'center',
                 }}>
-                  <p style={{ color: 'var(--t3)', fontSize: 14 }}>
+                  <p style={{ color: '#565449', fontSize: 14 }}>
                     No dishes match your current filter settings.
                   </p>
                   <button
@@ -862,7 +868,7 @@ export default function RestaurantDetail() {
                       setVegOnly(false);
                       setSelectedCategory('ALL');
                     }}
-                    style={{ marginTop: 8, color: '#15803D', fontWeight: 700 }}
+                    style={{ marginTop: 8, color: '#11120D', fontWeight: 600 }}
                   >
                     Clear All Filters
                   </button>
@@ -887,17 +893,17 @@ export default function RestaurantDetail() {
                             width: 8,
                             height: 8,
                             borderRadius: '50%',
-                            background: item.veg ? '#10B981' : '#EF4444',
+                            background: item.veg ? '#15803D' : '#B91C1C',
                             flexShrink: 0
                           }} />
-                          <h4 className="font-display" style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--t1)', margin: 0 }}>
+                          <h4 className="font-display" style={{ fontSize: '1.05rem', fontWeight: 600, color: '#11120D', margin: 0 }}>
                             {item.name}
                           </h4>
                         </div>
 
                         <p style={{
                           fontSize: 12,
-                          color: 'var(--t3)',
+                          color: '#565449',
                           lineHeight: 1.45,
                           marginBottom: 8,
                           display: '-webkit-box',
@@ -909,21 +915,19 @@ export default function RestaurantDetail() {
                         </p>
 
                         <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                          <span style={{ fontSize: 14, fontWeight: 800, color: 'var(--t1)' }}>
+                          <span style={{ fontSize: 14, fontWeight: 700, color: '#11120D' }}>
                             ₹{item.price}
                           </span>
                           <button
                             type="button"
-                            className="btn btn-outline btn-xs"
+                            className="btn btn-primary btn-xs"
                             onClick={() => setShowBookingModal(true)}
                             style={{
-                              borderRadius: 10,
-                              padding: '7px 14px',
+                              borderRadius: 8,
+                              padding: '6px 14px',
                               fontSize: 12,
-                              fontWeight: 700,
-                              borderColor: '#15803D',
-                              color: '#15803D',
-                              minHeight: 32
+                              fontWeight: 600,
+                              minHeight: 30
                             }}
                           >
                             + Pre-Book
@@ -941,20 +945,21 @@ export default function RestaurantDetail() {
                       key={item.id}
                       style={{
                         background: '#FFFFFF',
-                        border: '1px solid var(--border)',
+                        border: '1px solid #E8E2D5',
                         borderRadius: 14,
                         padding: '12px 16px',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'space-between',
-                        gap: 16
+                        gap: 16,
+                        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.04)'
                       }}
                     >
                       <div style={{ display: 'flex', alignItems: 'center', gap: 12, flex: 1 }}>
                         <img
                           src={item.image}
                           alt={item.name}
-                          style={{ width: 48, height: 48, borderRadius: 8, objectFit: 'cover', flexShrink: 0 }}
+                          style={{ width: 48, height: 48, borderRadius: 10, objectFit: 'cover', flexShrink: 0, border: '1px solid #E8E2D5' }}
                           loading="lazy"
                         />
                         <div>
@@ -963,33 +968,31 @@ export default function RestaurantDetail() {
                               width: 8,
                               height: 8,
                               borderRadius: '50%',
-                              background: item.veg ? '#10B981' : '#EF4444'
+                              background: item.veg ? '#15803D' : '#B91C1C'
                             }} />
-                            <span style={{ fontSize: 13.5, fontWeight: 800, color: 'var(--t1)' }}>{item.name}</span>
-                            <span style={{ fontSize: 11, color: 'var(--t4)' }}>· {item.category}</span>
+                            <span style={{ fontSize: 13.5, fontWeight: 600, color: '#11120D' }}>{item.name}</span>
+                            <span style={{ fontSize: 11, color: '#565449' }}>· {item.category}</span>
                           </div>
-                          <p style={{ fontSize: 11.5, color: 'var(--t3)', margin: '2px 0 0', maxWidth: 460 }}>
+                          <p style={{ fontSize: 11.5, color: '#565449', margin: '2px 0 0', maxWidth: 460 }}>
                             {item.desc}
                           </p>
                         </div>
                       </div>
 
                       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                        <span style={{ fontSize: 13.5, fontWeight: 800, color: 'var(--t1)' }}>
+                        <span style={{ fontSize: 13.5, fontWeight: 700, color: '#11120D' }}>
                           ₹{item.price}
                         </span>
                         <button
                           type="button"
-                          className="btn btn-outline btn-xs"
+                          className="btn btn-primary btn-xs"
                           onClick={() => setShowBookingModal(true)}
                           style={{
-                            borderRadius: 10,
-                            padding: '7px 14px',
+                            borderRadius: 8,
+                            padding: '6px 14px',
                             fontSize: 12,
-                            fontWeight: 700,
-                            borderColor: '#FF5200',
-                            color: '#FF5200',
-                            minHeight: 32
+                            fontWeight: 600,
+                            minHeight: 30
                           }}
                         >
                           + Pre-Book
@@ -1010,10 +1013,10 @@ export default function RestaurantDetail() {
                   key={offer.id}
                   style={{
                     background: '#FFFFFF',
-                    border: '1px solid var(--border)',
-                    borderRadius: 18,
+                    border: '1px solid #E8E2D5',
+                    borderRadius: 16,
                     padding: 22,
-                    boxShadow: 'var(--shadow-sm)',
+                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)',
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'space-between'
@@ -1022,10 +1025,10 @@ export default function RestaurantDetail() {
                   <div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
                       <span style={{
-                        background: '#FEF3C7',
-                        color: '#92400E',
-                        fontSize: 12,
-                        fontWeight: 800,
+                        background: '#11120D',
+                        color: '#FFFFFF',
+                        fontSize: 11.5,
+                        fontWeight: 700,
                         padding: '3px 10px',
                         borderRadius: 99,
                         display: 'inline-flex',
@@ -1034,34 +1037,34 @@ export default function RestaurantDetail() {
                       }}>
                         <Tag size={12} /> {offer.discount}
                       </span>
-                      <span style={{ fontSize: 11.5, color: 'var(--t3)', fontWeight: 600 }}>
+                      <span style={{ fontSize: 11.5, color: '#565449', fontWeight: 500 }}>
                         {offer.validTill}
                       </span>
                     </div>
 
-                    <h4 className="font-display" style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--t1)', margin: '0 0 6px' }}>
+                    <h4 className="font-display" style={{ fontSize: '1.25rem', fontWeight: 600, color: '#11120D', margin: '0 0 6px' }}>
                       {offer.title}
                     </h4>
-                    <p style={{ fontSize: 13, color: 'var(--t2)', lineHeight: 1.5, marginBottom: 16 }}>
+                    <p style={{ fontSize: 13, color: '#565449', lineHeight: 1.5, marginBottom: 16 }}>
                       {offer.description}
                     </p>
 
                     {/* Voucher Code Box */}
                     <div style={{
-                      background: '#FFFBEB',
-                      border: '1.5px dashed #F59E0B',
+                      background: '#F6F2EA',
+                      border: '1px dashed #18181B',
                       borderRadius: 12,
                       padding: '10px 14px',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'space-between',
-                      marginBottom: 16
+                      marginBottom: 16,
                     }}>
                       <div>
-                        <div style={{ fontSize: 10, fontWeight: 700, color: '#92400E', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                        <div style={{ fontSize: 10, fontWeight: 700, color: '#565449', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                           Promo Code
                         </div>
-                        <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#B45309', fontFamily: 'monospace', letterSpacing: '0.06em' }}>
+                        <div style={{ fontSize: '1.15rem', fontWeight: 700, color: '#11120D', fontFamily: 'monospace', letterSpacing: '0.06em' }}>
                           {offer.code || offer.promoCode}
                         </div>
                       </div>
@@ -1072,13 +1075,13 @@ export default function RestaurantDetail() {
                           showToast(`Copied code ${offer.code || offer.promoCode}!`);
                         }}
                         style={{
-                          background: '#FEF3C7',
+                          background: '#11120D',
                           border: 'none',
-                          color: '#92400E',
+                          color: '#FFFFFF',
                           borderRadius: 8,
                           padding: '7px 14px',
                           fontSize: 12,
-                          fontWeight: 800,
+                          fontWeight: 600,
                           cursor: 'pointer',
                           minHeight: 30
                         }}
@@ -1094,7 +1097,7 @@ export default function RestaurantDetail() {
                       setSelectedOffer(offer);
                       setShowBookingModal(true);
                     }}
-                    style={{ borderRadius: 12, fontWeight: 700, width: '100%', justifyContent: 'center', padding: '12px 20px', minHeight: 44 }}
+                    style={{ borderRadius: 99, fontWeight: 600, width: '100%', justifyContent: 'center', padding: '12px 24px', minHeight: 44 }}
                   >
                     <Sparkles size={15} /> Claim Voucher &amp; Reserve
                   </button>
@@ -1109,32 +1112,32 @@ export default function RestaurantDetail() {
               {/* Review Score Summary Card */}
               <div style={{
                 background: '#FFFFFF',
-                border: '1px solid var(--border)',
-                borderRadius: 20,
+                border: '1px solid #E8E2D5',
+                borderRadius: 18,
                 padding: '24px 28px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 flexWrap: 'wrap',
                 gap: 20,
-                boxShadow: 'var(--shadow-sm)'
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)'
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
                   <div style={{ textAlign: 'center' }}>
-                    <div className="font-display" style={{ fontSize: '2.8rem', fontWeight: 800, color: 'var(--t1)', lineHeight: 1 }}>
+                    <div className="font-display" style={{ fontSize: '2.8rem', fontWeight: 600, color: '#11120D', lineHeight: 1 }}>
                       {restaurant.rating}
                     </div>
-                    <div style={{ display: 'flex', gap: 3, color: '#F59E0B', margin: '6px 0' }}>
+                    <div style={{ display: 'flex', gap: 3, color: '#D97706', margin: '6px 0' }}>
                       {[1, 2, 3, 4, 5].map(s => (
                         <Star
                           key={s}
                           size={15}
-                          fill={s <= Math.round(restaurant.rating || 0) ? '#F59E0B' : 'none'}
-                          color="#F59E0B"
+                          fill={s <= Math.round(restaurant.rating || 0) ? '#D97706' : 'none'}
+                          color="#D97706"
                         />
                       ))}
                     </div>
-                    <div style={{ fontSize: 12, color: 'var(--t3)' }}>
+                    <div style={{ fontSize: 12, color: '#565449' }}>
                       {displayReviewsCount} verified reviews
                     </div>
                   </div>
@@ -1147,11 +1150,11 @@ export default function RestaurantDetail() {
                       const pct = Math.round((count / total) * 100);
                       return (
                         <div key={stars} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 11.5 }}>
-                          <span style={{ color: 'var(--t3)', width: 38 }}>{stars}★</span>
-                          <div style={{ flex: 1, height: 6, background: '#E2E8F0', borderRadius: 99, overflow: 'hidden' }}>
-                            <div style={{ width: `${pct}%`, height: '100%', background: '#F59E0B' }} />
+                          <span style={{ color: '#565449', width: 38 }}>{stars}★</span>
+                          <div style={{ flex: 1, height: 6, background: '#F6F2EA', borderRadius: 99, overflow: 'hidden' }}>
+                            <div style={{ width: `${pct}%`, height: '100%', background: '#11120D' }} />
                           </div>
-                          <span style={{ color: 'var(--t4)', width: 28, textAlign: 'right' }}>{pct}%</span>
+                          <span style={{ color: '#757367', width: 28, textAlign: 'right' }}>{pct}%</span>
                         </div>
                       );
                     })}
@@ -1161,7 +1164,7 @@ export default function RestaurantDetail() {
                 <button
                   className="btn btn-outline btn-md"
                   onClick={() => setShowReviewModal(true)}
-                  style={{ borderRadius: 12, fontWeight: 700, borderColor: '#15803D', color: '#15803D', padding: '10px 22px' }}
+                  style={{ borderRadius: 99, fontWeight: 600, padding: '10px 24px' }}
                 >
                   <MessageSquarePlus size={16} /> Write a Review
                 </button>
@@ -1171,18 +1174,18 @@ export default function RestaurantDetail() {
               {reviewsList.length === 0 ? (
                 <div style={{
                   background: '#FFFFFF',
-                  border: '1px solid var(--border)',
+                  border: '1px solid #E8E2D5',
                   borderRadius: 16,
                   padding: '40px 20px',
                   textAlign: 'center'
                 }}>
-                  <p style={{ color: 'var(--t3)', fontSize: 14, marginBottom: 12 }}>
+                  <p style={{ color: '#565449', fontSize: 14, marginBottom: 12 }}>
                     No reviews yet. Have you dined here? Be the first to share your feedback!
                   </p>
                   <button
                     className="btn btn-primary btn-sm"
                     onClick={() => setShowReviewModal(true)}
-                    style={{ borderRadius: 10, fontWeight: 700, padding: '9px 20px' }}
+                    style={{ borderRadius: 99, fontWeight: 600, padding: '9px 22px' }}
                   >
                     Write First Review
                   </button>
@@ -1192,7 +1195,7 @@ export default function RestaurantDetail() {
                   {reviewsList.map(rev => {
                     const authorName = rev.user?.name || rev.author || 'Bennett Scholar';
                     const authorDept = rev.user?.department || rev.dept || 'Bennett Member';
-                    const avatarUrl = rev.user?.avatar || rev.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(authorName)}&background=064E3B&color=fff`;
+                    const avatarUrl = rev.user?.avatar || rev.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(authorName)}&background=F6F2EA&color=11120D`;
                     const dateStr = rev.createdAt ? new Date(rev.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : (rev.date || 'Recently');
                     const isUpvoted = !!upvotedMap[rev.id];
 
@@ -1201,10 +1204,10 @@ export default function RestaurantDetail() {
                         key={rev.id}
                         style={{
                           background: '#FFFFFF',
-                          border: '1px solid var(--border)',
+                          border: '1px solid #E8E2D5',
                           borderRadius: 16,
                           padding: 18,
-                          boxShadow: 'var(--shadow-sm)'
+                          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.04)'
                         }}
                       >
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
@@ -1212,18 +1215,19 @@ export default function RestaurantDetail() {
                             <img
                               src={avatarUrl}
                               alt={authorName}
-                              style={{ width: 40, height: 40, borderRadius: '50%', objectFit: 'cover', border: '1.5px solid #15803D' }}
+                              style={{ width: 40, height: 40, borderRadius: '50%', objectFit: 'cover', border: '1px solid #E8E2D5' }}
                             />
                             <div>
                               <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                                <span style={{ fontSize: 13.5, fontWeight: 800, color: 'var(--t1)' }}>{authorName}</span>
+                                <span style={{ fontSize: 13.5, fontWeight: 600, color: '#11120D' }}>{authorName}</span>
                                 <span style={{
                                   fontSize: 10,
-                                  fontWeight: 700,
-                                  padding: '2px 6px',
+                                  fontWeight: 600,
+                                  padding: '2px 8px',
                                   borderRadius: 99,
-                                  background: '#ECFDF5',
-                                  color: '#065F46',
+                                  background: '#F6F2EA',
+                                  color: '#11120D',
+                                  border: '1px solid #E8E2D5',
                                   display: 'inline-flex',
                                   alignItems: 'center',
                                   gap: 3
@@ -1231,29 +1235,29 @@ export default function RestaurantDetail() {
                                   <ShieldCheck size={11} /> Verified Diner
                                 </span>
                               </div>
-                              <div style={{ fontSize: 11.5, color: 'var(--t3)' }}>{authorDept} · {dateStr}</div>
+                              <div style={{ fontSize: 11.5, color: '#565449' }}>{authorDept} · {dateStr}</div>
                             </div>
                           </div>
 
-                          <div style={{ display: 'flex', gap: 2, color: '#F59E0B' }}>
+                          <div style={{ display: 'flex', gap: 2, color: '#D97706' }}>
                             {[1, 2, 3, 4, 5].map(s => (
                               <Star
                                 key={s}
                                 size={13}
-                                fill={s <= rev.rating ? '#F59E0B' : 'none'}
-                                color="#F59E0B"
+                                fill={s <= rev.rating ? '#D97706' : 'none'}
+                                color="#D97706"
                               />
                             ))}
                           </div>
                         </div>
 
                         {rev.orderedDish && (
-                          <div style={{ fontSize: 12, color: '#15803D', fontWeight: 700, marginBottom: 6 }}>
+                          <div style={{ fontSize: 12, color: '#11120D', fontWeight: 600, marginBottom: 6 }}>
                             Ordered: {rev.orderedDish}
                           </div>
                         )}
 
-                        <p style={{ fontSize: 13, color: 'var(--t2)', lineHeight: 1.5, marginBottom: 10 }}>
+                        <p style={{ fontSize: 13, color: '#565449', lineHeight: 1.5, marginBottom: 10 }}>
                           "{rev.comment || rev.text}"
                         </p>
 
@@ -1264,18 +1268,18 @@ export default function RestaurantDetail() {
                             display: 'inline-flex',
                             alignItems: 'center',
                             gap: 6,
-                            background: isUpvoted ? '#ECFDF5' : '#F8FAFC',
-                            color: isUpvoted ? '#065F46' : 'var(--t3)',
-                            border: `1px solid ${isUpvoted ? '#A7F3D0' : 'var(--border)'}`,
+                            background: isUpvoted ? '#11120D' : '#F6F2EA',
+                            color: isUpvoted ? '#FFFFFF' : '#565449',
+                            border: '1px solid #E8E2D5',
                             borderRadius: 8,
                             padding: '6px 14px',
                             fontSize: 12,
                             cursor: 'pointer',
-                            fontWeight: isUpvoted ? 700 : 500,
+                            fontWeight: isUpvoted ? 600 : 500,
                             minHeight: 32
                           }}
                         >
-                          <ThumbsUp size={12} fill={isUpvoted ? '#065F46' : 'none'} />
+                          <ThumbsUp size={12} fill={isUpvoted ? '#FFFFFF' : 'none'} />
                           <span>Helpful ({rev.helpfulVotes || rev.helpfulCount || 0})</span>
                         </button>
                       </div>
@@ -1291,33 +1295,33 @@ export default function RestaurantDetail() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
               <div style={{
                 background: '#FFFFFF',
-                border: '1px solid var(--border)',
-                borderRadius: 20,
+                border: '1px solid #E8E2D5',
+                borderRadius: 18,
                 padding: 24,
-                boxShadow: 'var(--shadow-sm)'
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)'
               }}>
-                <h3 className="font-display" style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--t1)', marginBottom: 10 }}>
+                <h3 className="font-display" style={{ fontSize: '1.25rem', fontWeight: 600, color: '#11120D', marginBottom: 10 }}>
                   About the Restaurant
                 </h3>
-                <p style={{ fontSize: 13.5, color: 'var(--t2)', lineHeight: 1.6, marginBottom: 20 }}>
+                <p style={{ fontSize: 13.5, color: '#565449', lineHeight: 1.6, marginBottom: 20 }}>
                   {restaurant.description}
                 </p>
 
-                <div style={{ borderTop: '1px solid var(--border)', paddingTop: 18, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13, color: 'var(--t2)' }}>
-                    <MapPin size={16} className="text-emerald-700" />
+                <div style={{ borderTop: '1px solid #E8E2D5', paddingTop: 18, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13, color: '#565449' }}>
+                    <MapPin size={16} style={{ color: '#11120D' }} />
                     <span>{restaurant.address}</span>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13, color: 'var(--t2)' }}>
-                    <Phone size={16} className="text-emerald-700" />
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13, color: '#565449' }}>
+                    <Phone size={16} style={{ color: '#11120D' }} />
                     <span>{restaurant.phone}</span>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13, color: 'var(--t2)' }}>
-                    <Clock size={16} className="text-emerald-700" />
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13, color: '#565449' }}>
+                    <Clock size={16} style={{ color: '#11120D' }} />
                     <span>Hours: {restaurant.hours}</span>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13, color: 'var(--t2)' }}>
-                    <Users size={16} className="text-emerald-700" />
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13, color: '#565449' }}>
+                    <Users size={16} style={{ color: '#11120D' }} />
                     <span>Capacity: Up to {restaurant.capacity} diners</span>
                   </div>
                 </div>
@@ -1325,9 +1329,9 @@ export default function RestaurantDetail() {
 
               {/* Campus Proximity Card */}
               <div style={{
-                background: '#ECFDF5',
-                border: '1px solid #A7F3D0',
-                borderRadius: 20,
+                background: '#F6F2EA',
+                border: '1px solid #E8E2D5',
+                borderRadius: 16,
                 padding: 24,
                 display: 'flex',
                 justifyContent: 'space-between',
@@ -1336,10 +1340,10 @@ export default function RestaurantDetail() {
                 gap: 16
               }}>
                 <div>
-                  <div style={{ fontSize: 14, fontWeight: 800, color: '#065F46', marginBottom: 2 }}>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: '#11120D', marginBottom: 2 }}>
                     {restaurant.distance} km from Bennett University Main Gate
                   </div>
-                  <div style={{ fontSize: 12.5, color: '#047857' }}>
+                  <div style={{ fontSize: 12.5, color: '#565449' }}>
                     Approx. 4 mins by auto-rickshaw or 10-12 mins walking distance.
                   </div>
                 </div>
@@ -1351,7 +1355,7 @@ export default function RestaurantDetail() {
                     const query = encodeURIComponent(`${restaurant.name}, Bennett University, Greater Noida`);
                     window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, '_blank');
                   }}
-                  style={{ borderRadius: 10, fontWeight: 700, gap: 6, padding: '9px 18px' }}
+                  style={{ borderRadius: 99, fontWeight: 600, gap: 6, padding: '9px 20px' }}
                 >
                   <ExternalLink size={14} /> Open Route Map
                 </button>
@@ -1364,19 +1368,18 @@ export default function RestaurantDetail() {
         <div className="booking-rail-card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
             <div>
-              <span style={{ fontSize: 11, fontWeight: 700, color: '#FF5200', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <span style={{ fontSize: 11, fontWeight: 700, color: '#565449', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                 Instant Seating
               </span>
-              <h3 className="font-display" style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--t1)', margin: '2px 0 0' }}>
+              <h3 className="font-display" style={{ fontSize: '1.25rem', fontWeight: 600, color: '#11120D', margin: '2px 0 0' }}>
                 Reserve a Table
               </h3>
             </div>
             <span style={{
-              background: '#FFF5EE',
-              color: '#FF5200',
-              border: '1px solid #FFD8CC',
+              background: '#11120D',
+              color: '#FFFFFF',
               fontSize: 11,
-              fontWeight: 800,
+              fontWeight: 700,
               padding: '3px 8px',
               borderRadius: 99
             }}>
@@ -1384,32 +1387,32 @@ export default function RestaurantDetail() {
             </span>
           </div>
 
-          <p style={{ fontSize: 12.5, color: 'var(--t3)', lineHeight: 1.5, marginBottom: 18 }}>
+          <p style={{ fontSize: 12.5, color: '#565449', lineHeight: 1.5, marginBottom: 18 }}>
             Guaranteed seating for Bennett students &amp; faculty members with digital QR entry.
           </p>
 
           <div style={{
-            background: '#F8FAFC',
-            border: '1px solid var(--border)',
-            borderRadius: 14,
+            background: '#F6F2EA',
+            border: '1px solid #E8E2D5',
+            borderRadius: 12,
             padding: 14,
             marginBottom: 18,
             display: 'flex',
             flexDirection: 'column',
             gap: 8,
-            fontSize: 12.5
+            fontSize: 12.5,
           }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--t2)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', color: '#565449' }}>
               <span>Price Category:</span>
-              <strong style={{ color: 'var(--t1)' }}>{restaurant.price}</strong>
+              <strong style={{ color: '#11120D' }}>{restaurant.price}</strong>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--t2)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', color: '#565449' }}>
               <span>Capacity:</span>
-              <strong style={{ color: 'var(--t1)' }}>Up to {restaurant.capacity} diners</strong>
+              <strong style={{ color: '#11120D' }}>Up to {restaurant.capacity} diners</strong>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--t2)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', color: '#565449' }}>
               <span>Campus Discount:</span>
-              <strong style={{ color: '#FF5200' }}>20% OFF Available</strong>
+              <strong style={{ color: '#11120D' }}>20% OFF Available</strong>
             </div>
           </div>
 
@@ -1418,64 +1421,21 @@ export default function RestaurantDetail() {
             className="btn btn-primary btn-fw btn-md"
             onClick={() => setShowBookingModal(true)}
             style={{
-              borderRadius: 12,
-              fontWeight: 800,
+              borderRadius: 99,
+              fontWeight: 600,
               fontSize: 14,
-              boxShadow: '0 8px 18px rgba(21, 128, 61, 0.3)',
               padding: '13px 20px',
               minHeight: 46,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: 8
+              gap: 8,
+              touchAction: 'manipulation',
             }}
           >
             <Sparkles size={16} /> Book Dining Pass
           </button>
         </div>
-      </div>
-
-      {/* ── Fixed Mobile Bottom Action Bar ── */}
-      <div
-        className="mobile-only-flex"
-        style={{
-          position: 'fixed',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          background: 'rgba(255, 255, 255, 0.96)',
-          backdropFilter: 'blur(12px)',
-          borderTop: '1px solid var(--border)',
-          padding: '12px 18px',
-          zIndex: 100,
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          boxShadow: '0 -4px 16px rgba(0, 0, 0, 0.06)'
-        }}
-      >
-        <div>
-          <div style={{ fontSize: 11, color: '#15803D', fontWeight: 800, display: 'flex', alignItems: 'center', gap: 4 }}>
-            <Zap size={12} /> Instant Table Lock
-          </div>
-          <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--t1)' }}>
-            {restaurant.price} · {restaurant.distance} km away
-          </div>
-        </div>
-
-        <button
-          type="button"
-          className="btn btn-primary btn-sm"
-          onClick={() => setShowBookingModal(true)}
-          style={{
-            borderRadius: 12,
-            padding: '11px 24px',
-            fontSize: 13.5,
-            fontWeight: 800,
-            minHeight: 40
-          }}
-        >
-          Book Table
-        </button>
       </div>
 
       {/* Modals */}
