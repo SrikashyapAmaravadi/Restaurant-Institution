@@ -1330,7 +1330,7 @@ export default function RestaurantDetail() {
                   {restaurant.description}
                 </p>
 
-                <div style={{ borderTop: '1px solid #E8E2D5', paddingTop: 18, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+                <div className="restaurant-about-info-grid" style={{ borderTop: '1px solid #E8E2D5', paddingTop: 18, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))', gap: 14 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13, color: '#565449' }}>
                     <MapPin size={16} style={{ color: '#11120D' }} />
                     <span>{restaurant.address}</span>

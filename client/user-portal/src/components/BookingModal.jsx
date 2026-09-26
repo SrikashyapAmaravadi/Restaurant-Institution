@@ -14,21 +14,18 @@ import {
   ChevronRight,
   ChevronLeft,
   X,
-  AlertCircle,
-  Utensils,
-  QrCode,
-  ShieldCheck,
   Sun,
   Moon,
   Plus,
   Minus,
   Check,
   Zap,
-  MapPin,
   Star,
   Info,
+  MessageSquare,
+  QrCode,
+  Search,
   Leaf,
-  MessageSquare
 } from 'lucide-react';
 
 const LUNCH_SLOTS = [
@@ -38,7 +35,7 @@ const LUNCH_SLOTS = [
   { time: '1:30 PM', badge: 'Instant Confirm' },
   { time: '2:00 PM', badge: 'Available' },
   { time: '2:30 PM', badge: 'Instant Confirm' },
-  { time: '3:00 PM', badge: 'Late Lunch' }
+  { time: '3:00 PM', badge: 'Late Lunch' },
 ];
 
 const DINNER_SLOTS = [
@@ -48,24 +45,34 @@ const DINNER_SLOTS = [
   { time: '8:30 PM', badge: 'Instant Confirm' },
   { time: '9:00 PM', badge: 'Campus Special' },
   { time: '9:30 PM', badge: 'Available' },
-  { time: '10:00 PM', badge: 'Late Bites' }
+  { time: '10:00 PM', badge: 'Late Bites' },
 ];
 
 const OCCASIONS = [
-  'Casual Dining',
-  'Study Group',
-  'Birthday Celebration',
-  'Faculty / Club Meet',
-  'Date Night',
-  'Exam Treat'
+  { label: 'Casual Dining', emoji: '🍽️' },
+  { label: 'Study Group', emoji: '📚' },
+  { label: 'Birthday Celebration', emoji: '🎂' },
+  { label: 'Faculty / Club Meet', emoji: '🤝' },
+  { label: 'Date Night', emoji: '✨' },
+  { label: 'Exam Treat', emoji: '🎉' },
 ];
+
+const BADGE_COLOR = {
+  'Instant Confirm': { bg: '#F0FDF4', color: '#16A34A', border: '#BBF7D0' },
+  'Fast Filling': { bg: '#FFF7ED', color: '#C2410C', border: '#FED7AA' },
+  'Peak Hour': { bg: '#FEF2F2', color: '#DC2626', border: '#FECACA' },
+  'Available': { bg: '#F0FDF4', color: '#16A34A', border: '#BBF7D0' },
+  'Campus Special': { bg: '#F6F2EA', color: '#565449', border: '#D8CFBC' },
+  'Late Lunch': { bg: '#F6F2EA', color: '#565449', border: '#D8CFBC' },
+  'Late Bites': { bg: '#F6F2EA', color: '#565449', border: '#D8CFBC' },
+};
 
 export default function BookingModal({ restaurant, onClose, onBookingSuccess }) {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { createReservation } = useDining();
 
-  const [step, setStep] = useState(1); // 1: Date & Time, 2: Pre-order, 3: Occasion & Notes, 4: Confirmed
+  const [step, setStep] = useState(1);
   const [session, setSession] = useState('lunch');
   const [selectedSlot, setSelectedSlot] = useState('1:00 PM');
   const [guests, setGuests] = useState(2);
@@ -74,14 +81,12 @@ export default function BookingModal({ restaurant, onClose, onBookingSuccess }) 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [confirmedBooking, setConfirmedBooking] = useState(null);
 
-  // Pre-order dish state
   const [liveMenu, setLiveMenu] = useState([]);
   const [menuLoading, setMenuLoading] = useState(false);
-  const [menuFilter, setMenuFilter] = useState('all'); // 'all' | 'veg' | 'non-veg'
+  const [menuFilter, setMenuFilter] = useState('all');
   const [menuSearch, setMenuSearch] = useState('');
   const [preOrders, setPreOrders] = useState({});
 
-  // Generate 7 consecutive dynamic dates starting from today
   const dateOptions = useMemo(() => {
     const dates = [];
     const today = new Date();
@@ -90,16 +95,16 @@ export default function BookingModal({ restaurant, onClose, onBookingSuccess }) 
       d.setDate(today.getDate() + i);
       const iso = d.toISOString().split('T')[0];
       const weekday = i === 0 ? 'Today' : i === 1 ? 'Tomorrow' : d.toLocaleDateString('en-US', { weekday: 'short' });
-      const dayNum = d.toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
+      const dayNum = d.getDate();
+      const month = d.toLocaleDateString('en-US', { month: 'short' });
       const formatted = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
-      dates.push({ iso, weekday, dayNum, formatted });
+      dates.push({ iso, weekday, dayNum, month, formatted });
     }
     return dates;
   }, []);
 
   const [selectedDate, setSelectedDate] = useState(dateOptions[0]);
 
-  // Load live menu items for pre-ordering
   useEffect(() => {
     if (!restaurant?.id) return;
     if (restaurant.menuItems && restaurant.menuItems.length > 0) {
@@ -108,49 +113,27 @@ export default function BookingModal({ restaurant, onClose, onBookingSuccess }) 
     }
     setMenuLoading(true);
     api.restaurants.getById(restaurant.id)
-      .then(res => {
-        if (res.data?.menuItems) {
-          setLiveMenu(res.data.menuItems);
-        }
-      })
-      .catch(err => console.warn('Could not load menu items for pre-order:', err))
+      .then(res => { if (res.data?.menuItems) setLiveMenu(res.data.menuItems); })
+      .catch(() => {})
       .finally(() => setMenuLoading(false));
   }, [restaurant]);
 
-  // Pre-order items total computation
   const preOrderList = Object.values(preOrders).filter(p => p.qty > 0);
-  const preOrderTotal = preOrderList.reduce((acc, p) => acc + (p.price * p.qty), 0);
+  const preOrderTotal = preOrderList.reduce((acc, p) => acc + p.price * p.qty, 0);
 
   const handlePreOrderChange = (item, delta) => {
     setPreOrders(prev => {
       const curr = prev[item.id] || { id: item.id, name: item.name, price: item.price, qty: 0, isVeg: item.isVeg ?? item.veg ?? true };
       const newQty = Math.max(0, curr.qty + delta);
-      if (newQty === 0) {
-        const copy = { ...prev };
-        delete copy[item.id];
-        return copy;
-      }
+      if (newQty === 0) { const c = { ...prev }; delete c[item.id]; return c; }
       return { ...prev, [item.id]: { ...curr, qty: newQty } };
     });
   };
 
   const handleConfirmReservation = async () => {
-    if (!user) {
-      alert('Please sign in to reserve a table at partner venues.');
-      navigate('/login');
-      return;
-    }
-
+    if (!user) { navigate('/login'); return; }
     setIsSubmitting(true);
-    const randomNum = Math.floor(1000 + Math.random() * 9000);
-    const bookingCode = `DB-${randomNum}`;
-
-    const ordersToSave = preOrderList.map(p => ({
-      name: p.name,
-      price: p.price,
-      quantity: p.qty
-    }));
-
+    const bookingCode = `DB-${Math.floor(1000 + Math.random() * 9000)}`;
     const bookingPayload = {
       id: bookingCode,
       restaurantId: restaurant.id,
@@ -164,29 +147,15 @@ export default function BookingModal({ restaurant, onClose, onBookingSuccess }) 
       guestEmail: user.email,
       specialRequest: `${occasion}${specialNotes ? ` · ${specialNotes}` : ''}`,
       tableAssigned: null,
-      orders: ordersToSave,
-      qrCode: `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${bookingCode}-BENNETT-VERIFIED`
+      orders: preOrderList.map(p => ({ name: p.name, price: p.price, quantity: p.qty })),
+      qrCode: `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${bookingCode}-BENNETT-VERIFIED`,
     };
-
     try {
       const saved = await createReservation(bookingPayload);
-
-      try {
-        confetti({
-          particleCount: 100,
-          spread: 80,
-          origin: { y: 0.6 }
-        });
-      } catch {
-        // safe fallback
-      }
-
+      try { confetti({ particleCount: 100, spread: 80, origin: { y: 0.6 } }); } catch {}
       setConfirmedBooking(saved || bookingPayload);
       setStep(4);
-
-      if (onBookingSuccess) {
-        onBookingSuccess(saved || bookingPayload);
-      }
+      if (onBookingSuccess) onBookingSuccess(saved || bookingPayload);
     } catch (err) {
       alert('Could not confirm reservation: ' + err.message);
     } finally {
@@ -195,190 +164,199 @@ export default function BookingModal({ restaurant, onClose, onBookingSuccess }) 
   };
 
   const filteredMenuItems = liveMenu.filter(item => {
-    const isVeg = item.isVeg !== undefined ? item.isVeg : (item.veg !== undefined ? item.veg : true);
+    const isVeg = item.isVeg !== undefined ? item.isVeg : item.veg !== undefined ? item.veg : true;
     if (menuFilter === 'veg' && !isVeg) return false;
     if (menuFilter === 'non-veg' && isVeg) return false;
     if (menuSearch && !item.name.toLowerCase().includes(menuSearch.toLowerCase())) return false;
     return true;
   });
 
+  const STEPS = [
+    { num: 1, label: 'Date & Time' },
+    { num: 2, label: 'Pre-Order' },
+    { num: 3, label: 'Notes' },
+  ];
+
   return (
     <div className="modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
       <div
-        className="modal-card modal-bottom-sheet anim-scale-in"
+        className="anim-scale-in"
         style={{
-          maxWidth: 620,
-          maxHeight: '92vh',
+          width: '100%',
+          maxWidth: 560,
+          maxHeight: '92dvh',
           display: 'flex',
           flexDirection: 'column',
           background: '#FFFFFF',
-          borderRadius: 18,
+          borderRadius: 22,
           border: '1px solid #E8E2D5',
           overflow: 'hidden',
-          boxShadow: '0 20px 40px rgba(0, 0, 0, 0.12)',
-          color: '#11120D'
+          boxShadow: '0 32px 64px -12px rgba(17,18,13,0.22), 0 8px 24px -4px rgba(17,18,13,0.08)',
         }}
       >
-        {/* ── Modal Header ── */}
+
+        {/* ── Rich Hero Header ── */}
         <div style={{
-          padding: '16px 22px',
-          borderBottom: '1px solid #E8E2D5',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          background: '#FFFFFF'
+          background: 'linear-gradient(135deg, #11120D 0%, #252820 60%, #1A1B16 100%)',
+          padding: '20px 22px 0',
+          position: 'relative',
+          overflow: 'hidden',
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <img
-              src={restaurant.image}
-              alt={restaurant.name}
-              style={{ width: 42, height: 42, borderRadius: 8, objectFit: 'cover', border: '1px solid #E8E2D5' }}
-            />
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <h3 style={{ fontFamily: "'Newsreader', 'Playfair Display', Georgia, serif", fontSize: '1.25rem', fontWeight: 600, color: '#11120D', margin: 0 }}>
-                  {step === 4 ? 'Reservation Confirmed' : restaurant.name}
-                </h3>
-                <span style={{
-                  fontSize: 10,
-                  fontWeight: 600,
-                  padding: '2px 8px',
-                  borderRadius: 99,
-                  background: '#F6F2EA',
-                  color: '#11120D',
-                  border: '1px solid #E8E2D5',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 3
-                }}>
-                  <Check size={11} /> Bennett Partner
-                </span>
+          {/* Ambient glow */}
+          <div style={{
+            position: 'absolute', top: -40, right: -40,
+            width: 200, height: 200, borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(216,207,188,0.12) 0%, transparent 70%)',
+            pointerEvents: 'none',
+          }} />
+
+          {/* Top row */}
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 16, position: 'relative', zIndex: 2 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div style={{ position: 'relative' }}>
+                <img
+                  src={restaurant.image}
+                  alt={restaurant.name}
+                  style={{ width: 48, height: 48, borderRadius: 12, objectFit: 'cover', border: '2px solid rgba(216,207,188,0.3)' }}
+                />
+                <div style={{
+                  position: 'absolute', bottom: -3, right: -3,
+                  width: 16, height: 16, borderRadius: '50%',
+                  background: '#16A34A', border: '2px solid #11120D',
+                }} />
               </div>
-              <div style={{ fontSize: 12, color: '#565449', display: 'flex', alignItems: 'center', gap: 6, marginTop: 2 }}>
-                <span>{restaurant.cuisine}</span>
-                <span>·</span>
-                <span style={{ display: 'flex', alignItems: 'center', gap: 3, color: '#11120D', fontWeight: 600 }}>
-                  <Star size={11} fill="#11120D" /> {restaurant.rating || '4.8'}
-                </span>
-                <span>·</span>
-                <span>{restaurant.distance || '0.8'} km</span>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 3 }}>
+                  <h3 style={{
+                    fontFamily: "'Newsreader', 'Playfair Display', Georgia, serif",
+                    fontSize: '1.2rem', fontWeight: 600, color: '#FFFBF4', margin: 0, lineHeight: 1.2,
+                  }}>
+                    {step === 4 ? 'Reservation Confirmed' : restaurant.name}
+                  </h3>
+                  <span style={{
+                    fontSize: 9.5, fontWeight: 700, padding: '2px 7px', borderRadius: 99,
+                    background: 'rgba(255,251,244,0.12)', color: '#D8CFBC',
+                    border: '1px solid rgba(216,207,188,0.25)',
+                    display: 'inline-flex', alignItems: 'center', gap: 3, whiteSpace: 'nowrap',
+                  }}>
+                    <Check size={9} /> Bennett Partner
+                  </span>
+                </div>
+                <div style={{ fontSize: 12, color: 'rgba(255,251,244,0.65)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span>{restaurant.cuisine}</span>
+                  <span style={{ opacity: 0.4 }}>·</span>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 3, color: '#D8CFBC', fontWeight: 600 }}>
+                    <Star size={11} fill="#D8CFBC" color="#D8CFBC" /> {restaurant.rating || '4.8'}
+                  </span>
+                  <span style={{ opacity: 0.4 }}>·</span>
+                  <span>{restaurant.distance || '0.8'} km</span>
+                </div>
               </div>
             </div>
+
+            <button
+              onClick={onClose}
+              style={{
+                width: 30, height: 30, borderRadius: '50%',
+                background: 'rgba(255,251,244,0.1)', border: '1px solid rgba(255,251,244,0.15)',
+                color: 'rgba(255,251,244,0.7)', display: 'flex', alignItems: 'center',
+                justifyContent: 'center', cursor: 'pointer', flexShrink: 0,
+                transition: 'all 0.15s ease',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,251,244,0.18)'; e.currentTarget.style.color = '#FFFBF4'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,251,244,0.1)'; e.currentTarget.style.color = 'rgba(255,251,244,0.7)'; }}
+              aria-label="Close"
+            >
+              <X size={14} />
+            </button>
           </div>
 
-          <button
-            onClick={onClose}
-            aria-label="Close"
-            style={{
-              width: 30,
-              height: 30,
-              borderRadius: '50%',
-              background: '#F6F2EA',
-              border: '1px solid #E8E2D5',
-              color: '#565449',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer'
-            }}
-          >
-            <X size={15} />
-          </button>
+          {/* Step indicator */}
+          {step !== 4 && (
+            <div style={{ display: 'flex', gap: 0, position: 'relative', zIndex: 2 }}>
+              {STEPS.map((s, i) => {
+                const isActive = step === s.num;
+                const isPast = step > s.num;
+                return (
+                  <button
+                    key={s.num}
+                    type="button"
+                    onClick={() => step > s.num && setStep(s.num)}
+                    style={{
+                      flex: 1, padding: '10px 6px 12px',
+                      border: 'none', background: 'transparent',
+                      cursor: isPast ? 'pointer' : 'default',
+                      borderBottom: `2.5px solid ${isActive ? '#FFFBF4' : isPast ? 'rgba(255,251,244,0.35)' : 'rgba(255,251,244,0.12)'}`,
+                      transition: 'all 0.2s ease',
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+                      <span style={{
+                        width: 18, height: 18, borderRadius: '50%', fontSize: 10, fontWeight: 700,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                        background: isActive ? '#FFFBF4' : isPast ? 'rgba(255,251,244,0.25)' : 'rgba(255,251,244,0.1)',
+                        color: isActive ? '#11120D' : isPast ? 'rgba(255,251,244,0.8)' : 'rgba(255,251,244,0.4)',
+                        border: isPast && !isActive ? '1px solid rgba(255,251,244,0.3)' : 'none',
+                      }}>
+                        {isPast ? <Check size={10} /> : s.num}
+                      </span>
+                      <span style={{
+                        fontSize: 12, fontWeight: isActive ? 600 : 500,
+                        color: isActive ? '#FFFBF4' : isPast ? 'rgba(255,251,244,0.7)' : 'rgba(255,251,244,0.35)',
+                      }}>
+                        {s.label}
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
 
-        {/* ── Stepper Navigation Bar (Steps 1 to 3) ── */}
-        {step !== 4 && (
-          <div style={{
-            display: 'flex',
-            borderBottom: '1px solid #E8E2D5',
-            background: '#F6F2EA'
-          }}>
-            {[
-              { num: 1, label: '1. Date & Time' },
-              { num: 2, label: `2. Pre-Order ${preOrderList.length > 0 ? `(${preOrderList.length})` : ''}` },
-              { num: 3, label: '3. Occasion & Notes' }
-            ].map(s => {
-              const isActive = step === s.num;
-              const isPast = step > s.num;
-              return (
-                <button
-                  key={s.num}
-                  type="button"
-                  onClick={() => setStep(s.num)}
-                  style={{
-                    flex: 1,
-                    padding: '10px 8px',
-                    fontSize: 12,
-                    fontWeight: 600,
-                    textAlign: 'center',
-                    border: 'none',
-                    cursor: 'pointer',
-                    color: isActive ? '#11120D' : (isPast ? '#27272A' : '#565449'),
-                    borderBottom: `2px solid ${isActive ? '#11120D' : 'transparent'}`,
-                    background: isActive ? '#FFFFFF' : 'transparent',
-                    transition: 'all 0.15s ease'
-                  }}
-                >
-                  {s.label}
-                </button>
-              );
-            })}
-          </div>
-        )}
-
         {/* ── Scrollable Body ── */}
-        <div style={{ overflowY: 'auto', flex: 1, padding: 22, background: '#FFFFFF' }}>
+        <div style={{ overflowY: 'auto', flex: 1, padding: '20px 22px', background: '#FAFAF8' }}>
           <AnimatePresence mode="wait">
-            {/* STEP 1: DATE, GUESTS & TIME */}
+
+            {/* STEP 1 */}
             {step === 1 && (
-              <motion.div
-                key="step-1"
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.18 }}
-                style={{ display: 'flex', flexDirection: 'column', gap: 20 }}
+              <motion.div key="step-1"
+                initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.18 }}
+                style={{ display: 'flex', flexDirection: 'column', gap: 22 }}
               >
-                {/* 1. Date Selector */}
+                {/* Date Picker */}
                 <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                    <label style={{ fontSize: 12.5, fontWeight: 600, color: '#11120D', display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <Calendar size={14} color="#11120D" />
-                      Select Dining Date
-                    </label>
-                    <span style={{ fontSize: 12, color: '#565449', fontWeight: 600 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                    <span style={{ fontSize: 11.5, fontWeight: 700, color: '#11120D', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <Calendar size={13} color="#565449" /> Select Dining Date
+                    </span>
+                    <span style={{ fontSize: 11.5, color: '#565449', fontWeight: 500 }}>
                       {selectedDate.formatted}
                     </span>
                   </div>
-
-                  <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 2 }}>
+                  <div style={{ display: 'flex', gap: 7, overflowX: 'auto', paddingBottom: 4 }}>
                     {dateOptions.map(d => {
-                      const isSelected = selectedDate.iso === d.iso;
+                      const isSel = selectedDate.iso === d.iso;
                       return (
-                        <button
-                          key={d.iso}
-                          type="button"
-                          onClick={() => setSelectedDate(d)}
+                        <button key={d.iso} type="button" onClick={() => setSelectedDate(d)}
                           style={{
-                            minWidth: 74,
-                            padding: '8px 4px',
-                            borderRadius: 8,
-                            border: `1px solid ${isSelected ? '#11120D' : '#E8E2D5'}`,
-                            background: isSelected ? '#11120D' : '#FFFFFF',
-                            color: isSelected ? '#FFFFFF' : '#565449',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            gap: 2,
+                            minWidth: 62, padding: '9px 6px', borderRadius: 12, flexShrink: 0,
+                            border: `1.5px solid ${isSel ? '#11120D' : '#E8E2D5'}`,
+                            background: isSel ? '#11120D' : '#FFFFFF',
+                            cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3,
                             transition: 'all 0.15s ease',
+                            boxShadow: isSel ? '0 4px 12px rgba(17,18,13,0.18)' : '0 1px 3px rgba(0,0,0,0.04)',
                           }}
                         >
-                          <span style={{ fontSize: 10.5, fontWeight: 600, color: isSelected ? '#FFFFFF' : '#565449' }}>
+                          <span style={{ fontSize: 10, fontWeight: 600, color: isSel ? 'rgba(255,251,244,0.7)' : '#A3A3A3', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                             {d.weekday}
                           </span>
-                          <span style={{ fontSize: 13, fontWeight: 700 }}>
+                          <span style={{ fontSize: 15, fontWeight: 700, color: isSel ? '#FFFBF4' : '#11120D', lineHeight: 1 }}>
                             {d.dayNum}
+                          </span>
+                          <span style={{ fontSize: 10, color: isSel ? 'rgba(255,251,244,0.6)' : '#565449' }}>
+                            {d.month}
                           </span>
                         </button>
                       );
@@ -386,155 +364,116 @@ export default function BookingModal({ restaurant, onClose, onBookingSuccess }) 
                   </div>
                 </div>
 
-                {/* 2. Number of Diners */}
+                {/* Guest count */}
                 <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                    <label style={{ fontSize: 12.5, fontWeight: 600, color: '#11120D', display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <Users size={14} color="#11120D" />
-                      Number of Diners
-                    </label>
-                    <span style={{ fontSize: 11.5, color: '#565449' }}>
-                      {guests === 1 ? 'Solo Dining' : guests <= 4 ? 'Standard Table' : 'Large Group'}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                    <span style={{ fontSize: 11.5, fontWeight: 700, color: '#11120D', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <Users size={13} color="#565449" /> Number of Diners
+                    </span>
+                    <span style={{
+                      fontSize: 11, fontWeight: 600, padding: '2px 9px', borderRadius: 99,
+                      background: '#F6F2EA', color: '#565449', border: '1px solid #E8E2D5',
+                    }}>
+                      {guests === 1 ? 'Solo' : guests <= 4 ? 'Standard Table' : 'Large Group'}
                     </span>
                   </div>
-
-                  <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 2 }}>
-                    {[1, 2, 3, 4, 5, 6, 7, 8].map(count => {
-                      const isSelected = guests === count;
+                  <div style={{ display: 'flex', gap: 6 }}>
+                    {[1, 2, 3, 4, 5, 6, 7, 8].map(n => {
+                      const isSel = guests === n;
                       return (
-                        <button
-                          key={count}
-                          type="button"
-                          onClick={() => setGuests(count)}
+                        <button key={n} type="button" onClick={() => setGuests(n)}
                           style={{
-                            flex: 1,
-                            minWidth: 40,
-                            height: 40,
-                            borderRadius: 8,
-                            border: `1px solid ${isSelected ? '#11120D' : '#E8E2D5'}`,
-                            background: isSelected ? '#11120D' : '#FFFFFF',
-                            color: isSelected ? '#FFFFFF' : '#11120D',
-                            fontWeight: 600,
-                            fontSize: 13.5,
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
+                            flex: 1, height: 42, borderRadius: 10, minWidth: 0,
+                            border: `1.5px solid ${isSel ? '#11120D' : '#E8E2D5'}`,
+                            background: isSel ? '#11120D' : '#FFFFFF',
+                            color: isSel ? '#FFFBF4' : '#11120D',
+                            fontWeight: 700, fontSize: 13.5, cursor: 'pointer',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
                             transition: 'all 0.15s ease',
+                            boxShadow: isSel ? '0 3px 10px rgba(17,18,13,0.15)' : 'none',
                           }}
                         >
-                          {count === 8 ? '8+' : count}
+                          {n === 8 ? '8+' : n}
                         </button>
                       );
                     })}
                   </div>
                 </div>
 
-                {/* 3. Session & Time Slot Selector */}
+                {/* Session + Slots */}
                 <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                    <label style={{ fontSize: 12.5, fontWeight: 600, color: '#11120D', display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <Clock size={14} color="#11120D" />
-                      Seating Window &amp; Slot
-                    </label>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                    <span style={{ fontSize: 11.5, fontWeight: 700, color: '#11120D', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <Clock size={13} color="#565449" /> Seating Window & Slot
+                    </span>
                     <span style={{
-                      fontSize: 10.5,
-                      fontWeight: 600,
-                      padding: '2px 7px',
-                      borderRadius: 99,
-                      background: '#F0FDF4',
-                      color: '#16A34A',
-                      border: '1px solid #BBF7D0',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: 4
+                      fontSize: 10.5, fontWeight: 600, padding: '2px 8px', borderRadius: 99,
+                      background: '#F0FDF4', color: '#16A34A', border: '1px solid #BBF7D0',
+                      display: 'inline-flex', alignItems: 'center', gap: 4,
                     }}>
                       <Zap size={11} /> Instant Seating
                     </span>
                   </div>
 
-                  {/* Lunch vs Dinner Pill Toggle */}
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 10 }}>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSession('lunch');
-                        setSelectedSlot('1:00 PM');
-                      }}
-                      style={{
-                        padding: '9px 12px',
-                        borderRadius: 8,
-                        border: `1px solid ${session === 'lunch' ? '#11120D' : '#E8E2D5'}`,
-                        background: session === 'lunch' ? '#11120D' : '#FFFFFF',
-                        color: session === 'lunch' ? '#FFFFFF' : '#565449',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: 7,
-                        fontWeight: 600,
-                        fontSize: 12.5,
-                        transition: 'all 0.15s ease'
-                      }}
-                    >
-                      <Sun size={14} />
-                      Lunch (12:00 – 3:30 PM)
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSession('dinner');
-                        setSelectedSlot('8:00 PM');
-                      }}
-                      style={{
-                        padding: '9px 12px',
-                        borderRadius: 8,
-                        border: `1px solid ${session === 'dinner' ? '#11120D' : '#E8E2D5'}`,
-                        background: session === 'dinner' ? '#11120D' : '#FFFFFF',
-                        color: session === 'dinner' ? '#FFFFFF' : '#565449',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: 7,
-                        fontWeight: 600,
-                        fontSize: 12.5,
-                        transition: 'all 0.15s ease'
-                      }}
-                    >
-                      <Moon size={14} />
-                      Dinner (7:00 – 11:00 PM)
-                    </button>
-                  </div>
-
-                  {/* Slot Grid */}
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', gap: 6 }}>
-                    {(session === 'lunch' ? LUNCH_SLOTS : DINNER_SLOTS).map(s => {
-                      const isSelected = selectedSlot === s.time;
+                  {/* Lunch / Dinner toggle */}
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 12 }}>
+                    {[
+                      { id: 'lunch', icon: Sun, label: 'Lunch', sub: '12:00 – 3:30 PM', slot: '1:00 PM' },
+                      { id: 'dinner', icon: Moon, label: 'Dinner', sub: '7:00 – 11:00 PM', slot: '8:00 PM' },
+                    ].map(s => {
+                      const isSel = session === s.id;
                       return (
-                        <button
-                          key={s.time}
-                          type="button"
-                          onClick={() => setSelectedSlot(s.time)}
+                        <button key={s.id} type="button"
+                          onClick={() => { setSession(s.id); setSelectedSlot(s.slot); }}
                           style={{
-                            padding: '8px 6px',
-                            borderRadius: 8,
-                            border: `1px solid ${isSelected ? '#11120D' : '#E8E2D5'}`,
-                            background: isSelected ? '#11120D' : '#FFFFFF',
-                            color: isSelected ? '#FFFFFF' : '#11120D',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            gap: 2,
+                            padding: '10px 12px', borderRadius: 12,
+                            border: `1.5px solid ${isSel ? '#11120D' : '#E8E2D5'}`,
+                            background: isSel ? '#11120D' : '#FFFFFF',
+                            color: isSel ? '#FFFBF4' : '#565449',
+                            cursor: 'pointer', display: 'flex', alignItems: 'center',
+                            justifyContent: 'center', gap: 8, fontWeight: 600, fontSize: 13,
                             transition: 'all 0.15s ease',
+                            boxShadow: isSel ? '0 4px 14px rgba(17,18,13,0.18)' : '0 1px 3px rgba(0,0,0,0.04)',
+                            flexDirection: 'column',
                           }}
                         >
-                          <div style={{ fontWeight: 600, fontSize: 13 }}>{s.time}</div>
-                          <div style={{ fontSize: 9.5, color: isSelected ? '#E8E2D5' : '#565449', fontWeight: 500 }}>
+                          <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                            <s.icon size={15} /> {s.label}
+                          </span>
+                          <span style={{ fontSize: 10.5, fontWeight: 500, opacity: 0.7 }}>{s.sub}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Slot grid */}
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(90px, 1fr))', gap: 7 }}>
+                    {(session === 'lunch' ? LUNCH_SLOTS : DINNER_SLOTS).map(s => {
+                      const isSel = selectedSlot === s.time;
+                      const bc = BADGE_COLOR[s.badge] || BADGE_COLOR['Available'];
+                      return (
+                        <button key={s.time} type="button" onClick={() => setSelectedSlot(s.time)}
+                          style={{
+                            padding: '9px 6px', borderRadius: 10,
+                            border: `1.5px solid ${isSel ? '#11120D' : '#E8E2D5'}`,
+                            background: isSel ? '#11120D' : '#FFFFFF',
+                            cursor: 'pointer', display: 'flex', flexDirection: 'column',
+                            alignItems: 'center', gap: 4, transition: 'all 0.15s ease',
+                            boxShadow: isSel ? '0 4px 12px rgba(17,18,13,0.18)' : '0 1px 2px rgba(0,0,0,0.03)',
+                          }}
+                        >
+                          <span style={{ fontWeight: 700, fontSize: 13, color: isSel ? '#FFFBF4' : '#11120D' }}>
+                            {s.time}
+                          </span>
+                          <span style={{
+                            fontSize: 9, fontWeight: 600, padding: '1px 6px', borderRadius: 99,
+                            background: isSel ? 'rgba(255,251,244,0.15)' : bc.bg,
+                            color: isSel ? '#D8CFBC' : bc.color,
+                            border: `1px solid ${isSel ? 'rgba(255,251,244,0.2)' : bc.border}`,
+                            whiteSpace: 'nowrap',
+                          }}>
                             {s.badge}
-                          </div>
+                          </span>
                         </button>
                       );
                     })}
@@ -543,193 +482,129 @@ export default function BookingModal({ restaurant, onClose, onBookingSuccess }) 
               </motion.div>
             )}
 
-            {/* STEP 2: PRE-ORDER SPECIALTIES */}
+            {/* STEP 2 */}
             {step === 2 && (
-              <motion.div
-                key="step-2"
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.18 }}
+              <motion.div key="step-2"
+                initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.18 }}
                 style={{ display: 'flex', flexDirection: 'column', gap: 14 }}
               >
-                <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div>
-                      <h4 style={{ fontFamily: "'Newsreader', 'Playfair Display', Georgia, serif", fontSize: '1.15rem', fontWeight: 600, color: '#11120D', margin: 0 }}>
-                        Pre-Order Kitchen Dishes
-                      </h4>
-                      <p style={{ fontSize: 12, color: '#565449', margin: '2px 0 0' }}>
-                        Optional: Order in advance so food is ready when you arrive.
-                      </p>
-                    </div>
-
-                    {preOrderTotal > 0 && (
-                      <span style={{
-                        background: '#11120D',
-                        color: '#FFFFFF',
-                        fontSize: 11.5,
-                        fontWeight: 700,
-                        padding: '3px 9px',
-                        borderRadius: 99,
-                      }}>
-                        Total: ₹{preOrderTotal}
-                      </span>
-                    )}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 10 }}>
+                  <div>
+                    <h4 style={{ fontFamily: "'Newsreader', serif", fontSize: '1.1rem', fontWeight: 600, color: '#11120D', margin: '0 0 2px' }}>
+                      Pre-Order Dishes
+                    </h4>
+                    <p style={{ fontSize: 12, color: '#565449', margin: 0, lineHeight: 1.4 }}>
+                      Optional — food ready at your seat when you arrive.
+                    </p>
                   </div>
+                  {preOrderTotal > 0 && (
+                    <span style={{
+                      background: '#11120D', color: '#FFFBF4',
+                      fontSize: 12, fontWeight: 700, padding: '4px 12px', borderRadius: 99,
+                      display: 'inline-flex', alignItems: 'center', gap: 5,
+                      boxShadow: '0 2px 8px rgba(17,18,13,0.2)',
+                    }}>
+                      ₹{preOrderTotal} · {preOrderList.length} item{preOrderList.length !== 1 ? 's' : ''}
+                    </span>
+                  )}
+                </div>
 
-                  {/* Filter and Search Bar */}
-                  <div style={{ display: 'flex', gap: 6, marginTop: 10 }}>
+                {/* Search + filter */}
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                  <div style={{ flex: 1, position: 'relative' }}>
+                    <Search size={14} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: '#A3A3A3' }} />
                     <input
                       type="text"
                       className="form-input"
-                      style={{ flex: 1, padding: '7px 10px', fontSize: 12.5 }}
-                      placeholder="Search menu items..."
+                      style={{ paddingLeft: 32, fontSize: 12.5, height: 36, borderRadius: 8 }}
+                      placeholder="Search dishes..."
                       value={menuSearch}
                       onChange={e => setMenuSearch(e.target.value)}
                     />
-                    <div style={{ display: 'flex', gap: 4 }}>
-                      <button
-                        type="button"
-                        onClick={() => setMenuFilter('all')}
+                  </div>
+                  <div style={{ display: 'flex', background: '#F6F2EA', borderRadius: 8, border: '1px solid #E8E2D5', overflow: 'hidden' }}>
+                    {['all', 'veg'].map(f => (
+                      <button key={f} type="button" onClick={() => setMenuFilter(f)}
                         style={{
-                          padding: '6px 12px',
-                          minHeight: 32,
-                          borderRadius: 6,
-                          fontSize: 12,
-                          fontWeight: 600,
-                          border: `1px solid ${menuFilter === 'all' ? '#11120D' : '#E8E2D5'}`,
-                          background: menuFilter === 'all' ? '#11120D' : '#FFFFFF',
-                          color: menuFilter === 'all' ? '#FFFFFF' : '#565449',
-                          cursor: 'pointer'
+                          padding: '6px 12px', border: 'none', fontSize: 12, fontWeight: 600,
+                          background: menuFilter === f ? '#11120D' : 'transparent',
+                          color: menuFilter === f ? '#FFFBF4' : '#565449',
+                          cursor: 'pointer', transition: 'all 0.15s ease', display: 'flex', alignItems: 'center', gap: 4,
                         }}
                       >
-                        All
+                        {f === 'veg' && <Leaf size={11} />}
+                        {f === 'all' ? 'All' : 'Veg'}
                       </button>
-                      <button
-                        type="button"
-                        onClick={() => setMenuFilter('veg')}
-                        style={{
-                          padding: '6px 12px',
-                          minHeight: 32,
-                          borderRadius: 6,
-                          fontSize: 12,
-                          fontWeight: 600,
-                          border: `1px solid ${menuFilter === 'veg' ? '#11120D' : '#E8E2D5'}`,
-                          background: menuFilter === 'veg' ? '#11120D' : '#FFFFFF',
-                          color: menuFilter === 'veg' ? '#FFFFFF' : '#565449',
-                          cursor: 'pointer'
-                        }}
-                      >
-                        Veg
-                      </button>
-                    </div>
+                    ))}
                   </div>
                 </div>
 
-                {/* Dish List */}
                 {menuLoading ? (
-                  <div style={{ textAlign: 'center', padding: '24px 0', color: '#565449', fontSize: 12.5 }}>
-                    Loading fresh kitchen catalog...
+                  <div style={{ textAlign: 'center', padding: '32px 0' }}>
+                    <div style={{
+                      width: 28, height: 28, borderRadius: '50%',
+                      border: '2.5px solid #E8E2D5', borderTopColor: '#11120D',
+                      animation: 'spin 0.7s linear infinite', margin: '0 auto 10px',
+                    }} />
+                    <p style={{ fontSize: 12.5, color: '#565449', margin: 0 }}>Loading kitchen catalog...</p>
                   </div>
                 ) : filteredMenuItems.length === 0 ? (
-                  <div style={{ textAlign: 'center', padding: '24px 0', color: '#565449', fontSize: 12.5 }}>
-                    No matching dishes found. You can still proceed to reserve your table.
+                  <div style={{ textAlign: 'center', padding: '32px 20px' }}>
+                    <p style={{ fontSize: 13, color: '#565449' }}>No items found. You can still proceed to reserve.</p>
                   </div>
                 ) : (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6, maxHeight: 300, overflowY: 'auto', paddingRight: 4 }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6, maxHeight: 280, overflowY: 'auto', paddingRight: 2 }}>
                     {filteredMenuItems.map(item => {
-                      const isVeg = item.isVeg !== undefined ? item.isVeg : (item.veg !== undefined ? item.veg : true);
+                      const isVeg = item.isVeg !== undefined ? item.isVeg : item.veg !== undefined ? item.veg : true;
                       const qty = preOrders[item.id]?.qty || 0;
                       return (
-                        <div
-                          key={item.id}
+                        <div key={item.id}
                           style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                            padding: '9px 12px',
-                            borderRadius: 8,
-                            border: `1px solid ${qty > 0 ? '#11120D' : '#E8E2D5'}`,
+                            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                            padding: '10px 12px', borderRadius: 10,
+                            border: `1.5px solid ${qty > 0 ? '#11120D' : '#E8E2D5'}`,
                             background: qty > 0 ? '#F6F2EA' : '#FFFFFF',
+                            transition: 'all 0.15s ease',
                           }}
                         >
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 1, minWidth: 0 }}>
                             <span style={{
-                              width: 8,
-                              height: 8,
-                              borderRadius: '50%',
+                              width: 8, height: 8, borderRadius: 2, flexShrink: 0,
                               background: isVeg ? '#16A34A' : '#DC2626',
-                              flexShrink: 0
+                              border: `1.5px solid ${isVeg ? '#16A34A' : '#DC2626'}`,
                             }} />
-                            <div>
-                              <div style={{ fontSize: 12.5, fontWeight: 600, color: '#11120D' }}>
+                            <div style={{ minWidth: 0 }}>
+                              <div style={{ fontSize: 13, fontWeight: 600, color: '#11120D', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                 {item.name}
                               </div>
                               <div style={{ fontSize: 11.5, color: '#565449' }}>
-                                ₹{item.price} {item.category ? `· ${item.category}` : ''}
+                                ₹{item.price}{item.category ? ` · ${item.category}` : ''}
                               </div>
                             </div>
                           </div>
-
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
                             {qty > 0 ? (
-                              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                                <button
-                                  type="button"
-                                  onClick={() => handlePreOrderChange(item, -1)}
-                                  style={{
-                                    width: 26,
-                                    height: 26,
-                                    borderRadius: 6,
-                                    border: '1px solid #E8E2D5',
-                                    background: '#F6F2EA',
-                                    color: '#11120D',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    cursor: 'pointer'
-                                  }}
-                                >
-                                  <Minus size={12} />
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                                <button type="button" onClick={() => handlePreOrderChange(item, -1)}
+                                  style={{ width: 26, height: 26, borderRadius: 6, border: '1px solid #E8E2D5', background: '#FFFFFF', color: '#11120D', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+                                  <Minus size={11} />
                                 </button>
-                                <span style={{ fontSize: 12.5, fontWeight: 700, minWidth: 16, textAlign: 'center', color: '#11120D' }}>
-                                  {qty}
-                                </span>
-                                <button
-                                  type="button"
-                                  onClick={() => handlePreOrderChange(item, 1)}
-                                  style={{
-                                    width: 26,
-                                    height: 26,
-                                    borderRadius: 6,
-                                    border: '1px solid #11120D',
-                                    background: '#11120D',
-                                    color: '#FFFFFF',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    cursor: 'pointer'
-                                  }}
-                                >
-                                  <Plus size={12} />
+                                <span style={{ fontSize: 13, fontWeight: 700, minWidth: 18, textAlign: 'center', color: '#11120D' }}>{qty}</span>
+                                <button type="button" onClick={() => handlePreOrderChange(item, 1)}
+                                  style={{ width: 26, height: 26, borderRadius: 6, border: '1px solid #11120D', background: '#11120D', color: '#FFFBF4', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+                                  <Plus size={11} />
                                 </button>
                               </div>
                             ) : (
-                              <button
-                                type="button"
-                                onClick={() => handlePreOrderChange(item, 1)}
+                              <button type="button" onClick={() => handlePreOrderChange(item, 1)}
                                 style={{
-                                  padding: '5px 12px',
-                                  minHeight: 28,
-                                  borderRadius: 6,
-                                  border: '1px solid #E8E2D5',
-                                  background: '#FFFFFF',
-                                  color: '#11120D',
-                                  fontSize: 11.5,
-                                  fontWeight: 600,
-                                  cursor: 'pointer',
+                                  padding: '5px 12px', borderRadius: 7, border: '1.5px solid #E8E2D5',
+                                  background: '#FFFFFF', color: '#11120D', fontSize: 11.5, fontWeight: 600,
+                                  cursor: 'pointer', transition: 'all 0.15s ease',
                                 }}
+                                onMouseEnter={e => { e.currentTarget.style.borderColor = '#11120D'; e.currentTarget.style.background = '#F6F2EA'; }}
+                                onMouseLeave={e => { e.currentTarget.style.borderColor = '#E8E2D5'; e.currentTarget.style.background = '#FFFFFF'; }}
                               >
                                 + Add
                               </button>
@@ -743,267 +618,238 @@ export default function BookingModal({ restaurant, onClose, onBookingSuccess }) 
               </motion.div>
             )}
 
-            {/* STEP 3: OCCASION & SPECIAL NOTES */}
+            {/* STEP 3 */}
             {step === 3 && (
-              <motion.div
-                key="step-3"
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.18 }}
-                style={{ display: 'flex', flexDirection: 'column', gap: 16 }}
+              <motion.div key="step-3"
+                initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.18 }}
+                style={{ display: 'flex', flexDirection: 'column', gap: 18 }}
               >
-                {/* Occasions */}
                 <div>
-                  <label style={{ fontSize: 12.5, fontWeight: 600, color: '#11120D', display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
-                    <Sparkles size={14} color="#11120D" />
-                    Campus Occasion
-                  </label>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                  <span style={{ fontSize: 11.5, fontWeight: 700, color: '#11120D', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
+                    <Sparkles size={13} color="#565449" /> Campus Occasion
+                  </span>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7 }}>
                     {OCCASIONS.map(occ => {
-                      const isSelected = occasion === occ;
+                      const isSel = occasion === occ.label;
                       return (
-                        <button
-                          key={occ}
-                          type="button"
-                          onClick={() => setOccasion(occ)}
+                        <button key={occ.label} type="button" onClick={() => setOccasion(occ.label)}
                           style={{
-                            padding: '6px 12px',
-                            borderRadius: 6,
-                            border: `1px solid ${isSelected ? '#11120D' : '#E8E2D5'}`,
-                            background: isSelected ? '#11120D' : '#FFFFFF',
-                            color: isSelected ? '#FFFFFF' : '#565449',
-                            fontSize: 12,
-                            fontWeight: 600,
-                            cursor: 'pointer',
-                            transition: 'all 0.15s ease'
+                            padding: '7px 14px', borderRadius: 10,
+                            border: `1.5px solid ${isSel ? '#11120D' : '#E8E2D5'}`,
+                            background: isSel ? '#11120D' : '#FFFFFF',
+                            color: isSel ? '#FFFBF4' : '#565449',
+                            fontSize: 12.5, fontWeight: 600, cursor: 'pointer',
+                            display: 'flex', alignItems: 'center', gap: 6,
+                            transition: 'all 0.15s ease',
+                            boxShadow: isSel ? '0 3px 10px rgba(17,18,13,0.15)' : 'none',
                           }}
                         >
-                          {occ}
+                          <span>{occ.emoji}</span>
+                          <span>{occ.label}</span>
                         </button>
                       );
                     })}
                   </div>
                 </div>
 
-                {/* Special Request Notes */}
                 <div>
-                  <label style={{ fontSize: 12.5, fontWeight: 600, color: '#11120D', display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
-                    <MessageSquare size={14} color="#11120D" />
-                    Seating Preferences or Dietary Notes (Optional)
-                  </label>
+                  <span style={{ fontSize: 11.5, fontWeight: 700, color: '#11120D', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
+                    <MessageSquare size={13} color="#565449" /> Special Preferences
+                  </span>
                   <textarea
                     className="form-input"
                     rows={3}
-                    placeholder="e.g. Quiet corner table for study group, wheelchair access, low spice..."
+                    placeholder="e.g. Quiet corner for study, wheelchair access, low spice..."
                     value={specialNotes}
                     onChange={e => setSpecialNotes(e.target.value)}
-                    style={{ width: '100%', resize: 'none', fontSize: 12.5 }}
+                    style={{ width: '100%', resize: 'none', fontSize: 13, borderRadius: 10, lineHeight: 1.5 }}
                   />
                 </div>
 
-                {/* Reservation Summary Preview */}
+                {/* Summary card */}
                 <div style={{
-                  background: '#F6F2EA',
-                  border: '1px solid #E8E2D5',
-                  borderRadius: 10,
-                  padding: 12,
-                  fontSize: 12,
+                  background: 'linear-gradient(135deg, #11120D 0%, #252820 100%)',
+                  borderRadius: 14, padding: '14px 16px', color: '#FFFBF4',
+                  border: '1px solid rgba(216,207,188,0.15)',
+                  boxShadow: '0 4px 16px rgba(17,18,13,0.16)',
                 }}>
-                  <div style={{ fontWeight: 700, color: '#11120D', marginBottom: 6, letterSpacing: '0.04em', textTransform: 'uppercase', fontSize: 10.5 }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: '#D8CFBC', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 10 }}>
                     Reservation Summary
                   </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6, color: '#565449' }}>
-                    <div>Date: <strong style={{ color: '#11120D' }}>{selectedDate.formatted}</strong></div>
-                    <div>Slot: <strong style={{ color: '#11120D' }}>{selectedSlot}</strong></div>
-                    <div>Party: <strong style={{ color: '#11120D' }}>{guests} Diners</strong></div>
-                    <div>Pre-orders: <strong style={{ color: '#11120D' }}>{preOrderList.length} items (₹{preOrderTotal})</strong></div>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px 12px', fontSize: 12.5 }}>
+                    {[
+                      ['Date', selectedDate.formatted],
+                      ['Time', selectedSlot],
+                      ['Diners', `${guests} Guest${guests > 1 ? 's' : ''}`],
+                      ['Pre-orders', preOrderList.length > 0 ? `${preOrderList.length} item${preOrderList.length > 1 ? 's' : ''} · ₹${preOrderTotal}` : 'None'],
+                    ].map(([k, v]) => (
+                      <div key={k}>
+                        <span style={{ color: 'rgba(255,251,244,0.5)', fontSize: 11 }}>{k}</span>
+                        <div style={{ fontWeight: 600, color: '#FFFBF4', marginTop: 1 }}>{v}</div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </motion.div>
             )}
 
-            {/* STEP 4: CONFIRMATION */}
+            {/* STEP 4 — CONFIRMED */}
             {step === 4 && confirmedBooking && (
-              <motion.div
-                key="step-4"
-                initial={{ opacity: 0, scale: 0.96 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.2 }}
-                style={{ textAlign: 'center', padding: '10px 0' }}
+              <motion.div key="step-4"
+                initial={{ opacity: 0, scale: 0.94 }} animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+                style={{ textAlign: 'center', padding: '8px 0 4px' }}
               >
+                {/* Success icon */}
                 <div style={{
-                  width: 50,
-                  height: 50,
-                  borderRadius: '50%',
-                  background: '#F0FDF4',
-                  border: '1px solid #BBF7D0',
-                  color: '#16A34A',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  margin: '0 auto 12px',
+                  width: 64, height: 64, borderRadius: '50%',
+                  background: 'linear-gradient(135deg, #F0FDF4, #DCFCE7)',
+                  border: '2px solid #BBF7D0', color: '#16A34A',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  margin: '0 auto 14px',
+                  boxShadow: '0 8px 24px rgba(22,163,74,0.18)',
                 }}>
-                  <CheckCircle2 size={28} />
+                  <CheckCircle2 size={34} />
                 </div>
 
-                <h3 style={{ fontFamily: "'Newsreader', 'Playfair Display', Georgia, serif", fontSize: '1.4rem', fontWeight: 600, color: '#11120D', margin: '0 0 4px' }}>
+                <h3 style={{ fontFamily: "'Newsreader', serif", fontSize: '1.5rem', fontWeight: 600, color: '#11120D', margin: '0 0 5px' }}>
                   Dining Pass Confirmed!
                 </h3>
-                <p style={{ fontSize: 12.5, color: '#565449', margin: '0 0 16px' }}>
-                  Your table at {restaurant.name} is reserved with Bennett Tier-1 priority.
+                <p style={{ fontSize: 13, color: '#565449', margin: '0 0 20px', lineHeight: 1.5 }}>
+                  Your table at <strong style={{ color: '#11120D' }}>{restaurant.name}</strong> is reserved with Bennett Tier-1 priority.
                 </p>
 
-                {/* Digital Ticket Preview Box */}
+                {/* Digital ticket */}
                 <div style={{
-                  background: '#F6F2EA',
-                  border: '1px solid #E8E2D5',
-                  borderRadius: 12,
-                  padding: 16,
-                  maxWidth: 340,
-                  margin: '0 auto 14px',
+                  background: '#FFFFFF',
+                  border: '1.5px solid #E8E2D5',
+                  borderRadius: 18, overflow: 'hidden',
+                  maxWidth: 340, margin: '0 auto 16px',
+                  boxShadow: '0 4px 20px rgba(17,18,13,0.08)',
                 }}>
-                  <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 10 }}>
+                  {/* Ticket header */}
+                  <div style={{
+                    background: 'linear-gradient(135deg, #11120D 0%, #252820 100%)',
+                    padding: '12px 16px',
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  }}>
+                    <div>
+                      <div style={{ fontSize: 10, color: '#D8CFBC', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' }}>Dining Pass</div>
+                      <div style={{ fontSize: 16, fontWeight: 800, color: '#FFFBF4', fontFamily: 'monospace', letterSpacing: '0.06em' }}>
+                        {confirmedBooking.id}
+                      </div>
+                    </div>
+                    <span style={{
+                      fontSize: 10, fontWeight: 700, padding: '3px 9px', borderRadius: 99,
+                      background: 'rgba(34,197,94,0.2)', color: '#4ADE80', border: '1px solid rgba(34,197,94,0.3)',
+                    }}>
+                      ● CONFIRMED
+                    </span>
+                  </div>
+
+                  {/* Perforated divider */}
+                  <div style={{ display: 'flex', alignItems: 'center', background: '#F6F2EA', overflow: 'hidden', height: 18 }}>
+                    <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#FAFAF8', marginLeft: -6, border: '1px solid #E8E2D5', flexShrink: 0 }} />
+                    <div style={{ flex: 1, borderTop: '1.5px dashed #D8CFBC', margin: '0 4px' }} />
+                    <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#FAFAF8', marginRight: -6, border: '1px solid #E8E2D5', flexShrink: 0 }} />
+                  </div>
+
+                  {/* QR + details */}
+                  <div style={{ padding: '14px 16px', display: 'flex', gap: 14, alignItems: 'center' }}>
                     <img
                       src={confirmedBooking.qrCode}
-                      alt="Booking QR Code"
-                      style={{ width: 130, height: 130, borderRadius: 6, background: '#FFFFFF', padding: 4, border: '1px solid #E8E2D5' }}
+                      alt="QR"
+                      style={{ width: 90, height: 90, borderRadius: 8, border: '1px solid #E8E2D5', background: '#FFFFFF', padding: 3, flexShrink: 0 }}
                     />
-                  </div>
-
-                  <div style={{ fontSize: 10, color: '#565449', fontWeight: 600, letterSpacing: '0.06em' }}>
-                    BOOKING REFERENCE
-                  </div>
-                  <div style={{ fontSize: '1.3rem', fontWeight: 700, color: '#11120D', letterSpacing: '0.04em', margin: '2px 0 8px', fontFamily: 'monospace' }}>
-                    {confirmedBooking.id}
-                  </div>
-
-                  <div style={{ borderTop: '1px dashed #D8CFBC', paddingTop: 8, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4, fontSize: 11.5, textAlign: 'left' }}>
-                    <div><span style={{ color: '#565449' }}>Date:</span> <strong style={{ color: '#11120D' }}>{confirmedBooking.date}</strong></div>
-                    <div><span style={{ color: '#565449' }}>Time:</span> <strong style={{ color: '#11120D' }}>{confirmedBooking.time}</strong></div>
-                    <div><span style={{ color: '#565449' }}>Guests:</span> <strong style={{ color: '#11120D' }}>{confirmedBooking.guests} Diners</strong></div>
-                    <div><span style={{ color: '#565449' }}>Occasion:</span> <strong style={{ color: '#11120D' }}>{occasion}</strong></div>
+                    <div style={{ flex: 1, textAlign: 'left', display: 'flex', flexDirection: 'column', gap: 5 }}>
+                      {[
+                        ['Venue', restaurant.name],
+                        ['Date', confirmedBooking.date],
+                        ['Time', confirmedBooking.time],
+                        ['Guests', `${confirmedBooking.guests}`],
+                      ].map(([k, v]) => (
+                        <div key={k} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11.5 }}>
+                          <span style={{ color: '#A3A3A3', fontWeight: 500 }}>{k}</span>
+                          <span style={{ color: '#11120D', fontWeight: 700 }}>{v}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
 
-                <div style={{ fontSize: 11.5, color: '#565449', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5 }}>
-                  <Info size={12} color="#565449" />
-                  Pass stored in your account. Present QR at the host desk.
+                <div style={{ fontSize: 12, color: '#A3A3A3', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5 }}>
+                  <Info size={12} /> Show QR at host desk for instant seating
                 </div>
               </motion.div>
             )}
           </AnimatePresence>
         </div>
 
-        {/* ── Modal Footer ── */}
+        {/* ── Footer ── */}
         <div style={{
-          padding: '14px 22px',
+          padding: '14px 20px',
           borderTop: '1px solid #E8E2D5',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          background: '#F6F2EA'
+          background: '#FFFFFF',
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
         }}>
           {step === 1 && (
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-              <div style={{ fontSize: 12, color: '#565449' }}>
-                {selectedDate.weekday} · {selectedSlot} · {guests} Diners
+            <>
+              <div style={{ fontSize: 12, color: '#565449', fontWeight: 500 }}>
+                {selectedDate.weekday} · <strong style={{ color: '#11120D' }}>{selectedSlot}</strong> · {guests} Diner{guests > 1 ? 's' : ''}
               </div>
-              <div style={{ display: 'flex', gap: 6 }}>
-                <button
-                  type="button"
-                  className="btn btn-ghost btn-sm"
-                  onClick={onClose}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-primary btn-sm"
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button type="button" className="btn btn-ghost btn-sm" onClick={onClose}>Cancel</button>
+                <button type="button" className="btn btn-primary btn-sm"
                   onClick={() => setStep(2)}
-                  style={{ borderRadius: 99, padding: '8px 18px', minHeight: 36, fontWeight: 600 }}
-                >
+                  style={{ borderRadius: 99, padding: '8px 18px', fontWeight: 600 }}>
                   Next: Pre-Order <ChevronRight size={13} />
                 </button>
               </div>
-            </div>
+            </>
           )}
-
           {step === 2 && (
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-              <button
-                type="button"
-                className="btn btn-ghost btn-sm"
-                onClick={() => setStep(1)}
-              >
+            <>
+              <button type="button" className="btn btn-ghost btn-sm" onClick={() => setStep(1)}>
                 <ChevronLeft size={13} /> Back
               </button>
-              <div style={{ display: 'flex', gap: 6 }}>
-                <button
-                  type="button"
-                  className="btn btn-outline btn-sm"
-                  onClick={() => setStep(3)}
-                >
-                  Skip Pre-Order
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button type="button" className="btn btn-outline btn-sm" onClick={() => setStep(3)}>
+                  Skip
                 </button>
-                <button
-                  type="button"
-                  className="btn btn-primary btn-sm"
+                <button type="button" className="btn btn-primary btn-sm"
                   onClick={() => setStep(3)}
-                  style={{ borderRadius: 99, padding: '8px 18px', minHeight: 36, fontWeight: 600 }}
-                >
-                  Next: Occasion <ChevronRight size={13} />
+                  style={{ borderRadius: 99, padding: '8px 18px', fontWeight: 600 }}>
+                  Next: Notes <ChevronRight size={13} />
                 </button>
               </div>
-            </div>
+            </>
           )}
-
           {step === 3 && (
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-              <button
-                type="button"
-                className="btn btn-ghost btn-sm"
-                onClick={() => setStep(2)}
-              >
+            <>
+              <button type="button" className="btn btn-ghost btn-sm" onClick={() => setStep(2)}>
                 <ChevronLeft size={13} /> Back
               </button>
-              <button
-                type="button"
-                className="btn btn-primary btn-sm"
+              <button type="button" className="btn btn-primary btn-sm"
                 disabled={isSubmitting}
                 onClick={handleConfirmReservation}
-                style={{ borderRadius: 99, padding: '9px 20px', minHeight: 38, fontWeight: 600, gap: 6 }}
-              >
-                {isSubmitting ? (
-                  'Confirming Table...'
-                ) : (
-                  <>
-                    <Sparkles size={13} /> Confirm Reservation {preOrderList.length > 0 && `(₹${preOrderTotal})`}
-                  </>
+                style={{ borderRadius: 99, padding: '9px 22px', fontWeight: 600, minHeight: 38, gap: 6 }}>
+                {isSubmitting ? 'Confirming...' : (
+                  <><Sparkles size={13} /> Confirm{preOrderTotal > 0 ? ` · ₹${preOrderTotal}` : ''}</>
                 )}
               </button>
-            </div>
+            </>
           )}
-
           {step === 4 && (
             <div style={{ display: 'flex', gap: 8, width: '100%' }}>
-              <button
-                type="button"
-                className="btn btn-outline btn-md"
-                style={{ flex: 1, fontWeight: 600, borderRadius: 99 }}
-                onClick={() => {
-                  onClose();
-                  navigate('/bookings');
-                }}
-              >
-                <QrCode size={14} /> View in My Bookings
+              <button type="button" className="btn btn-outline btn-md"
+                style={{ flex: 1, borderRadius: 99, fontWeight: 600 }}
+                onClick={() => { onClose(); navigate('/bookings'); }}>
+                <QrCode size={14} /> My Bookings
               </button>
-              <button
-                type="button"
-                className="btn btn-primary btn-md"
-                style={{ flex: 1, fontWeight: 600, borderRadius: 99 }}
-                onClick={onClose}
-              >
+              <button type="button" className="btn btn-primary btn-md"
+                style={{ flex: 1, borderRadius: 99, fontWeight: 600 }}
+                onClick={onClose}>
                 Done
               </button>
             </div>

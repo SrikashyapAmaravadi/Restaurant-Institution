@@ -99,9 +99,21 @@ export default function RestaurantCircularGallery({
     }));
   }, [baseList]);
 
-  // Card geometry dimensions
-  const cardWidth = 330;
-  const cardGap = 28;
+  const [stageWidth, setStageWidth] = useState(() => (typeof window !== 'undefined' ? window.innerWidth : 900));
+
+  useEffect(() => {
+    const updateWidth = () => {
+      const w = containerRef.current?.clientWidth || window.innerWidth;
+      setStageWidth(w);
+    };
+    updateWidth();
+    window.addEventListener('resize', updateWidth);
+    return () => window.removeEventListener('resize', updateWidth);
+  }, []);
+
+  // Responsive Card geometry dimensions
+  const cardWidth = Math.min(330, Math.max(260, stageWidth - 32));
+  const cardGap = stageWidth < 480 ? 16 : 28;
   const cardStride = cardWidth + cardGap;
   const totalTrackWidth = items.length * cardStride;
 

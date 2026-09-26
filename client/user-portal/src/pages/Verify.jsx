@@ -380,6 +380,7 @@ export default function Verify() {
               <input
                 key={idx}
                 id={`otp-${idx}`}
+                className="otp-digit-input"
                 type="text"
                 maxLength={1}
                 value={digit}

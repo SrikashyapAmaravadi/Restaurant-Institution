@@ -2027,9 +2027,16 @@ textarea.form-textarea {
   }
 }
 
-/* ── Topbar Nav Tabs (Center) ──────────────────────────────────────────── */
+/* ── Topbar Nav Tabs & Mobile Logo Controls ────────────────────────────── */
 @media (max-width: 1100px) {
   .mobile-hide {
+    display: none !important;
+  }
+}
+
+@media (min-width: 1025px) {
+  .topbar-logo-mobile,
+  .mobile-menu-trigger {
     display: none !important;
   }
 }
@@ -2673,6 +2680,61 @@ img {
    ANIMATION — reduced motion accessibility
    ══════════════════════════════════════════════════════════════════════════ */
 
+/* ══════════════════════════════════════════════════════════════════════════
+   MOBILE & VIEWPORT RESPONSIVE UTILITIES
+   ══════════════════════════════════════════════════════════════════════════ */
+
+.mobile-only-inline {
+  display: none !important;
+}
+
+@media (max-width: 480px) {
+  .mobile-only-inline {
+    display: inline !important;
+  }
+}
+
+/* Modal Bottom Sheets & Responsive Dialogs */
+@media (max-width: 640px) {
+  .modal-overlay {
+    padding: 10px !important;
+    align-items: flex-end !important;
+  }
+  .modal-bottom-sheet,
+  .modal-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+    max-height: 90vh !important;
+    max-height: 90dvh !important;
+  }
+  .modal-hd {
+    padding: 16px 18px !important;
+  }
+  .modal-body {
+    padding: 16px 18px !important;
+  }
+}
+
+/* Ultra-Small Mobile Viewports (320px - 360px) */
+@media (max-width: 360px) {
+  h1, .font-display {
+    font-size: 1.4rem !important;
+  }
+  .btn {
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+    font-size: 12px !important;
+  }
+  .header-location-pill {
+    padding: 4px 8px !important;
+  }
+  .header-location-text span:last-child {
+    display: none !important;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -2682,3 +2744,4 @@ img {
     transition-duration: 0.01ms !important;
   }
 }
+

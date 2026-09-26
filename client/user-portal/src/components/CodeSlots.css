@@ -191,3 +191,13 @@
     opacity: 1;
   }
 }
+
+@media (max-width: 380px) {
+  .code-slots {
+    --cs-size: 36px !important;
+    --cs-gap: 5px !important;
+    --cs-height: 44px !important;
+    --cs-font: 18px !important;
+  }
+}
+

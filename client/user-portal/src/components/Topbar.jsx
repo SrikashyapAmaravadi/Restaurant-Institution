@@ -71,8 +71,9 @@ export default function Topbar({ onOpenMobileDrawer }) {
             <Menu size={18} />
           </button>
 
-          {/* Logo — Nivix Dine-In */}
+          {/* Logo — Nivix Dine-In (Mobile only to avoid desktop sidebar duplication) */}
           <div
+            className="topbar-logo-mobile"
             onClick={() => navigate('/dashboard')}
             style={{ display: 'flex', flexDirection: 'column', cursor: 'pointer', flexShrink: 0 }}
           >
