@@ -3,6 +3,8 @@ import RestaurantCircularGallery from '../components/RestaurantCircularGallery';
 import BookingModal from '../components/BookingModal';
 import OfferDrawer from '../components/OfferDrawer';
 import BranchedMenu from '../components/BranchedMenu';
+import RubberSegment from '../components/RubberSegment';
+import CustomSelect from '../components/CustomSelect';
 import { useDining } from '../context/DiningContext';
 import {
   Search,
@@ -24,12 +26,12 @@ const PRICES   = ['₹', '₹₹', '₹₹₹'];
 const RATINGS  = ['Any', '4.0+', '4.5+'];
 
 const SORT_OPTIONS = [
-  { id: 'recommended', label: 'Featured / Recommended' },
-  { id: 'rating-desc', label: 'Top Rated (4.8★+)' },
-  { id: 'distance-asc', label: 'Nearest to Campus' },
-  { id: 'price-asc', label: 'Price: Low to High' },
-  { id: 'price-desc', label: 'Price: High to Low' },
-  { id: 'reviews-desc', label: 'Most Popular' },
+  { value: 'recommended', label: 'Featured / Recommended' },
+  { value: 'rating-desc', label: 'Top Rated (4.8★+)' },
+  { value: 'distance-asc', label: 'Nearest to Campus' },
+  { value: 'price-asc', label: 'Price: Low to High' },
+  { value: 'price-desc', label: 'Price: High to Low' },
+  { value: 'reviews-desc', label: 'Most Popular' },
 ];
 
 export default function Discover() {
@@ -232,66 +234,14 @@ export default function Discover() {
 
           {/* Sort Dropdown */}
           <div className="flex items-center gap-2.5 flex-wrap">
-            {/* Custom Sort Selector */}
-            <div className="relative" ref={sortDropdownRef}>
-              <button
-                type="button"
-                onClick={() => setIsSortOpen(prev => !prev)}
-                className={`custom-dropdown-trigger ${isSortOpen ? 'open' : ''}`}
-                style={{
-                  background: '#FFFFFF',
-                  border: `1px solid ${isSortOpen ? '#11120D' : '#E8E2D5'}`,
-                  color: '#11120D',
-                }}
-                aria-haspopup="listbox"
-                aria-expanded={isSortOpen}
-              >
-                <ArrowUpDown size={13} style={{ color: '#11120D' }} className="shrink-0" />
-                <span style={{ color: '#11120D' }}>
-                  {SORT_OPTIONS.find(o => o.id === sortBy)?.label || 'Featured / Recommended'}
-                </span>
-                <ChevronDown
-                  size={13}
-                  style={{ color: '#565449' }}
-                  className={`transition-transform duration-200 ${isSortOpen ? 'rotate-180' : ''}`}
-                />
-              </button>
-
-              {isSortOpen && (
-                <div className="custom-dropdown-panel" role="listbox" style={{ background: '#FFFFFF', border: '1px solid #E8E2D5' }}>
-                  <div className="px-3 py-2 text-[10.5px] font-bold uppercase tracking-wider border-b mb-1" style={{ color: '#565449', borderColor: '#E8E2D5' }}>
-                    Sort Restaurants
-                  </div>
-                  <div className="flex flex-col gap-0.5">
-                    {SORT_OPTIONS.map(opt => {
-                      const isSelected = sortBy === opt.id;
-                      return (
-                        <button
-                          key={opt.id}
-                          type="button"
-                          role="option"
-                          aria-selected={isSelected}
-                          onClick={() => {
-                            setSortBy(opt.id);
-                            setIsSortOpen(false);
-                          }}
-                          className={`custom-dropdown-option ${isSelected ? 'selected' : ''}`}
-                          style={{
-                            background: isSelected ? '#11120D' : 'transparent',
-                            color: isSelected ? '#FFFBF4' : '#11120D',
-                          }}
-                        >
-                          <span>{opt.label}</span>
-                          {isSelected && (
-                            <Check size={14} strokeWidth={2.5} style={{ color: '#FFFBF4' }} className="shrink-0 ml-2" />
-                          )}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-            </div>
+            <CustomSelect
+              icon={ArrowUpDown}
+              options={SORT_OPTIONS}
+              value={sortBy}
+              onChange={setSortBy}
+              align="right"
+              ariaLabel="Sort restaurants"
+            />
           </div>
         </div>
 
@@ -345,22 +295,80 @@ export default function Discover() {
       {/* Main Discover 3D Circular Showcase */}
       <div style={{ marginTop: 8 }}>
         {sortedAndFiltered.length === 0 ? (
-          <div className="bg-white border border-slate-200 rounded-2xl p-12 text-center shadow-xs">
-            <div className="w-12 h-12 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center mx-auto mb-4 text-slate-500">
+          <div
+            style={{
+              background: '#FFFFFF',
+              border: '1px solid #E8E2D5',
+              borderRadius: 20,
+              padding: '48px 24px',
+              textAlign: 'center',
+              boxShadow: '0 4px 20px rgba(17, 18, 13, 0.04)',
+            }}
+          >
+            <div
+              style={{
+                width: 48,
+                height: 48,
+                borderRadius: '50%',
+                background: '#F6F2EA',
+                border: '1px solid #E8E2D5',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: '0 auto 16px',
+                color: '#565449',
+              }}
+            >
               <UtensilsCrossed size={22} />
             </div>
-            <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-1">
+            <h3
+              style={{
+                fontFamily: "'Newsreader', 'Playfair Display', Georgia, serif",
+                fontSize: 20,
+                fontWeight: 600,
+                color: '#11120D',
+                marginBottom: 6,
+              }}
+            >
               No Restaurants Found
             </h3>
-            <p className="text-xs sm:text-sm text-slate-500 max-w-sm mx-auto mb-5">
+            <p
+              style={{
+                fontSize: 13,
+                color: '#565449',
+                maxWidth: 400,
+                margin: '0 auto 20px',
+                lineHeight: 1.5,
+              }}
+            >
               Try adjusting your radius slider, clearing search keywords, or selecting different cuisines.
             </p>
             <button
               type="button"
-              className="px-4 py-2 text-xs sm:text-sm font-semibold rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 transition-colors cursor-pointer"
               onClick={clearAll}
+              style={{
+                borderRadius: 99,
+                padding: '9px 22px',
+                fontSize: 12.5,
+                fontWeight: 600,
+                background: '#11120D',
+                color: '#FFFBF4',
+                border: '1px solid #11120D',
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                transition: 'all 0.2s ease',
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.background = '#2A2B23';
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.background = '#11120D';
+              }}
             >
-              Reset All Filters
+              <RotateCcw size={13} />
+              <span>Reset All Filters</span>
             </button>
           </div>
         ) : (
@@ -472,35 +480,27 @@ export default function Discover() {
                   onChange={e => setDist(parseFloat(e.target.value))}
                   style={{ width: '100%', accentColor: '#11120D', height: 6, borderRadius: 6, cursor: 'pointer' }}
                 />
-                {/* Distance Presets */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, marginTop: 10 }}>
-                  {[
-                    { label: 'Walk (1km)', val: 1 },
-                    { label: 'TechZone (5km)', val: 5 },
-                    { label: 'All (10km)', val: 10 }
-                  ].map(p => {
-                    const isSelected = maxDist === p.val;
-                    return (
-                      <button
-                        key={p.val}
-                        type="button"
-                        onClick={() => setDist(p.val)}
-                        style={{
-                          padding: '7px 12px',
-                          borderRadius: 99,
-                          fontSize: 12,
-                          fontWeight: 700,
-                          cursor: 'pointer',
-                          border: isSelected ? '1.5px solid #11120D' : '1.5px solid #E8E2D5',
-                          background: isSelected ? '#11120D' : '#FFFFFF',
-                          color: isSelected ? '#FFFBF4' : '#565449',
-                          transition: 'all 0.15s ease'
-                        }}
-                      >
-                        {p.label}
-                      </button>
-                    );
-                  })}
+                {/* Distance Presets with RubberSegment */}
+                <div style={{ marginTop: 12 }}>
+                  <RubberSegment
+                    items={[
+                      { value: '1', label: 'Walk (1km)' },
+                      { value: '5', label: 'TechZone (5km)' },
+                      { value: '10', label: 'All (10km)' }
+                    ]}
+                    value={String(maxDist)}
+                    onChange={(val) => setDist(parseFloat(val))}
+                    trackColor="#F6F2EA"
+                    thumbColor="#11120D"
+                    textColor="#565449"
+                    activeTextColor="#FFFBF4"
+                    size="sm"
+                    radius={99}
+                    inset={2.5}
+                    equalSlots
+                    className="w-full"
+                    aria-label="Campus radius presets"
+                  />
                 </div>
               </div>
 
@@ -703,7 +703,20 @@ export default function Discover() {
                 type="button"
                 className="btn-action-cancel"
                 onClick={clearAll}
-                style={{ padding: '10px 18px', fontSize: 13, minHeight: 42, borderRadius: 12 }}
+                style={{
+                  padding: '10px 20px',
+                  fontSize: 13,
+                  fontWeight: 600,
+                  minHeight: 44,
+                  borderRadius: 99,
+                  background: '#FFFFFF',
+                  border: '1px solid #E8E2D5',
+                  color: '#11120D',
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                }}
               >
                 <RotateCcw size={14} />
                 <span>Reset All</span>
@@ -716,10 +729,17 @@ export default function Discover() {
                   flex: 1,
                   padding: '12px 24px',
                   fontSize: 13.5,
-                  fontWeight: 800,
+                  fontWeight: 700,
                   minHeight: 44,
-                  borderRadius: 12,
-                  justifyContent: 'center'
+                  borderRadius: 99,
+                  background: '#11120D',
+                  border: '1px solid #11120D',
+                  color: '#FFFBF4',
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 6,
                 }}
               >
                 Show {filtered.length} Restaurants
