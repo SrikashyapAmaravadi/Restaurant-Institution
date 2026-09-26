@@ -1681,3 +1681,1004 @@ textarea.form-textarea {
   }
 }
 
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   COMPREHENSIVE RESPONSIVE SYSTEM — All Pages & Components
+   Breakpoints: 1280, 1024, 768, 640, 480, 360
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Landing Page ──────────────────────────────────────────────────────── */
+.landing-header-brand span:last-child {
+  display: inline;
+}
+
+@media (max-width: 480px) {
+  .landing-header-brand span:last-child {
+    display: none;
+  }
+}
+
+/* Promo voucher section on mobile */
+@media (max-width: 640px) {
+  .landing-voucher-row {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 16px !important;
+  }
+  .landing-promo-code-box {
+    width: 100% !important;
+    align-self: stretch !important;
+  }
+}
+
+/* ── Topbar / Header ───────────────────────────────────────────────────── */
+@media (max-width: 360px) {
+  .header-location-pill {
+    display: none !important;
+  }
+}
+
+/* ── Dashboard Page ────────────────────────────────────────────────────── */
+.dashboard-hero-heading {
+  font-size: clamp(1.9rem, 5vw, 3rem) !important;
+  line-height: 1.2 !important;
+}
+
+@media (max-width: 640px) {
+  .dashboard-restaurants-grid {
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+  }
+}
+
+/* ── Discover Page ─────────────────────────────────────────────────────── */
+.discover-filter-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.discover-chips-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .nivix-discovery-search-container,
+  .district-discovery-search-container {
+    flex-wrap: wrap !important;
+  }
+  .nivix-discovery-filter-btn,
+  .district-discovery-filter-btn {
+    height: 44px !important;
+    padding: 0 16px !important;
+    font-size: 12.5px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .nivix-discovery-search-box,
+  .district-discovery-search-box {
+    height: 44px !important;
+    padding: 0 12px 0 14px !important;
+  }
+  .nivix-discovery-search-input,
+  .district-discovery-search-input {
+    font-size: 13px !important;
+  }
+}
+
+/* ── Bookings Page ─────────────────────────────────────────────────────── */
+.bookings-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.bookings-filter-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 640px) {
+  .bookings-filter-row {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+  .bookings-search-input-wrap {
+    width: 100% !important;
+  }
+  .bookings-sort-select {
+    width: 100% !important;
+  }
+}
+
+.booking-card-body {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 480px) {
+  .booking-card-body {
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+  .booking-card-meta-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
+  }
+}
+
+/* ── Restaurant Detail Page ────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .restaurant-hero-cta-desktop {
+    display: none !important;
+  }
+  .restaurant-hero-cta-mobile {
+    display: flex !important;
+  }
+  .restaurant-hero-info-row {
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+}
+
+@media (min-width: 641px) {
+  .restaurant-hero-cta-mobile {
+    display: none !important;
+  }
+}
+
+.restaurant-tab-nav {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.restaurant-tab-nav::-webkit-scrollbar { display: none; }
+
+@media (max-width: 768px) {
+  .menu-dish-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+  .editorial-dish-card {
+    flex-direction: row !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .menu-dish-grid-col2 {
+    grid-template-columns: 1fr !important;
+  }
+  .restaurant-detail-breadcrumb {
+    font-size: 12px !important;
+  }
+  .restaurant-detail-back-btn {
+    padding: 7px 14px !important;
+    font-size: 12px !important;
+  }
+  .booking-rail-card {
+    border-radius: 14px !important;
+    padding: 16px !important;
+  }
+}
+
+/* ── Profile Page ──────────────────────────────────────────────────────── */
+.digital-id-card {
+  background: linear-gradient(135deg, #11120D 0%, #252820 60%, #1C1D17 100%);
+  border: 1.5px solid rgba(216, 207, 188, 0.25);
+  box-shadow: 0 12px 40px rgba(17, 18, 13, 0.25);
+  color: #FFFBF4;
+}
+
+.digital-id-qr {
+  flex-shrink: 0;
+}
+
+@media (max-width: 640px) {
+  .digital-id-card {
+    padding: 18px !important;
+  }
+  .digital-id-card .card-top-row {
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+  .digital-id-card .card-middle-row {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 12px !important;
+  }
+  .digital-id-qr {
+    align-self: flex-start !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-stats-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+  .profile-form-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .digital-id-qr {
+    display: none !important;
+  }
+}
+
+/* ── Notifications Page ────────────────────────────────────────────────── */
+.notification-card {
+  transition: all 0.2s ease;
+}
+
+@media (max-width: 640px) {
+  .notification-card {
+    flex-direction: column !important;
+    gap: 12px !important;
+    padding: 14px 14px !important;
+  }
+  .notification-card .notif-icon-wrap {
+    width: 36px !important;
+    height: 36px !important;
+  }
+  .notification-dismiss-btn {
+    position: absolute !important;
+    top: 12px !important;
+    right: 12px !important;
+  }
+}
+
+/* ── Management Pages (Admin / Staff / SuperAdmin) ─────────────────────── */
+.admin-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.admin-content-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+  gap: 20px;
+}
+
+@media (max-width: 768px) {
+  .admin-table-wrap {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 12px;
+  }
+  .admin-table {
+    min-width: 600px !important;
+  }
+  .admin-table th,
+  .admin-table td {
+    padding: 10px 12px !important;
+    font-size: 12px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .admin-kpi-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+  }
+  .admin-content-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .kpi-card-lux {
+    padding: 14px 16px !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .admin-kpi-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* ── Grid Systems — Universal Fixes ─────────────────────────────────────── */
+.grid-responsive-kpi {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 480px) {
+  .grid-responsive-kpi {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .grid-responsive-kpi {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* ── Auth Cards — Register Role Picker ─────────────────────────────────── */
+@media (max-width: 360px) {
+  .auth-card {
+    max-width: 100% !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    min-height: 100vh !important;
+    min-height: 100dvh !important;
+    border: none !important;
+    box-shadow: none !important;
+    overflow-y: auto !important;
+  }
+  .auth-card-mode-btn span {
+    display: none !important;
+  }
+}
+
+/* ── Topbar Nav Tabs (Center) ──────────────────────────────────────────── */
+@media (max-width: 1100px) {
+  .mobile-hide {
+    display: none !important;
+  }
+}
+
+/* ── Rubber Segment — Touch Scroll on Overflow ─────────────────────────── */
+.rubber-segment-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.rubber-segment-wrap::-webkit-scrollbar { display: none; }
+
+/* ── Modals — Wider on Tablets ─────────────────────────────────────────── */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .modal-card {
+    max-width: min(560px, 92vw) !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .modal-card {
+    max-width: 100% !important;
+    max-height: 92dvh !important;
+  }
+}
+
+/* ── Safe Area & Viewport Units ─────────────────────────────────────────── */
+@supports (height: 100dvh) {
+  .auth-page-root {
+    min-height: 100dvh !important;
+  }
+}
+
+/* ── Offers / Deal Cards Grid ───────────────────────────────────────────── */
+.offers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+  gap: 16px;
+}
+
+@media (max-width: 480px) {
+  .offers-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+}
+
+/* ── Restaurant Card Grid in Discover ───────────────────────────────────── */
+@media (max-width: 768px) {
+  .dashboard-restaurants-grid {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)) !important;
+    gap: 16px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-restaurants-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+}
+
+/* ── Hero Section Text — All Viewports ─────────────────────────────────── */
+@media (max-width: 360px) {
+  .hero-heading-main {
+    font-size: 1.65rem !important;
+  }
+  .nivix-hero-art,
+  .district-hero-art {
+    padding: 24px 12px !important;
+  }
+  .nivix-search-bar,
+  .district-search-bar {
+    padding: 5px 5px 5px 12px !important;
+    margin-top: 12px !important;
+  }
+}
+
+/* ── Voucher Ticket on Landing (Flat 20% Card) ──────────────────────────── */
+@media (max-width: 540px) {
+  .landing-voucher-inner {
+    flex-direction: column !important;
+    gap: 16px !important;
+  }
+  .landing-promo-code-box {
+    width: 100% !important;
+    padding: 10px 14px !important;
+  }
+}
+
+/* ── Page-level bottom clearance for bottom dock ───────────────────────── */
+@media (max-width: 1024px) {
+  .page-pad {
+    padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+}
+
+/* ── Notification Card Layout ───────────────────────────────────────────── */
+.notification-card {
+  position: relative;
+}
+.notification-dismiss-btn {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #F6F2EA;
+  border: 1px solid #E8E2D5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #565449;
+  transition: all 0.15s ease;
+}
+.notification-dismiss-btn:hover {
+  background: #FEF2F2;
+  color: #DC2626;
+  border-color: #FCA5A5;
+}
+
+/* ── Feature perk cards on Landing ─────────────────────────────────────── */
+@media (max-width: 480px) {
+  .landing-perks-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+}
+
+/* ── Smooth image loading ───────────────────────────────────────────────── */
+img {
+  max-width: 100%;
+}
+
+/* ── Topbar height compensations ───────────────────────────────────────── */
+@media (max-width: 480px) {
+  header {
+    height: 60px !important;
+  }
+  .app-layout header {
+    height: 60px !important;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   MANAGEMENT PAGES — Desktop/Mobile View Toggles & Layout Fixes
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* Desktop table view — shown on ≥ 768px */
+.desktop-only-block {
+  display: block;
+}
+.mobile-only-flex {
+  display: none !important;
+}
+
+@media (max-width: 768px) {
+  .desktop-only-block {
+    display: none !important;
+  }
+  .mobile-only-flex {
+    display: flex !important;
+  }
+}
+
+/* ── Admin/Staff Hero Banner ──────────────────────────────────────────── */
+.dashboard-hero-banner {
+  background: linear-gradient(135deg, #11120D 0%, #252820 55%, #1A1B16 100%);
+  border-radius: 20px;
+  padding: clamp(18px, 4vw, 28px);
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  border: 1px solid rgba(216, 207, 188, 0.15);
+  box-shadow: 0 8px 32px rgba(17, 18, 13, 0.18);
+  color: #FFFBF4;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 640px) {
+  .dashboard-hero-banner {
+    border-radius: 16px !important;
+    padding: 16px !important;
+  }
+  .dashboard-hero-banner h2 {
+    font-size: 1.35rem !important;
+  }
+  .dashboard-hero-banner .tabs-scroll-x {
+    gap: 6px !important;
+    padding-top: 12px !important;
+  }
+}
+
+/* ── Staff Portal Pulse Cards ────────────────────────────────────────── */
+.dashboard-pulse-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 20px;
+  background: #FFFFFF;
+  border: 1px solid #E8E2D5;
+  border-radius: 14px;
+  box-shadow: 0 1px 4px rgba(17, 18, 13, 0.04);
+  transition: all 0.2s ease;
+}
+.dashboard-pulse-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(17, 18, 13, 0.08);
+  border-color: #D8CFBC;
+}
+
+@media (max-width: 480px) {
+  .dashboard-pulse-card {
+    padding: 14px 16px !important;
+    gap: 10px !important;
+  }
+  .dashboard-pulse-card .font-display {
+    font-size: 1.25rem !important;
+  }
+}
+
+/* ── StaffPortal search & filter row ─────────────────────────────────── */
+@media (max-width: 640px) {
+  .form-input-wrap {
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+}
+
+/* ── Table responsive wrapper ────────────────────────────────────────── */
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .admin-table {
+    min-width: 560px;
+  }
+}
+
+/* ── Mobile reservation cards (RestaurantAdmin) ──────────────────────── */
+.mobile-reservation-card {
+  padding: 16px 18px;
+  background: #FFFFFF;
+  border: 1px solid #E8E2D5;
+  border-radius: 14px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+.mobile-reservation-card:hover {
+  border-color: #11120D;
+  box-shadow: 0 4px 12px rgba(17,18,13,0.07);
+}
+
+@media (max-width: 480px) {
+  .mobile-reservation-card {
+    padding: 12px 14px !important;
+    border-radius: 12px !important;
+  }
+}
+
+/* ── SuperAdmin Users table ─────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .superadmin-users-table {
+    min-width: 640px;
+  }
+  .superadmin-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 12px;
+  }
+}
+
+/* ── KPI Card on small mobile ─────────────────────────────────────────── */
+@media (max-width: 400px) {
+  .kpi-card-lux {
+    padding: 12px 14px !important;
+  }
+  .kpi-card-lux .font-display {
+    font-size: 1.3rem !important;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   PAGE-LEVEL PADDING — RestaurantDetail hero adjustment
+   ══════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 640px) {
+  .restaurant-hero-cta-desktop {
+    display: none !important;
+  }
+  .restaurant-hero-cta-mobile {
+    display: flex !important;
+  }
+}
+
+@media (min-width: 641px) {
+  .restaurant-hero-cta-mobile {
+    display: none !important;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   BOOKING CARD — consistent responsive behaviour across pages
+   ══════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 520px) {
+  .booking-card-actions {
+    width: 100% !important;
+    margin-left: 0 !important;
+    flex-wrap: wrap !important;
+  }
+  .booking-card-actions .btn {
+    flex: 1 1 auto !important;
+    justify-content: center !important;
+    min-width: 0 !important;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   PROFILE PAGE — digital ID card responsive
+   ══════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 480px) {
+  .digital-id-card {
+    border-radius: 16px !important;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   GLOBAL — prevent horizontal overflow on all pages
+   ══════════════════════════════════════════════════════════════════════════ */
+.app-layout,
+.main-area,
+.page-scroll {
+  overflow-x: hidden;
+}
+
+/* Prevent any fixed-width element from causing overflow */
+@media (max-width: 480px) {
+  .modal-hd,
+  .modal-body,
+  .modal-ft {
+    padding-left: 14px !important;
+    padding-right: 14px !important;
+  }
+  .wallet-card-header {
+    padding: 14px 14px 12px !important;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   VERIFY + PENDING APPROVAL PAGES — center layout fix
+   ══════════════════════════════════════════════════════════════════════════ */
+
+.auth-page-center {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(16px, 4vw, 32px);
+  background: #FFFBF4;
+  box-sizing: border-box;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   DISCOVER PAGE — Filter chips & active filter row
+   ══════════════════════════════════════════════════════════════════════════ */
+
+.discover-active-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 480px) {
+  .discover-active-filters {
+    gap: 6px !important;
+  }
+  .chip {
+    font-size: 11px !important;
+    padding: 5px 10px !important;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   LANDING PAGE — hero section clamp tweaks for very small phones
+   ══════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 360px) {
+  .landing-hero-actions {
+    flex-direction: column !important;
+    width: 100% !important;
+  }
+  .landing-hero-actions .btn {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+  .landing-cta-banner {
+    padding: 20px 14px !important;
+    text-align: left !important;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   TOPBAR — compact on very small screens
+   ══════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 360px) {
+  .app-layout header,
+  header {
+    padding: 0 10px !important;
+    height: 56px !important;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   FINAL RESPONSIVE SWEEP — Toast, Images, Forms, Detail Tabs
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Toast notification — avoid hiding behind bottom dock on mobile ─── */
+@media (max-width: 640px) {
+  .toast-fixed {
+    bottom: calc(80px + env(safe-area-inset-bottom, 0px)) !important;
+    right: 12px !important;
+    left: 12px !important;
+    text-align: center !important;
+    justify-content: center !important;
+    border-radius: 12px !important;
+  }
+}
+
+/* ── Booking card — image stays consistent on all sizes ─────────────── */
+@media (max-width: 400px) {
+  .booking-thumb {
+    width: 64px !important;
+    height: 64px !important;
+  }
+}
+
+/* ── Profile — digital ID card content min-width fix ────────────────── */
+.digital-id-info {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ── Form input wrapper ──────────────────────────────────────────────── */
+.form-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+.form-input-wrap .form-input {
+  padding-left: 36px;
+}
+.form-input-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  flex-shrink: 0;
+}
+
+/* ── Restaurant Detail — tabs sticky scroll ─────────────────────────── */
+@media (max-width: 640px) {
+  .restaurant-detail-tabs-wrap {
+    position: sticky;
+    top: 60px;
+    z-index: 20;
+    background: var(--bg-page);
+    padding-bottom: 4px;
+    margin-bottom: 16px;
+  }
+}
+
+/* ── About tab — info rows stack on mobile ───────────────────────────── */
+.about-info-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 480px) {
+  .about-info-row {
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+}
+
+/* ── Active filters chip row in Discover ────────────────────────────── */
+@media (max-width: 360px) {
+  .district-discovery-filter-btn span:not(.district-discovery-filter-badge) {
+    display: none;
+  }
+  .district-discovery-filter-btn {
+    padding: 0 12px !important;
+    gap: 4px !important;
+  }
+}
+
+/* ── Notifications — max-width full on mobile ───────────────────────── */
+@media (max-width: 800px) {
+  .notifications-list-wrap {
+    max-width: 100% !important;
+  }
+}
+
+/* ── Booking empty state — constrain text width on mobile ───────────── */
+@media (max-width: 480px) {
+  .booking-empty-text {
+    max-width: 100% !important;
+    font-size: 12.5px !important;
+  }
+}
+
+/* ── RestaurantDetail — hero toast on mobile ────────────────────────── */
+@media (max-width: 480px) {
+  .restaurant-toast {
+    bottom: calc(70px + env(safe-area-inset-bottom, 0px)) !important;
+    right: 12px !important;
+    left: 12px !important;
+    border-radius: 10px !important;
+    font-size: 12px !important;
+    padding: 8px 14px !important;
+  }
+}
+
+/* ── Management page — walk-in modal & order modals ────────────────── */
+@media (max-width: 480px) {
+  .walkIn-form-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .order-item-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* ── SuperAdmin moderation review card ──────────────────────────────── */
+@media (max-width: 640px) {
+  .moderation-review-card {
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+  .moderation-review-actions {
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+}
+
+/* ── Global btn-group on mobile ──────────────────────────────────────── */
+@media (max-width: 400px) {
+  .btn-group-mobile-stack {
+    flex-direction: column !important;
+    width: 100% !important;
+  }
+  .btn-group-mobile-stack .btn {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+}
+
+/* ── Landing footer — small screen tweaks ───────────────────────────── */
+@media (max-width: 400px) {
+  footer .footer-brand {
+    display: block !important;
+    text-align: center !important;
+  }
+}
+
+/* ── Verify OTP input — scale to fit on tiny phones ────────────────── */
+@media (max-width: 360px) {
+  .otp-digit-input {
+    width: 30px !important;
+    height: 36px !important;
+    font-size: 15px !important;
+    border-radius: 8px !important;
+  }
+}
+
+/* ── Dashboard hero min-height on small phones ───────────────────────── */
+@media (max-width: 400px) {
+  .nivix-hero-art,
+  .district-hero-art {
+    min-height: 220px !important;
+    padding: 22px 12px !important;
+  }
+  .hero-heading-main {
+    font-size: 1.5rem !important;
+    margin-bottom: 10px !important;
+  }
+}
+
+/* ── Ensure all images don't overflow their containers ──────────────── */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* ── Prevent long text overflow in cards ────────────────────────────── */
+.card h3,
+.card h4,
+.mobile-reservation-card h3,
+.kpi-card-lux h3 {
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+/* ── RubberSegment — never cause horizontal scroll ───────────────────── */
+[class*="rubber-segment"],
+[class*="RubberSegment"] {
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   SAFE-AREA UTILITIES — iPhone notch & Android chin support
+   ══════════════════════════════════════════════════════════════════════════ */
+
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   ANIMATION — reduced motion accessibility
+   ══════════════════════════════════════════════════════════════════════════ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

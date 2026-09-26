@@ -221,7 +221,7 @@ export default function Profile() {
         </div>
 
         {/* Stats and Badges */}
-        <div className="anim-fade-up delay-1" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 240px), 1fr))', gap: 16 }}>
+        <div className="anim-fade-up delay-1 profile-stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 240px), 1fr))', gap: 16 }}>
           <div className="card card-hover stat-tile-interactive" style={{ padding: 18, display: 'flex', alignItems: 'center', gap: 14 }}>
             <div style={{ width: 44, height: 44, borderRadius: 'var(--r-sm)', background: 'rgba(245, 158, 11, 0.12)', color: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Award size={22} />

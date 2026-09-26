@@ -900,7 +900,7 @@ export default function RestaurantAdmin() {
               </div>
 
               {/* Search Bar */}
-              <div style={{ position: 'relative', minWidth: 260, flex: '1 1 260px', maxWidth: 360 }}>
+              <div style={{ position: 'relative', flex: '1 1 220px', maxWidth: 360, minWidth: 0 }}>
                 <Search size={14} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
                 <input
                   type="text"

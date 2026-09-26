@@ -105,16 +105,18 @@ export default function Verify() {
 
   if (isVerified) {
     return (
-      <div
+    <div
         style={{
           position: 'relative',
           minHeight: '100vh',
+          minHeight: '100dvh',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          padding: '16px',
+          padding: 'clamp(16px, 4vw, 32px)',
           boxSizing: 'border-box',
           overflow: 'hidden',
+          backgroundColor: '#FFFBF4',
         }}
       >
         <GlacierDoodleBackground theme="light" />
@@ -239,12 +241,14 @@ export default function Verify() {
       style={{
         position: 'relative',
         minHeight: '100vh',
+        minHeight: '100dvh',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '16px',
+        padding: 'clamp(16px, 4vw, 32px)',
         boxSizing: 'border-box',
         overflow: 'hidden',
+        backgroundColor: '#FFFBF4',
       }}
     >
       {/* Hand-drawn Doodles Canvas */}

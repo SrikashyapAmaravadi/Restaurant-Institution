@@ -194,10 +194,10 @@ export default function StaffPortal() {
         </div>
       </div>
 
-      {/* Front Desk Live Pulse Overview — Guaranteed Horizontal Row */}
+      {/* Front Desk Live Pulse Overview — Responsive 3-col → 1-col */}
       <div className="anim-fade-up delay-1 dashboard-pulse-grid" style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(3, 1fr)',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 160px), 1fr))',
         gap: 16,
         marginBottom: 24,
         width: '100%',
@@ -259,7 +259,7 @@ export default function StaffPortal() {
         </div>
 
         <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
-          <div className="form-input-wrap" style={{ flex: 1, minWidth: 260 }}>
+          <div className="form-input-wrap" style={{ flex: 1, minWidth: 0 }}>
             <Search size={16} className="form-input-icon text-slate-400" />
             <input
               className="form-input"

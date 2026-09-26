@@ -115,7 +115,7 @@ export default function Notifications() {
       </div>
 
       {/* Notifications List */}
-      <div className="anim-fade-up delay-2" style={{ maxWidth: 760, display: 'flex', flexDirection: 'column', gap: 12 }}>
+      <div className="anim-fade-up delay-2 notifications-list-wrap" style={{ maxWidth: 760, display: 'flex', flexDirection: 'column', gap: 12 }}>
         {filtered.length === 0 ? (
           <div className="card" style={{ padding: 48, textAlign: 'center' }}>
             <Bell size={36} className="text-slate-500 mx-auto mb-3" />

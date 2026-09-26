@@ -27,7 +27,7 @@ export default function Dashboard() {
   const safeRestaurants = Array.isArray(restaurants) ? restaurants : [];
 
   return (
-    <div style={{ maxWidth: 1140, margin: '0 auto', padding: 'clamp(14px, 3.5vw, 24px) clamp(12px, 3vw, 20px) calc(90px + env(safe-area-inset-bottom, 0px))', display: 'flex', flexDirection: 'column', gap: 'clamp(20px, 4vw, 32px)' }}>
+    <div style={{ maxWidth: 1140, margin: '0 auto', padding: 'clamp(14px, 3.5vw, 24px) clamp(12px, 3vw, 20px) calc(100px + env(safe-area-inset-bottom, 0px))', display: 'flex', flexDirection: 'column', gap: 'clamp(20px, 4vw, 32px)' }}>
 
       {/* ── 1. HERO BANNER ── */}
       <div className="nivix-hero-canvas district-hero-canvas">

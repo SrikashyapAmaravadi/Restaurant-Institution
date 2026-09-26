@@ -905,7 +905,7 @@ export default function SuperAdmin() {
             </button>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))', gap: 16 }}>
             <div className="kpi-card-lux">
               <div style={{ fontSize: 11, color: '#565449', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.05em' }}>Total Registered Users</div>
               <div className="font-display" style={{ fontSize: '1.85rem', fontWeight: 800, color: '#11120D', marginTop: 4 }}>

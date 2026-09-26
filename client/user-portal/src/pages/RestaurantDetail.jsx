@@ -407,7 +407,9 @@ export default function RestaurantDetail() {
     <div className="page-pad" style={{ maxWidth: 1240, margin: '0 auto', paddingBottom: 80 }}>
       {/* Toast Notification */}
       {toastMessage && (
-        <div style={{
+        <div
+          className="restaurant-toast"
+          style={{
           position: 'fixed',
           bottom: 24,
           right: 24,
@@ -633,7 +635,7 @@ export default function RestaurantDetail() {
             </div>
 
             {/* Desktop Hero CTA */}
-            <div style={{ flexShrink: 0 }}>
+            <div className="restaurant-hero-cta-desktop" style={{ flexShrink: 0 }}>
               <button
                 className="btn btn-primary btn-lg"
                 onClick={() => setShowBookingModal(true)}
@@ -651,6 +653,27 @@ export default function RestaurantDetail() {
                 <Sparkles size={16} /> Reserve Table Pass
               </button>
             </div>
+          </div>
+
+          {/* Mobile Hero CTA — shown below title on small screens */}
+          <div className="restaurant-hero-cta-mobile" style={{ padding: '0 clamp(18px, 4vw, 36px) clamp(16px, 4vw, 24px)', display: 'none' }}>
+            <button
+              className="btn btn-primary"
+              onClick={() => setShowBookingModal(true)}
+              style={{
+                borderRadius: 99,
+                padding: '11px 24px',
+                fontSize: 14,
+                fontWeight: 600,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 8,
+                width: '100%',
+                justifyContent: 'center',
+              }}
+            >
+              <Sparkles size={16} /> Reserve Table Pass
+            </button>
           </div>
         </div>
       </div>
@@ -1114,7 +1137,7 @@ export default function RestaurantDetail() {
                 background: '#FFFFFF',
                 border: '1px solid #E8E2D5',
                 borderRadius: 18,
-                padding: '24px 28px',
+                padding: 'clamp(16px, 3vw, 24px) clamp(16px, 4vw, 28px)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
@@ -1122,7 +1145,7 @@ export default function RestaurantDetail() {
                 gap: 20,
                 boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)'
               }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(14px, 4vw, 28px)', flexWrap: 'wrap' }}>
                   <div style={{ textAlign: 'center' }}>
                     <div className="font-display" style={{ fontSize: '2.8rem', fontWeight: 600, color: '#11120D', lineHeight: 1 }}>
                       {restaurant.rating}
@@ -1143,7 +1166,7 @@ export default function RestaurantDetail() {
                   </div>
 
                   {/* Rating Breakdown Distribution */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 5, minWidth: 200 }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 5, minWidth: 0, flex: 1, maxWidth: 240 }}>
                     {[5, 4, 3, 2, 1].map(stars => {
                       const count = reviewStats.breakdown[stars] || 0;
                       const total = reviewStats.total || reviewsList.length || 1;

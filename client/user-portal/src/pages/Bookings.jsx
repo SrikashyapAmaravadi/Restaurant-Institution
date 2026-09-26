@@ -169,7 +169,7 @@ export default function Bookings() {
       </div>
 
       {/* Search & Sort Toolbar */}
-      <div className="anim-fade-up delay-1" style={{
+      <div className="anim-fade-up delay-1 bookings-filter-row" style={{
         display: 'flex',
         gap: 10,
         marginBottom: 20,
@@ -181,7 +181,7 @@ export default function Bookings() {
         border: '1px solid #E8E2D5',
         boxShadow: '0 1px 2px rgba(0, 0, 0, 0.04)'
       }}>
-        <div style={{ flex: 1, minWidth: 220, position: 'relative' }}>
+        <div style={{ flex: 1, minWidth: 0, position: 'relative' }}>
           <Search size={14} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#565449' }} />
           <input
             className="form-input"

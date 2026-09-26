@@ -252,7 +252,7 @@ export default function Landing() {
         </p>
 
         {/* Hero Actions */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, flexWrap: 'wrap' }}>
+        <div className="landing-hero-actions" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, flexWrap: 'wrap' }}>
           <button
             type="button"
             onClick={handlePortalEntry}
@@ -333,6 +333,7 @@ export default function Landing() {
           />
 
           <div
+            className="landing-voucher-inner"
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -449,9 +450,10 @@ export default function Landing() {
         </div>
 
         <div
+          className="landing-perks-grid"
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 250px), 1fr))',
             gap: 16,
           }}
         >
