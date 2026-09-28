@@ -5,6 +5,7 @@ import { useDining } from '../../context/DiningContext';
 import api from '../../services/api';
 import CameraScannerModal from '../../components/CameraScannerModal';
 import PaymentModal from '../../components/PaymentModal';
+import HeroDoodleArt from '../../components/HeroDoodleArt';
 import {
   ChefHat,
   Calendar,
@@ -42,9 +43,12 @@ import {
 
 export default function RestaurantAdmin() {
   const { user } = useAuth();
+  const isOwner = user?.role === 'SUPER_ADMIN' || user?.role === 'RESTAURANT_ADMIN';
+  const isStaff = user?.role === 'RESTAURANT_STAFF';
   const {
     restaurants = [],
     reservations = [],
+    createReservation,
     staffCheckInGuest,
     staffCompletePayment,
     syncBookingOrders,
@@ -63,8 +67,51 @@ export default function RestaurantAdmin() {
   };
 
   const [activeTab, setActiveTab] = useState('Reservations');
+
+  // Enforce staff lock on Reservations Queue
+  useEffect(() => {
+    if (!isOwner && activeTab !== 'Reservations') {
+      setActiveTab('Reservations');
+    }
+  }, [isOwner, activeTab]);
+
   const [showScannerModal, setShowScannerModal] = useState(false);
   const [paymentModalBooking, setPaymentModalBooking] = useState(null);
+
+  // Walk-in Guest check-in state
+  const [showWalkinModal, setShowWalkinModal] = useState(false);
+  const [walkinForm, setWalkinForm] = useState({
+    name: '',
+    email: '',
+    guests: 2,
+    notes: 'Walk-In Student Dining'
+  });
+
+  const handleWalkinSubmit = async (e) => {
+    e.preventDefault();
+    if (!walkinForm.name || !walkinForm.email) return;
+
+    try {
+      let newBookingId = `BK-${Date.now().toString().slice(-4)}`;
+      if (createReservation) {
+        const res = await createReservation({
+          guestName: walkinForm.name,
+          guestEmail: walkinForm.email,
+          guests: Number(walkinForm.guests),
+          tableAssigned: null,
+          restaurantId: restaurant?.id || 1,
+          specialRequest: walkinForm.notes || 'Walk-In Dining'
+        });
+        if (res?.id) newBookingId = res.id;
+      }
+
+      handleStatusUpdate(newBookingId, 'SEATED');
+      setShowWalkinModal(false);
+      setWalkinForm({ name: '', email: '', guests: 2, notes: 'Walk-In Student Dining' });
+    } catch (err) {
+      alert('Could not admit walk-in guest: ' + err.message);
+    }
+  };
 
   // Bookings list from live reservations
   const [bookings, setBookings] = useState(
@@ -181,8 +228,10 @@ export default function RestaurantAdmin() {
   };
 
   useEffect(() => {
-    fetchStaff();
-  }, [restaurant?.id]);
+    if (activeTab === 'Staff') {
+      fetchStaff();
+    }
+  }, [activeTab, restaurant?.id]);
 
   // ================= OPERATIONAL ANALYTICS =================
   const [restaurantStats, setRestaurantStats] = useState(null);
@@ -631,11 +680,13 @@ export default function RestaurantAdmin() {
       <div
         className="anim-fade-up dashboard-hero-banner"
         style={{
-          background: 'linear-gradient(135deg, #0F172A 0%, #1E293B 60%, #0F172A 100%)',
+          position: 'relative',
+          overflow: 'hidden',
+          background: 'linear-gradient(135deg, #0C0D0A 0%, #1B1C17 60%, #0C0D0A 100%)',
           borderRadius: 20,
           padding: '28px 32px',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
-          boxShadow: '0 12px 36px rgba(15, 23, 42, 0.16)',
+          border: '1px solid rgba(216, 207, 188, 0.2)',
+          boxShadow: '0 14px 40px rgba(0, 0, 0, 0.35)',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
@@ -643,7 +694,10 @@ export default function RestaurantAdmin() {
           gap: 20
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+        {/* Handcrafted Campus Dining Doodles Art Overlay */}
+        <HeroDoodleArt opacity={0.36} />
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16, position: 'relative', zIndex: 2 }}>
           <div style={{
             width: 54,
             height: 54,
@@ -671,14 +725,14 @@ export default function RestaurantAdmin() {
                 letterSpacing: '0.04em',
                 textTransform: 'uppercase'
               }}>
-                Restaurant Admin Hub
+                {isOwner ? 'Restaurant Admin Hub' : 'Front Desk & Host Desk'}
               </span>
               <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)', fontWeight: 600 }}>
-                Partner Outlet
+                {isOwner ? 'Partner Outlet' : 'Service Staff'}
               </span>
             </div>
             <h2 className="font-display" style={{ fontSize: '1.75rem', fontWeight: 900, color: '#FFFFFF', margin: 0, letterSpacing: '-0.02em' }}>
-              {restaurant.name} · Operational Desk
+              {restaurant.name} · {isOwner ? 'Operational Desk' : 'Guest Check-in Desk'}
             </h2>
             <div style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.75)', marginTop: 3 }}>
               {restaurant.cuisine} Cuisine · Bennett University Approved Dining Partner
@@ -686,169 +740,151 @@ export default function RestaurantAdmin() {
           </div>
         </div>
 
-        {/* Global Action Button — Crisp White on Dark Banner */}
-        <div>
-          <button
-            type="button"
-            className="btn-action-dishes"
-            style={{
-              background: '#FFFFFF',
-              color: '#0F172A',
-              border: '1.5px solid #FFFFFF',
-              padding: '12px 24px',
-              fontSize: '13.5px',
-              borderRadius: 99,
-              fontWeight: 800,
-              boxShadow: '0 4px 18px rgba(0, 0, 0, 0.25)',
-              gap: 8,
-              transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)'
-            }}
-            onClick={handleOpenAddDish}
-          >
-            <Plus size={17} strokeWidth={3} />
-            <span>Add New Menu Dish</span>
-          </button>
-        </div>
+        {/* Global Action Button — Owners: Add Dish | Staff: Check-in Quick Actions */}
+        {isOwner ? (
+          <div style={{ position: 'relative', zIndex: 2 }}>
+            <button
+              type="button"
+              className="btn-action-dishes"
+              style={{
+                background: '#FFFFFF',
+                color: '#11120D',
+                border: '1.5px solid #FFFFFF',
+                padding: '12px 24px',
+                fontSize: '13.5px',
+                borderRadius: 99,
+                fontWeight: 800,
+                boxShadow: '0 4px 18px rgba(0, 0, 0, 0.25)',
+                gap: 8,
+                transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)'
+              }}
+              onClick={handleOpenAddDish}
+            >
+              <Plus size={17} strokeWidth={3} />
+              <span>Add New Menu Dish</span>
+            </button>
+          </div>
+        ) : (
+          <div style={{ position: 'relative', zIndex: 2, display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+            <button
+              type="button"
+              className="btn-action-dishes"
+              style={{
+                background: '#FFFFFF',
+                color: '#11120D',
+                border: '1.5px solid #FFFFFF',
+                padding: '11px 22px',
+                fontSize: '13.5px',
+                borderRadius: 99,
+                fontWeight: 800,
+                boxShadow: '0 4px 18px rgba(0, 0, 0, 0.25)',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 8,
+                cursor: 'pointer',
+                transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
+              }}
+              onClick={() => setShowScannerModal(true)}
+              title="Scan digital dining pass QR code"
+            >
+              <QrCode size={17} strokeWidth={2.5} />
+              <span>Scan Pass QR</span>
+            </button>
 
-        {/* Tab Switcher Pills with 0.32s transition */}
-        <div className="tabs-scroll-x" style={{ borderTop: '1px solid rgba(255,255,255,0.12)', paddingTop: 18, width: '100%', gap: 10 }}>
-          <button
-            type="button"
-            className={`btn-tab-pill ${activeTab === 'Reservations' ? 'active' : ''}`}
-            onClick={() => setActiveTab('Reservations')}
-          >
-            <Calendar size={14} />
-            <span>Reservations Queue ({bookings.length})</span>
-          </button>
-          <button
-            type="button"
-            className={`btn-tab-pill ${activeTab === 'Menu' ? 'active' : ''}`}
-            onClick={() => setActiveTab('Menu')}
-          >
-            <ChefHat size={14} />
-            <span>Menu Catalog ({menuItems.length})</span>
-          </button>
-          <button
-            type="button"
-            className={`btn-tab-pill ${activeTab === 'PaymentQRs' ? 'active' : ''}`}
-            onClick={() => setActiveTab('PaymentQRs')}
-          >
-            <QrCode size={14} />
-            <span>Payment QRs ({paymentQrs.length})</span>
-          </button>
-          <button
-            type="button"
-            className={`btn-tab-pill ${activeTab === 'Offers' ? 'active' : ''}`}
-            onClick={() => setActiveTab('Offers')}
-          >
-            <Tag size={14} />
-            <span>Special Offers ({offersList.length})</span>
-          </button>
-          <button
-            type="button"
-            className={`btn-tab-pill ${activeTab === 'Staff' ? 'active' : ''}`}
-            onClick={() => setActiveTab('Staff')}
-          >
-            <Users size={14} />
-            <span>Staff Roster ({staffList.length})</span>
-          </button>
-          <button
-            type="button"
-            className={`btn-tab-pill ${activeTab === 'Analytics' ? 'active' : ''}`}
-            onClick={() => setActiveTab('Analytics')}
-          >
-            <BarChart3 size={14} />
-            <span>Outlet Analytics</span>
-          </button>
-        </div>
+            <button
+              type="button"
+              style={{
+                background: 'rgba(255, 255, 255, 0.15)',
+                color: '#FFFFFF',
+                border: '1.5px solid rgba(255, 255, 255, 0.3)',
+                padding: '11px 22px',
+                fontSize: '13.5px',
+                borderRadius: 99,
+                fontWeight: 800,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 8,
+                cursor: 'pointer',
+                transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
+              }}
+              onClick={() => setShowWalkinModal(true)}
+              title="Admit walk-in student diners"
+            >
+              <Plus size={17} strokeWidth={2.5} />
+              <span>Walk-In Guest</span>
+            </button>
+          </div>
+        )}
+
+        {/* Tab Switcher Pills — Only Available for Owner / Admin */}
+        {isOwner && (
+          <div className="tabs-scroll-x" style={{ borderTop: '1px solid rgba(255,255,255,0.12)', paddingTop: 18, width: '100%', gap: 10, position: 'relative', zIndex: 2 }}>
+            <button
+              type="button"
+              className={`btn-tab-pill ${activeTab === 'Reservations' ? 'active' : ''}`}
+              onClick={() => setActiveTab('Reservations')}
+            >
+              <Calendar size={14} />
+              <span>Reservations Queue ({bookings.length})</span>
+            </button>
+            <button
+              type="button"
+              className={`btn-tab-pill ${activeTab === 'Menu' ? 'active' : ''}`}
+              onClick={() => setActiveTab('Menu')}
+            >
+              <ChefHat size={14} />
+              <span>Menu Catalog ({menuItems.length})</span>
+            </button>
+            <button
+              type="button"
+              className={`btn-tab-pill ${activeTab === 'PaymentQRs' ? 'active' : ''}`}
+              onClick={() => setActiveTab('PaymentQRs')}
+            >
+              <QrCode size={14} />
+              <span>Payment QRs ({paymentQrs.length})</span>
+            </button>
+            <button
+              type="button"
+              className={`btn-tab-pill ${activeTab === 'Offers' ? 'active' : ''}`}
+              onClick={() => setActiveTab('Offers')}
+            >
+              <Tag size={14} />
+              <span>Special Offers ({offersList.length})</span>
+            </button>
+            <button
+              type="button"
+              className={`btn-tab-pill ${activeTab === 'Staff' ? 'active' : ''}`}
+              onClick={() => setActiveTab('Staff')}
+            >
+              <Users size={14} />
+              <span>Staff Roster ({staffList.length})</span>
+            </button>
+            <button
+              type="button"
+              className={`btn-tab-pill ${activeTab === 'Analytics' ? 'active' : ''}`}
+              onClick={() => setActiveTab('Analytics')}
+            >
+              <BarChart3 size={14} />
+              <span>Outlet Analytics</span>
+            </button>
+          </div>
+        )}
       </div>
 
-      {/* Overview KPI Cards with 0.35s hover transitions */}
-      <div className="grid-responsive-kpi anim-fade-up delay-1">
-        <div className="kpi-card-lux">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <div>
-              <div style={{ fontSize: 11, fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Active Reservations</div>
-              <div className="font-display" style={{ fontSize: '1.9rem', fontWeight: 900, color: '#0F172A', margin: '4px 0' }}>
-                {bookings.length}
-              </div>
-              <div style={{ fontSize: 12, color: '#475569', fontWeight: 700, display: 'flex', alignItems: 'center', gap: 6 }}>
-                <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#0F172A' }} /> Live dining passes
-              </div>
-            </div>
-            <div style={{ width: 40, height: 40, borderRadius: 12, background: '#F8FAFC', color: '#0F172A', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Calendar size={20} />
-            </div>
-          </div>
-        </div>
 
-        <div className="kpi-card-lux">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <div>
-              <div style={{ fontSize: 11, fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Catalog Dishes</div>
-              <div className="font-display" style={{ fontSize: '1.9rem', fontWeight: 900, color: '#0F172A', margin: '4px 0' }}>
-                {menuItems.length}
-              </div>
-              <div style={{ fontSize: 12, color: '#475569', fontWeight: 700 }}>
-                {menuItems.filter(m => m.isAvailable !== false).length} In Stock
-              </div>
-            </div>
-            <div style={{ width: 40, height: 40, borderRadius: 12, background: '#F8FAFC', color: '#0F172A', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <ChefHat size={20} />
-            </div>
-          </div>
-        </div>
-
-        <div className="kpi-card-lux">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <div>
-              <div style={{ fontSize: 11, fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Active Offers</div>
-              <div className="font-display" style={{ fontSize: '1.9rem', fontWeight: 900, color: '#0F172A', margin: '4px 0' }}>
-                {offersList.filter(o => o.status === 'ACTIVE').length}
-              </div>
-              <div style={{ fontSize: 12, color: '#475569', fontWeight: 700 }}>
-                Student discounts live
-              </div>
-            </div>
-            <div style={{ width: 40, height: 40, borderRadius: 12, background: '#F8FAFC', color: '#0F172A', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Tag size={20} />
-            </div>
-          </div>
-        </div>
-
-        <div className="kpi-card-lux">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <div>
-              <div style={{ fontSize: 11, fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Staff on Duty</div>
-              <div className="font-display" style={{ fontSize: '1.9rem', fontWeight: 900, color: '#0F172A', margin: '4px 0' }}>
-                {staffList.length}
-              </div>
-              <div style={{ fontSize: 12, color: '#475569', fontWeight: 700 }}>
-                Assigned to outlet
-              </div>
-            </div>
-            <div style={{ width: 40, height: 40, borderRadius: 12, background: '#F8FAFC', color: '#0F172A', border: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Users size={20} />
-            </div>
-          </div>
-        </div>
-      </div>
 
       {/* ================= TAB 1: RESERVATIONS ================= */}
       {activeTab === 'Reservations' && (
         <div className="card anim-fade-up delay-2" style={{ background: '#FFFFFF', borderRadius: 20, overflow: 'hidden', border: '1px solid #EEF0F3', boxShadow: '0 4px 20px rgba(0, 0, 0, 0.03)' }}>
           {/* Header & Controls */}
-          <div style={{ padding: '24px 28px', borderBottom: '1px solid #EEF0F3' }}>
+          <div style={{ padding: '20px 28px', borderBottom: '1px solid #EEF0F3' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 14 }}>
               <div>
-                <h3 className="font-display" style={{ fontSize: '1.35rem', fontWeight: 800, color: '#0F172A', margin: '0 0 4px', letterSpacing: '-0.02em' }}>
-                  Live Diner Passes &amp; Service Orders
+                <h3 className="font-display" style={{ fontSize: '1.35rem', fontWeight: 800, color: '#11120D', margin: 0, letterSpacing: '-0.02em' }}>
+                  Reservations Queue
                 </h3>
-                <p style={{ fontSize: 13, color: '#64748B', margin: 0 }}>
-                  1-click admit guests, approve passes, and manage active diners for {restaurant.name}.
-                </p>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
                 <span style={{
                   display: 'inline-flex',
                   alignItems: 'center',
@@ -863,6 +899,48 @@ export default function RestaurantAdmin() {
                   <Calendar size={13} className="text-slate-500" />
                   <span>{filteredBookings.length} Bookings</span>
                 </span>
+
+                {/* Scan Digital Pass QR Button */}
+                <button
+                  type="button"
+                  onClick={() => setShowScannerModal(true)}
+                  className="btn btn-outline btn-sm"
+                  style={{
+                    borderRadius: 99,
+                    padding: '7px 16px',
+                    fontSize: 12.5,
+                    fontWeight: 700,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    cursor: 'pointer'
+                  }}
+                  title="Scan digital dining pass QR code"
+                >
+                  <QrCode size={14} />
+                  <span>Scan Pass QR</span>
+                </button>
+
+                {/* Walk-In Diner Button */}
+                <button
+                  type="button"
+                  onClick={() => setShowWalkinModal(true)}
+                  className="btn btn-primary btn-sm"
+                  style={{
+                    borderRadius: 99,
+                    padding: '7px 18px',
+                    fontSize: 12.5,
+                    fontWeight: 700,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    cursor: 'pointer'
+                  }}
+                  title="Admit walk-in student diners"
+                >
+                  <Plus size={14} />
+                  <span>Walk-In Guest</span>
+                </button>
               </div>
             </div>
 
@@ -872,8 +950,9 @@ export default function RestaurantAdmin() {
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                 {[
                   { key: 'ALL', label: `All (${bookings.length})` },
+                  { key: 'CONFIRMED', label: `Awaiting (${bookings.filter(b => b.status === 'CONFIRMED' || b.status === 'PENDING').length})` },
                   { key: 'SEATED', label: `Seated (${bookings.filter(b => b.status === 'SEATED').length})` },
-                  { key: 'CONFIRMED', label: `Confirmed (${bookings.filter(b => b.status === 'CONFIRMED' || b.status === 'PENDING').length})` },
+                  { key: 'COMPLETED', label: `Completed (${bookings.filter(b => b.status === 'COMPLETED').length})` },
                   { key: 'CANCELLED', label: `Cancelled (${bookings.filter(b => b.status === 'CANCELLED').length})` }
                 ].map(tab => (
                   <button
@@ -1271,7 +1350,7 @@ export default function RestaurantAdmin() {
       )}
 
       {/* ================= TAB 2: MENU CATALOG ================= */}
-      {activeTab === 'Menu' && (
+      {isOwner && activeTab === 'Menu' && (
         <div className="card anim-fade-up delay-2" style={{ padding: 24, background: 'var(--bg-card)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18, flexWrap: 'wrap', gap: 12 }}>
             <div>
@@ -1462,7 +1541,7 @@ export default function RestaurantAdmin() {
       )}
 
       {/* ================= TAB: PAYMENT QRS ================= */}
-      {activeTab === 'PaymentQRs' && (
+      {isOwner && activeTab === 'PaymentQRs' && (
         <div className="card anim-fade-up delay-2" style={{ padding: 24, background: 'var(--bg-card)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, flexWrap: 'wrap', gap: 12 }}>
             <div>
@@ -1662,7 +1741,7 @@ export default function RestaurantAdmin() {
       )}
 
       {/* ================= TAB 3: OFFERS ================= */}
-      {activeTab === 'Offers' && (
+      {isOwner && activeTab === 'Offers' && (
         <div className="card anim-fade-up delay-2" style={{ padding: 24, background: 'var(--bg-card)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, flexWrap: 'wrap', gap: 12 }}>
             <div>
@@ -1716,7 +1795,7 @@ export default function RestaurantAdmin() {
       )}
 
       {/* ================= TAB 4: STAFF TEAM ================= */}
-      {activeTab === 'Staff' && (
+      {isOwner && activeTab === 'Staff' && (
         <div className="card anim-fade-up delay-2" style={{ padding: 24, background: 'var(--bg-card)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, flexWrap: 'wrap', gap: 12 }}>
             <div>
@@ -1785,7 +1864,7 @@ export default function RestaurantAdmin() {
       )}
 
       {/* ================= TAB 5: ANALYTICS ================= */}
-      {activeTab === 'Analytics' && (
+      {isOwner && activeTab === 'Analytics' && (
         <div className="card anim-fade-up delay-2" style={{ padding: 24, background: 'var(--bg-card)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, flexWrap: 'wrap', gap: 12 }}>
             <div>
@@ -2326,12 +2405,102 @@ export default function RestaurantAdmin() {
         </div>
       )}
 
+      {/* Walk-in Guest Check-in Modal */}
+      {showWalkinModal && (
+        <div className="modal-overlay" onClick={() => setShowWalkinModal(false)}>
+          <div className="modal-card anim-scale-in" onClick={e => e.stopPropagation()} style={{ maxWidth: 480 }}>
+            <div className="modal-hd">
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div style={{ width: 38, height: 38, borderRadius: 10, background: '#F6F2EA', color: '#11120D', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <UserCheck size={18} />
+                </div>
+                <div>
+                  <h3 className="modal-title font-display">Admit Walk-In Guest</h3>
+                  <div className="modal-sub">Create reservation &amp; immediately seat diner</div>
+                </div>
+              </div>
+              <button type="button" className="modal-close" onClick={() => setShowWalkinModal(false)}>
+                <X size={16} />
+              </button>
+            </div>
+
+            <form onSubmit={handleWalkinSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <div className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                <div>
+                  <label className="form-label">Guest Full Name *</label>
+                  <input
+                    className="form-input"
+                    required
+                    placeholder="e.g. Diya Nair"
+                    value={walkinForm.name}
+                    onChange={e => setWalkinForm({ ...walkinForm, name: e.target.value })}
+                  />
+                </div>
+
+                <div>
+                  <label className="form-label">Bennett Email (for verification) *</label>
+                  <input
+                    className="form-input"
+                    type="email"
+                    required
+                    placeholder="student@bennett.edu.in"
+                    value={walkinForm.email}
+                    onChange={e => setWalkinForm({ ...walkinForm, email: e.target.value })}
+                  />
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                  <div>
+                    <label className="form-label">Party Size</label>
+                    <input
+                      className="form-input"
+                      type="number"
+                      min="1"
+                      max="12"
+                      value={walkinForm.guests}
+                      onChange={e => setWalkinForm({ ...walkinForm, guests: e.target.value })}
+                    />
+                  </div>
+                  <div>
+                    <label className="form-label">Notes / Occasion</label>
+                    <input
+                      className="form-input"
+                      placeholder="e.g. Walk-in Lunch"
+                      value={walkinForm.notes}
+                      onChange={e => setWalkinForm({ ...walkinForm, notes: e.target.value })}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="modal-ft">
+                <button
+                  type="button"
+                  className="btn btn-ghost btn-sm"
+                  onClick={() => setShowWalkinModal(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="btn btn-primary btn-md"
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
+                >
+                  <Check size={14} /> 1-Click Admit &amp; Seat Diner
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       {/* Camera Digital Pass Scanner Modal */}
       <CameraScannerModal
         isOpen={showScannerModal}
         onClose={() => setShowScannerModal(false)}
         reservations={reservations}
         onScanSuccess={(code, matched) => {
+          setBookingSearch(code);
           if (matched) {
             handleStatusUpdate(matched.id, 'SEATED');
           }

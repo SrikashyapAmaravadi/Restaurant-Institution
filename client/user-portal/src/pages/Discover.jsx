@@ -374,6 +374,7 @@ export default function Discover() {
         ) : (
           <RestaurantCircularGallery
             restaurants={sortedAndFiltered}
+            bend={0}
             onQuickReserve={rest => setSelectedForBooking(rest)}
             onViewOffer={offer => setSelectedOffer(offer)}
           />

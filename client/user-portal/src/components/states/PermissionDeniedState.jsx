@@ -10,7 +10,7 @@ export default function PermissionDeniedState({
   allowedRoles = [],
   userName = 'Current User',
   userEmail = '',
-  homePath = '/dashboard',
+  homePath = '/discover',
   onLogout,
   className = '',
   style = {}
@@ -126,12 +126,12 @@ export default function PermissionDeniedState({
         {/* Action CTAs */}
         <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
           <Link
-            to={homePath || '/dashboard'}
+            to={homePath || '/discover'}
             className="btn btn-primary btn-md cursor-pointer"
             style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}
           >
             <ArrowLeft size={15} />
-            <span>Return to My Dashboard</span>
+            <span>Return to Outlets</span>
           </Link>
 
           {onLogout && (

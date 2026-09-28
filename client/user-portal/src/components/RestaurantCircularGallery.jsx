@@ -1,4 +1,5 @@
 import { useMemo, useRef, useEffect, useCallback, useState } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import RestaurantCard from './RestaurantCard';
 
 const DEFAULT_RESTAURANTS = [
@@ -64,14 +65,14 @@ function lerp(start, end, factor) {
 
 /**
  * RestaurantCircularGallery
- * Renders complete, interactive <RestaurantCard /> components in a real 3D cylindrical circular arc.
+ * Renders complete, interactive <RestaurantCard /> components in a straight horizontal or 3D curved gallery.
  * Clean, distraction-free stage with direct card clicks, Book Table, and Offer drawer functionality.
  */
 export default function RestaurantCircularGallery({
   restaurants = [],
   onQuickReserve,
   onViewOffer,
-  bend = 3,
+  bend = 0,
   height = 580
 }) {
   const containerRef = useRef(null);
@@ -139,7 +140,7 @@ export default function RestaurantCircularGallery({
     scrollRef.current.target = nearestIndex * cardStride;
   }, [cardStride]);
 
-  // Main 3D render loop
+  // Main render loop
   useEffect(() => {
     let animId;
     let isRunning = true;
@@ -154,11 +155,8 @@ export default function RestaurantCircularGallery({
       const containerWidth = container?.clientWidth || 900;
       const halfTrack = totalTrackWidth / 2;
 
-      // Arc radius R derived from bend parameter
       const bendFactor = bend;
       const H = containerWidth / 2;
-      const B_abs = Math.max(Math.abs(bendFactor) * 22, 1);
-      const R = (H * H + B_abs * B_abs) / (2 * B_abs) + 120;
 
       for (let i = 0; i < items.length; i++) {
         const cardEl = cardRefs.current[i];
@@ -171,17 +169,21 @@ export default function RestaurantCircularGallery({
         }
 
         const absDist = Math.abs(wrappedX);
-
-        // 3D positioning along circular arc
         const progress = wrappedX / (containerWidth / 2 || 1);
-        const angle = wrappedX / R;
-        const effectiveX = Math.min(Math.abs(wrappedX), H);
-        const arc = R - Math.sqrt(Math.max(R * R - effectiveX * effectiveX, 0));
 
         let yOffset = 0;
         let rotZ = 0;
+        let rotY = 0;
+        let zOffset = 0;
+        let scale = 1;
 
         if (bendFactor !== 0) {
+          const B_abs = Math.max(Math.abs(bendFactor) * 22, 1);
+          const R = (H * H + B_abs * B_abs) / (2 * B_abs) + 120;
+          const angle = wrappedX / R;
+          const effectiveX = Math.min(Math.abs(wrappedX), H);
+          const arc = R - Math.sqrt(Math.max(R * R - effectiveX * effectiveX, 0));
+
           if (bendFactor > 0) {
             yOffset = -arc * 0.95;
             rotZ = -Math.sign(wrappedX) * Math.asin(Math.min(effectiveX / R, 0.99)) * (180 / Math.PI) * 0.35;
@@ -189,13 +191,15 @@ export default function RestaurantCircularGallery({
             yOffset = arc * 0.95;
             rotZ = Math.sign(wrappedX) * Math.asin(Math.min(effectiveX / R, 0.99)) * (180 / Math.PI) * 0.35;
           }
+
+          // Depth curve
+          zOffset = -(1 - Math.cos(angle)) * 360 - (Math.abs(progress) > 1 ? (Math.abs(progress) - 1) * 180 : 0);
+          rotY = -angle * (180 / Math.PI) * 0.72;
+          scale = Math.max(0.72, 1 - Math.abs(progress) * 0.12);
         }
 
-        // Depth curve (cards curve smoothly away into the cylinder)
-        const zOffset = -(1 - Math.cos(angle)) * 360 - (Math.abs(progress) > 1 ? (Math.abs(progress) - 1) * 180 : 0);
-        const rotY = -angle * (180 / Math.PI) * 0.72;
-        const scale = Math.max(0.72, 1 - Math.abs(progress) * 0.12);
-        const opacity = Math.max(0, 1 - Math.max(0, absDist - containerWidth * 0.42) / (containerWidth * 0.42));
+        // Fading smoothly at edges
+        const opacity = Math.max(0, 1 - Math.max(0, absDist - containerWidth * 0.44) / (containerWidth * 0.44));
         const zIndex = Math.round(1000 - absDist);
 
         cardEl.style.transform = `translate3d(calc(${wrappedX}px - 50%), ${yOffset}px, ${zOffset}px) rotateY(${rotY}deg) rotateZ(${rotZ}deg) scale(${scale})`;
@@ -389,6 +393,87 @@ export default function RestaurantCircularGallery({
             </div>
           ))}
         </div>
+
+        {/* Navigation Chevron Buttons */}
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            scrollRef.current.target -= cardStride;
+            snapToNearest();
+          }}
+          aria-label="Previous card"
+          style={{
+            position: 'absolute',
+            left: 18,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            width: 44,
+            height: 44,
+            borderRadius: '50%',
+            background: 'rgba(255, 255, 255, 0.94)',
+            backdropFilter: 'blur(8px)',
+            border: '1px solid #E8E2D5',
+            boxShadow: '0 6px 18px rgba(17, 18, 13, 0.08)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            zIndex: 1100,
+            color: '#11120D',
+            transition: 'all 0.2s ease',
+          }}
+          onMouseEnter={e => {
+            e.currentTarget.style.transform = 'translateY(-50%) scale(1.08)';
+            e.currentTarget.style.borderColor = '#11120D';
+          }}
+          onMouseLeave={e => {
+            e.currentTarget.style.transform = 'translateY(-50%) scale(1)';
+            e.currentTarget.style.borderColor = '#E8E2D5';
+          }}
+        >
+          <ChevronLeft size={20} />
+        </button>
+
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            scrollRef.current.target += cardStride;
+            snapToNearest();
+          }}
+          aria-label="Next card"
+          style={{
+            position: 'absolute',
+            right: 18,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            width: 44,
+            height: 44,
+            borderRadius: '50%',
+            background: 'rgba(255, 255, 255, 0.94)',
+            backdropFilter: 'blur(8px)',
+            border: '1px solid #E8E2D5',
+            boxShadow: '0 6px 18px rgba(17, 18, 13, 0.08)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            zIndex: 1100,
+            color: '#11120D',
+            transition: 'all 0.2s ease',
+          }}
+          onMouseEnter={e => {
+            e.currentTarget.style.transform = 'translateY(-50%) scale(1.08)';
+            e.currentTarget.style.borderColor = '#11120D';
+          }}
+          onMouseLeave={e => {
+            e.currentTarget.style.transform = 'translateY(-50%) scale(1)';
+            e.currentTarget.style.borderColor = '#E8E2D5';
+          }}
+        >
+          <ChevronRight size={20} />
+        </button>
       </div>
     </div>
   );

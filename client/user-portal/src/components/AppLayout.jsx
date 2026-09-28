@@ -6,7 +6,6 @@ import Sidebar from './Sidebar';
 import Topbar from './Topbar';
 import CameraScannerModal from './CameraScannerModal';
 import {
-  LayoutDashboard,
   Compass,
   CalendarDays,
   Bell,
@@ -61,12 +60,11 @@ export default function AppLayout() {
       case 'RESTAURANT_ADMIN':
         return [
           { to: '/management/admin', label: 'Operations', icon: ChefHat },
-          { to: '/management/staff', label: 'Host Desk', icon: ConciergeBell },
           { to: '/profile', label: 'Profile', icon: User }
         ];
       case 'RESTAURANT_STAFF':
         return [
-          { to: '/management/staff', label: 'Host Desk', icon: ConciergeBell },
+          { to: '/management/admin', label: 'Check-in', icon: ChefHat },
           { to: '/profile', label: 'Profile', icon: User }
         ];
       case 'SUPER_ADMIN':
@@ -77,7 +75,6 @@ export default function AppLayout() {
       case 'STUDENT':
       default:
         return [
-          { to: '/dashboard', label: 'Dining', icon: LayoutDashboard },
           { to: '/discover', label: 'Outlets', icon: Compass },
           { to: '/bookings', label: 'Passes', icon: CalendarDays, badge: activeBookingsCount },
           { to: '/notifications', label: 'Alerts', icon: Bell, badge: unreadNotifsCount },

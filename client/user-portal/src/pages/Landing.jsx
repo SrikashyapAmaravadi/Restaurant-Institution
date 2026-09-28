@@ -72,7 +72,7 @@ export default function Landing() {
           ? '/management/staff'
           : user?.role === 'SUPER_ADMIN'
           ? '/management/superadmin'
-          : '/dashboard'
+          : '/discover'
       );
       navigate(target);
     } else {

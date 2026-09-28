@@ -106,7 +106,7 @@ export default function RoleRoute({ children, allowedRoles = [] }) {
               <ArrowLeft size={16} /> Go Back
             </button>
             <a
-              href={user.homePath || '/dashboard'}
+              href={user.homePath || '/discover'}
               className="btn btn-primary"
               style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}
             >

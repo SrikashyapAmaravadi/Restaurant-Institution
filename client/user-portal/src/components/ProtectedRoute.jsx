@@ -27,7 +27,7 @@ export default function ProtectedRoute({ children, allowedRoles = [] }) {
         allowedRoles={allowedRoles}
         userName={user.name}
         userEmail={user.email}
-        homePath={user.homePath || '/dashboard'}
+        homePath={user.homePath || '/discover'}
         onLogout={logout}
       />
     );

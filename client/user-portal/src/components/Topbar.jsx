@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useDining } from '../context/DiningContext';
 import {
@@ -11,17 +11,7 @@ import {
 } from 'lucide-react';
 import NivixSearchModal from './NivixSearchModal';
 
-const NIVIX_NAV_TABS = [
-  { id: 'foryou', label: 'For you', path: '/dashboard' },
-  { id: 'dining', label: 'Dining', path: '/dashboard' },
-  { id: 'outlets', label: 'Outlets', path: '/discover' },
-  { id: 'passes', label: 'Passes', path: '/bookings' },
-  { id: 'cafeteria', label: 'Cafeteria', path: '/discover?tag=Cafeteria' },
-  { id: 'events', label: 'Events', path: '/notifications' },
-];
-
 export default function Topbar({ onOpenMobileDrawer }) {
-  const { pathname } = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();
   const { notifications = [] } = useDining() || {};
@@ -74,7 +64,7 @@ export default function Topbar({ onOpenMobileDrawer }) {
           {/* Logo — Nivix Dine-In (Mobile only to avoid desktop sidebar duplication) */}
           <div
             className="topbar-logo-mobile"
-            onClick={() => navigate('/dashboard')}
+            onClick={() => navigate('/discover')}
             style={{ display: 'flex', flexDirection: 'column', cursor: 'pointer', flexShrink: 0 }}
           >
             <span
@@ -146,53 +136,6 @@ export default function Topbar({ onOpenMobileDrawer }) {
             </div>
           </div>
         </div>
-
-        {/* Center: Top Category Tabs */}
-        <nav
-          className="mobile-hide"
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 4,
-          }}
-        >
-          {NIVIX_NAV_TABS.map(tab => {
-            const isDining = tab.id === 'dining' && pathname === '/dashboard';
-            return (
-              <button
-                key={tab.id}
-                onClick={() => navigate(tab.path)}
-                style={{
-                  padding: '6px 14px',
-                  borderRadius: 99,
-                  fontSize: 12.5,
-                  fontWeight: isDining ? 600 : 500,
-                  color: isDining ? '#FFFBF4' : '#565449',
-                  background: isDining ? '#565449' : 'transparent',
-                  border: `1px solid ${isDining ? '#565449' : 'transparent'}`,
-                  cursor: 'pointer',
-                  transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
-                }}
-                onMouseEnter={e => {
-                  if (!isDining) {
-                    e.currentTarget.style.background = '#F6F2EA';
-                    e.currentTarget.style.color = '#11120D';
-                    e.currentTarget.style.transform = 'translateY(-1px)';
-                  }
-                }}
-                onMouseLeave={e => {
-                  if (!isDining) {
-                    e.currentTarget.style.background = 'transparent';
-                    e.currentTarget.style.color = '#565449';
-                    e.currentTarget.style.transform = 'translateY(0)';
-                  }
-                }}
-              >
-                {tab.label}
-              </button>
-            );
-          })}
-        </nav>
 
         {/* Right: Search Button + Avatar */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>

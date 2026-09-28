@@ -5,6 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 import PaymentModal from '../../components/PaymentModal';
 import CameraScannerModal from '../../components/CameraScannerModal';
 import RubberSegment from '../../components/RubberSegment';
+import HeroDoodleArt from '../../components/HeroDoodleArt';
 import api from '../../services/api';
 import {
   Search,
@@ -128,19 +129,24 @@ export default function StaffPortal() {
     <div className="page-pad">
       {/* Front Desk Terminal Header */}
       <div className="anim-fade-up dashboard-hero-banner" style={{
+        position: 'relative',
+        overflow: 'hidden',
         padding: '24px 28px',
         borderRadius: 20,
-        background: 'linear-gradient(135deg, #1E293B 0%, #11120D 100%)',
-        border: '1px solid rgba(255, 255, 255, 0.12)',
+        background: 'linear-gradient(135deg, #0C0D0A 0%, #1B1C17 60%, #0C0D0A 100%)',
+        border: '1px solid rgba(216, 207, 188, 0.2)',
         marginBottom: 24,
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
         flexWrap: 'wrap',
         gap: 18,
-        boxShadow: '0 4px 20px rgba(15, 23, 42, 0.08)'
+        boxShadow: '0 14px 40px rgba(0, 0, 0, 0.35)'
       }}>
-        <div>
+        {/* Handcrafted Campus Dining Doodles Overlay */}
+        <HeroDoodleArt opacity={0.34} />
+
+        <div style={{ position: 'relative', zIndex: 2 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
             <span style={{
               background: 'rgba(255, 255, 255, 0.12)',
@@ -165,7 +171,7 @@ export default function StaffPortal() {
           </div>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 20, position: 'relative', zIndex: 2 }}>
           <div style={{ textAlign: 'right' }}>
             <div style={{ fontSize: 11, color: 'rgba(255, 255, 255, 0.75)', textTransform: 'uppercase', fontWeight: 700 }}>Active Diners</div>
             <div className="font-display" style={{ fontSize: '1.6rem', fontWeight: 800, color: '#FFFFFF' }}>

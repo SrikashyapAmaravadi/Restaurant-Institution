@@ -174,8 +174,7 @@ router.post('/verify-otp', authLimiter, validate(verifyOtpSchema), async (req, r
 
     safeUser.homePath = safeUser.homePath || (
       safeUser.role === 'SUPER_ADMIN' ? '/management/superadmin' :
-      safeUser.role === 'RESTAURANT_ADMIN' ? '/management/admin' :
-      safeUser.role === 'RESTAURANT_STAFF' ? '/management/staff' :
+      safeUser.role === 'RESTAURANT_ADMIN' || safeUser.role === 'RESTAURANT_STAFF' ? '/management/admin' :
       '/dashboard'
     );
 
@@ -238,8 +237,7 @@ router.post('/register', authLimiter, async (req, res) => {
     }
 
     const passwordHash = bcrypt.hashSync(password, 10);
-    const homePath = role === 'RESTAURANT_ADMIN' ? '/management/admin'
-      : role === 'RESTAURANT_STAFF' ? '/management/staff'
+    const homePath = (role === 'RESTAURANT_ADMIN' || role === 'RESTAURANT_STAFF') ? '/management/admin'
       : role === 'SUPER_ADMIN' ? '/management/superadmin'
       : '/dashboard';
 
@@ -335,8 +333,7 @@ router.post('/login', authLimiter, validate(loginSchema), async (req, res) => {
     // Ensure homePath matches RBAC role directly
     safeUser.homePath = safeUser.homePath || (
       safeUser.role === 'SUPER_ADMIN' ? '/management/superadmin' :
-      safeUser.role === 'RESTAURANT_ADMIN' ? '/management/admin' :
-      safeUser.role === 'RESTAURANT_STAFF' ? '/management/staff' :
+      safeUser.role === 'RESTAURANT_ADMIN' || safeUser.role === 'RESTAURANT_STAFF' ? '/management/admin' :
       '/dashboard'
     );
 

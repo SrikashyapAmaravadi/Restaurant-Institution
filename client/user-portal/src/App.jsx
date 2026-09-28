@@ -3,6 +3,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import { DiningProvider } from './context/DiningContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import AppLayout from './components/AppLayout';
+import ClickSpark from './components/ClickSpark';
 
 // Auth Pages
 import Login from './pages/Login';
@@ -12,7 +13,6 @@ import PendingApproval from './pages/PendingApproval';
 import { OfflineBanner } from './components/states';
 
 // Student Portal Pages
-import Dashboard from './pages/Dashboard';
 import Discover from './pages/Discover';
 import RestaurantDetail from './pages/RestaurantDetail';
 import Bookings from './pages/Bookings';
@@ -30,8 +30,15 @@ export default function App() {
     <AuthProvider>
       <DiningProvider>
         <BrowserRouter>
-          <OfflineBanner />
-          <Routes>
+          <ClickSpark
+            sparkColor="#11120D"
+            sparkSize={11}
+            sparkRadius={22}
+            sparkCount={8}
+            duration={420}
+          >
+            <OfflineBanner />
+            <Routes>
             {/* Public Landing & Auth Routes */}
             <Route path="/" element={<Landing />} />
             <Route path="/landing" element={<Landing />} />
@@ -46,14 +53,7 @@ export default function App() {
           <Route element={<AppLayout />}>
 
             {/* Student & Faculty RBAC Routes */}
-            <Route
-              path="/dashboard"
-              element={
-                <ProtectedRoute allowedRoles={['STUDENT', 'SUPER_ADMIN']}>
-                  <Dashboard />
-                </ProtectedRoute>
-              }
-            />
+            <Route path="/dashboard" element={<Navigate to="/discover" replace />} />
             <Route
               path="/discover"
               element={
@@ -95,24 +95,20 @@ export default function App() {
               }
             />
 
-            {/* Restaurant Admin RBAC Route */}
+            {/* Restaurant Admin & Operations RBAC Route */}
             <Route
               path="/management/admin"
               element={
-                <ProtectedRoute allowedRoles={['RESTAURANT_ADMIN', 'SUPER_ADMIN']}>
+                <ProtectedRoute allowedRoles={['RESTAURANT_ADMIN', 'RESTAURANT_STAFF', 'SUPER_ADMIN']}>
                   <RestaurantAdmin />
                 </ProtectedRoute>
               }
             />
 
-            {/* Restaurant Staff Front Desk RBAC Route */}
+            {/* Legacy Host Desk Route Redirect */}
             <Route
               path="/management/staff"
-              element={
-                <ProtectedRoute allowedRoles={['RESTAURANT_STAFF', 'RESTAURANT_ADMIN', 'SUPER_ADMIN']}>
-                  <StaffPortal />
-                </ProtectedRoute>
-              }
+              element={<Navigate to="/management/admin" replace />}
             />
 
             {/* Super Admin Governance RBAC Route */}
@@ -129,6 +125,7 @@ export default function App() {
           {/* Catch-all fallback */}
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
+          </ClickSpark>
       </BrowserRouter>
       </DiningProvider>
     </AuthProvider>

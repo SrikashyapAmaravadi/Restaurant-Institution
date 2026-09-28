@@ -56,7 +56,7 @@ export default function SuperAdmin() {
   // Protect route: only SUPER_ADMIN should be on this page
   useEffect(() => {
     if (user && user.role !== 'SUPER_ADMIN') {
-      navigate(user.homePath || '/dashboard', { replace: true });
+      navigate(user.homePath || '/discover', { replace: true });
     }
   }, [user, navigate]);
 

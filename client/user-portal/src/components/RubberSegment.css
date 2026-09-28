@@ -1,8 +1,9 @@
 .rubber-segment {
-  --rs-track: #27272a;
-  --rs-thumb: #fafafa;
-  --rs-ink: #fafafa;
-  --rs-ink-active: #18181b;
+  --rs-track: #F6F2EA;
+  --rs-border: #E8E2D5;
+  --rs-thumb: #11120D;
+  --rs-ink: #565449;
+  --rs-ink-active: #FFFBF4;
   --rs-radius: 99px;
   --rs-inset: 3px;
   --rs-thumb-radius: 96px;
@@ -10,8 +11,8 @@
   --rs-font: 13px;
   --rs-pad: 14px;
   --rs-min: 44px;
-  --rs-idle: 0.7;
-  --rs-hover: 0.9;
+  --rs-idle: 1;
+  --rs-hover: 1;
   --rs-ease-out: cubic-bezier(0.23, 1, 0.32, 1);
 
   position: relative;
@@ -22,6 +23,9 @@
   padding: var(--rs-inset);
   border-radius: var(--rs-radius);
   background: var(--rs-track);
+  border: 1px solid var(--rs-border);
+  box-shadow: 0 1px 3px rgba(17, 18, 13, 0.04);
+  box-sizing: border-box;
   font-family: inherit;
   touch-action: pan-y;
   user-select: none;
@@ -55,7 +59,8 @@
   opacity: var(--rs-idle);
   font: inherit;
   font-size: var(--rs-font);
-  font-weight: 500;
+  font-weight: 600;
+  letter-spacing: -0.01em;
   line-height: 1;
   white-space: nowrap;
   cursor: pointer;
@@ -101,6 +106,8 @@
   grid-auto-columns: auto;
   background: var(--rs-thumb);
   color: var(--rs-ink-active);
+  border-radius: var(--rs-thumb-radius);
+  box-shadow: 0 2px 8px rgba(17, 18, 13, 0.16);
   pointer-events: none;
 }
 

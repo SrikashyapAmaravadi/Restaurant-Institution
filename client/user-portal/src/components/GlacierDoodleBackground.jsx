@@ -11,6 +11,7 @@ export default function GlacierDoodleBackground({
   theme = 'light',
   opacity,
   strokeWidth = 2.4,
+  transparent = false,
 }) {
   const isDark = theme === 'dark';
   const resolvedOpacity = opacity !== undefined ? opacity : (isDark ? 0.35 : 0.65);
@@ -24,7 +25,7 @@ export default function GlacierDoodleBackground({
         zIndex: 0,
         pointerEvents: 'none',
         overflow: 'hidden',
-        background: isDark ? '#020106' : '#FFFBF4',
+        background: transparent ? 'transparent' : (isDark ? '#020106' : '#FFFBF4'),
       }}
       aria-hidden="true"
     >

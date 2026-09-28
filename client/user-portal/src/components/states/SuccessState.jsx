@@ -12,7 +12,7 @@ export default function SuccessState({
   referenceLabel = 'Reference Code',
   details = [],
   actionLabel = 'Continue',
-  actionPath = '/dashboard',
+  actionPath = '/discover',
   onAction,
   secondaryLabel,
   secondaryPath,
@@ -178,7 +178,7 @@ export default function SuccessState({
             </button>
           ) : (
             <Link
-              to={secondaryPath || '/dashboard'}
+              to={secondaryPath || '/discover'}
               className="btn btn-secondary btn-md cursor-pointer"
             >
               {secondaryLabel}

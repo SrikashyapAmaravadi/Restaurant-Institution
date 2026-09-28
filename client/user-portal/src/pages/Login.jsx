@@ -140,7 +140,7 @@ export default function Login() {
       }
 
       setTimeout(() => {
-        const destination = from || loggedUser.homePath || '/dashboard';
+        const destination = from || loggedUser.homePath || '/discover';
         navigate(destination, { replace: true });
       }, 700);
     } catch (err) {
@@ -166,7 +166,7 @@ export default function Login() {
         loggedUser.role === 'SUPER_ADMIN' ? '/management/superadmin' :
         loggedUser.role === 'RESTAURANT_ADMIN' ? '/management/admin' :
         loggedUser.role === 'RESTAURANT_STAFF' ? '/management/staff' :
-        '/dashboard'
+        '/discover'
       );
       navigate(destination, { replace: true });
     } catch (err) {
@@ -185,10 +185,10 @@ export default function Login() {
       try {
         confetti({ particleCount: 70, spread: 60, origin: { y: 0.6 } });
       } catch {}
-      const destination = from || loggedUser.homePath || '/dashboard';
+      const destination = from || loggedUser.homePath || '/discover';
       navigate(destination, { replace: true });
     } catch {
-      navigate('/dashboard', { replace: true });
+      navigate('/discover', { replace: true });
     } finally {
       setSubmitting(false);
     }

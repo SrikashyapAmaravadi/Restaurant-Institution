@@ -71,7 +71,7 @@ function handleOfflineFallback(endpoint, options = {}) {
       role: 'STUDENT',
       department: 'Bennett University',
       verified: true,
-      homePath: '/dashboard'
+      homePath: '/discover'
     };
 
     return {
@@ -120,7 +120,7 @@ function handleOfflineFallback(endpoint, options = {}) {
         role: 'STUDENT',
         roleLabel: 'Student / Faculty',
         department: 'B.Tech CSE - Bennett University',
-        homePath: '/dashboard'
+        homePath: '/discover'
       },
       'sahith@bennett.edu.in': {
         id: 'usr-student-2',
@@ -128,14 +128,14 @@ function handleOfflineFallback(endpoint, options = {}) {
         role: 'STUDENT',
         roleLabel: 'Student / Faculty',
         department: 'Bennett University',
-        homePath: '/dashboard'
+        homePath: '/discover'
       }
     };
 
     let userObj = KNOWN_ACCOUNTS[email];
     if (!userObj) {
       let role = 'STUDENT';
-      let homePath = '/dashboard';
+      let homePath = '/discover';
       let roleLabel = 'Student / Faculty';
       let department = 'Bennett University';
       let restaurantId = null;
@@ -201,7 +201,7 @@ function handleOfflineFallback(endpoint, options = {}) {
       verified: role === 'STUDENT',
       homePath: role === 'SUPER_ADMIN' ? '/management/superadmin' :
         role === 'RESTAURANT_ADMIN' ? '/management/admin' :
-        role === 'RESTAURANT_STAFF' ? '/management/staff' : '/dashboard'
+        role === 'RESTAURANT_STAFF' ? '/management/staff' : '/discover'
     };
 
     return {
@@ -809,6 +809,43 @@ function handleOfflineFallback(endpoint, options = {}) {
       saveQrs(current);
       return { success: true, message: 'Payment QR deleted successfully' };
     }
+  }
+
+  // 9. Staff Fallback
+  if (endpoint.includes('/staff')) {
+    return {
+      success: true,
+      data: [
+        { id: 'usr-staff-1', name: 'Rajesh Kumar', email: 'staff@spicegarden.com', role: 'RESTAURANT_STAFF', department: 'The Spice Garden Front Desk', verified: true },
+        { id: 'usr-admin-1', name: 'Vikram Singhania', email: 'owner@spicegarden.com', role: 'RESTAURANT_ADMIN', department: 'The Spice Garden', verified: true }
+      ]
+    };
+  }
+
+  // 10. Analytics Fallback
+  if (endpoint.includes('/analytics')) {
+    return {
+      success: true,
+      data: {
+        totalRevenue: 28450,
+        completedBookings: 18,
+        activeDiners: 6,
+        popularDishes: ['Butter Chicken', 'Paneer Tikka', 'Garlic Naan'],
+        peakHour: '1:30 PM'
+      }
+    };
+  }
+
+  // 11. Reviews Fallback
+  if (endpoint.includes('/reviews')) {
+    return {
+      success: true,
+      count: 0,
+      total: 0,
+      avgRating: 4.8,
+      breakdown: { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 },
+      data: []
+    };
   }
 
   return null;

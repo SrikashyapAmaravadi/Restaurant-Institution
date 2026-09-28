@@ -73,7 +73,7 @@ export function AuthProvider({ children }) {
           loggedUser.homePath = loggedUser.role === 'SUPER_ADMIN' ? '/management/superadmin'
             : loggedUser.role === 'RESTAURANT_ADMIN' ? '/management/admin'
             : loggedUser.role === 'RESTAURANT_STAFF' ? '/management/staff'
-            : '/dashboard';
+            : '/discover';
         }
         localStorage.setItem('dine_bennett_token', token);
         localStorage.setItem('dine_bennett_user', JSON.stringify(loggedUser));
@@ -100,7 +100,7 @@ export function AuthProvider({ children }) {
           loggedUser.homePath = loggedUser.role === 'SUPER_ADMIN' ? '/management/superadmin'
             : loggedUser.role === 'RESTAURANT_ADMIN' ? '/management/admin'
             : loggedUser.role === 'RESTAURANT_STAFF' ? '/management/staff'
-            : '/dashboard';
+            : '/discover';
         }
         localStorage.setItem('dine_bennett_token', token);
         localStorage.setItem('dine_bennett_user', JSON.stringify(loggedUser));
@@ -133,7 +133,7 @@ export function AuthProvider({ children }) {
           newUser.homePath = newUser.role === 'SUPER_ADMIN' ? '/management/superadmin'
             : newUser.role === 'RESTAURANT_ADMIN' ? '/management/admin'
             : newUser.role === 'RESTAURANT_STAFF' ? '/management/staff'
-            : '/dashboard';
+            : '/discover';
         }
         localStorage.setItem('dine_bennett_token', res.data.token);
         localStorage.setItem('dine_bennett_user', JSON.stringify(newUser));
@@ -158,7 +158,7 @@ export function AuthProvider({ children }) {
           switchedUser.homePath = switchedUser.role === 'SUPER_ADMIN' ? '/management/superadmin'
             : switchedUser.role === 'RESTAURANT_ADMIN' ? '/management/admin'
             : switchedUser.role === 'RESTAURANT_STAFF' ? '/management/staff'
-            : '/dashboard';
+            : '/discover';
         }
         localStorage.setItem('dine_bennett_token', res.data.token);
         localStorage.setItem('dine_bennett_user', JSON.stringify(switchedUser));

@@ -14,6 +14,8 @@ export default function CustomSelect({
   align = 'right',
   ariaLabel = 'Select option',
   style = {},
+  fullWidth = false,
+  size = 'md',
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef(null);
@@ -24,7 +26,7 @@ export default function CustomSelect({
   );
 
   const selectedOption =
-    normalizedOptions.find(opt => opt.value === value) || normalizedOptions[0];
+    normalizedOptions.find(opt => opt.value === value || opt.label === value) || normalizedOptions[0];
 
   // Close on outside click
   useEffect(() => {
@@ -49,12 +51,17 @@ export default function CustomSelect({
     };
   }, [isOpen]);
 
+  const isSmall = size === 'sm' && !fullWidth;
+  const triggerPadding = fullWidth ? '10px 16px' : isSmall ? '6px 14px' : '8px 16px';
+  const triggerFontSize = isSmall ? 12 : 13.5;
+
   return (
     <div
       ref={containerRef}
       style={{
         position: 'relative',
-        display: 'inline-block',
+        display: fullWidth ? 'block' : 'inline-block',
+        width: fullWidth ? '100%' : 'auto',
         ...style,
       }}
     >
@@ -66,16 +73,18 @@ export default function CustomSelect({
         aria-label={ariaLabel}
         onClick={() => setIsOpen(!isOpen)}
         style={{
-          display: 'inline-flex',
+          display: fullWidth ? 'flex' : 'inline-flex',
+          width: fullWidth ? '100%' : 'auto',
           alignItems: 'center',
-          gap: 7,
+          justifyContent: fullWidth ? 'space-between' : 'flex-start',
+          gap: 8,
           background: isOpen ? '#ECE6D8' : '#F6F2EA',
           border: '1px solid',
           borderColor: isOpen ? '#11120D' : '#E8E2D5',
           borderRadius: 9999,
-          padding: '6px 14px',
+          padding: triggerPadding,
           color: '#11120D',
-          fontSize: 12,
+          fontSize: triggerFontSize,
           fontWeight: 600,
           cursor: 'pointer',
           outline: 'none',
@@ -97,10 +106,14 @@ export default function CustomSelect({
           }
         }}
       >
-        {Icon && <Icon size={13} style={{ color: '#565449', flexShrink: 0 }} />}
-        <span>{selectedOption?.label || 'Select'}</span>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, overflow: 'hidden' }}>
+          {Icon && <Icon size={isSmall ? 13 : 14} style={{ color: '#565449', flexShrink: 0 }} />}
+          <span style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
+            {selectedOption?.label || 'Select'}
+          </span>
+        </div>
         <ChevronDown
-          size={13}
+          size={isSmall ? 13 : 14}
           style={{
             color: '#565449',
             flexShrink: 0,
@@ -117,8 +130,9 @@ export default function CustomSelect({
           style={{
             position: 'absolute',
             top: 'calc(100% + 6px)',
-            [align === 'right' ? 'right' : 'left']: 0,
-            minWidth: 200,
+            [fullWidth ? 'left' : (align === 'right' ? 'right' : 'left')]: 0,
+            minWidth: fullWidth ? '100%' : 200,
+            width: fullWidth ? '100%' : 'auto',
             background: '#FFFFFF',
             border: '1px solid #D8CFBC',
             borderRadius: 14,
@@ -128,12 +142,13 @@ export default function CustomSelect({
             display: 'flex',
             flexDirection: 'column',
             gap: 2,
-            transformOrigin: align === 'right' ? 'top right' : 'top left',
+            boxSizing: 'border-box',
+            transformOrigin: align === 'right' && !fullWidth ? 'top right' : 'top left',
             animation: 'dropdown-pop 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
           }}
         >
           {normalizedOptions.map(opt => {
-            const isSelected = opt.value === value;
+            const isSelected = opt.value === value || opt.label === value;
             return (
               <button
                 key={opt.value}
@@ -150,12 +165,12 @@ export default function CustomSelect({
                   justifyContent: 'space-between',
                   gap: 10,
                   width: '100%',
-                  padding: '8px 12px',
+                  padding: '9px 14px',
                   borderRadius: 8,
                   border: 'none',
                   background: isSelected ? '#F6F2EA' : 'transparent',
                   color: isSelected ? '#11120D' : '#565449',
-                  fontSize: 12.5,
+                  fontSize: 13,
                   fontWeight: isSelected ? 600 : 500,
                   textAlign: 'left',
                   cursor: 'pointer',
@@ -178,7 +193,7 @@ export default function CustomSelect({
               >
                 <span>{opt.label}</span>
                 {isSelected && (
-                  <Check size={13} style={{ color: '#11120D', flexShrink: 0 }} />
+                  <Check size={14} style={{ color: '#11120D', flexShrink: 0 }} />
                 )}
               </button>
             );

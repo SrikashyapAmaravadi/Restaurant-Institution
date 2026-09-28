@@ -46,10 +46,11 @@ export default function RubberSegment({
   value,
   defaultValue,
   onChange,
-  trackColor = '#27272a',
-  thumbColor = '#fafafa',
-  textColor = '#fafafa',
-  activeTextColor = '#18181b',
+  trackColor = '#F6F2EA',
+  borderColor = '#E8E2D5',
+  thumbColor = '#11120D',
+  textColor = '#565449',
+  activeTextColor = '#FFFBF4',
   size = 'md',
   radius = 99,
   inset = 3,
@@ -115,7 +116,7 @@ export default function RubberSegment({
     jumpTo(committed.current);
   };
 
-  const listKey = list.map(item => item.value).join('|');
+  const listKey = list.map(item => `${item.value}:${typeof item.label === 'string' ? item.label : ''}`).join('|');
   useLayoutEffect(() => {
     measure();
     const observer = new ResizeObserver(measure);
@@ -310,6 +311,7 @@ export default function RubberSegment({
       className={`rubber-segment${className ? ` ${className}` : ''}`}
       style={{
         '--rs-track': trackColor,
+        '--rs-border': borderColor,
         '--rs-thumb': thumbColor,
         '--rs-ink': textColor,
         '--rs-ink-active': activeTextColor,

@@ -131,9 +131,9 @@ export default function Register() {
       try {
         confetti({ particleCount: 70, spread: 60, origin: { y: 0.6 } });
       } catch {}
-      navigate(loggedUser?.homePath || '/dashboard', { replace: true });
+      navigate(loggedUser?.homePath || '/discover', { replace: true });
     } catch {
-      navigate('/dashboard', { replace: true });
+      navigate('/discover', { replace: true });
     } finally {
       setSubmitted(false);
     }

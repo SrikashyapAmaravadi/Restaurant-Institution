@@ -12,7 +12,7 @@ const router = express.Router({ mergeParams: true });
 router.get(
   '/',
   authenticateToken,
-  requireRole('SUPER_ADMIN', 'RESTAURANT_ADMIN'),
+  requireRole('SUPER_ADMIN', 'RESTAURANT_ADMIN', 'RESTAURANT_STAFF'),
   requireRestaurantScope('restaurantId'),
   async (req, res) => {
     try {

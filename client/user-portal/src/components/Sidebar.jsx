@@ -2,7 +2,6 @@ import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useDining } from '../context/DiningContext';
 import {
-  LayoutDashboard,
   Compass,
   CalendarDays,
   Bell,
@@ -61,7 +60,7 @@ export default function Sidebar() {
       <div style={{ display: 'flex', flexDirection: 'column', gap: 26 }}>
         {/* Brand — Nivix Dine-In */}
         <div
-          onClick={() => navigate('/dashboard')}
+          onClick={() => navigate(isStudent ? '/discover' : (isAdmin ? '/management/admin' : (isStaff ? '/management/staff' : (isSuper ? '/management/superadmin' : '/discover'))))}
           style={{
             display: 'flex',
             flexDirection: 'column',
@@ -113,11 +112,6 @@ export default function Sidebar() {
 
           {isStudent && (
             <>
-              <NavLink to="/dashboard" style={({ isActive }) => navLinkStyle(isActive)}>
-                <LayoutDashboard size={17} />
-                <span style={{ flex: 1 }}>Dining Home</span>
-              </NavLink>
-
               <NavLink to="/discover" style={({ isActive }) => navLinkStyle(isActive)}>
                 <Compass size={17} />
                 <span style={{ flex: 1 }}>Explore Outlets</span>
@@ -176,33 +170,16 @@ export default function Sidebar() {
 
               <NavLink to="/profile" style={({ isActive }) => navLinkStyle(isActive)}>
                 <User size={17} />
-                <span style={{ flex: 1 }}>Profile & Perks</span>
-              </NavLink>
-            </>
-          )}
-
-          {isAdmin && (
-            <>
-              <NavLink to="/management/admin" style={({ isActive }) => navLinkStyle(isActive)}>
-                <ChefHat size={17} />
-                <span style={{ flex: 1 }}>Outlet Manager</span>
-              </NavLink>
-              <NavLink to="/management/staff" style={({ isActive }) => navLinkStyle(isActive)}>
-                <ConciergeBell size={17} />
-                <span style={{ flex: 1 }}>Host Desk</span>
-              </NavLink>
-              <NavLink to="/profile" style={({ isActive }) => navLinkStyle(isActive)}>
-                <User size={17} />
                 <span style={{ flex: 1 }}>Profile</span>
               </NavLink>
             </>
           )}
 
-          {isStaff && (
+          {(isAdmin || isStaff) && (
             <>
-              <NavLink to="/management/staff" style={({ isActive }) => navLinkStyle(isActive)}>
-                <ConciergeBell size={17} />
-                <span style={{ flex: 1 }}>Host Desk</span>
+              <NavLink to="/management/admin" style={({ isActive }) => navLinkStyle(isActive)}>
+                <ChefHat size={17} />
+                <span style={{ flex: 1 }}>{isAdmin ? 'Outlet Manager' : 'Guest Check-in'}</span>
               </NavLink>
               <NavLink to="/profile" style={({ isActive }) => navLinkStyle(isActive)}>
                 <User size={17} />

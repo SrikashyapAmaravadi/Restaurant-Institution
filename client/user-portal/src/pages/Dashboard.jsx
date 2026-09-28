@@ -100,6 +100,7 @@ export default function Dashboard() {
         ) : (
           <RestaurantCircularGallery
             restaurants={safeRestaurants}
+            bend={0}
             onQuickReserve={res => setSelectedRestaurant(res)}
             onViewOffer={off => setSelectedOffer(off)}
           />

@@ -8,10 +8,10 @@ import { Link } from 'react-router-dom';
  */
 export default function ErrorState({
   title = 'Unable to Load Information',
-  message = 'We encountered an issue while communicating with the dining service. Please try again or return to the main dashboard.',
+  message = 'We encountered an issue while communicating with the dining service. Please try again or return to Explore Outlets.',
   technicalDetails,
   onRetry,
-  homePath = '/dashboard',
+  homePath = '/discover',
   className = '',
   style = {}
 }) {
