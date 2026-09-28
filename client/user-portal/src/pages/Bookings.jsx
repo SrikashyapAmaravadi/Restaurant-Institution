@@ -115,7 +115,7 @@ export default function Bookings() {
             </span>
           </div>
           <p style={{ fontSize: 13, color: '#565449', margin: 0 }}>
-            Manage campus partner reservations, access digital entry passes, and settle bills.
+            Manage campus partner reservations and access digital dining entry passes.
           </p>
         </div>
 
@@ -411,24 +411,14 @@ export default function Bookings() {
                   )}
 
                   {isSeated && (
-                    <>
-                      <button
-                        type="button"
-                        className="btn btn-primary btn-sm"
-                        onClick={() => setPaymentModalBooking(b)}
-                        style={{ borderRadius: 99, fontWeight: 700, gap: 6, padding: '9px 18px', minHeight: 38, touchAction: 'manipulation' }}
-                      >
-                        <Receipt size={14} /> Settle Bill
-                      </button>
-                      <button
-                        type="button"
-                        className="btn btn-outline btn-sm"
-                        onClick={() => setPassModalBooking(b)}
-                        style={{ borderRadius: 99, fontWeight: 700, gap: 6, padding: '9px 18px', minHeight: 38, touchAction: 'manipulation' }}
-                      >
-                        <QrCode size={14} /> View Pass
-                      </button>
-                    </>
+                    <button
+                      type="button"
+                      className="btn btn-primary btn-sm"
+                      onClick={() => setPassModalBooking(b)}
+                      style={{ borderRadius: 99, fontWeight: 700, gap: 6, padding: '9px 18px', minHeight: 38, touchAction: 'manipulation' }}
+                    >
+                      <QrCode size={14} /> View Pass
+                    </button>
                   )}
 
                   {isCompleted && (
@@ -509,10 +499,8 @@ export default function Bookings() {
       {paymentModalBooking && (
         <PaymentModal
           booking={paymentModalBooking}
+          viewOnly={true}
           onClose={() => setPaymentModalBooking(null)}
-          onPaymentComplete={(paymentResult) => {
-            staffCompletePayment(paymentModalBooking.id, paymentResult);
-          }}
         />
       )}
     </div>

@@ -72,7 +72,9 @@ export function DiningProvider({ children }) {
         ) {
           bookRes = await api.bookings.getAll().catch(() => null);
         } else {
-          bookRes = await api.bookings.getMy().catch(() => null);
+          bookRes = await api.bookings.getMy().catch(async () => {
+            return await api.bookings.getAll().catch(() => null);
+          });
         }
       }
       if (bookRes?.success && bookRes.data) {

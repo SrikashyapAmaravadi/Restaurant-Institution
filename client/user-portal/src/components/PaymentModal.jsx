@@ -38,11 +38,14 @@ export default function PaymentModal({
   onPaymentComplete,
   initialBilledBy,
   menuItems: propMenuItems,
-  onOrdersUpdated
+  onOrdersUpdated,
+  viewOnly = false
 }) {
-  const [method, setMethod] = useState('UPI'); // 'UPI' | 'CASH'
-  const [step, setStep] = useState('SELECT'); // 'SELECT' | 'PROCESSING' | 'SUCCESS'
-  const [activeView, setActiveView] = useState('SETTLEMENT'); // 'SETTLEMENT' | 'OFFICIAL_BILL'
+  const isAlreadyCompleted = booking?.status === 'COMPLETED' || booking?.paymentStatus === 'PAID';
+  const isReadOnly = viewOnly || isAlreadyCompleted;
+  const [method, setMethod] = useState(booking?.paymentMethod || 'UPI'); // 'UPI' | 'CASH'
+  const [step, setStep] = useState(isReadOnly ? 'SUCCESS' : 'SELECT'); // 'SELECT' | 'PROCESSING' | 'SUCCESS'
+  const [activeView, setActiveView] = useState(isReadOnly ? 'OFFICIAL_BILL' : 'SETTLEMENT'); // 'SETTLEMENT' | 'OFFICIAL_BILL'
   const [activePaymentQr, setActivePaymentQr] = useState(null);
 
   // --- BILLING AUTHORITY: STAFF OR OWNER ---
@@ -351,7 +354,7 @@ export default function PaymentModal({
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            {step === 'SELECT' && (
+            {step === 'SELECT' && !isReadOnly && (
               <button
                 type="button"
                 className={`btn btn-xs ${activeView === 'OFFICIAL_BILL' ? 'btn-primary' : 'btn-outline'}`}
