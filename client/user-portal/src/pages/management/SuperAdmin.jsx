@@ -250,6 +250,7 @@ export default function SuperAdmin() {
   // ================= RESTAURANT ONBOARDING STATE =================
   const [showAddRestModal, setShowAddRestModal] = useState(false);
   const [submittingRest, setSubmittingRest] = useState(false);
+  const [showOwnerPassword, setShowOwnerPassword] = useState(false);
   const [restSuccessMsg, setRestSuccessMsg] = useState('');
   const [restForm, setRestForm] = useState({
     name: '',
@@ -264,7 +265,7 @@ export default function SuperAdmin() {
     description: '',
     ownerName: '',
     ownerEmail: '',
-    ownerPassword: 'password123'
+    ownerPassword: ''
   });
 
   useEffect(() => {
@@ -279,6 +280,10 @@ export default function SuperAdmin() {
       alert('Please fill out all required fields (Name, Cuisine, Address, Phone).');
       return;
     }
+    if (!restForm.ownerEmail || !restForm.ownerPassword) {
+      alert('Please provide the restaurant owner login email and password.');
+      return;
+    }
 
     setSubmittingRest(true);
     try {
@@ -288,8 +293,8 @@ export default function SuperAdmin() {
         image: restForm.image || 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80'
       });
 
-      setRestSuccessMsg(`Restaurant "${created.name}" onboarded and live!`);
-      setTimeout(() => setRestSuccessMsg(''), 4000);
+      setRestSuccessMsg(`Restaurant "${created.name}" onboarded and live! Owner Login: ${restForm.ownerEmail}`);
+      setTimeout(() => setRestSuccessMsg(''), 6000);
       setShowAddRestModal(false);
       setRestForm({
         name: '',
@@ -304,7 +309,7 @@ export default function SuperAdmin() {
         description: '',
         ownerName: '',
         ownerEmail: '',
-        ownerPassword: 'password123'
+        ownerPassword: ''
       });
     } catch (err) {
       alert('Failed to onboard restaurant: ' + err.message);
@@ -570,6 +575,11 @@ export default function SuperAdmin() {
                   </div>
                   <div style={{ fontSize: 12, color: '#565449', margin: '3px 0' }}>{r.cuisine} · {r.price || '₹450 for two'} · {r.hours || '11:00 AM - 11:00 PM'}</div>
                   <div style={{ fontSize: 11.5, color: '#94A3B8', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{r.address}</div>
+                  {r.ownerEmail && (
+                    <div style={{ fontSize: 11, color: '#166534', fontWeight: 600, marginTop: 4 }}>
+                      Owner Desk: {r.ownerEmail}
+                    </div>
+                  )}
                   <div style={{ display: 'flex', gap: 8, marginTop: 12, flexWrap: 'wrap' }}>
                     <button
                       className="btn-action-dishes"
@@ -1186,6 +1196,120 @@ export default function SuperAdmin() {
                       value={restForm.capacity}
                       onChange={e => setRestForm({ ...restForm, capacity: e.target.value })}
                     />
+                  </div>
+
+                  {/* Dedicated Restaurant Owner Login Credentials Section */}
+                  <div style={{
+                    gridColumn: 'span 2',
+                    marginTop: 6,
+                    padding: '16px 18px',
+                    borderRadius: 14,
+                    background: '#F9F8F5',
+                    border: '1.5px dashed #D8CFBC',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 12
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <div style={{
+                        width: 32,
+                        height: 32,
+                        borderRadius: 8,
+                        background: '#11120D',
+                        color: '#FFFBF4',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0
+                      }}>
+                        <Shield size={16} />
+                      </div>
+                      <div>
+                        <div style={{ fontSize: 13, fontWeight: 800, color: '#11120D' }}>
+                          Restaurant Owner / Manager Login Credentials
+                        </div>
+                        <div style={{ fontSize: 11.5, color: '#716E61' }}>
+                          Create login access for the restaurant's operational desk &amp; menu portal.
+                        </div>
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 240px), 1fr))', gap: 12, marginTop: 4 }}>
+                      <div>
+                        <label className="form-label">Manager / Owner Name</label>
+                        <input
+                          className="form-input"
+                          placeholder="e.g. Vikram Singhania"
+                          value={restForm.ownerName}
+                          onChange={e => setRestForm({ ...restForm, ownerName: e.target.value })}
+                        />
+                      </div>
+
+                      <div>
+                        <label className="form-label">Owner Login Email *</label>
+                        <input
+                          type="email"
+                          className="form-input"
+                          placeholder="e.g. owner@bistrocentral.com"
+                          required
+                          value={restForm.ownerEmail}
+                          onChange={e => setRestForm({ ...restForm, ownerEmail: e.target.value })}
+                        />
+                      </div>
+
+                      <div style={{ gridColumn: 'span 2' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+                          <label className="form-label" style={{ margin: 0 }}>Owner Login Password *</label>
+                          <button
+                            type="button"
+                            className="btn btn-ghost btn-xs"
+                            style={{ fontSize: 11, color: '#888478', padding: '0 4px', height: 'auto', textDecoration: 'underline' }}
+                            onClick={() => {
+                              const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789@#';
+                              let autoPass = '';
+                              for (let i = 0; i < 10; i++) autoPass += chars.charAt(Math.floor(Math.random() * chars.length));
+                              setRestForm({ ...restForm, ownerPassword: autoPass });
+                            }}
+                          >
+                            Generate Password
+                          </button>
+                        </div>
+                        <div style={{ position: 'relative' }}>
+                          <input
+                            type={showOwnerPassword ? 'text' : 'password'}
+                            className="form-input"
+                            placeholder="Enter login password (min 6 characters)"
+                            required
+                            minLength={6}
+                            value={restForm.ownerPassword}
+                            onChange={e => setRestForm({ ...restForm, ownerPassword: e.target.value })}
+                            style={{ paddingRight: 40 }}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowOwnerPassword(!showOwnerPassword)}
+                            style={{
+                              position: 'absolute',
+                              right: 10,
+                              top: '50%',
+                              transform: 'translateY(-50%)',
+                              background: 'transparent',
+                              border: 'none',
+                              color: '#888478',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center'
+                            }}
+                            title={showOwnerPassword ? 'Hide password' : 'Show password'}
+                          >
+                            {showOwnerPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                          </button>
+                        </div>
+                        <div style={{ fontSize: 11, color: '#888478', marginTop: 4 }}>
+                          The restaurant manager will use this email &amp; password to sign in at /login.
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>

@@ -354,16 +354,19 @@ router.post('/restaurants', async (req, res) => {
       data: tablesData
     });
 
-    // Optionally create restaurant owner user if provided
+    // Provision restaurant owner / manager login credentials
+    let ownerInfo = null;
     if (ownerEmail) {
       const emailLower = ownerEmail.toLowerCase().trim();
+      const pass = ownerPassword || 'password123';
+      const bcrypt = await import('bcryptjs');
+      const passwordHash = bcrypt.default.hashSync(pass, 10);
       const existingUser = await prisma.user.findUnique({ where: { email: emailLower } });
+
       if (!existingUser) {
-        const bcrypt = await import('bcryptjs');
-        const passwordHash = bcrypt.default.hashSync(ownerPassword, 10);
-        await prisma.user.create({
+        const newOwner = await prisma.user.create({
           data: {
-            name: ownerName || `${name} Manager`,
+            name: ownerName?.trim() || `${name} Owner`,
             email: emailLower,
             passwordHash,
             role: 'RESTAURANT_ADMIN',
@@ -372,14 +375,37 @@ router.post('/restaurants', async (req, res) => {
             restaurantId: restaurant.id,
             verified: true,
             homePath: '/management/admin',
-            avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80'
+            avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(ownerName || name)}&background=11120D&color=fff`
           }
         });
+        ownerInfo = { email: newOwner.email, name: newOwner.name };
+
+        try {
+          await prisma.notification.create({
+            data: {
+              userId: newOwner.id,
+              type: 'success',
+              title: `Welcome to ${name} Management Desk`,
+              body: `Your restaurant owner account is active. You can now manage menu items, QR codes, and guest check-ins.`,
+              read: false
+            }
+          });
+        } catch {
+          // ignore notification error
+        }
       } else {
-        await prisma.user.update({
+        const updated = await prisma.user.update({
           where: { id: existingUser.id },
-          data: { restaurantId: restaurant.id }
+          data: {
+            restaurantId: restaurant.id,
+            role: 'RESTAURANT_ADMIN',
+            department: name,
+            verified: true,
+            homePath: '/management/admin',
+            ...(ownerPassword ? { passwordHash } : {})
+          }
         });
+        ownerInfo = { email: updated.email, name: updated.name };
       }
     }
 
@@ -387,7 +413,7 @@ router.post('/restaurants', async (req, res) => {
       action: 'RESTAURANT_ONBOARDED',
       entityType: 'RESTAURANT',
       entityId: restaurant.id,
-      details: { name: restaurant.name, cuisine: restaurant.cuisine }
+      details: { name: restaurant.name, cuisine: restaurant.cuisine, ownerEmail: ownerInfo?.email }
     });
 
     res.status(201).json({
@@ -395,6 +421,8 @@ router.post('/restaurants', async (req, res) => {
       message: `Restaurant "${restaurant.name}" successfully onboarded.`,
       data: {
         ...restaurant,
+        ownerEmail: ownerInfo?.email || (ownerEmail ? ownerEmail.toLowerCase().trim() : null),
+        ownerName: ownerInfo?.name || (ownerName || `${name} Owner`),
         tags: tags.length ? tags : [cuisine, 'Campus Partner', 'Instant Booking'],
         features: features.length ? features : ['Air Conditioned', 'Campus WiFi', 'Group Seating'],
         popularDishes: popularDishes.length ? popularDishes : ['House Special Platter']

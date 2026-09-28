@@ -471,6 +471,60 @@ function handleOfflineFallback(endpoint, options = {}) {
     };
   }
 
+  if (endpoint === '/superadmin/restaurants' && options.method === 'POST') {
+    const newRest = {
+      id: Date.now(),
+      name: body?.name,
+      cuisine: body?.cuisine,
+      price: body?.price || '₹₹',
+      address: body?.address,
+      phone: body?.phone,
+      hours: body?.hours || '11:00 AM – 11:00 PM',
+      capacity: Number(body?.capacity) || 40,
+      image: body?.image || 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80',
+      heroImage: body?.image || 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80',
+      rating: 4.8,
+      reviews: 1,
+      isOpen: true,
+      hasOffer: true,
+      offerLabel: '15% Off',
+      ownerEmail: body?.ownerEmail,
+      ownerName: body?.ownerName || `${body?.name} Owner`
+    };
+
+    try {
+      const existingRests = JSON.parse(localStorage.getItem('dine_bennett_restaurants') || '[]');
+      localStorage.setItem('dine_bennett_restaurants', JSON.stringify([newRest, ...existingRests]));
+    } catch {
+      // ignore
+    }
+
+    if (body?.ownerEmail) {
+      try {
+        const users = JSON.parse(localStorage.getItem('dine_bennett_all_users') || '[]');
+        const newOwner = {
+          id: `usr-owner-${Date.now()}`,
+          name: body.ownerName || `${body.name} Owner`,
+          email: body.ownerEmail.toLowerCase().trim(),
+          password: body.ownerPassword || 'password123',
+          role: 'RESTAURANT_ADMIN',
+          department: body.name,
+          restaurantId: newRest.id,
+          verified: true
+        };
+        localStorage.setItem('dine_bennett_all_users', JSON.stringify([newOwner, ...users]));
+      } catch {
+        // ignore
+      }
+    }
+
+    return {
+      success: true,
+      message: `Restaurant "${newRest.name}" successfully onboarded.`,
+      data: newRest
+    };
+  }
+
   // 7. Bookings Resilient Fallback (Multi-User & Multi-Role Local Sync)
   if (endpoint.startsWith('/bookings')) {
     const getStoredBookings = () => {
