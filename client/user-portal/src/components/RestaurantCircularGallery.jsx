@@ -373,7 +373,6 @@ export default function RestaurantCircularGallery({
                 marginTop: -230,
                 transformOrigin: '50% 50%',
                 willChange: 'transform, opacity',
-                transition: 'box-shadow 0.3s ease',
                 pointerEvents: 'auto'
               }}
             >

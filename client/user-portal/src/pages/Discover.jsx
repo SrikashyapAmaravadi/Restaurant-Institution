@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
-import RestaurantCircularGallery from '../components/RestaurantCircularGallery';
+import RestaurantCard from '../components/RestaurantCard';
 import BookingModal from '../components/BookingModal';
 import OfferDrawer from '../components/OfferDrawer';
 import BranchedMenu from '../components/BranchedMenu';
@@ -372,12 +372,23 @@ export default function Discover() {
             </button>
           </div>
         ) : (
-          <RestaurantCircularGallery
-            restaurants={sortedAndFiltered}
-            bend={0}
-            onQuickReserve={rest => setSelectedForBooking(rest)}
-            onViewOffer={offer => setSelectedOffer(offer)}
-          />
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+              gap: 24,
+              padding: '12px 0 32px',
+            }}
+          >
+            {sortedAndFiltered.map((rest, index) => (
+              <RestaurantCard
+                key={rest.id || rest._id || index}
+                restaurant={rest}
+                onQuickReserve={r => setSelectedForBooking(r)}
+                onViewOffer={offer => setSelectedOffer(offer)}
+              />
+            ))}
+          </div>
         )}
       </div>
 

@@ -85,15 +85,15 @@ export default function RestaurantCard({ restaurant, onQuickReserve, onViewOffer
         borderRadius: 14,
         border: `1px solid ${isHovered ? '#11120D' : '#E8E2D5'}`,
         boxShadow: isHovered
-          ? '0 22px 42px -10px rgba(17, 18, 13, 0.14), 0 8px 18px -4px rgba(17, 18, 13, 0.05)'
+          ? '0 12px 24px -6px rgba(17, 18, 13, 0.10)'
           : '0 1px 3px rgba(0, 0, 0, 0.04)',
-        transform: isHovered ? 'translateY(-6px)' : 'translateY(0)',
+        transform: 'none',
         overflow: 'hidden',
         cursor: 'pointer',
         display: 'flex',
         flexDirection: 'column',
         position: 'relative',
-        transition: 'transform 0.55s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.55s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.45s ease',
+        transition: 'none',
       }}
     >
       {/* Image & Badges Container */}
@@ -108,12 +108,10 @@ export default function RestaurantCard({ restaurant, onQuickReserve, onViewOffer
             width: '100%',
             height: '100%',
             objectFit: 'cover',
-            filter: isHovered
-              ? 'brightness(1.18) contrast(0.80) saturate(0.86)'
-              : 'brightness(1.24) contrast(0.74) saturate(0.80)',
-            opacity: isHovered ? 0.95 : 0.88,
-            transform: isHovered ? 'scale(1.06)' : 'scale(1.0)',
-            transition: 'transform 0.75s cubic-bezier(0.16, 1, 0.3, 1), filter 0.45s ease, opacity 0.45s ease',
+            filter: 'brightness(1.24) contrast(0.74) saturate(0.80)',
+            opacity: 0.92,
+            transform: 'none',
+            transition: 'none',
           }}
         />
 
@@ -125,8 +123,8 @@ export default function RestaurantCard({ restaurant, onQuickReserve, onViewOffer
             background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.32) 0%, rgba(255, 255, 255, 0.12) 45%, rgba(255, 255, 255, 0.45) 100%)',
             pointerEvents: 'none',
             zIndex: 1,
-            transition: 'opacity 0.45s ease',
-            opacity: isHovered ? 0.75 : 1,
+            transition: 'none',
+            opacity: 0.85,
           }}
         />
 

@@ -730,17 +730,14 @@ input[type="reset"] {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1),
-              box-shadow 0.55s cubic-bezier(0.16, 1, 0.3, 1),
-              border-color 0.45s ease;
+  transition: none;
   color: var(--text-primary);
-  will-change: transform, box-shadow;
 }
 .nivix-card:hover,
 .district-card:hover {
-  transform: translateY(-6px);
+  transform: none;
   border-color: #11120D;
-  box-shadow: 0 22px 42px -10px rgba(17, 18, 13, 0.14), 0 8px 18px -4px rgba(17, 18, 13, 0.05);
+  box-shadow: 0 4px 12px rgba(17, 18, 13, 0.08);
 }
 
 /* ══════════════════════════════════════════════════════════════════════════

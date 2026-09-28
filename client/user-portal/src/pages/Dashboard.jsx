@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import RestaurantCircularGallery from '../components/RestaurantCircularGallery';
+import RestaurantCard from '../components/RestaurantCard';
 import BookingModal from '../components/BookingModal';
 import OfferDrawer from '../components/OfferDrawer';
 import NivixSearchModal from '../components/NivixSearchModal';
@@ -98,12 +98,23 @@ export default function Dashboard() {
             <p style={{ fontSize: 13, color: '#A3A3A3', marginTop: 4 }}>Check back later for available dining spots.</p>
           </div>
         ) : (
-          <RestaurantCircularGallery
-            restaurants={safeRestaurants}
-            bend={0}
-            onQuickReserve={res => setSelectedRestaurant(res)}
-            onViewOffer={off => setSelectedOffer(off)}
-          />
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+              gap: 24,
+              padding: '12px 0 32px',
+            }}
+          >
+            {safeRestaurants.map((rest, index) => (
+              <RestaurantCard
+                key={rest.id || rest._id || index}
+                restaurant={rest}
+                onQuickReserve={res => setSelectedRestaurant(res)}
+                onViewOffer={off => setSelectedOffer(off)}
+              />
+            ))}
+          </div>
         )}
       </div>
 
