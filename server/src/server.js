@@ -29,8 +29,8 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 dotenv.config({ path: path.resolve(process.cwd(), 'server/.env') });
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 
-const DEFAULT_DATABASE_URL = "postgresql://postgres.nhcdgjeygsazqjxpaomz:DIstRiCt%40%231757@aws-0-ap-south-1.pooler.supabase.com:6543/postgres?pgbouncer=true&connection_limit=10&connect_timeout=15&pool_timeout=20";
-const DEFAULT_DIRECT_URL = "postgresql://postgres.nhcdgjeygsazqjxpaomz:DIstRiCt%40%231757@aws-0-ap-south-1.pooler.supabase.com:5432/postgres?connect_timeout=15";
+const DEFAULT_DATABASE_URL = "postgresql://postgres.nhcdgjeygsazqjxpaomz:DIstRiCt%40%231757@aws-0-ap-south-1.pooler.supabase.com:5432/postgres?connect_timeout=20";
+const DEFAULT_DIRECT_URL = "postgresql://postgres.nhcdgjeygsazqjxpaomz:DIstRiCt%40%231757@aws-0-ap-south-1.pooler.supabase.com:5432/postgres?connect_timeout=20";
 const DEFAULT_JWT_SECRET = "dine_bennett_super_secret_jwt_key_2026_rbac";
 
 if (!process.env.DATABASE_URL) {
