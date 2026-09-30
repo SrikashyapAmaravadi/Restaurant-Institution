@@ -7,7 +7,9 @@ export const sendOtpSchema = z.object({
 
 export const verifyOtpSchema = z.object({
   email: z.string().min(2, 'Please provide a valid institutional email or roll number'),
-  otp: z.string().min(6, 'Passkey must be 6 digits').max(6, 'Passkey must be 6 digits'),
+  otp: z.union([z.string(), z.number()]).transform(val => String(val).trim()).refine(val => val.length === 6, {
+    message: 'Passkey must be exactly 6 digits'
+  }),
   name: z.string().max(80).optional()
 });
 

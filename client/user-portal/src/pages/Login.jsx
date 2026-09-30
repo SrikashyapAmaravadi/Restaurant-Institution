@@ -144,6 +144,7 @@ export default function Login() {
     if (codeOrEvent && typeof codeOrEvent.preventDefault === 'function') {
       codeOrEvent.preventDefault();
     }
+    if (submitting) return;
     const code = (typeof codeOrEvent === 'string' ? codeOrEvent : otpCode).trim();
     if (code.length !== 6) {
       setErrorMsg('Please enter all 6 digits of the passkey.');

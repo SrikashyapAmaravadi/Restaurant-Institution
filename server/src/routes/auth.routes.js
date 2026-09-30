@@ -63,7 +63,40 @@ router.post('/send-otp', authLimiter, validate(sendOtpSchema), async (req, res) 
     const code = Math.floor(100000 + Math.random() * 900000).toString();
     const expiresAt = Date.now() + 10 * 60 * 1000; // 10 minutes
 
+    // Save in memory
     otpStore.set(emailLower, { code, expiresAt, attempts: 0 });
+
+    // Persist OTP in PostgreSQL so all serverless instances on Vercel share it
+    try {
+      const existingReq = await prisma.verificationRequest.findFirst({
+        where: { email: emailLower },
+        orderBy: { createdAt: 'desc' }
+      });
+
+      if (existingReq) {
+        await prisma.verificationRequest.update({
+          where: { id: existingReq.id },
+          data: {
+            verificationCode: code,
+            status: 'CODE_SENT',
+            updatedAt: new Date()
+          }
+        });
+      } else {
+        await prisma.verificationRequest.create({
+          data: {
+            email: emailLower,
+            name: emailLower.split('@')[0],
+            role: 'Student',
+            idProof: 'INSTITUTIONAL_SSO',
+            verificationCode: code,
+            status: 'CODE_SENT'
+          }
+        });
+      }
+    } catch (dbErr) {
+      console.warn('[AUTH_OTP_DB_WARN] Could not persist OTP in DB:', dbErr.message);
+    }
 
     // Deliver OTP via institutional email service
     await sendOtpEmail({
@@ -101,7 +134,37 @@ router.post('/verify-otp', authLimiter, validate(verifyOtpSchema), async (req, r
     }
     const otpStr = otp.toString().trim();
 
-    const stored = otpStore.get(emailLower);
+    let stored = otpStore.get(emailLower);
+    let dbRecordId = null;
+
+    // If not found in memory (e.g. serverless cold start on Vercel), check PostgreSQL database
+    if (!stored) {
+      try {
+        const dbReq = await prisma.verificationRequest.findFirst({
+          where: {
+            email: emailLower,
+            status: 'CODE_SENT'
+          },
+          orderBy: { updatedAt: 'desc' }
+        });
+
+        if (dbReq && dbReq.verificationCode) {
+          const ageMs = Date.now() - new Date(dbReq.updatedAt).getTime();
+          if (ageMs <= 15 * 60 * 1000) { // 15 minutes validity
+            stored = {
+              code: dbReq.verificationCode.trim(),
+              expiresAt: new Date(dbReq.updatedAt).getTime() + (15 * 60 * 1000),
+              attempts: 0
+            };
+            dbRecordId = dbReq.id;
+          } else {
+            return res.status(400).json({ success: false, error: 'Your OTP has expired. Please request a new code.' });
+          }
+        }
+      } catch (dbErr) {
+        console.warn('[AUTH_OTP_DB_READ_WARN] Could not fetch OTP from DB:', dbErr.message);
+      }
+    }
 
     if (!stored) {
       return res.status(400).json({ success: false, error: 'No active OTP request found for this email. Please request a new OTP.' });
@@ -121,8 +184,14 @@ router.post('/verify-otp', authLimiter, validate(verifyOtpSchema), async (req, r
       return res.status(400).json({ success: false, error: 'Invalid verification code. Please check the code sent to your email.' });
     }
 
-    // OTP verified! Clear OTP from store
+    // OTP verified! Clear OTP from store and DB
     otpStore.delete(emailLower);
+    try {
+      await prisma.verificationRequest.updateMany({
+        where: { email: emailLower, status: 'CODE_SENT' },
+        data: { status: 'VERIFIED', verificationCode: null }
+      });
+    } catch (_) {}
 
     // Find or auto-provision user
     const institutions = await prisma.institution.findMany();
