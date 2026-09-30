@@ -346,7 +346,7 @@ export default function AppLayout() {
                   fontWeight: 500,
                   cursor: 'pointer',
                 }}
-                onClick={() => { logout(); navigate('/login'); }}
+                onClick={() => { logout(); navigate('/'); }}
               >
                 <LogOut size={15} /> Sign out
               </button>

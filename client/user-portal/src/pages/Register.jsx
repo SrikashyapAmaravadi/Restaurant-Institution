@@ -71,7 +71,7 @@ function GoogleIcon({ size = 15 }) {
 
 export default function Register() {
   const navigate = useNavigate();
-  const { signup, login } = useAuth();
+  const { signup, login, googleLogin } = useAuth();
 
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
@@ -127,13 +127,16 @@ export default function Register() {
     setSubmitted(true);
     setErrorMsg('');
     try {
-      const loggedUser = await login('student@bennett.edu.in', 'student123');
+      const loggedUser = await googleLogin({
+        email: 'student@bennett.edu.in',
+        name: 'Bennett Scholar'
+      });
       try {
         confetti({ particleCount: 70, spread: 60, origin: { y: 0.6 } });
       } catch {}
       navigate(loggedUser?.homePath || '/discover', { replace: true });
-    } catch {
-      navigate('/discover', { replace: true });
+    } catch (err) {
+      setErrorMsg(err.message || 'Google SSO failed. Please try again.');
     } finally {
       setSubmitted(false);
     }

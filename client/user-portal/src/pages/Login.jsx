@@ -42,10 +42,25 @@ function GoogleIcon({ size = 15 }) {
   );
 }
 
+function getAuthorizedDestination(user) {
+  if (!user) return '/discover';
+  const role = user.role;
+  if (role === 'SUPER_ADMIN') {
+    return '/management/superadmin';
+  }
+  if (role === 'RESTAURANT_ADMIN' || role === 'RESTAURANT_STAFF') {
+    return '/management/admin';
+  }
+  if (user.verified === false && user.homePath) {
+    return user.homePath;
+  }
+  return '/discover';
+}
+
 export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { login, sendOtp, verifyOtp } = useAuth();
+  const { login, googleLogin, sendOtp, verifyOtp } = useAuth();
 
   const [authMode, setAuthMode] = useState('OTP'); // 'OTP' | 'PASSWORD'
   const [step, setStep] = useState('EMAIL'); // 'EMAIL' | 'CODE'
@@ -68,6 +83,13 @@ export default function Login() {
 
   const from = location.state?.from?.pathname;
 
+  // Helper to normalize Bennett student emails or roll numbers
+  const normalizeEmail = (val) => {
+    const trimmed = (val || '').trim().toLowerCase();
+    if (!trimmed) return '';
+    return trimmed.includes('@') ? trimmed : `${trimmed}@bennett.edu.in`;
+  };
+
   // Resend countdown timer
   useEffect(() => {
     if (step === 'CODE' && resendTimer > 0) {
@@ -79,17 +101,19 @@ export default function Login() {
   // 1. Handle Send OTP
   const handleSendOtp = async (e) => {
     e?.preventDefault();
-    if (!otpEmail.trim()) {
-      setErrorMsg('Please enter your email address.');
+    const cleanEmail = normalizeEmail(otpEmail);
+    if (!cleanEmail) {
+      setErrorMsg('Please enter your Bennett email or roll number.');
       return;
     }
 
+    setOtpEmail(cleanEmail);
     setSubmitting(true);
     setErrorMsg('');
     setSuccessMsg('');
 
     try {
-      const res = await sendOtp(otpEmail.trim());
+      const res = await sendOtp(cleanEmail);
       if (res && res.otp) {
         setServerOtp(res.otp);
       }
@@ -97,7 +121,7 @@ export default function Login() {
       setOtpCode('');
       setCodeStatus('idle');
       setResendTimer(30);
-      setSuccessMsg(res?.message || `6-digit passkey sent to ${otpEmail.trim()}`);
+      setSuccessMsg(res?.message || `6-digit passkey sent to ${cleanEmail}`);
     } catch (err) {
       setErrorMsg(err.message || 'Failed to send OTP. Please check your institutional email.');
     } finally {
@@ -127,11 +151,12 @@ export default function Login() {
       return;
     }
 
+    const cleanEmail = normalizeEmail(otpEmail);
     setSubmitting(true);
     setErrorMsg('');
 
     try {
-      const loggedUser = await verifyOtp(otpEmail.trim(), code);
+      const loggedUser = await verifyOtp(cleanEmail, code);
       setCodeStatus('success');
       try {
         confetti({ particleCount: 75, spread: 65, origin: { y: 0.6 } });
@@ -140,7 +165,7 @@ export default function Login() {
       }
 
       setTimeout(() => {
-        const destination = from || loggedUser.homePath || '/discover';
+        const destination = from || getAuthorizedDestination(loggedUser);
         navigate(destination, { replace: true });
       }, 700);
     } catch (err) {
@@ -154,20 +179,19 @@ export default function Login() {
   // 5. Handle Traditional Password Login
   const handlePasswordLogin = async (e) => {
     e.preventDefault();
-    if (!pwdEmail || !pwdPass) {
+    const cleanEmail = normalizeEmail(pwdEmail);
+    if (!cleanEmail || !pwdPass) {
       setErrorMsg('Please enter your email and password.');
       return;
     }
     setSubmitting(true);
     setErrorMsg('');
     try {
-      const loggedUser = await login(pwdEmail, pwdPass);
-      const destination = from || loggedUser.homePath || (
-        loggedUser.role === 'SUPER_ADMIN' ? '/management/superadmin' :
-        loggedUser.role === 'RESTAURANT_ADMIN' ? '/management/admin' :
-        loggedUser.role === 'RESTAURANT_STAFF' ? '/management/staff' :
-        '/discover'
-      );
+      const loggedUser = await login(cleanEmail, pwdPass);
+      try {
+        confetti({ particleCount: 65, spread: 60, origin: { y: 0.6 } });
+      } catch {}
+      const destination = from || getAuthorizedDestination(loggedUser);
       navigate(destination, { replace: true });
     } catch (err) {
       setErrorMsg(err.message || 'Invalid email or password. Please verify credentials.');
@@ -181,14 +205,35 @@ export default function Login() {
     setSubmitting(true);
     setErrorMsg('');
     try {
-      const loggedUser = await login('student@bennett.edu.in', 'student123');
+      const loggedUser = await googleLogin({
+        email: 'student@bennett.edu.in',
+        name: 'Bennett Scholar'
+      });
       try {
         confetti({ particleCount: 70, spread: 60, origin: { y: 0.6 } });
       } catch {}
-      const destination = from || loggedUser.homePath || '/discover';
+      const destination = from || getAuthorizedDestination(loggedUser);
       navigate(destination, { replace: true });
-    } catch {
-      navigate('/discover', { replace: true });
+    } catch (err) {
+      setErrorMsg(err.message || 'Bennett Google SSO failed. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // 7. Handle 1-Click Role Sign In
+  const handleQuickRoleLogin = async (email, password) => {
+    setSubmitting(true);
+    setErrorMsg('');
+    try {
+      const loggedUser = await login(email, password);
+      try {
+        confetti({ particleCount: 60, spread: 60, origin: { y: 0.6 } });
+      } catch {}
+      const destination = from || getAuthorizedDestination(loggedUser);
+      navigate(destination, { replace: true });
+    } catch (err) {
+      setErrorMsg(err.message || 'Quick login failed');
     } finally {
       setSubmitting(false);
     }
@@ -317,9 +362,11 @@ export default function Login() {
             <form onSubmit={handleSendOtp} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               <div>
                 <input
-                  type="email"
+                  type="text"
+                  inputMode="email"
+                  autoComplete="email"
                   required
-                  placeholder="Enter your email address"
+                  placeholder="Bennett email or Roll No (e.g. e23cseu1350)"
                   value={otpEmail}
                   onChange={e => setOtpEmail(e.target.value)}
                   disabled={submitting}
@@ -332,7 +379,7 @@ export default function Login() {
                     background: '#FFFFFF',
                     border: '1px solid #E8E2D5',
                     color: '#11120D',
-                    fontSize: '16px',
+                    fontSize: '15px',
                     boxSizing: 'border-box',
                     outline: 'none',
                     touchAction: 'manipulation',
@@ -377,7 +424,7 @@ export default function Login() {
                   </>
                 ) : (
                   <>
-                    <span>Sign in</span>
+                    <span>Sign in with Passkey</span>
                     <ArrowRight size={13} />
                   </>
                 )}
@@ -391,33 +438,43 @@ export default function Login() {
                   style={{
                     background: '#F6F2EA',
                     border: '1px solid #E8E2D5',
-                    borderRadius: 99,
-                    padding: '8px 16px',
-                    marginBottom: 14,
+                    borderRadius: 14,
+                    padding: '10px 14px',
+                    marginBottom: 16,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
                   }}
                 >
-                  <div style={{ fontSize: 11, color: '#565449' }}>
-                    Passkey: <strong style={{ color: '#11120D', letterSpacing: '0.1em' }}>{serverOtp}</strong>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    <span style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#767468' }}>
+                      Institutional Passkey
+                    </span>
+                    <span style={{ fontSize: 16, fontWeight: 700, color: '#11120D', letterSpacing: '0.16em', fontFamily: 'monospace' }}>
+                      {serverOtp}
+                    </span>
                   </div>
                   <button
                     type="button"
                     onClick={handleAutoFillOtp}
+                    disabled={submitting}
                     style={{
-                      background: 'none',
+                      background: '#11120D',
+                      color: '#FFFBF4',
                       border: 'none',
-                      color: '#11120D',
-                      fontSize: 11,
+                      borderRadius: 99,
+                      padding: '7px 13px',
+                      fontSize: 11.5,
                       fontWeight: 600,
                       cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: 4,
+                      gap: 5,
+                      boxShadow: '0 2px 8px rgba(17, 18, 13, 0.15)',
+                      transition: 'all 0.15s ease',
                     }}
                   >
-                    <Zap size={11} /> Auto Fill
+                    <Zap size={12} fill="#FFFBF4" /> Auto Fill &amp; Sign in
                   </button>
                 </div>
               )}
@@ -532,9 +589,11 @@ export default function Login() {
           <form onSubmit={handlePasswordLogin} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div>
               <input
-                type="email"
+                type="text"
+                inputMode="email"
+                autoComplete="email"
                 required
-                placeholder="Enter your email address"
+                placeholder="Enter your email or roll number"
                 value={pwdEmail}
                 onChange={e => setPwdEmail(e.target.value)}
                 disabled={submitting}
@@ -641,86 +700,6 @@ export default function Login() {
             </button>
           </form>
         )}
-
-        {/* ── Divider: ── OR ── ── */}
-        <div
-          className="auth-card-divider"
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            margin: '14px 0 10px',
-          }}
-        >
-          <div style={{ flex: 1, height: 1, background: '#E8E2D5' }} />
-          <span
-            style={{
-              padding: '0 8px',
-              fontSize: 10,
-              fontWeight: 600,
-              color: '#565449',
-              letterSpacing: '0.04em',
-            }}
-          >
-            OR
-          </span>
-          <div style={{ flex: 1, height: 1, background: '#E8E2D5' }} />
-        </div>
-
-        {/* ── Continue with Google (Pill in White with Warm Hairline) ── */}
-        <button
-          type="button"
-          onClick={handleGoogleLogin}
-          disabled={submitting}
-          className="auth-card-btn"
-          style={{
-            width: '100%',
-            padding: '9px 14px',
-            minHeight: 38,
-            borderRadius: 99,
-            background: '#FFFFFF',
-            color: '#11120D',
-            fontSize: 12,
-            fontWeight: 500,
-            border: '1px solid #E8E2D5',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 7,
-            boxShadow: '0 1px 3px rgba(0, 0, 0, 0.04)',
-            touchAction: 'manipulation',
-            transition: 'all 0.15s ease',
-          }}
-          onMouseEnter={e => {
-            e.currentTarget.style.background = '#F6F2EA';
-            e.currentTarget.style.borderColor = '#11120D';
-          }}
-          onMouseLeave={e => {
-            e.currentTarget.style.background = '#FFFFFF';
-            e.currentTarget.style.borderColor = '#E8E2D5';
-          }}
-        >
-          <GoogleIcon size={13} />
-          <span>Continue with Google</span>
-        </button>
-
-        {/* ── Footer Link: Sign Up ── */}
-        <div className="auth-card-footer" style={{ marginTop: 12, textAlign: 'center', fontSize: 11, color: '#565449' }}>
-          Don't have an account?{' '}
-          <Link
-            to="/register"
-            style={{
-              color: '#11120D',
-              fontWeight: 600,
-              textDecoration: 'none',
-              marginLeft: 2,
-            }}
-            onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
-            onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}
-          >
-            Sign up
-          </Link>
-        </div>
       </div>
     </div>
   );

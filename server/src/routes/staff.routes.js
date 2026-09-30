@@ -64,17 +64,28 @@ router.post(
         return res.status(400).json({ success: false, error: 'Staff email is required' });
       }
 
-      const existingUser = await prisma.user.findUnique({ where: { email } });
+      const emailLower = email.toLowerCase().trim();
+      const existingUser = await prisma.user.findUnique({ where: { email: emailLower } });
 
       let staffMember;
       if (existingUser) {
+        const updateData = {
+          restaurantId,
+          role: role === 'RESTAURANT_ADMIN' ? 'RESTAURANT_ADMIN' : 'RESTAURANT_STAFF',
+          roleLabel: role === 'RESTAURANT_ADMIN' ? 'Restaurant Manager & Admin' : 'Front-Desk Host & Service Desk',
+          verified: true,
+          homePath: role === 'RESTAURANT_ADMIN' ? '/management/admin' : '/management/staff'
+        };
+        if (name) updateData.name = name.trim();
+        if (department) updateData.department = department;
+        if (password) {
+          updateData.passwordHash = await bcrypt.hash(password, 10);
+        }
+
         staffMember = await prisma.user.update({
           where: { id: existingUser.id },
-          data: {
-            restaurantId,
-            role: role === 'RESTAURANT_ADMIN' ? 'RESTAURANT_ADMIN' : 'RESTAURANT_STAFF'
-          },
-          select: { id: true, name: true, email: true, role: true, restaurantId: true, verified: true }
+          data: updateData,
+          select: { id: true, name: true, email: true, role: true, restaurantId: true, verified: true, department: true }
         });
       } else {
         if (!password || !name) {
@@ -87,15 +98,18 @@ router.post(
         const hashedPassword = await bcrypt.hash(password, 10);
         staffMember = await prisma.user.create({
           data: {
-            name,
-            email,
+            name: name.trim(),
+            email: emailLower,
             passwordHash: hashedPassword,
             department: department || 'Dining Operations',
             role: role === 'RESTAURANT_ADMIN' ? 'RESTAURANT_ADMIN' : 'RESTAURANT_STAFF',
+            roleLabel: role === 'RESTAURANT_ADMIN' ? 'Restaurant Manager & Admin' : 'Front-Desk Host & Service Desk',
             restaurantId,
-            verified: true
+            verified: true,
+            homePath: role === 'RESTAURANT_ADMIN' ? '/management/admin' : '/management/staff',
+            avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(name.trim())}&background=11120D&color=fff`
           },
-          select: { id: true, name: true, email: true, role: true, restaurantId: true, verified: true }
+          select: { id: true, name: true, email: true, role: true, restaurantId: true, verified: true, department: true }
         });
       }
 

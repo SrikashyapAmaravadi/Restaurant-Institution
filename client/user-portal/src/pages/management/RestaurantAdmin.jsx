@@ -38,7 +38,10 @@ import {
   CheckCircle,
   ExternalLink,
   Receipt,
-  Utensils
+  Utensils,
+  Eye,
+  EyeOff,
+  Key
 } from 'lucide-react';
 
 export default function RestaurantAdmin() {
@@ -479,11 +482,14 @@ export default function RestaurantAdmin() {
   });
 
   const [showStaffModal, setShowStaffModal] = useState(false);
+  const [showStaffPassword, setShowStaffPassword] = useState(false);
   const [staffSaving, setStaffSaving] = useState(false);
+  const [staffSuccessMsg, setStaffSuccessMsg] = useState('');
   const [staffForm, setStaffForm] = useState({
     name: '',
     email: '',
     role: 'RESTAURANT_STAFF',
+    password: '',
     shift: 'Lunch (11:00 AM – 4:00 PM)'
   });
 
@@ -642,19 +648,25 @@ export default function RestaurantAdmin() {
   const handleAddStaff = async (e) => {
     e.preventDefault();
     if (!staffForm.name || !staffForm.email) return;
+    if (!staffForm.password || staffForm.password.length < 6) {
+      alert('Please provide a password of at least 6 characters for the staff account.');
+      return;
+    }
     setStaffSaving(true);
     try {
       const res = await api.staff.assign(restaurant.id, {
         name: staffForm.name,
         email: staffForm.email,
         role: staffForm.role,
-        password: 'password123',
+        password: staffForm.password,
         department: restaurant.name
       });
       if (res?.success && res.data) {
         setStaffList([res.data, ...staffList]);
         setShowStaffModal(false);
-        setStaffForm({ name: '', email: '', role: 'RESTAURANT_STAFF', shift: 'Lunch (11:00 AM – 4:00 PM)' });
+        setStaffSuccessMsg(`Staff credentials created for "${res.data.name}" (${res.data.email}). Login access is ready!`);
+        setTimeout(() => setStaffSuccessMsg(''), 6000);
+        setStaffForm({ name: '', email: '', role: 'RESTAURANT_STAFF', password: '', shift: 'Lunch (11:00 AM – 4:00 PM)' });
       }
     } catch (err) {
       alert('Failed to assign staff member: ' + err.message);
@@ -1811,6 +1823,25 @@ export default function RestaurantAdmin() {
             </button>
           </div>
 
+          {staffSuccessMsg && (
+            <div style={{
+              padding: '10px 14px',
+              borderRadius: 10,
+              background: '#F0FDF4',
+              border: '1px solid #86EFAC',
+              color: '#166534',
+              marginBottom: 16,
+              fontSize: 13,
+              fontWeight: 600,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8
+            }}>
+              <CheckCircle size={16} />
+              <span>{staffSuccessMsg}</span>
+            </div>
+          )}
+
           <div className="table-responsive">
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, textAlign: 'left' }}>
               <thead>
@@ -2386,9 +2417,74 @@ export default function RestaurantAdmin() {
                     value={staffForm.role}
                     onChange={e => setStaffForm({ ...staffForm, role: e.target.value })}
                   >
-                    <option value="RESTAURANT_STAFF">Front-Desk Staff</option>
-                    <option value="RESTAURANT_ADMIN">Restaurant Admin / Manager</option>
+                    <option value="RESTAURANT_STAFF">Front-Desk Staff (Reception &amp; QR Terminal)</option>
+                    <option value="RESTAURANT_ADMIN">Restaurant Admin / Floor Manager</option>
                   </select>
+                </div>
+
+                {/* Staff Credentials Section */}
+                <div style={{
+                  padding: '14px 16px',
+                  borderRadius: 12,
+                  background: '#F9F8F5',
+                  border: '1.5px dashed #D8CFBC',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 10
+                }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <label className="form-label" style={{ margin: 0, fontWeight: 700, color: '#11120D', display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <Key size={14} /> Staff Login Password *
+                    </label>
+                    <button
+                      type="button"
+                      className="btn btn-ghost btn-xs"
+                      style={{ fontSize: 11, color: '#888478', padding: '0 4px', height: 'auto', textDecoration: 'underline' }}
+                      onClick={() => {
+                        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789@#';
+                        let autoPass = '';
+                        for (let i = 0; i < 10; i++) autoPass += chars.charAt(Math.floor(Math.random() * chars.length));
+                        setStaffForm({ ...staffForm, password: autoPass });
+                      }}
+                    >
+                      Generate Password
+                    </button>
+                  </div>
+
+                  <div style={{ position: 'relative' }}>
+                    <input
+                      type={showStaffPassword ? 'text' : 'password'}
+                      className="form-input"
+                      placeholder="Enter staff login password (min 6 characters)"
+                      required
+                      minLength={6}
+                      value={staffForm.password}
+                      onChange={e => setStaffForm({ ...staffForm, password: e.target.value })}
+                      style={{ paddingRight: 40 }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowStaffPassword(!showStaffPassword)}
+                      style={{
+                        position: 'absolute',
+                        right: 10,
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        background: 'transparent',
+                        border: 'none',
+                        color: '#888478',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center'
+                      }}
+                      title={showStaffPassword ? 'Hide password' : 'Show password'}
+                    >
+                      {showStaffPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                  </div>
+                  <div style={{ fontSize: 11, color: '#716E61' }}>
+                    Staff will use their email and this password to sign in at /login.
+                  </div>
                 </div>
               </div>
 
@@ -2397,7 +2493,7 @@ export default function RestaurantAdmin() {
                   Cancel
                 </button>
                 <button type="submit" className="btn btn-primary btn-md" disabled={staffSaving}>
-                  {staffSaving ? 'Assigning...' : 'Assign Staff'}
+                  {staffSaving ? 'Assigning...' : 'Assign Staff Member'}
                 </button>
               </div>
             </form>

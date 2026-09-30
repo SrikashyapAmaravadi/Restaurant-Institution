@@ -472,23 +472,28 @@ router.patch('/restaurants/:id/status', async (req, res) => {
 router.delete('/restaurants/:id', async (req, res) => {
   try {
     const id = parseInt(req.params.id, 10);
-
     const existing = await prisma.restaurant.findUnique({ where: { id } });
 
-    await prisma.restaurant.delete({
-      where: { id }
+    // Soft delete to protect financial, booking, and review audit trails
+    await prisma.restaurant.update({
+      where: { id },
+      data: {
+        isDeleted: true,
+        deletedAt: new Date(),
+        isOpen: false
+      }
     });
 
     await recordAuditLog(req, {
-      action: 'RESTAURANT_DELETED',
+      action: 'RESTAURANT_SOFT_DELETED',
       entityType: 'RESTAURANT',
       entityId: id,
-      details: { name: existing?.name }
+      details: { name: existing?.name || `Restaurant ${id}` }
     });
 
     res.json({
       success: true,
-      message: 'Restaurant deleted successfully.'
+      message: 'Restaurant safely archived/soft-deleted. Historical records and financial ledger preserved.'
     });
   } catch (err) {
     console.error('Delete restaurant error:', err);

@@ -126,12 +126,18 @@ export default function PermissionDeniedState({
         {/* Action CTAs */}
         <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
           <Link
-            to={homePath || '/discover'}
+            to={
+              userRole === 'SUPER_ADMIN'
+                ? '/management/superadmin'
+                : (userRole === 'RESTAURANT_ADMIN' || userRole === 'RESTAURANT_STAFF')
+                ? '/management/admin'
+                : (homePath || '/discover')
+            }
             className="btn btn-primary btn-md cursor-pointer"
             style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}
           >
             <ArrowLeft size={15} />
-            <span>Return to Outlets</span>
+            <span>Go to My Dashboard</span>
           </Link>
 
           {onLogout && (

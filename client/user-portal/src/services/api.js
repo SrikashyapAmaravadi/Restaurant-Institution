@@ -11,6 +11,11 @@ function getAuthHeader() {
 }
 
 function handleOfflineFallback(endpoint, options = {}) {
+  // Authentication, payment, and booking state mutations must NEVER have offline fallbacks or hardcoded credentials
+  if (endpoint.startsWith('/auth') || options.method === 'POST' || options.method === 'PATCH' || options.method === 'DELETE') {
+    return null;
+  }
+
   let body = {};
   if (options.body) {
     try {
@@ -20,341 +25,23 @@ function handleOfflineFallback(endpoint, options = {}) {
     }
   }
 
-  // 1. Auth: Send OTP
-  if (endpoint === '/auth/send-otp') {
-    const email = (body.email || '').toLowerCase().trim();
-    const isValidDomain =
-      email.endsWith('.edu.in') ||
-      email.endsWith('.ac.in') ||
-      email.endsWith('.edu') ||
-      email.includes('@bennett');
-
-    if (!isValidDomain && !email.includes('@')) {
-      throw new Error('Please enter a valid official university email (e.g. @bennett.edu.in)');
-    }
-
-    const sandboxOtp = '482100';
-    try {
-      sessionStorage.setItem(`bennett_otp_${email}`, sandboxOtp);
-    } catch {
-      // ignore storage errors
-    }
-
-    return {
-      success: true,
-      message: `A 6-digit one-time passkey has been issued for ${email}`,
-      otp: sandboxOtp,
-      expiresIn: 600
-    };
-  }
-
-  // 2. Auth: Verify OTP
-  if (endpoint === '/auth/verify-otp') {
-    const email = (body.email || '').toLowerCase().trim();
-    const enteredOtp = (body.otp || '').toString().trim();
-    let storedOtp = '482100';
-    try {
-      storedOtp = sessionStorage.getItem(`bennett_otp_${email}`) || '482100';
-    } catch {
-      // ignore
-    }
-
-    if (enteredOtp !== storedOtp && enteredOtp !== '482100' && enteredOtp !== '123456') {
-      throw new Error('Invalid OTP passkey. Enter the 6-digit code or try 482100.');
-    }
-
-    const cleanName = body.name || email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-    const mockUser = {
-      id: 999,
-      email,
-      name: cleanName,
-      role: 'STUDENT',
-      department: 'Bennett University',
-      verified: true,
-      homePath: '/discover'
-    };
-
-    return {
-      success: true,
-      data: {
-        token: `demo_jwt_token_${Date.now()}`,
-        user: mockUser
-      }
-    };
-  }
-
-  // 3. Auth: Login (Password)
-  if (endpoint === '/auth/login') {
-    const email = (body.email || '').toLowerCase().trim();
-
-    const KNOWN_ACCOUNTS = {
-      'owner@spicegarden.com': {
-        id: 'usr-admin-1',
-        name: 'Vikram Singhania',
-        role: 'RESTAURANT_ADMIN',
-        roleLabel: 'Restaurant Owner & Manager',
-        department: 'The Spice Garden',
-        restaurantId: 1,
-        homePath: '/management/admin'
-      },
-      'staff@spicegarden.com': {
-        id: 'usr-staff-1',
-        name: 'Rajesh Kumar',
-        role: 'RESTAURANT_STAFF',
-        roleLabel: 'Front-Desk Host & Service Desk',
-        department: 'The Spice Garden Front Desk',
-        restaurantId: 1,
-        homePath: '/management/staff'
-      },
-      'superadmin@bennett.edu.in': {
-        id: 'usr-superadmin-1',
-        name: 'Dr. A. K. Sharma',
-        role: 'SUPER_ADMIN',
-        roleLabel: 'Platform Governance & Super Admin',
-        department: 'Office of Dean & Campus Operations',
-        homePath: '/management/superadmin'
-      },
-      'student@bennett.edu.in': {
-        id: 'usr-student-1',
-        name: 'Aarav Sharma',
-        role: 'STUDENT',
-        roleLabel: 'Student / Faculty',
-        department: 'B.Tech CSE - Bennett University',
-        homePath: '/discover'
-      },
-      'sahith@bennett.edu.in': {
-        id: 'usr-student-2',
-        name: 'Sahith',
-        role: 'STUDENT',
-        roleLabel: 'Student / Faculty',
-        department: 'Bennett University',
-        homePath: '/discover'
-      }
-    };
-
-    let userObj = KNOWN_ACCOUNTS[email];
-    if (!userObj) {
-      let role = 'STUDENT';
-      let homePath = '/discover';
-      let roleLabel = 'Student / Faculty';
-      let department = 'Bennett University';
-      let restaurantId = null;
-
-      if (email.includes('superadmin') || email.includes('governance')) {
-        role = 'SUPER_ADMIN';
-        homePath = '/management/superadmin';
-        roleLabel = 'Platform Governance & Super Admin';
-        department = 'Office of Dean & Campus Operations';
-      } else if (email.includes('owner') || email.includes('admin') || email.includes('spicegarden')) {
-        role = 'RESTAURANT_ADMIN';
-        homePath = '/management/admin';
-        roleLabel = 'Restaurant Owner & Manager';
-        department = 'The Spice Garden';
-        restaurantId = 1;
-      } else if (email.includes('staff') || email.includes('host') || email.includes('desk') || email.includes('waiter')) {
-        role = 'RESTAURANT_STAFF';
-        homePath = '/management/staff';
-        roleLabel = 'Front-Desk Host & Service Desk';
-        department = 'The Spice Garden Front Desk';
-        restaurantId = 1;
-      }
-
-      const cleanName = email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-      userObj = {
-        id: `usr-${role.toLowerCase()}-${Date.now()}`,
-        email,
-        name: cleanName,
-        role,
-        roleLabel,
-        department,
-        restaurantId,
-        homePath
-      };
-    }
-
-    const mockUser = {
-      ...userObj,
-      email,
-      institution: 'Bennett University',
-      verified: true
-    };
-
-    return {
-      success: true,
-      data: {
-        token: `demo_jwt_token_${Date.now()}`,
-        user: mockUser
-      }
-    };
-  }
-
-  // 4. Auth: Register
-  if (endpoint === '/auth/register') {
-    const email = (body.email || '').toLowerCase().trim();
-    const role = body.role || 'STUDENT';
-    const mockUser = {
-      id: 777,
-      email,
-      name: body.name || 'New Campus Member',
-      role,
-      department: body.department || 'Bennett University',
-      verified: role === 'STUDENT',
-      homePath: role === 'SUPER_ADMIN' ? '/management/superadmin' :
-        role === 'RESTAURANT_ADMIN' ? '/management/admin' :
-        role === 'RESTAURANT_STAFF' ? '/management/staff' : '/discover'
-    };
-
-    return {
-      success: true,
-      data: {
-        token: `demo_jwt_token_${Date.now()}`,
-        user: mockUser
-      }
-    };
-  }
-
-  // 5. Auth: Me
-  if (endpoint === '/auth/me') {
-    try {
-      const stored = localStorage.getItem('dine_bennett_user');
-      if (stored) {
-        return { success: true, data: { user: JSON.parse(stored) } };
-      }
-    } catch {
-      // ignore
-    }
-    return null;
-  }
-
   // 6. Data Endpoints Fallbacks (Offline & Static Hosting Mode)
   if (endpoint.startsWith('/restaurants')) {
     const singleMatch = endpoint.match(/\/restaurants\/(\d+)/);
-    const spiceGardenMenu = {
-      'Chef Specialties': [
-        {
-          id: 'sg-1',
-          name: 'Smoked Dal Makhani',
-          desc: 'House specialty prepared fresh daily at The Spice Garden. Verified organic black lentils cooked overnight with cultured butter.',
-          price: 180,
-          veg: true,
-          badge: 'House Specialty',
-          image: 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?auto=format&fit=crop&w=600&q=80'
-        },
-        {
-          id: 'sg-2',
-          name: 'Butter Chicken Masala',
-          desc: 'House specialty prepared fresh daily at The Spice Garden. Verified tandoori chicken simmered in rich satin tomato gravy.',
-          price: 215,
-          veg: false,
-          badge: 'Must Try',
-          image: 'https://images.unsplash.com/photo-1588166524941-3bf61a9c41db?auto=format&fit=crop&w=600&q=80'
-        },
-        {
-          id: 'sg-3',
-          name: 'Garlic Butter Naan',
-          desc: 'House specialty prepared fresh daily at The Spice Garden. Verified crispy leavened bread brushed with farm butter and minced garlic.',
-          price: 75,
-          veg: true,
-          badge: 'Popular',
-          image: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=600&q=80'
-        },
-        {
-          id: 'sg-4',
-          name: 'Paneer Tikka Angara',
-          desc: 'House specialty prepared fresh daily at The Spice Garden. Charcoal-smoked cottage cheese cubes marinated in royal Kashmiri chili rub.',
-          price: 280,
-          veg: true,
-          badge: 'Signature',
-          image: 'https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?auto=format&fit=crop&w=600&q=80'
-        },
-        {
-          id: 'sg-5',
-          name: 'Murgh Malai Tikka',
-          desc: 'House specialty prepared fresh daily at The Spice Garden. Cream-marinated tender chicken kebabs finished in clay tandoor.',
-          price: 340,
-          veg: false,
-          badge: 'Chef Special',
-          image: 'https://images.unsplash.com/photo-1599488615731-7e5c2823ff28?auto=format&fit=crop&w=600&q=80'
-        },
-        {
-          id: 'sg-6',
-          name: 'Awadhi Dum Biryani',
-          desc: 'House specialty prepared fresh daily at The Spice Garden. Fragrant aged basmati rice layered with saffron chicken and kewra essence.',
-          price: 360,
-          veg: false,
-          badge: 'Bestseller',
-          image: 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format&fit=crop&w=600&q=80'
-        }
-      ]
-    };
-
-    const allRest = [
-      {
-        id: 1,
-        name: 'The Spice Garden',
-        cuisine: 'North Indian, Mughlai',
-        rating: 4.8,
-        reviews: 142,
-        priceForTwo: 450,
-        location: 'Shop 14, Sector Alpha Commercial, Greater Noida',
-        distance: '0.8 km from Campus',
-        status: 'OPEN',
-        isOpen: true,
-        pureVeg: false,
-        image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=600&q=80',
-        description: 'Authentic royal curries, butter naans, and rich tandoori grills curated for Bennett University students and faculty.',
-        menuByCategory: spiceGardenMenu,
-        menuItems: spiceGardenMenu['Chef Specialties']
-      },
-        {
-          id: 2,
-          name: 'Campus Cafe & Roastery',
-          cuisine: 'Continental, Cafe, Beverages',
-          rating: 4.6,
-          reviews: 98,
-          priceForTwo: 320,
-          location: 'Next to Gate 2, Bennett University Main Road',
-          distance: '0.2 km from Campus',
-          status: 'OPEN',
-          isOpen: true,
-          pureVeg: true,
-          image: 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=600&q=80',
-          description: 'Specialty pour-overs, artisanal pizzas, and quiet booth seating designed for campus study sessions.'
-        },
-        {
-          id: 3,
-          name: 'Green Bowl Organics',
-          cuisine: 'Healthy Bowls, Salads, Smoothies',
-          rating: 4.7,
-          reviews: 64,
-          priceForTwo: 380,
-          location: 'TechZone II Commercial Plaza, Greater Noida',
-          distance: '0.5 km from Campus',
-          status: 'OPEN',
-          isOpen: true,
-          pureVeg: true,
-          image: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=600&q=80',
-          description: 'Wholesome farm-fresh protein bowls, cold pressed juices, and clean eating favorites.'
-        },
-        {
-          id: 4,
-          name: 'Kathi Junction & Shawarma House',
-          cuisine: 'Street Food, Rolls, Fast Food',
-          rating: 4.5,
-          reviews: 120,
-          priceForTwo: 240,
-          location: 'Hostel Outer Ring, Opposite Bennett South Gate',
-          distance: '0.1 km from Campus',
-          status: 'OPEN',
-          isOpen: true,
-          pureVeg: false,
-          image: 'https://images.unsplash.com/photo-1561758033-d89a9ad46330?auto=format&fit=crop&w=600&q=80',
-        }
-      ];
+    let allRest = [];
+    try {
+      allRest = JSON.parse(localStorage.getItem('dine_bennett_restaurants') || '[]');
+    } catch {
+      allRest = [];
+    }
 
     if (singleMatch) {
-      const found = allRest.find(r => r.id === Number(singleMatch[1])) || allRest[0];
-      return { success: true, data: found };
+      const restId = Number(singleMatch[1]);
+      const found = allRest.find(r => Number(r.id) === restId);
+      if (found) {
+        return { success: true, data: found };
+      }
+      return { success: false, error: 'Restaurant not found' };
     }
 
     return {
@@ -534,61 +221,7 @@ function handleOfflineFallback(endpoint, options = {}) {
       } catch {
         // ignore
       }
-      return [
-        {
-          id: 'DB-4821',
-          restaurantId: 1,
-          restaurantName: 'The Spice Garden',
-          guestName: 'Aarav Sharma',
-          guestEmail: 'aarav.sharma@bennett.edu.in',
-          date: new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }),
-          time: '1:30 PM',
-          guests: 2,
-          status: 'CONFIRMED',
-          tableAssigned: 'T-01',
-          specialRequest: 'Window Table · Anniversary',
-          qrCode: 'https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=DB-4821-BENNETT-VERIFIED',
-          orders: [
-            { name: 'Smoked Dal Makhani', price: 180, qty: 1 },
-            { name: 'Garlic Butter Naan', price: 75, qty: 2 }
-          ]
-        },
-        {
-          id: 'DB-4822',
-          restaurantId: 1,
-          restaurantName: 'The Spice Garden',
-          guestName: 'Ananya Verma',
-          guestEmail: 'ananya.verma@bennett.edu.in',
-          date: new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }),
-          time: '2:15 PM',
-          guests: 4,
-          status: 'CONFIRMED',
-          tableAssigned: 'T-02',
-          specialRequest: 'Booth Seating · Team Lunch',
-          qrCode: 'https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=DB-4822-BENNETT-VERIFIED',
-          orders: [
-            { name: 'Butter Chicken Masala', price: 215, qty: 1 },
-            { name: 'Garlic Butter Naan', price: 75, qty: 3 }
-          ]
-        },
-        {
-          id: 'DB-4823',
-          restaurantId: 1,
-          restaurantName: 'The Spice Garden',
-          guestName: 'Rohan Mehta',
-          guestEmail: 'rohan.mehta@bennett.edu.in',
-          date: new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }),
-          time: '3:00 PM',
-          guests: 3,
-          status: 'SEATED',
-          tableAssigned: 'T-04',
-          specialRequest: 'Family Table',
-          qrCode: 'https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=DB-4823-BENNETT-VERIFIED',
-          orders: [
-            { name: 'Awadhi Dum Biryani', price: 360, qty: 2 }
-          ]
-        }
-      ];
+      return [];
     };
 
     const saveStoredBookings = (list) => {
@@ -867,12 +500,15 @@ function handleOfflineFallback(endpoint, options = {}) {
 
   // 9. Staff Fallback
   if (endpoint.includes('/staff')) {
+    let storedStaff = [];
+    try {
+      storedStaff = JSON.parse(localStorage.getItem('dine_bennett_staff') || '[]');
+    } catch {
+      storedStaff = [];
+    }
     return {
       success: true,
-      data: [
-        { id: 'usr-staff-1', name: 'Rajesh Kumar', email: 'staff@spicegarden.com', role: 'RESTAURANT_STAFF', department: 'The Spice Garden Front Desk', verified: true },
-        { id: 'usr-admin-1', name: 'Vikram Singhania', email: 'owner@spicegarden.com', role: 'RESTAURANT_ADMIN', department: 'The Spice Garden', verified: true }
-      ]
+      data: storedStaff
     };
   }
 
@@ -920,6 +556,9 @@ async function request(endpoint, options = {}) {
       headers
     });
   } catch (networkErr) {
+    if (endpoint.startsWith('/auth') || options.method === 'POST' || options.method === 'PATCH' || options.method === 'DELETE') {
+      throw new Error('Unable to connect to Dine@Bennett server. Please verify your network connection.');
+    }
     const fallback = handleOfflineFallback(endpoint, options);
     if (fallback) return fallback;
     throw new Error('Unable to reach the campus dining server. Please verify your connection.');
@@ -930,8 +569,6 @@ async function request(endpoint, options = {}) {
   const isJson = contentType.includes('application/json');
 
   if (!isJson) {
-    const fallback = handleOfflineFallback(endpoint, options);
-    if (fallback) return fallback;
     throw new Error(`Server returned non-JSON response (${response.status})`);
   }
 
@@ -939,14 +576,10 @@ async function request(endpoint, options = {}) {
   try {
     data = await response.json();
   } catch {
-    const fallback = handleOfflineFallback(endpoint, options);
-    if (fallback) return fallback;
     throw new Error('Failed to parse response from server');
   }
 
   if (!response.ok) {
-    const fallback = handleOfflineFallback(endpoint, options);
-    if (fallback) return fallback;
     throw new Error(data?.error || `HTTP ${response.status}: Request failed`);
   }
 
@@ -962,6 +595,8 @@ export const api = {
       request('/auth/send-otp', { method: 'POST', body: JSON.stringify({ email }) }),
     verifyOtp: (email, otp, name) =>
       request('/auth/verify-otp', { method: 'POST', body: JSON.stringify({ email, otp, name }) }),
+    googleLogin: (userData) =>
+      request('/auth/google', { method: 'POST', body: JSON.stringify(userData || {}) }),
     register: (userData) =>
       request('/auth/register', { method: 'POST', body: JSON.stringify(userData) }),
     getMe: () =>

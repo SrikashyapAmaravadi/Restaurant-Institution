@@ -330,46 +330,50 @@ export default function Discover() {
                 marginBottom: 6,
               }}
             >
-              No Restaurants Found
+              {restaurantList.length === 0 ? 'No Partner Outlets Onboarded Yet' : 'No Restaurants Match Criteria'}
             </h3>
             <p
               style={{
                 fontSize: 13,
                 color: '#565449',
-                maxWidth: 400,
+                maxWidth: 420,
                 margin: '0 auto 20px',
                 lineHeight: 1.5,
               }}
             >
-              Try adjusting your radius slider, clearing search keywords, or selecting different cuisines.
+              {restaurantList.length === 0
+                ? 'Super Admin can onboard new dining partner establishments with owner credentials. Newly added restaurants will appear here instantly for students.'
+                : 'Try adjusting your radius slider, clearing search keywords, or selecting different cuisines.'}
             </p>
-            <button
-              type="button"
-              onClick={clearAll}
-              style={{
-                borderRadius: 99,
-                padding: '9px 22px',
-                fontSize: 12.5,
-                fontWeight: 600,
-                background: '#11120D',
-                color: '#FFFBF4',
-                border: '1px solid #11120D',
-                cursor: 'pointer',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 6,
-                transition: 'all 0.2s ease',
-              }}
-              onMouseEnter={e => {
-                e.currentTarget.style.background = '#2A2B23';
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.background = '#11120D';
-              }}
-            >
-              <RotateCcw size={13} />
-              <span>Reset All Filters</span>
-            </button>
+            {restaurantList.length > 0 && (
+              <button
+                type="button"
+                onClick={clearAll}
+                style={{
+                  borderRadius: 99,
+                  padding: '9px 22px',
+                  fontSize: 12.5,
+                  fontWeight: 600,
+                  background: '#11120D',
+                  color: '#FFFBF4',
+                  border: '1px solid #11120D',
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  transition: 'all 0.2s ease',
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.background = '#2A2B23';
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.background = '#11120D';
+                }}
+              >
+                <RotateCcw size={13} />
+                <span>Reset All Filters</span>
+              </button>
+            )}
           </div>
         ) : (
           <div

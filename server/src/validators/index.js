@@ -2,17 +2,17 @@ import { z } from 'zod';
 
 // --- AUTH SCHEMAS ---
 export const sendOtpSchema = z.object({
-  email: z.string().email('Please provide a valid institutional email address')
+  email: z.string().min(2, 'Please provide a valid institutional email or roll number')
 });
 
 export const verifyOtpSchema = z.object({
-  email: z.string().email('Please provide a valid institutional email address'),
+  email: z.string().min(2, 'Please provide a valid institutional email or roll number'),
   otp: z.string().min(6, 'Passkey must be 6 digits').max(6, 'Passkey must be 6 digits'),
   name: z.string().max(80).optional()
 });
 
 export const loginSchema = z.object({
-  email: z.string().email('Please provide a valid email address'),
+  email: z.string().min(2, 'Please provide a valid email or roll number'),
   password: z.string().min(1, 'Password is required').optional(),
   roleHint: z.string().optional()
 });
@@ -20,7 +20,17 @@ export const loginSchema = z.object({
 // --- BOOKING SCHEMAS ---
 export const createBookingSchema = z.object({
   restaurantId: z.coerce.number().int().positive('Valid restaurant ID is required'),
-  date: z.string().min(1, 'Date is required'),
+  date: z.string().min(1, 'Date is required').refine((val) => {
+    const bookingDate = new Date(val);
+    if (isNaN(bookingDate.getTime())) return false;
+    const now = new Date();
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const maxDate = new Date();
+    maxDate.setDate(maxDate.getDate() + 90);
+    return bookingDate >= startOfToday && bookingDate <= maxDate;
+  }, {
+    message: 'Booking date must be between today and the next 90 days'
+  }),
   time: z.string().min(1, 'Time is required'),
   guests: z.coerce.number().int().min(1, 'At least 1 guest required').max(20, 'Maximum 20 guests per table booking'),
   specialRequest: z.string().max(250, 'Special requests cannot exceed 250 characters').optional()

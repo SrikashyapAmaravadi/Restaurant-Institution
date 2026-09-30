@@ -1,7 +1,16 @@
 import jwt from 'jsonwebtoken';
 import prisma from '../config/db.js';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'dine_bennett_super_secret_jwt_key_2026_rbac';
+function getJwtSecret() {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('JWT_SECRET environment variable is missing in production!');
+    }
+    return 'dine_bennett_dev_insecure_secret_key_change_in_production';
+  }
+  return secret;
+}
 
 /**
  * Middleware: Authenticate Bearer JWT Token
@@ -17,20 +26,8 @@ export async function authenticateToken(req, res, next) {
     });
   }
 
-  // Support demo / mock session tokens seamlessly
-  if (token.startsWith('demo_jwt_token_') || token.startsWith('mock_')) {
-    req.user = {
-      id: 'usr-student-1',
-      email: 'student@bennett.edu.in',
-      name: 'Aarav Sharma',
-      role: 'STUDENT',
-      verified: true
-    };
-    return next();
-  }
-
   try {
-    const decoded = jwt.verify(token, JWT_SECRET);
+    const decoded = jwt.verify(token, getJwtSecret());
     let user = null;
     try {
       user = await prisma.user.findUnique({
@@ -79,19 +76,8 @@ export async function optionalAuth(req, res, next) {
     return next();
   }
 
-  if (token.startsWith('demo_jwt_token_') || token.startsWith('mock_')) {
-    req.user = {
-      id: 'usr-student-1',
-      email: 'student@bennett.edu.in',
-      name: 'Aarav Sharma',
-      role: 'STUDENT',
-      verified: true
-    };
-    return next();
-  }
-
   try {
-    const decoded = jwt.verify(token, JWT_SECRET);
+    const decoded = jwt.verify(token, getJwtSecret());
     let user = null;
     try {
       user = await prisma.user.findUnique({
@@ -147,8 +133,8 @@ export function generateToken(user) {
       email: user.email,
       role: user.role
     },
-    JWT_SECRET,
-    { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
+    getJwtSecret(),
+    { expiresIn: process.env.JWT_EXPIRES_IN || '24h' }
   );
 }
 

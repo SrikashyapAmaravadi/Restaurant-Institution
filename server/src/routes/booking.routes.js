@@ -1,136 +1,70 @@
 import { Router } from 'express';
 import prisma from '../config/db.js';
-import { authenticateToken, optionalAuth } from '../middleware/auth.js';
+import { authenticateToken, recordAuditLog } from '../middleware/auth.js';
 import validate from '../middleware/validate.js';
 import { createBookingSchema, cancelBookingSchema } from '../validators/index.js';
+import { generateQrDataUrl } from '../services/qr.service.js';
+import { sendBookingConfirmationEmail } from '../services/email.service.js';
 
 const router = Router();
 
-// Resilient memory store for bookings to bridge Supabase pooler network reconnects
-const inMemoryBookings = [
-  {
-    id: 'DB-4821',
-    restaurantId: 1,
-    restaurantName: 'The Spice Garden',
-    guestName: 'Aarav Sharma',
-    guestEmail: 'aarav.sharma@bennett.edu.in',
-    date: new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }),
-    time: '1:30 PM',
-    guests: 2,
-    status: 'CONFIRMED',
-    tableAssigned: 'T-01',
-    specialRequest: 'Window Table · Anniversary',
-    qrCode: 'https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=DB-4821-BENNETT-VERIFIED',
-    orders: [
-      { name: 'Smoked Dal Makhani', price: 180, quantity: 1 },
-      { name: 'Garlic Butter Naan', price: 75, quantity: 2 }
-    ]
-  },
-  {
-    id: 'DB-4822',
-    restaurantId: 1,
-    restaurantName: 'The Spice Garden',
-    guestName: 'Ananya Verma',
-    guestEmail: 'ananya.verma@bennett.edu.in',
-    date: new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }),
-    time: '2:15 PM',
-    guests: 4,
-    status: 'CONFIRMED',
-    tableAssigned: 'T-02',
-    specialRequest: 'Booth Seating · Team Lunch',
-    qrCode: 'https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=DB-4822-BENNETT-VERIFIED',
-    orders: [
-      { name: 'Butter Chicken Masala', price: 215, quantity: 1 },
-      { name: 'Garlic Butter Naan', price: 75, quantity: 3 }
-    ]
-  },
-  {
-    id: 'DB-4823',
-    restaurantId: 1,
-    restaurantName: 'The Spice Garden',
-    guestName: 'Rohan Mehta',
-    guestEmail: 'rohan.mehta@bennett.edu.in',
-    date: new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }),
-    time: '3:00 PM',
-    guests: 3,
-    status: 'SEATED',
-    tableAssigned: 'T-04',
-    specialRequest: 'Family Table',
-    qrCode: 'https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=DB-4823-BENNETT-VERIFIED',
-    orders: [
-      { name: 'Awadhi Dum Biryani', price: 360, quantity: 2 }
-    ]
-  }
-];
+/**
+ * Helper: Sanitize string against basic XSS
+ */
+function sanitizeInput(str) {
+  if (typeof str !== 'string') return str;
+  return str.replace(/[<>]/g, '').trim();
+}
 
 /**
  * GET /api/bookings
- * Get bookings filtered by user role
+ * Get bookings scoped to authenticated user or restaurant staff tenancy
  */
-router.get('/', optionalAuth, async (req, res) => {
+router.get('/', authenticateToken, async (req, res) => {
   try {
     const user = req.user;
     let whereClause = {};
 
-    if (user) {
-      if (user.role === 'STUDENT') {
-        whereClause = {
-          OR: [
-            { userId: user.id },
-            { guestEmail: user.email }
-          ]
-        };
-      } else if (user.role === 'RESTAURANT_STAFF' || user.role === 'RESTAURANT_ADMIN') {
-        const queryRestId = req.query.restaurantId ? Number(req.query.restaurantId) : null;
-        const userRestId = user.restaurantId ? Number(user.restaurantId) : null;
-        const targetRestId = queryRestId || userRestId;
-        if (targetRestId && req.query.all !== 'true') {
-          whereClause = {
-            restaurantId: targetRestId
-          };
+    if (user.role === 'STUDENT') {
+      whereClause = {
+        OR: [
+          { userId: user.id },
+          { guestEmail: user.email.toLowerCase() }
+        ]
+      };
+    } else if (user.role === 'RESTAURANT_STAFF' || user.role === 'RESTAURANT_ADMIN') {
+      const targetRestId = req.query.restaurantId ? Number(req.query.restaurantId) : Number(user.restaurantId);
+      if (!targetRestId) {
+        return res.status(403).json({ success: false, error: 'Restaurant staff account must be linked to a valid outlet' });
+      }
+      whereClause = { restaurantId: targetRestId };
+    } else if (user.role === 'SUPER_ADMIN') {
+      if (req.query.restaurantId) {
+        whereClause = { restaurantId: Number(req.query.restaurantId) };
+      }
+    } else {
+      return res.status(403).json({ success: false, error: 'Unauthorized role' });
+    }
+
+    const bookings = await prisma.booking.findMany({
+      where: whereClause,
+      include: {
+        orders: true,
+        payment: true,
+        restaurant: {
+          select: { id: true, name: true, image: true, phone: true, address: true }
         }
-      }
-      // SUPER_ADMIN gets all bookings (empty whereClause)
-    }
-
-    let dbBookings = [];
-    try {
-      dbBookings = await prisma.booking.findMany({
-        where: whereClause,
-        include: {
-          orders: true,
-          payment: true
-        },
-        orderBy: { createdAt: 'desc' }
-      });
-    } catch (dbErr) {
-      console.warn('Prisma findMany bookings error, using in-memory cache:', dbErr.message);
-    }
-
-    // Merge in-memory bookings and DB bookings without duplicates
-    const allBookingsMap = new Map();
-    inMemoryBookings.forEach(b => allBookingsMap.set(b.id, b));
-    dbBookings.forEach(b => allBookingsMap.set(b.id, b));
-
-    let mergedList = Array.from(allBookingsMap.values());
-
-    // Apply role-based filtering on merged list
-    if (user && user.role === 'STUDENT') {
-      mergedList = mergedList.filter(b => b.userId === user.id || b.guestEmail?.toLowerCase() === user.email?.toLowerCase());
-    } else if (user && (user.role === 'RESTAURANT_STAFF' || user.role === 'RESTAURANT_ADMIN')) {
-      const filterRestId = req.query.restaurantId ? Number(req.query.restaurantId) : (user.restaurantId ? Number(user.restaurantId) : null);
-      if (filterRestId && req.query.all !== 'true') {
-        mergedList = mergedList.filter(b => Number(b.restaurantId) === filterRestId);
-      }
-    }
+      },
+      orderBy: { createdAt: 'desc' }
+    });
 
     res.json({
       success: true,
-      data: mergedList
+      data: bookings
     });
   } catch (err) {
-    console.warn('Fetch bookings warning, returning in-memory fallback:', err.message);
-    res.json({ success: true, data: inMemoryBookings });
+    console.error('[GET_BOOKINGS_ERROR]', err);
+    res.status(500).json({ success: false, error: 'Failed to fetch bookings: ' + err.message });
   }
 });
 
@@ -138,63 +72,85 @@ router.get('/', optionalAuth, async (req, res) => {
  * GET /api/bookings/my
  * Get current authenticated user's personal bookings
  */
-router.get('/my', optionalAuth, async (req, res) => {
+router.get('/my', authenticateToken, async (req, res) => {
   try {
     const user = req.user;
-    const userEmail = user?.email?.toLowerCase();
-    const userId = user?.id;
-
-    let dbBookings = [];
-    if (userId || userEmail) {
-      try {
-        dbBookings = await prisma.booking.findMany({
-          where: {
-            OR: [
-              ...(userId ? [{ userId }] : []),
-              ...(userEmail ? [{ guestEmail: userEmail }] : [])
-            ]
-          },
-          include: {
-            orders: true,
-            payment: true
-          },
-          orderBy: { createdAt: 'desc' }
-        });
-      } catch (dbErr) {
-        console.warn('Prisma findMany /bookings/my error, using in-memory bookings:', dbErr.message);
-      }
-    }
-
-    // Filter in-memory bookings matching user or default sample bookings
-    const memMatching = inMemoryBookings.filter(b => 
-      (userId && b.userId === userId) ||
-      (userEmail && b.guestEmail?.toLowerCase() === userEmail) ||
-      (!userEmail || userEmail === 'student@bennett.edu.in')
-    );
-
-    const allMap = new Map();
-    memMatching.forEach(b => allMap.set(b.id, b));
-    dbBookings.forEach(b => allMap.set(b.id, b));
+    const bookings = await prisma.booking.findMany({
+      where: {
+        OR: [
+          { userId: user.id },
+          { guestEmail: user.email.toLowerCase() }
+        ]
+      },
+      include: {
+        orders: true,
+        payment: true,
+        restaurant: {
+          select: { id: true, name: true, image: true, address: true, phone: true }
+        }
+      },
+      orderBy: { createdAt: 'desc' }
+    });
 
     res.json({
       success: true,
-      data: Array.from(allMap.values())
+      data: bookings
     });
   } catch (err) {
-    console.error('Fetch my bookings error:', err);
-    res.json({ success: true, data: inMemoryBookings });
+    console.error('[GET_MY_BOOKINGS_ERROR]', err);
+    res.status(500).json({ success: false, error: 'Failed to fetch personal bookings: ' + err.message });
+  }
+});
+
+/**
+ * GET /api/bookings/:id
+ * Retrieve a specific booking with access authorization check
+ */
+router.get('/:id', authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = req.user;
+
+    const booking = await prisma.booking.findUnique({
+      where: { id },
+      include: {
+        orders: true,
+        payment: true,
+        restaurant: true
+      }
+    });
+
+    if (!booking) {
+      return res.status(404).json({ success: false, error: 'Booking reservation not found' });
+    }
+
+    // Access authorization check
+    const isOwner = (booking.userId === user.id || booking.guestEmail.toLowerCase() === user.email.toLowerCase());
+    const isRestStaff = (user.role === 'RESTAURANT_STAFF' || user.role === 'RESTAURANT_ADMIN') && Number(user.restaurantId) === booking.restaurantId;
+    const isSuperAdmin = user.role === 'SUPER_ADMIN';
+
+    if (!isOwner && !isRestStaff && !isSuperAdmin) {
+      return res.status(403).json({ success: false, error: 'Access denied: You do not have permission to view this reservation' });
+    }
+
+    res.json({
+      success: true,
+      data: booking
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, error: 'Failed to retrieve booking: ' + err.message });
   }
 });
 
 /**
  * POST /api/bookings
- * Create a new table reservation with transactional capacity lock
+ * Create a new table reservation with transactional capacity lock & validation
  */
-router.post('/', optionalAuth, validate(createBookingSchema), async (req, res) => {
+router.post('/', authenticateToken, validate(createBookingSchema), async (req, res) => {
   try {
     const {
-      restaurantId = 1,
-      restaurantName = 'The Spice Garden',
+      restaurantId,
+      restaurantName,
       restaurantImage,
       date,
       time,
@@ -207,135 +163,144 @@ router.post('/', optionalAuth, validate(createBookingSchema), async (req, res) =
     } = req.body;
 
     const user = req.user;
-    const finalGuestName = guestName || user?.name || 'Student Diner';
-    const finalGuestEmail = guestEmail || user?.email || 'student@bennett.edu.in';
     const restIdNum = Number(restaurantId);
     const numGuests = Number(guests) || 2;
+    const finalGuestName = sanitizeInput(guestName || user?.name || 'Institutional Diner');
+    const finalGuestEmail = (guestEmail || user?.email).toLowerCase().trim();
+    const cleanSpecialRequest = sanitizeInput(specialRequest || 'Table Reservation');
 
-    let completeBooking = null;
+    // Concurrency-safe capacity lock and booking creation inside a transaction
+    const bookingResult = await prisma.$transaction(async (tx) => {
+      // 1. Fetch restaurant outlet
+      const rest = await tx.restaurant.findUnique({
+        where: { id: restIdNum },
+        include: { tables: true }
+      });
 
-    try {
-      // Concurrency-safe capacity lock and booking creation inside a transaction
-      const bookingResult = await prisma.$transaction(async (tx) => {
-        // 1. Fetch restaurant capacity
-        const rest = await tx.restaurant.findUnique({
-          where: { id: restIdNum },
-          include: { tables: true }
-        });
+      if (!rest) {
+        const err = new Error('Restaurant outlet not found');
+        err.statusCode = 404;
+        throw err;
+      }
 
-        if (!rest) {
-          throw new Error('Restaurant outlet not found');
+      if (!rest.isOpen) {
+        const err = new Error('This restaurant outlet is currently closed for reservations');
+        err.statusCode = 400;
+        throw err;
+      }
+
+      // 2. Strict Capacity Check
+      let targetTable = null;
+      if (tableAssigned) {
+        targetTable = rest.tables?.find(t => t.id === tableAssigned && !t.isOccupied && t.capacity >= numGuests);
+      }
+      if (!targetTable) {
+        // Find best fit table with suitable capacity
+        targetTable = rest.tables?.find(t => !t.isOccupied && t.capacity >= numGuests);
+      }
+
+      if (!targetTable) {
+        const err = new Error(`Capacity full: No available table for ${numGuests} guests at this outlet. Please select another time or smaller group size.`);
+        err.statusCode = 409;
+        throw err;
+      }
+
+      const randomNum = Math.floor(1000 + Math.random() * 9000);
+      const bookingCode = `DB-${randomNum}`;
+      
+      // Generate server-side QR code Data URL (no external dependencies)
+      const qrCode = await generateQrDataUrl(`${bookingCode}-BENNETT-VERIFIED`);
+      const finalImage = restaurantImage || rest.image;
+
+      // 3. Mark table occupied
+      await tx.restaurantTable.update({
+        where: { id: targetTable.id },
+        data: {
+          isOccupied: true,
+          currentGuest: finalGuestName,
+          currentBookingId: bookingCode
         }
+      });
 
-        // 2. Determine target table (either requested, or first available with suitable capacity)
-        let targetTableId = tableAssigned;
-        if (!targetTableId) {
-          const availableTable = rest.tables?.find(t => !t.isOccupied && t.capacity >= numGuests);
-          targetTableId = availableTable ? availableTable.id : `T${restIdNum}-01`;
+      // 4. Create booking record
+      const newBooking = await tx.booking.create({
+        data: {
+          id: bookingCode,
+          restaurantId: restIdNum,
+          restaurantName: rest.name || restaurantName,
+          restaurantImage: finalImage,
+          userId: user.id,
+          guestName: finalGuestName,
+          guestEmail: finalGuestEmail,
+          date,
+          time,
+          guests: numGuests,
+          status: 'CONFIRMED',
+          specialRequest: cleanSpecialRequest,
+          tableAssigned: targetTable.id,
+          qrCode
         }
+      });
 
-        const randomNum = Math.floor(1000 + Math.random() * 9000);
-        const bookingCode = `DB-${randomNum}`;
-        const qrCode = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${bookingCode}-BENNETT-VERIFIED`;
-        const finalImage = restaurantImage || rest.image || 'https://images.unsplash.com/photo-1585937421612-70a008356fbe?auto=format&fit=crop&w=800&q=80';
-
-        // 3. Create booking
-        const newBooking = await tx.booking.create({
-          data: {
-            id: bookingCode,
-            restaurantId: restIdNum,
-            restaurantName: rest.name || restaurantName,
-            restaurantImage: finalImage,
-            userId: user?.id || null,
-            guestName: finalGuestName,
-            guestEmail: finalGuestEmail,
-            date: date || new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }),
-            time: time || '1:30 PM',
-            guests: numGuests,
-            status: 'CONFIRMED',
-            specialRequest: specialRequest || 'Table Pre-Booking',
-            tableAssigned: targetTableId,
-            qrCode
-          }
-        });
-
-        // 4. Create initial orders if provided
-        const initialOrders = orders.length > 0 ? orders : [
-          { name: 'Dal Makhani Bukhara', price: 270, quantity: 1 },
-          { name: 'Garlic Butter Naan', price: 75, quantity: 2 },
-          { name: 'Fresh Mint Lime Soda', price: 90, quantity: 2 }
-        ];
-
+      // 5. Create initial orders if provided
+      if (orders.length > 0) {
         await tx.bookingOrder.createMany({
-          data: initialOrders.map(o => ({
+          data: orders.map(o => ({
             bookingId: newBooking.id,
-            name: o.name,
-            price: Number(o.price),
+            name: sanitizeInput(o.name),
+            price: Number(o.price) || 0,
             quantity: Number(o.quantity || o.qty || 1)
           }))
         });
-
-        return newBooking;
-      });
-
-      // Create in-app notification for student
-      if (user) {
-        try {
-          await prisma.notification.create({
-            data: {
-              userId: user.id,
-              type: 'booking',
-              title: 'Table Reserved Successfully!',
-              body: `Confirmed reservation at ${restaurantName} for ${numGuests} guests on ${bookingResult.date} (${bookingResult.time}). Table ${bookingResult.tableAssigned}.`,
-              read: false
-            }
-          });
-        } catch {
-          // ignore notification error
-        }
       }
 
-      completeBooking = await prisma.booking.findUnique({
-        where: { id: bookingResult.id },
-        include: { orders: true, payment: true }
+      return newBooking;
+    });
+
+    // Send confirmation in-app notification
+    try {
+      await prisma.notification.create({
+        data: {
+          userId: user.id,
+          type: 'booking',
+          title: 'Table Reserved Successfully!',
+          body: `Confirmed reservation at ${bookingResult.restaurantName} for ${numGuests} guests on ${bookingResult.date} at ${bookingResult.time}. Table ${bookingResult.tableAssigned}.`,
+          read: false
+        }
       });
-    } catch (dbErr) {
-      console.warn('Prisma booking creation issue, using memory fallback:', dbErr.message);
+    } catch {
+      // non-fatal
     }
 
-    if (!completeBooking) {
-      const randomNum = Math.floor(1000 + Math.random() * 9000);
-      const bookingCode = `DB-${randomNum}`;
-      completeBooking = {
-        id: bookingCode,
-        restaurantId: restIdNum,
-        restaurantName: restaurantName || 'The Spice Garden',
-        restaurantImage: restaurantImage || 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=600&q=80',
-        userId: user?.id || null,
-        guestName: finalGuestName,
-        guestEmail: finalGuestEmail,
-        date: date || new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }),
-        time: time || '1:30 PM',
-        guests: numGuests,
-        status: 'CONFIRMED',
-        specialRequest: specialRequest || 'Table Pre-Booking',
-        tableAssigned: tableAssigned || 'T-01',
-        qrCode: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${bookingCode}-BENNETT-VERIFIED`,
-        orders: orders.map(o => ({ name: o.name, price: Number(o.price), quantity: Number(o.quantity || o.qty || 1) }))
-      };
-    }
+    // Send confirmation email
+    sendBookingConfirmationEmail({
+      to: finalGuestEmail,
+      name: finalGuestName,
+      booking: bookingResult
+    }).catch(e => console.warn('[BOOKING_EMAIL_ERROR]', e.message));
 
-    // Always keep memory store updated for immediate owner & staff portal visibility
-    inMemoryBookings.unshift(completeBooking);
+    // Audit log
+    await recordAuditLog(req, {
+      action: 'BOOKING_CREATED',
+      entityType: 'BOOKING',
+      entityId: bookingResult.id,
+      details: { restaurantId: restIdNum, guests: numGuests, date, time }
+    });
+
+    const completeBooking = await prisma.booking.findUnique({
+      where: { id: bookingResult.id },
+      include: { orders: true, payment: true }
+    });
 
     res.status(201).json({
       success: true,
-      message: 'Table reservation created successfully!',
+      message: 'Table reservation confirmed successfully!',
       data: completeBooking
     });
   } catch (err) {
-    console.error('Create booking error:', err);
-    res.status(500).json({ success: false, error: 'Booking failed: ' + err.message });
+    console.error('[CREATE_BOOKING_ERROR]', err);
+    const statusCode = err.statusCode || 500;
+    res.status(statusCode).json({ success: false, error: err.message || 'Booking reservation failed' });
   }
 });
 
@@ -343,13 +308,27 @@ router.post('/', optionalAuth, validate(createBookingSchema), async (req, res) =
  * PATCH /api/bookings/:id/cancel
  * Cancel a booking and release table capacity
  */
-router.patch('/:id/cancel', optionalAuth, validate(cancelBookingSchema), async (req, res) => {
+router.patch('/:id/cancel', authenticateToken, validate(cancelBookingSchema), async (req, res) => {
   try {
     const { id } = req.params;
+    const user = req.user;
 
     const booking = await prisma.booking.findUnique({ where: { id } });
     if (!booking) {
-      return res.status(404).json({ success: false, error: 'Booking not found' });
+      return res.status(404).json({ success: false, error: 'Booking reservation not found' });
+    }
+
+    // Authorization: User must be booking owner, restaurant staff, or superadmin
+    const isOwner = (booking.userId === user.id || booking.guestEmail.toLowerCase() === user.email.toLowerCase());
+    const isRestStaff = (user.role === 'RESTAURANT_STAFF' || user.role === 'RESTAURANT_ADMIN') && Number(user.restaurantId) === booking.restaurantId;
+    const isSuperAdmin = user.role === 'SUPER_ADMIN';
+
+    if (!isOwner && !isRestStaff && !isSuperAdmin) {
+      return res.status(403).json({ success: false, error: 'Unauthorized: You can only cancel your own reservations' });
+    }
+
+    if (booking.status === 'CANCELLED' || booking.status === 'COMPLETED') {
+      return res.status(400).json({ success: false, error: `Booking is already ${booking.status.toLowerCase()}` });
     }
 
     const updated = await prisma.booking.update({
@@ -358,77 +337,10 @@ router.patch('/:id/cancel', optionalAuth, validate(cancelBookingSchema), async (
       include: { orders: true, payment: true }
     });
 
-    // Release table if occupied
-    await prisma.restaurantTable.updateMany({
-      where: { currentBookingId: id },
-      data: {
-        isOccupied: false,
-        currentGuest: null,
-        currentBookingId: null
-      }
-    });
-
-    if (req.user) {
-      await prisma.notification.create({
-        data: {
-          userId: req.user.id,
-          type: 'system',
-          title: 'Reservation Cancelled',
-          body: `Your booking ${id} for ${booking.restaurantName} on ${booking.date} has been cancelled.`,
-          read: false
-        }
-      });
-    }
-
-    res.json({
-      success: true,
-      data: updated,
-      message: 'Reservation cancelled successfully. Table capacity released.'
-    });
-  } catch (err) {
-    console.error('Cancel booking error:', err);
-    res.status(500).json({ success: false, error: 'Failed to cancel booking' });
-  }
-});
-
-/**
- * PATCH /api/bookings/:id/status
- * Update booking lifecycle status (CONFIRMED -> SEATED -> CANCELLED)
- */
-router.patch('/:id/status', authenticateToken, async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { status, tableAssigned } = req.body;
-
-    const booking = await prisma.booking.findUnique({ where: { id } });
-    if (!booking) {
-      return res.status(404).json({ success: false, error: 'Booking not found' });
-    }
-
-    const finalTable = tableAssigned || booking.tableAssigned || 'T-04';
-
-    const updated = await prisma.booking.update({
-      where: { id },
-      data: {
-        status,
-        tableAssigned: finalTable
-      },
-      include: { orders: true, payment: true }
-    });
-
-    // If seated, update the floor table
-    if (status === 'SEATED') {
+    // Release table
+    if (booking.tableAssigned) {
       await prisma.restaurantTable.updateMany({
-        where: { id: finalTable },
-        data: {
-          isOccupied: true,
-          currentGuest: booking.guestName,
-          currentBookingId: booking.id
-        }
-      });
-    } else if (status === 'CANCELLED') {
-      await prisma.restaurantTable.updateMany({
-        where: { currentBookingId: booking.id },
+        where: { id: booking.tableAssigned },
         data: {
           isOccupied: false,
           currentGuest: null,
@@ -437,45 +349,170 @@ router.patch('/:id/status', authenticateToken, async (req, res) => {
       });
     }
 
-    // Update in-memory booking cache
-    const memBooking = inMemoryBookings.find(b => b.id === id);
-    if (memBooking) {
-      memBooking.status = status;
-      memBooking.tableAssigned = finalTable;
+    // Notify user
+    if (booking.userId) {
+      await prisma.notification.create({
+        data: {
+          userId: booking.userId,
+          type: 'system',
+          title: 'Reservation Cancelled',
+          body: `Your booking #${id} for ${booking.restaurantName} on ${booking.date} has been cancelled.`,
+          read: false
+        }
+      }).catch(() => {});
     }
+
+    await recordAuditLog(req, {
+      action: 'BOOKING_CANCELLED',
+      entityType: 'BOOKING',
+      entityId: id,
+      details: { cancelledBy: user.id, role: user.role }
+    });
 
     res.json({
       success: true,
+      data: updated,
+      message: 'Reservation cancelled successfully. Table capacity released.'
+    });
+  } catch (err) {
+    console.error('[CANCEL_BOOKING_ERROR]', err);
+    res.status(500).json({ success: false, error: 'Failed to cancel reservation: ' + err.message });
+  }
+});
+
+/**
+ * PATCH /api/bookings/:id/status
+ * Update booking lifecycle status (CONFIRMED -> SEATED -> PAYMENT_PENDING -> COMPLETED -> CANCELLED)
+ * Strictly authorized: Only assigned restaurant staff/admin or superadmin may advance status.
+ * Students may only cancel their own reservations.
+ */
+router.patch('/:id/status', authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status, tableAssigned } = req.body;
+    const user = req.user;
+
+    const allowedStatuses = ['CONFIRMED', 'SEATED', 'PAYMENT_PENDING', 'COMPLETED', 'CANCELLED'];
+    if (!allowedStatuses.includes(status)) {
+      return res.status(400).json({ success: false, error: `Invalid status. Must be one of: ${allowedStatuses.join(', ')}` });
+    }
+
+    const booking = await prisma.booking.findUnique({ where: { id } });
+    if (!booking) {
+      return res.status(404).json({ success: false, error: 'Booking reservation not found' });
+    }
+
+    // Role-based authorization
+    const isOwner = (booking.userId === user.id || booking.guestEmail.toLowerCase() === user.email.toLowerCase());
+    const isStaffOfRestaurant = (user.role === 'RESTAURANT_STAFF' || user.role === 'RESTAURANT_ADMIN') && Number(user.restaurantId) === booking.restaurantId;
+    const isSuperAdmin = user.role === 'SUPER_ADMIN';
+
+    if (user.role === 'STUDENT') {
+      if (!isOwner) {
+        return res.status(403).json({ success: false, error: 'Access denied: You do not own this reservation' });
+      }
+      if (status !== 'CANCELLED') {
+        return res.status(403).json({
+          success: false,
+          error: 'Students may only cancel their reservations. Table seating and completion must be performed by restaurant staff.'
+        });
+      }
+    } else if (!isStaffOfRestaurant && !isSuperAdmin) {
+      return res.status(403).json({
+        success: false,
+        error: 'Forbidden: You do not have permissions to manage bookings for this restaurant'
+      });
+    }
+
+    const finalTable = tableAssigned || booking.tableAssigned;
+
+    const updated = await prisma.booking.update({
+      where: { id },
+      data: {
+        status,
+        ...(finalTable ? { tableAssigned: finalTable } : {})
+      },
+      include: { orders: true, payment: true }
+    });
+
+    // Manage floor table occupancy
+    if (status === 'SEATED') {
+      if (finalTable) {
+        await prisma.restaurantTable.updateMany({
+          where: { id: finalTable },
+          data: {
+            isOccupied: true,
+            currentGuest: booking.guestName,
+            currentBookingId: booking.id
+          }
+        });
+      }
+    } else if (status === 'COMPLETED' || status === 'CANCELLED') {
+      if (booking.tableAssigned) {
+        await prisma.restaurantTable.updateMany({
+          where: { id: booking.tableAssigned },
+          data: {
+            isOccupied: false,
+            currentGuest: null,
+            currentBookingId: null
+          }
+        });
+      }
+    }
+
+    await recordAuditLog(req, {
+      action: `BOOKING_STATUS_${status}`,
+      entityType: 'BOOKING',
+      entityId: id,
+      details: { previousStatus: booking.status, newStatus: status, updatedBy: user.id }
+    });
+
+    res.json({
+      success: true,
+      message: `Reservation status updated to ${status}`,
       data: updated
     });
   } catch (err) {
-    const memBooking = inMemoryBookings.find(b => b.id === req.params.id);
-    if (memBooking) {
-      memBooking.status = req.body.status;
-      if (req.body.tableAssigned) memBooking.tableAssigned = req.body.tableAssigned;
-      return res.json({ success: true, data: memBooking });
-    }
-    res.status(500).json({ success: false, error: err.message });
+    console.error('[STATUS_UPDATE_ERROR]', err);
+    res.status(500).json({ success: false, error: 'Failed to update reservation status: ' + err.message });
   }
 });
 
 /**
  * POST /api/bookings/:id/orders
- * Add kitchen orders to active table tab
+ * Add kitchen orders to active table tab (by diner or restaurant staff)
  */
-router.post('/:id/orders', async (req, res) => {
+router.post('/:id/orders', authenticateToken, async (req, res) => {
   try {
     const { id } = req.params;
     const { name, price, quantity = 1 } = req.body;
+    const user = req.user;
+
+    if (!name || price === undefined) {
+      return res.status(400).json({ success: false, error: 'Item name and price are required' });
+    }
 
     const booking = await prisma.booking.findUnique({ where: { id } });
     if (!booking) {
-      return res.status(404).json({ success: false, error: 'Booking not found' });
+      return res.status(404).json({ success: false, error: 'Booking reservation not found' });
     }
 
-    // Check if order already exists
+    // Authorization check
+    const isOwner = (booking.userId === user.id || booking.guestEmail.toLowerCase() === user.email.toLowerCase());
+    const isStaffOfRest = (user.role === 'RESTAURANT_STAFF' || user.role === 'RESTAURANT_ADMIN') && Number(user.restaurantId) === booking.restaurantId;
+    const isSuperAdmin = user.role === 'SUPER_ADMIN';
+
+    if (!isOwner && !isStaffOfRest && !isSuperAdmin) {
+      return res.status(403).json({ success: false, error: 'Unauthorized to modify orders on this reservation' });
+    }
+
+    if (booking.status === 'COMPLETED' || booking.status === 'CANCELLED') {
+      return res.status(400).json({ success: false, error: `Cannot add orders to a ${booking.status.toLowerCase()} reservation` });
+    }
+
+    const cleanName = sanitizeInput(name);
     const existing = await prisma.bookingOrder.findFirst({
-      where: { bookingId: id, name }
+      where: { bookingId: id, name: cleanName }
     });
 
     if (existing) {
@@ -487,7 +524,7 @@ router.post('/:id/orders', async (req, res) => {
       await prisma.bookingOrder.create({
         data: {
           bookingId: id,
-          name,
+          name: cleanName,
           price: Number(price),
           quantity: Number(quantity)
         }
@@ -496,15 +533,17 @@ router.post('/:id/orders', async (req, res) => {
 
     const updatedBooking = await prisma.booking.findUnique({
       where: { id },
-      include: { orders: true }
+      include: { orders: true, payment: true }
     });
 
     res.json({
       success: true,
+      message: 'Item added to table tab',
       data: updatedBooking
     });
   } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
+    console.error('[ADD_ORDER_ERROR]', err);
+    res.status(500).json({ success: false, error: 'Failed to add order item: ' + err.message });
   }
 });
 

@@ -115,6 +115,30 @@ export function AuthProvider({ children }) {
     }
   };
 
+  // Google SSO simulated login for Bennett University students
+  const googleLogin = async (data) => {
+    setLoading(true);
+    try {
+      const res = await api.auth.googleLogin(data);
+      if (res.success && res.data) {
+        const loggedUser = res.data.user;
+        const token = res.data.token;
+        if (!loggedUser.homePath) {
+          loggedUser.homePath = '/discover';
+        }
+        localStorage.setItem('dine_bennett_token', token);
+        localStorage.setItem('dine_bennett_user', JSON.stringify(loggedUser));
+        setUser(loggedUser);
+        setLoading(false);
+        return loggedUser;
+      }
+      throw new Error(res.error || 'Google login failed');
+    } catch (err) {
+      setLoading(false);
+      throw err;
+    }
+  };
+
   // Sign up action with backend database persistence
   const signup = async (userData) => {
     setLoading(true);
@@ -194,6 +218,7 @@ export function AuthProvider({ children }) {
     isAuthenticated: !!user,
     loading,
     login,
+    googleLogin,
     sendOtp,
     verifyOtp,
     signup,

@@ -34,7 +34,9 @@ router.get('/', async (req, res) => {
   try {
     const { search, cuisine, price, minRating, openOnly, hasOffer, userLat, userLng, maxDist } = req.query;
 
-    const where = {};
+    const where = {
+      isDeleted: false
+    };
 
     if (search) {
       where.OR = [
@@ -76,7 +78,28 @@ router.get('/', async (req, res) => {
       orderBy: { rating: 'desc' }
     });
 
-    let formatted = restaurants.map(formatRestaurant);
+    const restaurantIds = restaurants.map(r => r.id);
+    const owners = await prisma.user.findMany({
+      where: {
+        restaurantId: { in: restaurantIds },
+        role: { in: ['RESTAURANT_ADMIN', 'SUPER_ADMIN'] }
+      },
+      select: { restaurantId: true, email: true, name: true }
+    });
+    const ownerMap = {};
+    owners.forEach(o => {
+      if (!ownerMap[o.restaurantId]) ownerMap[o.restaurantId] = o;
+    });
+
+    let formatted = restaurants.map(r => {
+      const formattedR = formatRestaurant(r);
+      const owner = ownerMap[r.id];
+      if (owner) {
+        formattedR.ownerEmail = owner.email;
+        formattedR.ownerName = owner.name;
+      }
+      return formattedR;
+    });
 
     // Compute server-side Haversine distance if coordinates are provided
     if (userLat && userLng) {
@@ -201,7 +224,7 @@ router.get('/:id', async (req, res) => {
       }
     });
 
-    if (!restaurant) {
+    if (!restaurant || restaurant.isDeleted) {
       return res.status(404).json({ success: false, error: 'Restaurant not found' });
     }
 

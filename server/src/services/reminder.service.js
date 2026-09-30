@@ -7,46 +7,65 @@ import { dispatchNotification } from './notification.service.js';
  */
 export async function checkAndSendReminders() {
   try {
-    const todayStr = new Date().toISOString().split('T')[0];
-
-    // Find active confirmed or seated bookings for today or upcoming
-    const activeBookings = await prisma.booking.findMany({
-      where: {
-        status: { in: ['CONFIRMED', 'SEATED'] }
-      },
-      include: {
-        restaurant: true
-      },
-      take: 50
-    });
-
+    const batchSize = 50;
+    let skip = 0;
+    let hasMore = true;
+    let totalScanned = 0;
     let remindersSent = 0;
 
-    for (const booking of activeBookings) {
-      if (!booking.userId) continue;
-
-      // Check if reminder was already sent in the last 12 hours
-      const existingReminder = await prisma.notification.findFirst({
+    while (hasMore) {
+      const activeBookings = await prisma.booking.findMany({
         where: {
-          userId: booking.userId,
-          title: { contains: `Dining Reminder: ${booking.restaurantName}` }
-        }
+          status: { in: ['CONFIRMED', 'SEATED'] }
+        },
+        include: {
+          restaurant: {
+            select: { name: true }
+          }
+        },
+        skip,
+        take: batchSize,
+        orderBy: { createdAt: 'asc' }
       });
 
-      if (!existingReminder) {
-        await dispatchNotification({
-          userId: booking.userId,
-          type: 'info',
-          title: `Dining Reminder: ${booking.restaurantName}`,
-          body: `Your table reservation #${booking.id} for ${booking.guests} guests is confirmed for ${booking.date} at ${booking.time}. Table: ${booking.tableAssigned || 'T-01'}. Access your digital QR pass anytime in My Bookings.`
+      if (activeBookings.length === 0) {
+        hasMore = false;
+        break;
+      }
+
+      totalScanned += activeBookings.length;
+
+      for (const booking of activeBookings) {
+        if (!booking.userId) continue;
+
+        const existingReminder = await prisma.notification.findFirst({
+          where: {
+            userId: booking.userId,
+            title: { contains: `Dining Reminder: ${booking.restaurantName}` }
+          }
         });
-        remindersSent++;
+
+        if (!existingReminder) {
+          await dispatchNotification({
+            userId: booking.userId,
+            type: 'info',
+            title: `Dining Reminder: ${booking.restaurantName}`,
+            body: `Your table reservation #${booking.id} for ${booking.guests} guests is confirmed for ${booking.date} at ${booking.time}. Table: ${booking.tableAssigned || 'T-01'}. Access your digital QR pass anytime in My Bookings.`
+          });
+          remindersSent++;
+        }
+      }
+
+      if (activeBookings.length < batchSize) {
+        hasMore = false;
+      } else {
+        skip += batchSize;
       }
     }
 
-    console.log(`[REMINDER_SERVICE] Scanned ${activeBookings.length} active bookings, dispatched ${remindersSent} new dining reminders.`);
+    console.log(`[REMINDER_SERVICE] Scanned ${totalScanned} active bookings across batches, dispatched ${remindersSent} new dining reminders.`);
     return {
-      scanned: activeBookings.length,
+      scanned: totalScanned,
       remindersSent
     };
   } catch (err) {

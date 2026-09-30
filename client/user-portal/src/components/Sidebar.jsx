@@ -36,7 +36,7 @@ export default function Sidebar() {
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
+    navigate('/');
   };
 
   const navLinkStyle = (isActive) => ({
@@ -193,24 +193,10 @@ export default function Sidebar() {
               <NavLink
                 to="/management/superadmin"
                 end
-                style={({ isActive }) =>
-                  navLinkStyle(isActive && !location.search.includes('Restaurants'))
-                }
+                style={({ isActive }) => navLinkStyle(isActive)}
               >
                 <Building2 size={17} />
                 <span style={{ flex: 1 }}>Governance</span>
-              </NavLink>
-              <NavLink
-                to="/management/superadmin?tab=Restaurants"
-                style={() =>
-                  navLinkStyle(
-                    location.pathname === '/management/superadmin' &&
-                      location.search.includes('Restaurants')
-                  )
-                }
-              >
-                <Store size={17} />
-                <span style={{ flex: 1 }}>Manage Outlets</span>
               </NavLink>
               <NavLink to="/profile" style={({ isActive }) => navLinkStyle(isActive)}>
                 <User size={17} />

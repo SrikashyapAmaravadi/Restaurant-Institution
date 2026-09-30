@@ -80,25 +80,43 @@ router.post('/', authenticateToken, validate(createReviewSchema), async (req, re
       return res.status(400).json({ success: false, error: 'Rating must be a numeric score between 1 and 5' });
     }
 
-    // Eligibility check: User must have a booking at this restaurant
+    // Eligibility check: User must have completed dining at this restaurant
     const eligibleBooking = await prisma.booking.findFirst({
       where: {
         restaurantId,
         OR: [
           { userId: req.user.id },
-          { guestEmail: req.user.email }
+          { guestEmail: req.user.email.toLowerCase() }
         ],
-        status: { in: ['COMPLETED', 'SEATED', 'CONFIRMED'] }
+        status: { in: ['COMPLETED', 'SEATED'] }
       }
     });
 
-    // Super Admin is exempt from booking check; normal users must have booked
+    // Super Admin is exempt from booking check; normal users must have dined
     if (!eligibleBooking && req.user.role !== 'SUPER_ADMIN') {
       return res.status(403).json({
         success: false,
-        error: 'Verified Review Gate: You must have an active or completed table reservation at this restaurant to submit a review.'
+        error: 'Verified Review Gate: You must have a seated or completed dining session at this restaurant to submit a review.'
       });
     }
+
+    // Duplicate check: Prevent multiple reviews for the same restaurant by the same user
+    const existingReview = await prisma.review.findFirst({
+      where: {
+        restaurantId,
+        userId: req.user.id
+      }
+    });
+
+    if (existingReview && req.user.role !== 'SUPER_ADMIN') {
+      return res.status(409).json({
+        success: false,
+        error: 'You have already submitted a review for this restaurant. Each verified member can submit one review.'
+      });
+    }
+
+    const cleanComment = comment.replace(/[<>]/g, '').trim();
+    const cleanDish = dishTried ? dishTried.replace(/[<>]/g, '').trim() : null;
 
     const review = await prisma.review.create({
       data: {
@@ -108,8 +126,8 @@ router.post('/', authenticateToken, validate(createReviewSchema), async (req, re
         userRole: req.user.role,
         userDept: req.user.department || req.user.rollNumber || 'Bennett Student Body',
         rating: numRating,
-        dishTried: dishTried || null,
-        comment: comment.trim(),
+        dishTried: cleanDish,
+        comment: cleanComment,
         status: 'APPROVED',
         helpfulCount: 0
       }

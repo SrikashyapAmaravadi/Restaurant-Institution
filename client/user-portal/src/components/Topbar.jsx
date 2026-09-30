@@ -18,6 +18,11 @@ export default function Topbar({ onOpenMobileDrawer }) {
   const [searchModalOpen, setSearchModalOpen] = useState(false);
 
   const unreadNotifs = Array.isArray(notifications) ? notifications.filter(n => !n.read).length : 0;
+  const homeUrl = user?.role === 'SUPER_ADMIN'
+    ? '/management/superadmin'
+    : (user?.role === 'RESTAURANT_ADMIN' || user?.role === 'RESTAURANT_STAFF')
+    ? '/management/admin'
+    : '/discover';
 
   return (
     <>
@@ -64,7 +69,7 @@ export default function Topbar({ onOpenMobileDrawer }) {
           {/* Logo — Nivix Dine-In (Mobile only to avoid desktop sidebar duplication) */}
           <div
             className="topbar-logo-mobile"
-            onClick={() => navigate('/discover')}
+            onClick={() => navigate(homeUrl)}
             style={{ display: 'flex', flexDirection: 'column', cursor: 'pointer', flexShrink: 0 }}
           >
             <span
@@ -97,7 +102,7 @@ export default function Topbar({ onOpenMobileDrawer }) {
           {/* Location Picker with Responsive Text */}
           <div
             className="header-location-pill"
-            onClick={() => navigate('/discover')}
+            onClick={() => navigate(homeUrl)}
             style={{
               display: 'flex',
               alignItems: 'center',

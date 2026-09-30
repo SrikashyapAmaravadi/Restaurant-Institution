@@ -7,7 +7,6 @@ import ClickSpark from './components/ClickSpark';
 
 // Auth Pages
 import Login from './pages/Login';
-import Register from './pages/Register';
 import Verify from './pages/Verify';
 import PendingApproval from './pages/PendingApproval';
 import { OfflineBanner } from './components/states';
@@ -24,6 +23,21 @@ import RestaurantAdmin from './pages/management/RestaurantAdmin';
 import StaffPortal from './pages/management/StaffPortal';
 import SuperAdmin from './pages/management/SuperAdmin';
 import Landing from './pages/Landing';
+
+// Role-Aware Dashboard Redirect
+function DashboardRedirect() {
+  const { user, isAuthenticated } = useAuth();
+  if (!isAuthenticated || !user) {
+    return <Navigate to="/login" replace />;
+  }
+  if (user.role === 'SUPER_ADMIN') {
+    return <Navigate to="/management/superadmin" replace />;
+  }
+  if (user.role === 'RESTAURANT_ADMIN' || user.role === 'RESTAURANT_STAFF') {
+    return <Navigate to="/management/admin" replace />;
+  }
+  return <Navigate to="/discover" replace />;
+}
 
 export default function App() {
   return (
@@ -44,16 +58,16 @@ export default function App() {
             <Route path="/landing" element={<Landing />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signin" element={<Navigate to="/login" replace />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/signup" element={<Navigate to="/register" replace />} />
+            <Route path="/register" element={<Navigate to="/login" replace />} />
+            <Route path="/signup" element={<Navigate to="/login" replace />} />
             <Route path="/verify" element={<Verify />} />
             <Route path="/pending-approval" element={<PendingApproval />} />
 
           {/* Authenticated Layout with RBAC Route Gates */}
           <Route element={<AppLayout />}>
 
-            {/* Student & Faculty RBAC Routes */}
-            <Route path="/dashboard" element={<Navigate to="/discover" replace />} />
+            {/* Role-Aware Dashboard Route */}
+            <Route path="/dashboard" element={<DashboardRedirect />} />
             <Route
               path="/discover"
               element={
@@ -123,7 +137,7 @@ export default function App() {
           </Route>
 
           {/* Catch-all fallback */}
-          <Route path="*" element={<Navigate to="/login" replace />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
           </ClickSpark>
       </BrowserRouter>

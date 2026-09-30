@@ -2,8 +2,14 @@ import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { PermissionDeniedState, LoadingState } from './states';
 
+export const getRoleDashboard = (role) => {
+  if (role === 'SUPER_ADMIN') return '/management/superadmin';
+  if (role === 'RESTAURANT_ADMIN' || role === 'RESTAURANT_STAFF') return '/management/admin';
+  return '/discover';
+};
+
 export default function ProtectedRoute({ children, allowedRoles = [] }) {
-  const { user, isAuthenticated, loading, logout } = useAuth();
+  const { user, isAuthenticated, loading } = useAuth();
   const location = useLocation();
 
   if (loading) {
@@ -19,18 +25,10 @@ export default function ProtectedRoute({ children, allowedRoles = [] }) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  // Check RBAC roles
+  // Check RBAC roles: directly redirect to respective dashboard according to user's role
   if (allowedRoles.length > 0 && !allowedRoles.includes(user.role)) {
-    return (
-      <PermissionDeniedState
-        userRole={user.role}
-        allowedRoles={allowedRoles}
-        userName={user.name}
-        userEmail={user.email}
-        homePath={user.homePath || '/discover'}
-        onLogout={logout}
-      />
-    );
+    const targetDashboard = getRoleDashboard(user.role);
+    return <Navigate to={targetDashboard} replace />;
   }
 
   return children;

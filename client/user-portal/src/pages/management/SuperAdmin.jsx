@@ -60,7 +60,7 @@ export default function SuperAdmin() {
     }
   }, [user, navigate]);
 
-  const [activeTab, setActiveTab] = useState('Restaurants');
+  const [activeTab, setActiveTab] = useState('Users');
   const [lastSentInfo, setLastSentInfo] = useState(null);
   const [restaurantsList, setRestaurantsList] = useState(restaurants);
 
@@ -70,7 +70,7 @@ export default function SuperAdmin() {
     const tabParam = params.get('tab');
     if (tabParam) {
       const lower = tabParam.toLowerCase();
-      if (lower === 'restaurants') setActiveTab('Restaurants');
+      if (lower === 'restaurants') setActiveTab('Users');
       else if (lower === 'users') setActiveTab('Users');
       else if (lower === 'clearance') setActiveTab('Clearance');
       else if (lower === 'institutions') setActiveTab('Institutions');
@@ -393,34 +393,63 @@ export default function SuperAdmin() {
     <div className="page-pad">
       {/* Executive Hero Banner */}
       <div className="anim-fade-up dashboard-hero-banner">
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          <div style={{ width: 52, height: 52, borderRadius: 14, background: 'rgba(255, 255, 255, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', border: '1px solid rgba(255, 255, 255, 0.18)' }}>
-            <Building2 size={26} />
-          </div>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-              <span className="status-pill" style={{ background: 'rgba(255, 255, 255, 0.12)', color: '#FFFFFF', border: '1px solid rgba(255, 255, 255, 0.22)', padding: '3px 10px', fontSize: 11 }}>
-                ● Super Admin Governance
-              </span>
-              <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.75)' }}>Institution: Bennett University</span>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            <div style={{ width: 52, height: 52, borderRadius: 14, background: 'rgba(255, 255, 255, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', border: '1px solid rgba(255, 255, 255, 0.18)' }}>
+              <Building2 size={26} />
             </div>
-            <h2 className="font-display" style={{ fontSize: '1.75rem', fontWeight: 800, color: '#fff', margin: '4px 0 2px' }}>
-              Platform Operations &amp; Verification Gate
-            </h2>
-            <div style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.7)' }}>
-              Governed by NIVIXPE PRIVATE LIMITED · PostgreSQL Live Network
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                <span className="status-pill" style={{ background: 'rgba(255, 255, 255, 0.12)', color: '#FFFFFF', border: '1px solid rgba(255, 255, 255, 0.22)', padding: '3px 10px', fontSize: 11 }}>
+                  ● Super Admin Governance
+                </span>
+                <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.75)' }}>Institution: Bennett University</span>
+              </div>
+              <h2 className="font-display" style={{ fontSize: '1.75rem', fontWeight: 800, color: '#fff', margin: '4px 0 2px' }}>
+                Platform Operations &amp; Verification Gate
+              </h2>
+              <div style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.7)' }}>
+                Governed by NIVIXPE PRIVATE LIMITED · PostgreSQL Live Network
+              </div>
             </div>
           </div>
+          <button
+            type="button"
+            onClick={() => setShowAddRestModal(true)}
+            style={{
+              padding: '9px 20px',
+              fontSize: 13,
+              fontWeight: 700,
+              background: '#FFFBF4',
+              color: '#11120D',
+              border: '1px solid #E8E2D5',
+              borderRadius: 99,
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8,
+              cursor: 'pointer',
+              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
+              transition: 'all 0.2s ease',
+              flexShrink: 0
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.background = '#FFFFFF';
+              e.currentTarget.style.transform = 'translateY(-1px)';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.background = '#FFFBF4';
+              e.currentTarget.style.transform = 'none';
+            }}
+          >
+            <Plus size={16} color="#11120D" strokeWidth={2.5} />
+            <span style={{ color: '#11120D', fontWeight: 700, letterSpacing: '0.01em' }}>
+              Onboard Restaurant
+            </span>
+          </button>
         </div>
 
         {/* Tab Switcher Pills */}
         <div className="tabs-scroll-x" style={{ borderTop: '1px solid rgba(255,255,255,0.12)', paddingTop: 16, width: '100%', gap: 8 }}>
-          <button
-            className={`btn-tab-pill ${activeTab === 'Restaurants' ? 'active' : ''}`}
-            onClick={() => setActiveTab('Restaurants')}
-          >
-            <Store size={14} /> Partner Restaurants ({restaurantsList.length})
-          </button>
           <button
             className={`btn-tab-pill ${activeTab === 'Users' ? 'active' : ''}`}
             onClick={() => setActiveTab('Users')}
@@ -465,23 +494,23 @@ export default function SuperAdmin() {
         <div
           className="kpi-card-lux"
           style={{ cursor: 'pointer' }}
-          onClick={() => setActiveTab('Restaurants')}
-          title="Click to view Partner Restaurants"
+          onClick={() => setActiveTab('Users')}
+          title="Click to view User Directory"
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
             <span style={{ fontSize: 11, fontWeight: 800, color: '#565449', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              Partner Restaurants
+              Platform Users
             </span>
             <div style={{ width: 28, height: 28, borderRadius: 8, background: '#F6F2EA', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#11120D' }}>
-              <Store size={14} />
+              <Users size={14} />
             </div>
           </div>
           <div className="font-display" style={{ fontSize: '1.85rem', fontWeight: 800, color: '#11120D', margin: '2px 0 6px' }}>
-            {restaurantsList.length} <span style={{ fontSize: '1rem', fontWeight: 600, color: '#565449' }}>Active</span>
+            {usersList.length} <span style={{ fontSize: '1rem', fontWeight: 600, color: '#565449' }}>Total</span>
           </div>
           <div style={{ fontSize: 11.5, color: '#11120D', display: 'flex', alignItems: 'center', gap: 5, fontWeight: 700 }}>
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#11120D', display: 'inline-block' }}></span>
-            Live PostgreSQL DB →
+            Active RBAC Directory →
           </div>
         </div>
 
@@ -532,74 +561,10 @@ export default function SuperAdmin() {
         </div>
       </div>
 
-      {/* ================= TAB 1: RESTAURANTS ================= */}
-      {activeTab === 'Restaurants' && (
-        <div className="card anim-fade-up delay-2" style={{ padding: 24, background: '#FFFFFF', border: '1px solid #EEF0F3', borderRadius: 16 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18, flexWrap: 'wrap', gap: 12 }}>
-            <div>
-              <h3 className="font-display" style={{ fontSize: '1.3rem', fontWeight: 800, color: '#11120D' }}>
-                Institutional Partner Establishments
-              </h3>
-              <p style={{ fontSize: 12.5, color: '#565449' }}>
-                Authorized dining outlets for Bennett University students and faculty members.
-              </p>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <span className="status-pill">{restaurantsList.length} Outlets Configured</span>
-              <button
-                className="btn-action-admit"
-                style={{ padding: '8px 16px', fontSize: 12 }}
-                onClick={() => setShowAddRestModal(true)}
-              >
-                <Plus size={14} /> Onboard Restaurant
-              </button>
-            </div>
-          </div>
-
-          {restSuccessMsg && (
-            <div style={{ padding: '10px 14px', borderRadius: 10, background: '#F6F2EA', border: '1px solid #CBD5E1', color: '#11120D', marginBottom: 16, fontSize: 13, fontWeight: 600 }}>
-              {restSuccessMsg}
-            </div>
-          )}
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))', gap: 16 }}>
-            {restaurantsList.map(r => (
-              <div key={r.id} className="card hover-lift" style={{ border: '1px solid #EEF0F3', borderRadius: 14, padding: 16, display: 'flex', gap: 14, alignItems: 'flex-start', background: '#FFFFFF', boxShadow: '0 2px 8px rgba(15, 23, 42, 0.03)' }}>
-                <img src={r.image} alt={r.name} style={{ width: 80, height: 80, borderRadius: 10, objectFit: 'cover', flexShrink: 0 }} />
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div style={{ fontWeight: 800, fontSize: 15, color: '#11120D' }}>{r.name}</div>
-                    <span className="status-pill">
-                      {r.isOpen ? '● Open' : '○ Suspended'}
-                    </span>
-                  </div>
-                  <div style={{ fontSize: 12, color: '#565449', margin: '3px 0' }}>{r.cuisine} · {r.price || '₹450 for two'} · {r.hours || '11:00 AM - 11:00 PM'}</div>
-                  <div style={{ fontSize: 11.5, color: '#94A3B8', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{r.address}</div>
-                  {r.ownerEmail && (
-                    <div style={{ fontSize: 11, color: '#166534', fontWeight: 600, marginTop: 4 }}>
-                      Owner Desk: {r.ownerEmail}
-                    </div>
-                  )}
-                  <div style={{ display: 'flex', gap: 8, marginTop: 12, flexWrap: 'wrap' }}>
-                    <button
-                      className="btn-action-dishes"
-                      style={{ padding: '6px 14px', fontSize: 11.5 }}
-                      onClick={() => handleToggleStatus(r.id, r.isOpen)}
-                    >
-                      {r.isOpen ? 'Suspend' : 'Activate'}
-                    </button>
-                    <button
-                      className="btn-action-cancel"
-                      style={{ padding: '6px 12px', fontSize: 11.5 }}
-                      onClick={() => handleDeleteRestaurant(r.id, r.name)}
-                    >
-                      <Trash2 size={12} /> Remove
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+      {restSuccessMsg && (
+        <div style={{ padding: '12px 16px', borderRadius: 12, background: '#F0FDF4', border: '1px solid #86EFAC', color: '#166534', marginBottom: 16, fontSize: 13, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 8 }}>
+          <CheckCircle2 size={16} />
+          <span>{restSuccessMsg}</span>
         </div>
       )}
 
