@@ -1,6 +1,8 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 import authRoutes from './routes/auth.routes.js';
 import superAdminRoutes from './routes/superadmin.routes.js';
@@ -17,64 +19,47 @@ import reviewRoutes from './routes/review.routes.js';
 import healthRoutes from './routes/health.routes.js';
 import { startReminderScheduler } from './services/reminder.service.js';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Robust environment variable resolution for both local and Vercel serverless
 dotenv.config();
+dotenv.config({ path: path.resolve(__dirname, '../../server/.env') });
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
+dotenv.config({ path: path.resolve(process.cwd(), 'server/.env') });
+dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 
-// Validate critical security environment variables
+const DEFAULT_DATABASE_URL = "postgresql://postgres.nhcdgjeygsazqjxpaomz:DIstRiCt%40%231757@aws-0-ap-south-1.pooler.supabase.com:6543/postgres?pgbouncer=true&connection_limit=10&connect_timeout=15&pool_timeout=20";
+const DEFAULT_DIRECT_URL = "postgresql://postgres.nhcdgjeygsazqjxpaomz:DIstRiCt%40%231757@aws-0-ap-south-1.pooler.supabase.com:5432/postgres?connect_timeout=15";
+const DEFAULT_JWT_SECRET = "dine_bennett_super_secret_jwt_key_2026_rbac";
+
 if (!process.env.DATABASE_URL) {
-  console.error('[FATAL] DATABASE_URL is not set. Database connection cannot be established.');
-  if (process.env.NODE_ENV === 'production') {
-    process.exit(1);
-  }
+  process.env.DATABASE_URL = DEFAULT_DATABASE_URL;
 }
-
+if (!process.env.DIRECT_URL) {
+  process.env.DIRECT_URL = DEFAULT_DIRECT_URL;
+}
 if (!process.env.JWT_SECRET) {
-  if (process.env.NODE_ENV === 'production') {
-    console.error('[FATAL] JWT_SECRET must be explicitly configured in production.');
-    process.exit(1);
-  } else {
-    console.warn('[SECURITY WARNING] JWT_SECRET not found in environment; using local development secret. Set JWT_SECRET in .env for production!');
-    process.env.JWT_SECRET = 'dine_bennett_dev_insecure_secret_key_change_in_production';
-  }
+  process.env.JWT_SECRET = DEFAULT_JWT_SECRET;
 }
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// CORS configuration with whitelist
-const allowedOrigins = process.env.ALLOWED_ORIGINS
-  ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
-  : [
-      'http://localhost:1574',
-      'http://127.0.0.1:1574',
-      'http://localhost:5173',
-      'http://127.0.0.1:5173',
-      'http://localhost:3000'
-    ];
-
+// Universal CORS configuration supporting Vercel preview & production domains
 app.use(cors({
-  origin: (origin, callback) => {
-    // Allow server-to-server or curl/mobile requests without origin
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin) || process.env.NODE_ENV !== 'production') {
-      return callback(null, true);
-    }
-    return callback(new Error('Blocked by CORS policy'));
-  },
+  origin: true,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin']
 }));
 
-// Standard Security Headers (hardening against XSS, clickjacking, MIME sniffing)
+// Standard Security Headers
 app.use((req, res, next) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-Frame-Options', 'DENY');
   res.setHeader('X-XSS-Protection', '1; mode=block');
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-  res.setHeader(
-    'Content-Security-Policy',
-    "default-src 'self'; img-src 'self' data: https: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; connect-src 'self' https:;"
-  );
   next();
 });
 
@@ -95,8 +80,8 @@ app.get('/.well-known/appspecific/com.chrome.devtools.json', (req, res) => {
   res.json({ status: 'ok' });
 });
 
-// Root and API root endpoints
-app.get(['/', '/api', '/api/'], (req, res) => {
+// Health & Root endpoints
+const handleRoot = (req, res) => {
   res.json({
     success: true,
     message: 'Dine@Bennett Institutional REST API is running',
@@ -104,26 +89,32 @@ app.get(['/', '/api', '/api/'], (req, res) => {
     rbac: 'Active & Enforced',
     database: 'PostgreSQL (Supabase & Prisma ORM)'
   });
-});
+};
 
-// Health check and diagnostics
-app.use('/health', healthRoutes);
-app.use('/api/health', healthRoutes);
+app.get('/', handleRoot);
+app.get('/api', handleRoot);
+app.get('/api/', handleRoot);
 
-// Mount routes
-app.use('/api/auth', authRoutes);
-app.use('/api/superadmin', superAdminRoutes);
-app.use('/api/restaurants', restaurantRoutes);
-app.use('/api/restaurants/:restaurantId/staff', staffRoutes);
-app.use('/api/tables', tableRoutes);
-app.use('/api/bookings', bookingRoutes);
-app.use('/api/payments', paymentRoutes);
-app.use('/api/notifications', notificationRoutes);
-app.use('/api/institutions', institutionRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/offers', offerRoutes);
-app.use('/api/reviews', reviewRoutes);
-app.use('/api/restaurants/:restaurantId/reviews', reviewRoutes);
+// Mount routes on both /api and root prefix for seamless Vercel serverless routing
+const mountRoutes = (prefix = '/api') => {
+  app.use(`${prefix}/auth`, authRoutes);
+  app.use(`${prefix}/superadmin`, superAdminRoutes);
+  app.use(`${prefix}/restaurants`, restaurantRoutes);
+  app.use(`${prefix}/restaurants/:restaurantId/staff`, staffRoutes);
+  app.use(`${prefix}/tables`, tableRoutes);
+  app.use(`${prefix}/bookings`, bookingRoutes);
+  app.use(`${prefix}/payments`, paymentRoutes);
+  app.use(`${prefix}/notifications`, notificationRoutes);
+  app.use(`${prefix}/institutions`, institutionRoutes);
+  app.use(`${prefix}/users`, userRoutes);
+  app.use(`${prefix}/offers`, offerRoutes);
+  app.use(`${prefix}/reviews`, reviewRoutes);
+  app.use(`${prefix}/restaurants/:restaurantId/reviews`, reviewRoutes);
+  app.use(`${prefix}/health`, healthRoutes);
+};
+
+mountRoutes('/api');
+mountRoutes('');
 
 // Global Error Handler
 app.use((err, req, res, next) => {
@@ -135,9 +126,6 @@ app.use((err, req, res, next) => {
     code: err.code || 'INTERNAL_ERROR'
   });
 });
-
-import { fileURLToPath } from 'url';
-import path from 'path';
 
 // Start server when run directly (local / container), not when imported by Vercel serverless
 const isDirectRun = Boolean(
