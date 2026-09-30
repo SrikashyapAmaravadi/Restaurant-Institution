@@ -113,16 +113,7 @@ function handleOfflineFallback(endpoint, options = {}) {
   if (endpoint.startsWith('/notifications')) {
     return {
       success: true,
-      data: [
-        {
-          id: 'notif-1',
-          title: 'Dining Privilege Active',
-          message: 'Your verified Bennett University student dining status is active with 20% off privileges.',
-          type: 'SYSTEM',
-          read: false,
-          createdAt: new Date().toISOString()
-        }
-      ]
+      data: []
     };
   }
 

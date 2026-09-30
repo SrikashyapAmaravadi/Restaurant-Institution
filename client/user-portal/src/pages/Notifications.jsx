@@ -434,7 +434,7 @@ export default function Notifications() {
                       wordBreak: 'break-word',
                     }}
                   >
-                    {n.body}
+                    {n.body || n.message}
                   </p>
 
                   {/* Contextual Action Button */}
