@@ -1,31 +1,32 @@
 import { Router } from 'express';
 import crypto from 'crypto';
 import prisma from '../config/db.js';
-import { authenticateToken, requireRole, recordAuditLog } from '../middleware/auth.js';
+import { authenticateToken, requireRole, recordAuditLog, userCanOperateRestaurant } from '../middleware/auth.js';
 
 const router = Router();
 
 /**
  * Helper: Calculate bill figures from booking orders
  */
-function calculateBill(booking, overrides = {}) {
-  const subtotal = overrides.subtotal !== undefined
-    ? Number(overrides.subtotal)
-    : (booking.orders || []).reduce((sum, o) => sum + (Number(o.price) || 0) * (Number(o.quantity) || 1), 0);
+function calculateBill(booking, institutionDiscountPercent = 0) {
+  const subtotal = (booking.orders || []).reduce(
+    (sum, o) => sum + (Number(o.price) || 0) * (Number(o.quantity) || 1),
+    0
+  );
+  const percent = Math.min(100, Math.max(0, Number(institutionDiscountPercent) || 0));
+  const discount = Math.round(subtotal * (percent / 100));
+  const tax = Math.round((subtotal - discount) * 0.05);
+  const totalAmount = Math.max(0, subtotal - discount + tax);
+  return { subtotal, discount, tax, totalAmount, discountPercent: percent };
+}
 
-  const discount = overrides.discount !== undefined
-    ? Number(overrides.discount)
-    : Math.round(subtotal * 0.20); // 20% institutional student discount
-
-  const tax = overrides.tax !== undefined
-    ? Number(overrides.tax)
-    : Math.round((subtotal - discount) * 0.05); // 5% GST
-
-  const totalAmount = overrides.totalAmount !== undefined
-    ? Number(overrides.totalAmount)
-    : Math.max(0, subtotal - discount + tax);
-
-  return { subtotal, discount, tax, totalAmount };
+async function institutionDiscountForUser(userId) {
+  if (!userId) return 0;
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    include: { institutionRecord: true }
+  });
+  return user?.institutionRecord?.discountPercent || 0;
 }
 
 /**
@@ -53,57 +54,53 @@ router.post('/create-order', authenticateToken, async (req, res) => {
       return res.status(403).json({ success: false, error: 'Access denied: You cannot checkout another user reservation' });
     }
 
-    const { subtotal, discount, tax, totalAmount } = calculateBill(booking);
+    const discountPercent = await institutionDiscountForUser(booking.userId);
+    const { subtotal, discount, tax, totalAmount } = calculateBill(booking, discountPercent);
     const amountInPaise = Math.round(totalAmount * 100);
 
     const keyId = process.env.RAZORPAY_KEY_ID;
     const keySecret = process.env.RAZORPAY_KEY_SECRET;
+    if (!keyId || !keySecret) {
+      return res.status(503).json({
+        success: false,
+        error: 'Online payments are not configured. Pay at the restaurant via UPI QR or ask staff to settle cash.'
+      });
+    }
 
-    let orderId = `order_${bookingId.replace(/[^a-zA-Z0-9]/g, '')}_${Date.now()}`;
-    let isLiveGateway = false;
-
-    if (keyId && keySecret) {
-      try {
-        const authHeader = 'Basic ' + Buffer.from(`${keyId}:${keySecret}`).toString('base64');
-        const rzResponse = await fetch('https://api.razorpay.com/v1/orders', {
-          method: 'POST',
-          headers: {
-            'Authorization': authHeader,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            amount: amountInPaise,
-            currency: 'INR',
-            receipt: booking.id,
-            notes: {
-              restaurantName: booking.restaurantName,
-              guestName: booking.guestName,
-              guestEmail: booking.guestEmail
-            }
-          })
-        });
-
-        const rzData = await rzResponse.json();
-        if (rzResponse.ok && rzData.id) {
-          orderId = rzData.id;
-          isLiveGateway = true;
-        } else {
-          console.warn('[RAZORPAY_ORDER_FALLBACK]', rzData);
+    const authHeader = 'Basic ' + Buffer.from(`${keyId}:${keySecret}`).toString('base64');
+    const rzResponse = await fetch('https://api.razorpay.com/v1/orders', {
+      method: 'POST',
+      headers: {
+        'Authorization': authHeader,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        amount: amountInPaise,
+        currency: 'INR',
+        receipt: booking.id,
+        notes: {
+          restaurantName: booking.restaurantName,
+          guestName: booking.guestName,
+          guestEmail: booking.guestEmail
         }
-      } catch (gatewayErr) {
-        console.warn('[RAZORPAY_NETWORK_ISSUE] Using resilient sandbox order:', gatewayErr.message);
-      }
+      })
+    });
+
+    const rzData = await rzResponse.json();
+    if (!rzResponse.ok || !rzData.id) {
+      console.error('[RAZORPAY_ORDER_FAIL]', rzData);
+      return res.status(502).json({ success: false, error: 'Payment gateway rejected the order' });
     }
 
     res.json({
       success: true,
       data: {
-        orderId,
+        orderId: rzData.id,
         amount: totalAmount,
         amountInPaise,
         currency: 'INR',
-        keyId: keyId || 'rzp_test_campus_dining_sandbox',
-        isLiveGateway,
+        keyId,
+        isLiveGateway: true,
         booking: {
           id: booking.id,
           restaurantName: booking.restaurantName,
@@ -146,28 +143,34 @@ router.post('/verify-signature', authenticateToken, async (req, res) => {
     }
 
     const keySecret = process.env.RAZORPAY_KEY_SECRET;
-
-    // Verify HMAC-SHA256 signature if credentials configured
-    if (keySecret && razorpay_order_id && razorpay_signature) {
-      const generatedSignature = crypto
-        .createHmac('sha256', keySecret)
-        .update(`${razorpay_order_id}|${razorpay_payment_id}`)
-        .digest('hex');
-
-      const isSignatureValid = crypto.timingSafeEqual(
-        Buffer.from(generatedSignature),
-        Buffer.from(razorpay_signature)
-      );
-
-      if (!isSignatureValid) {
-        return res.status(400).json({
-          success: false,
-          error: 'Cryptographic signature verification failed: Payment may be tampered'
-        });
-      }
+    if (!keySecret || !razorpay_order_id || !razorpay_signature) {
+      return res.status(400).json({
+        success: false,
+        error: 'Payment signature is required'
+      });
     }
 
-    const { subtotal, discount, tax, totalAmount } = calculateBill(booking);
+    const generatedSignature = crypto
+      .createHmac('sha256', keySecret)
+      .update(`${razorpay_order_id}|${razorpay_payment_id}`)
+      .digest('hex');
+
+    const isSignatureValid =
+      generatedSignature.length === String(razorpay_signature).length &&
+      crypto.timingSafeEqual(
+        Buffer.from(generatedSignature),
+        Buffer.from(String(razorpay_signature))
+      );
+
+    if (!isSignatureValid) {
+      return res.status(400).json({
+        success: false,
+        error: 'Cryptographic signature verification failed: Payment may be tampered'
+      });
+    }
+
+    const discountPercent = await institutionDiscountForUser(booking.userId);
+    const { subtotal, discount, tax, totalAmount } = calculateBill(booking, discountPercent);
 
     // Save payment record
     const payment = await prisma.payment.upsert({
@@ -265,11 +268,7 @@ router.post(
     try {
       const { bookingId } = req.params;
       const {
-        method = 'CASH', // CASH | CARD | UPI
-        subtotal,
-        discount,
-        tax,
-        totalAmount,
+        method = 'CASH',
         details = {}
       } = req.body;
 
@@ -290,24 +289,21 @@ router.post(
       }
 
       // Enforce Restaurant Staff Tenancy Check
-      const isStaffOfOutlet =
-        (req.user.role === 'RESTAURANT_STAFF' || req.user.role === 'RESTAURANT_ADMIN') &&
-        Number(req.user.restaurantId) === booking.restaurantId;
-      const isSuperAdmin = req.user.role === 'SUPER_ADMIN';
-
-      if (!isStaffOfOutlet && !isSuperAdmin) {
+      const isStaffOfOutlet = await userCanOperateRestaurant(req.user, booking.restaurantId);
+      if (!isStaffOfOutlet) {
         return res.status(403).json({
           success: false,
           error: 'Forbidden: You can only settle bills for tables in your assigned restaurant outlet'
         });
       }
 
+      const discountPercent = await institutionDiscountForUser(booking.userId);
       const {
         subtotal: calcSubtotal,
         discount: calcDiscount,
         tax: calcTax,
         totalAmount: finalAmount
-      } = calculateBill(booking, { subtotal, discount, tax, totalAmount });
+      } = calculateBill(booking, discountPercent);
 
       const txnId = `TXN-${method}-${Date.now().toString().slice(-6)}-${Math.floor(100 + Math.random() * 900)}`;
 
@@ -436,10 +432,9 @@ router.get('/:bookingId', authenticateToken, async (req, res) => {
 
     // Access authorization check
     const isOwner = (payment.booking.userId === user.id || payment.booking.guestEmail.toLowerCase() === user.email.toLowerCase());
-    const isStaffOfOutlet = (user.role === 'RESTAURANT_STAFF' || user.role === 'RESTAURANT_ADMIN') && Number(user.restaurantId) === payment.booking.restaurantId;
-    const isSuperAdmin = user.role === 'SUPER_ADMIN';
+    const isStaffOfOutlet = await userCanOperateRestaurant(user, payment.booking.restaurantId);
 
-    if (!isOwner && !isStaffOfOutlet && !isSuperAdmin) {
+    if (!isOwner && !isStaffOfOutlet) {
       return res.status(403).json({ success: false, error: 'Access denied: You do not have permission to view this receipt' });
     }
 

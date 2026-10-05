@@ -10,6 +10,9 @@ async function main() {
   await prisma.payment.deleteMany();
   await prisma.bookingOrder.deleteMany();
   await prisma.booking.deleteMany();
+  await prisma.availabilitySlot.deleteMany().catch(() => {});
+  await prisma.restaurantMember.deleteMany().catch(() => {});
+  await prisma.refreshToken.deleteMany().catch(() => {});
   await prisma.review.deleteMany();
   await prisma.offer.deleteMany();
   await prisma.menuItem.deleteMany();
@@ -29,6 +32,8 @@ async function main() {
       name: 'Bennett University',
       domain: '@bennett.edu.in',
       location: 'Plot 8-11, TechZone II, Greater Noida, UP 201310',
+      type: 'UNIVERSITY',
+      discountPercent: 20,
       activeUsers: 3420,
       partnerRestaurants: 0,
       status: 'ACTIVE',
@@ -42,6 +47,8 @@ async function main() {
       name: 'Shiv Nadar University',
       domain: '@snu.edu.in',
       location: 'NH91, Tehsil Dadri, Gautam Buddha Nagar, UP 203207',
+      type: 'UNIVERSITY',
+      discountPercent: 10,
       activeUsers: 1840,
       partnerRestaurants: 0,
       status: 'PILOT',
@@ -65,6 +72,7 @@ async function main() {
       roleLabel: 'Platform Governance & Super Admin',
       department: 'Office of Dean & Campus Operations',
       institution: 'Bennett University',
+      institutionId: 'inst-1',
       avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=150&q=80',
       verified: true,
       homePath: '/management/superadmin'
@@ -83,6 +91,7 @@ async function main() {
       department: 'B.Tech CSE · 2nd Year',
       rollNumber: 'BU24CSE0082',
       institution: 'Bennett University',
+      institutionId: 'inst-1',
       avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
       verified: true,
       homePath: '/dashboard'
@@ -101,6 +110,7 @@ async function main() {
       department: 'B.Tech Computer Science · 2nd Year',
       rollNumber: 'BU24CSE0001',
       institution: 'Bennett University',
+      institutionId: 'inst-1',
       avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
       verified: true,
       homePath: '/dashboard'
@@ -119,6 +129,7 @@ async function main() {
       department: 'B.Tech CSE · 1st Year',
       rollNumber: 'BU25CSE0114',
       institution: 'Bennett University',
+      institutionId: 'inst-1',
       avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=150&q=80',
       verified: false,
       homePath: '/verify'
@@ -137,6 +148,7 @@ async function main() {
       department: 'Dept of Biotechnology & Sciences',
       rollNumber: 'FAC-BIO-104',
       institution: 'Bennett University',
+      institutionId: 'inst-1',
       avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80',
       verified: false,
       homePath: '/verify'

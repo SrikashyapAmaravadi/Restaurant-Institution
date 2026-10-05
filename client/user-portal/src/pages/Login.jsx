@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
-import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import confetti from 'canvas-confetti';
 import GlacierDoodleBackground from '../components/GlacierDoodleBackground';
@@ -10,37 +10,12 @@ import {
   Loader2,
   CheckCircle2,
   RotateCcw,
-  Zap,
   ArrowRight,
   GraduationCap,
   Shield
 } from 'lucide-react';
 
 
-
-/* ── Google Multi-Color Icon ── */
-function GoogleIcon({ size = 15 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
-      <path
-        fill="#EA4335"
-        d="M12 5c1.6 0 3 .6 4.1 1.7l3.1-3.1C17.3 1.8 14.8 1 12 1 7.4 1 3.5 3.6 1.6 7.4l3.7 2.9C6.2 7.3 8.9 5 12 5z"
-      />
-      <path
-        fill="#4285F4"
-        d="M23.5 12.3c0-.8-.1-1.7-.2-2.3H12v4.6h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.9z"
-      />
-      <path
-        fill="#FBBC05"
-        d="M5.3 14.7c-.2-.7-.4-1.5-.4-2.3 0-.8.2-1.6.4-2.3L1.6 7.2C.6 9.2 0 11.5 0 14s.6 4.8 1.6 6.8l3.7-2.9c-.3-.7-.6-1.5-.6-3.2z"
-      />
-      <path
-        fill="#34A853"
-        d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3.1 0-5.8-2.3-6.7-5.3L1.6 16C3.5 19.8 7.4 23 12 23z"
-      />
-    </svg>
-  );
-}
 
 function getAuthorizedDestination(user) {
   if (!user) return '/discover';
@@ -60,7 +35,7 @@ function getAuthorizedDestination(user) {
 export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { login, googleLogin, sendOtp, verifyOtp } = useAuth();
+  const { login, sendOtp, verifyOtp } = useAuth();
 
   const [authMode, setAuthMode] = useState('OTP'); // 'OTP' | 'PASSWORD'
   const [step, setStep] = useState('EMAIL'); // 'EMAIL' | 'CODE'
@@ -69,8 +44,9 @@ export default function Login() {
   const [otpEmail, setOtpEmail] = useState('');
   const [otpCode, setOtpCode] = useState('');
   const [codeStatus, setCodeStatus] = useState('idle'); // 'idle' | 'error' | 'success'
-  const [serverOtp, setServerOtp] = useState('');
   const [resendTimer, setResendTimer] = useState(30);
+  // Dev-only: server echoes OTP in JSON when OTP_ECHO=true and SMTP is unset
+  const [devOtp, setDevOtp] = useState('');
 
   // Password Flow State
   const [pwdEmail, setPwdEmail] = useState('');
@@ -114,28 +90,22 @@ export default function Login() {
 
     try {
       const res = await sendOtp(cleanEmail);
-      if (res && res.otp) {
-        setServerOtp(res.otp);
-      }
       setStep('CODE');
       setOtpCode('');
       setCodeStatus('idle');
       setResendTimer(30);
       setSuccessMsg(res?.message || `6-digit passkey sent to ${cleanEmail}`);
+      // Dev-only auto-fill: server echoes OTP when OTP_ECHO=true and SMTP is unset
+      if (res?.devOtp) {
+        setDevOtp(String(res.devOtp));
+        setOtpCode(String(res.devOtp));
+      } else {
+        setDevOtp('');
+      }
     } catch (err) {
       setErrorMsg(err.message || 'Failed to send OTP. Please check your institutional email.');
     } finally {
       setSubmitting(false);
-    }
-  };
-
-  // 2. Auto-fill detected OTP
-  const handleAutoFillOtp = () => {
-    if (serverOtp) {
-      setOtpCode(serverOtp);
-      setCodeStatus('idle');
-      setErrorMsg('');
-      handleVerifyOtp(serverOtp);
     }
   };
 
@@ -196,45 +166,6 @@ export default function Login() {
       navigate(destination, { replace: true });
     } catch (err) {
       setErrorMsg(err.message || 'Invalid email or password. Please verify credentials.');
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  // 6. Handle Google Login Shortcut (Simulated Bennett SSO)
-  const handleGoogleLogin = async () => {
-    setSubmitting(true);
-    setErrorMsg('');
-    try {
-      const loggedUser = await googleLogin({
-        email: 'student@bennett.edu.in',
-        name: 'Bennett Scholar'
-      });
-      try {
-        confetti({ particleCount: 70, spread: 60, origin: { y: 0.6 } });
-      } catch {}
-      const destination = from || getAuthorizedDestination(loggedUser);
-      navigate(destination, { replace: true });
-    } catch (err) {
-      setErrorMsg(err.message || 'Bennett Google SSO failed. Please try again.');
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  // 7. Handle 1-Click Role Sign In
-  const handleQuickRoleLogin = async (email, password) => {
-    setSubmitting(true);
-    setErrorMsg('');
-    try {
-      const loggedUser = await login(email, password);
-      try {
-        confetti({ particleCount: 60, spread: 60, origin: { y: 0.6 } });
-      } catch {}
-      const destination = from || getAuthorizedDestination(loggedUser);
-      navigate(destination, { replace: true });
-    } catch (err) {
-      setErrorMsg(err.message || 'Quick login failed');
     } finally {
       setSubmitting(false);
     }
@@ -434,52 +365,6 @@ export default function Login() {
           ) : (
             /* OTP Verification Step */
             <div>
-              {serverOtp && (
-                <div
-                  style={{
-                    background: '#F6F2EA',
-                    border: '1px solid #E8E2D5',
-                    borderRadius: 14,
-                    padding: '10px 14px',
-                    marginBottom: 16,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                  }}
-                >
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                    <span style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#767468' }}>
-                      Institutional Passkey
-                    </span>
-                    <span style={{ fontSize: 16, fontWeight: 700, color: '#11120D', letterSpacing: '0.16em', fontFamily: 'monospace' }}>
-                      {serverOtp}
-                    </span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={handleAutoFillOtp}
-                    disabled={submitting}
-                    style={{
-                      background: '#11120D',
-                      color: '#FFFBF4',
-                      border: 'none',
-                      borderRadius: 99,
-                      padding: '7px 13px',
-                      fontSize: 11.5,
-                      fontWeight: 600,
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 5,
-                      boxShadow: '0 2px 8px rgba(17, 18, 13, 0.15)',
-                      transition: 'all 0.15s ease',
-                    }}
-                  >
-                    <Zap size={12} fill="#FFFBF4" /> Auto Fill &amp; Sign in
-                  </button>
-                </div>
-              )}
-
               <form onSubmit={handleVerifyOtp}>
                 <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
                   <CodeSlots
@@ -511,6 +396,46 @@ export default function Login() {
                     cascade={20}
                   />
                 </div>
+
+                {/* Dev-only OTP helper — never visible in production (server omits devOtp when NODE_ENV=production) */}
+                {devOtp && (
+                  <div style={{
+                    margin: '0 0 12px',
+                    padding: '10px 14px',
+                    borderRadius: 10,
+                    background: '#FFFBEA',
+                    border: '1.5px dashed #D97706',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: 10,
+                    fontSize: 12,
+                  }}>
+                    <span style={{ color: '#92400E', fontWeight: 500 }}>
+                      🛠 Dev — OTP: <strong style={{ fontFamily: 'monospace', letterSpacing: 3, fontSize: 14 }}>{devOtp}</strong>
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setOtpCode(devOtp);
+                        setCodeStatus('idle');
+                      }}
+                      style={{
+                        padding: '4px 10px',
+                        borderRadius: 6,
+                        background: '#D97706',
+                        color: '#fff',
+                        border: 'none',
+                        fontSize: 11,
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        flexShrink: 0,
+                      }}
+                    >
+                      Use code
+                    </button>
+                  </div>
+                )}
 
                 <button
                   type="submit"

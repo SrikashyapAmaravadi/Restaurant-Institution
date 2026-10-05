@@ -19,6 +19,7 @@ model User {
   department    String?
   rollNumber    String?
   institution   String?  @default("Bennett University")
+  institutionId String?
   avatar        String?
   verified      Boolean  @default(false)
   homePath      String?  @default("/dashboard")
@@ -26,10 +27,13 @@ model User {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  bookings      Booking[]
-  notifications Notification[]
-  verifications VerificationRequest[]
-  reviews       Review[]
+  institutionRecord Institution? @relation(fields: [institutionId], references: [id], onDelete: SetNull)
+  bookings          Booking[]
+  notifications     Notification[]
+  verifications     VerificationRequest[]
+  reviews           Review[]
+  refreshTokens     RefreshToken[]
+  memberships       RestaurantMember[]
 }
 
 model Institution {
@@ -37,27 +41,81 @@ model Institution {
   name               String
   domain             String   @unique
   location           String
+  type               String   @default("UNIVERSITY") // UNIVERSITY | ENTERPRISE
+  discountPercent    Int      @default(0)
   activeUsers        Int      @default(0)
   partnerRestaurants Int      @default(0)
   status             String   @default("ACTIVE") // ACTIVE | PILOT | INACTIVE
   isPrimary          Boolean  @default(false)
   createdAt          DateTime @default(now())
+
+  users User[]
 }
 
 model VerificationRequest {
-  id               String   @id @default(uuid())
+  id               String    @id @default(uuid())
   userId           String?
   name             String
   email            String
   role             String
   idProof          String
-  submitted        String   @default("Just now")
-  status           String   @default("PENDING") // PENDING | CODE_SENT | VERIFIED
+  submitted        String    @default("Just now")
+  status           String    @default("PENDING") // PENDING | CODE_SENT | VERIFIED
   verificationCode String?
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  codeHash         String?
+  expiresAt        DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 
-  user             User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([email])
+}
+
+model RefreshToken {
+  id         String    @id @default(uuid())
+  userId     String
+  tokenHash  String    @unique
+  expiresAt  DateTime
+  revokedAt  DateTime?
+  createdAt  DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model RestaurantMember {
+  id           String   @id @default(uuid())
+  restaurantId Int
+  userId       String
+  role         String
+  status       String   @default("ACTIVE")
+  createdAt    DateTime @default(now())
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([restaurantId, userId])
+  @@index([userId])
+}
+
+model AvailabilitySlot {
+  id           String   @id @default(uuid())
+  restaurantId Int
+  slotDate     String
+  startTime    String
+  capacity     Int
+  bookedCount  Int      @default(0)
+  status       String   @default("OPEN")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  bookings   Booking[]
+
+  @@unique([restaurantId, slotDate, startTime])
+  @@index([restaurantId, slotDate])
 }
 
 model Restaurant {
@@ -94,6 +152,8 @@ model Restaurant {
   bookings          Booking[]
   offers            Offer[]
   studentReviews    Review[]
+  members           RestaurantMember[]
+  slots             AvailabilitySlot[]
 
   @@index([rating])
   @@index([isOpen])
@@ -155,6 +215,8 @@ model Booking {
 
   user            User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
   restaurant      Restaurant     @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  slotId          String?
+  slot            AvailabilitySlot? @relation(fields: [slotId], references: [id], onDelete: SetNull)
   orders          BookingOrder[]
   payment         Payment?
 

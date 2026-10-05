@@ -1,8 +1,12 @@
 import express from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv';
+import rateLimit from 'express-rate-limit';
 import path from 'path';
 import { fileURLToPath } from 'url';
+
+import { corsAllowlist, isProduction, loadRuntimeEnv } from './config/env.js';
+
+loadRuntimeEnv();
 
 import authRoutes from './routes/auth.routes.js';
 import superAdminRoutes from './routes/superadmin.routes.js';
@@ -20,74 +24,70 @@ import healthRoutes from './routes/health.routes.js';
 import { startReminderScheduler } from './services/reminder.service.js';
 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// Robust environment variable resolution for both local and Vercel serverless
-dotenv.config();
-dotenv.config({ path: path.resolve(__dirname, '../../server/.env') });
-dotenv.config({ path: path.resolve(__dirname, '../.env') });
-dotenv.config({ path: path.resolve(process.cwd(), 'server/.env') });
-dotenv.config({ path: path.resolve(process.cwd(), '.env') });
-
-const DEFAULT_DATABASE_URL = "postgresql://postgres.nhcdgjeygsazqjxpaomz:DIstRiCt%40%231757@aws-0-ap-south-1.pooler.supabase.com:5432/postgres?connect_timeout=20";
-const DEFAULT_DIRECT_URL = "postgresql://postgres.nhcdgjeygsazqjxpaomz:DIstRiCt%40%231757@aws-0-ap-south-1.pooler.supabase.com:5432/postgres?connect_timeout=20";
-const DEFAULT_JWT_SECRET = "dine_bennett_super_secret_jwt_key_2026_rbac";
-
-if (!process.env.DATABASE_URL) {
-  process.env.DATABASE_URL = DEFAULT_DATABASE_URL;
-}
-if (!process.env.DIRECT_URL) {
-  process.env.DIRECT_URL = DEFAULT_DIRECT_URL;
-}
-if (!process.env.JWT_SECRET) {
-  process.env.JWT_SECRET = DEFAULT_JWT_SECRET;
-}
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const allowedOrigins = corsAllowlist();
 
-// Universal CORS configuration supporting Vercel preview & production domains
+app.set('trust proxy', 1);
+
 app.use(cors({
-  origin: true,
+  origin(origin, callback) {
+    if (!origin) {
+      return callback(null, true);
+    }
+    if (allowedOrigins.length === 0 && !isProduction) {
+      return callback(null, true);
+    }
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error('CORS origin is not allowlisted'));
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin']
 }));
 
-// Standard Security Headers
 app.use((req, res, next) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-Frame-Options', 'DENY');
-  res.setHeader('X-XSS-Protection', '1; mode=block');
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('X-DNS-Prefetch-Control', 'off');
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  if (isProduction) {
+    res.setHeader('Strict-Transport-Security', 'max-age=15552000; includeSubDomains');
+  }
   next();
 });
 
-app.use(express.json({ limit: '2mb' }));
+app.use(express.json({ limit: '200kb' }));
 
-// Request logging middleware
+app.use(rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 300,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, error: 'Too many requests. Please slow down.' }
+}));
+
 app.use((req, res, next) => {
   const start = Date.now();
   res.on('finish', () => {
-    const duration = Date.now() - start;
-    console.log(`[API] ${req.method} ${req.originalUrl} ${res.statusCode} (${duration}ms)`);
+    console.log(`[API] ${req.method} ${req.originalUrl} ${res.statusCode} (${Date.now() - start}ms)`);
   });
   next();
 });
 
-// Chrome DevTools probe handler to prevent CSP / 404 noise
 app.get('/.well-known/appspecific/com.chrome.devtools.json', (req, res) => {
   res.json({ status: 'ok' });
 });
 
-// Health & Root endpoints
 const handleRoot = (req, res) => {
   res.json({
     success: true,
-    message: 'Dine@Bennett Institutional REST API is running',
-    version: '1.0.0',
-    rbac: 'Active & Enforced',
-    database: 'PostgreSQL (Supabase & Prisma ORM)'
+    message: 'Institutional dining API',
+    version: '1.1.0'
   });
 };
 
@@ -95,7 +95,6 @@ app.get('/', handleRoot);
 app.get('/api', handleRoot);
 app.get('/api/', handleRoot);
 
-// Mount routes on both /api and root prefix for seamless Vercel serverless routing
 const mountRoutes = (prefix = '/api') => {
   app.use(`${prefix}/auth`, authRoutes);
   app.use(`${prefix}/superadmin`, superAdminRoutes);
@@ -116,18 +115,20 @@ const mountRoutes = (prefix = '/api') => {
 mountRoutes('/api');
 mountRoutes('');
 
-// Global Error Handler
 app.use((err, req, res, next) => {
   console.error('[SERVER_ERROR]', err);
   const statusCode = err.statusCode || err.status || 500;
+  const publicMessage =
+    isProduction && statusCode >= 500
+      ? 'Internal Server Error'
+      : err.message || 'Internal Server Error';
   res.status(statusCode).json({
     success: false,
-    error: err.message || 'Internal Server Error',
+    error: publicMessage,
     code: err.code || 'INTERNAL_ERROR'
   });
 });
 
-// Start server when run directly (local / container), not when imported by Vercel serverless
 const isDirectRun = Boolean(
   process.argv[1] &&
   path.resolve(process.argv[1]) === path.resolve(fileURLToPath(import.meta.url))
@@ -135,14 +136,7 @@ const isDirectRun = Boolean(
 
 if (isDirectRun && !process.env.VERCEL) {
   app.listen(PORT, () => {
-    console.log(`\n======================================================`);
-    console.log(`[START] Dine@Bennett REST API Server running on port ${PORT}`);
-    console.log(`[URL] http://localhost:${PORT}`);
-    console.log(`[RBAC] Active & Enforced Server-Side`);
-    console.log(`[DATABASE] PostgreSQL (Supabase & Prisma ORM)`);
-    console.log(`======================================================\n`);
-
-    // Start background reminder scheduler
+    console.log(`[START] Institutional dining API on port ${PORT}`);
     startReminderScheduler(30);
   });
 }

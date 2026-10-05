@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import prisma from '../config/db.js';
-import { authenticateToken, recordAuditLog } from '../middleware/auth.js';
+import { authenticateToken, recordAuditLog, requireVerified, userCanOperateRestaurant } from '../middleware/auth.js';
 import validate from '../middleware/validate.js';
 import { createBookingSchema, cancelBookingSchema } from '../validators/index.js';
 import { generateQrDataUrl } from '../services/qr.service.js';
@@ -34,7 +34,7 @@ router.get('/', authenticateToken, async (req, res) => {
       };
     } else if (user.role === 'RESTAURANT_STAFF' || user.role === 'RESTAURANT_ADMIN') {
       const targetRestId = req.query.restaurantId ? Number(req.query.restaurantId) : Number(user.restaurantId);
-      if (!targetRestId) {
+      if (!targetRestId || !(await userCanOperateRestaurant(user, targetRestId))) {
         return res.status(403).json({ success: false, error: 'Restaurant staff account must be linked to a valid outlet' });
       }
       whereClause = { restaurantId: targetRestId };
@@ -126,7 +126,7 @@ router.get('/:id', authenticateToken, async (req, res) => {
 
     // Access authorization check
     const isOwner = (booking.userId === user.id || booking.guestEmail.toLowerCase() === user.email.toLowerCase());
-    const isRestStaff = (user.role === 'RESTAURANT_STAFF' || user.role === 'RESTAURANT_ADMIN') && Number(user.restaurantId) === booking.restaurantId;
+    const isRestStaff = await userCanOperateRestaurant(user, booking.restaurantId);
     const isSuperAdmin = user.role === 'SUPER_ADMIN';
 
     if (!isOwner && !isRestStaff && !isSuperAdmin) {
@@ -146,7 +146,7 @@ router.get('/:id', authenticateToken, async (req, res) => {
  * POST /api/bookings
  * Create a new table reservation with transactional capacity lock & validation
  */
-router.post('/', authenticateToken, validate(createBookingSchema), async (req, res) => {
+router.post('/', authenticateToken, requireVerified, validate(createBookingSchema), async (req, res) => {
   try {
     const {
       restaurantId,
@@ -169,12 +169,11 @@ router.post('/', authenticateToken, validate(createBookingSchema), async (req, r
     const finalGuestEmail = (guestEmail || user?.email).toLowerCase().trim();
     const cleanSpecialRequest = sanitizeInput(specialRequest || 'Table Reservation');
 
-    // Concurrency-safe capacity lock and booking creation inside a transaction
+    const ACTIVE_STATUSES = ['CONFIRMED', 'SEATED', 'PAYMENT_PENDING'];
     const bookingResult = await prisma.$transaction(async (tx) => {
-      // 1. Fetch restaurant outlet
       const rest = await tx.restaurant.findUnique({
         where: { id: restIdNum },
-        include: { tables: true }
+        include: { tables: true, menuItems: true }
       });
 
       if (!rest) {
@@ -183,46 +182,77 @@ router.post('/', authenticateToken, validate(createBookingSchema), async (req, r
         throw err;
       }
 
-      if (!rest.isOpen) {
+      if (!rest.isOpen || rest.isDeleted) {
         const err = new Error('This restaurant outlet is currently closed for reservations');
         err.statusCode = 400;
         throw err;
       }
 
-      // 2. Strict Capacity Check
-      let targetTable = null;
-      if (tableAssigned) {
-        targetTable = rest.tables?.find(t => t.id === tableAssigned && !t.isOccupied && t.capacity >= numGuests);
-      }
-      if (!targetTable) {
-        // Find best fit table with suitable capacity
-        targetTable = rest.tables?.find(t => !t.isOccupied && t.capacity >= numGuests);
+      let slot = await tx.availabilitySlot.findUnique({
+        where: {
+          restaurantId_slotDate_startTime: {
+            restaurantId: restIdNum,
+            slotDate: date,
+            startTime: time
+          }
+        }
+      });
+
+      if (!slot) {
+        slot = await tx.availabilitySlot.create({
+          data: {
+            restaurantId: restIdNum,
+            slotDate: date,
+            startTime: time,
+            capacity: rest.capacity || 40,
+            bookedCount: 0,
+            status: 'OPEN'
+          }
+        });
       }
 
-      if (!targetTable) {
-        const err = new Error(`Capacity full: No available table for ${numGuests} guests at this outlet. Please select another time or smaller group size.`);
+      const claimed = await tx.availabilitySlot.updateMany({
+        where: {
+          id: slot.id,
+          status: 'OPEN',
+          bookedCount: { lte: slot.capacity - numGuests }
+        },
+        data: { bookedCount: { increment: numGuests } }
+      });
+
+      if (claimed.count !== 1) {
+        const err = new Error(`Capacity full: No availability for ${numGuests} guests at ${date} ${time}.`);
         err.statusCode = 409;
         throw err;
       }
 
+      const busyTables = await tx.booking.findMany({
+        where: {
+          restaurantId: restIdNum,
+          date,
+          time,
+          status: { in: ACTIVE_STATUSES },
+          tableAssigned: { not: null }
+        },
+        select: { tableAssigned: true }
+      });
+      const busyIds = new Set(busyTables.map((row) => row.tableAssigned));
+
+      let targetTable = null;
+      if (tableAssigned && !busyIds.has(tableAssigned)) {
+        targetTable = rest.tables?.find((t) => t.id === tableAssigned && t.capacity >= numGuests);
+      }
+      if (!targetTable) {
+        targetTable = rest.tables
+          ?.filter((t) => !busyIds.has(t.id) && t.capacity >= numGuests)
+          .sort((a, b) => a.capacity - b.capacity)[0] || null;
+      }
+
       const randomNum = Math.floor(1000 + Math.random() * 9000);
       const bookingCode = `DB-${randomNum}`;
-      
-      // Generate server-side QR code Data URL (no external dependencies)
-      const qrCode = await generateQrDataUrl(`${bookingCode}-BENNETT-VERIFIED`);
+      const qrCode = await generateQrDataUrl(`${bookingCode}-INSTITUTION-VERIFIED`);
       const finalImage = restaurantImage || rest.image;
 
-      // 3. Mark table occupied
-      await tx.restaurantTable.update({
-        where: { id: targetTable.id },
-        data: {
-          isOccupied: true,
-          currentGuest: finalGuestName,
-          currentBookingId: bookingCode
-        }
-      });
-
-      // 4. Create booking record
       const newBooking = await tx.booking.create({
         data: {
           id: bookingCode,
@@ -237,21 +267,27 @@ router.post('/', authenticateToken, validate(createBookingSchema), async (req, r
           guests: numGuests,
           status: 'CONFIRMED',
           specialRequest: cleanSpecialRequest,
-          tableAssigned: targetTable.id,
+          tableAssigned: targetTable?.id || null,
+          slotId: slot.id,
           qrCode
         }
       });
 
-      // 5. Create initial orders if provided
-      if (orders.length > 0) {
-        await tx.bookingOrder.createMany({
-          data: orders.map(o => ({
+      if (Array.isArray(orders) && orders.length > 0) {
+        const priced = [];
+        for (const order of orders) {
+          const menuItem = rest.menuItems?.find((item) => item.id === order.menuItemId || item.id === order.id);
+          if (!menuItem) continue;
+          priced.push({
             bookingId: newBooking.id,
-            name: sanitizeInput(o.name),
-            price: Number(o.price) || 0,
-            quantity: Number(o.quantity || o.qty || 1)
-          }))
-        });
+            name: sanitizeInput(menuItem.name),
+            price: Number(menuItem.price) || 0,
+            quantity: Number(order.quantity || order.qty || 1)
+          });
+        }
+        if (priced.length > 0) {
+          await tx.bookingOrder.createMany({ data: priced });
+        }
       }
 
       return newBooking;
@@ -320,7 +356,7 @@ router.patch('/:id/cancel', authenticateToken, validate(cancelBookingSchema), as
 
     // Authorization: User must be booking owner, restaurant staff, or superadmin
     const isOwner = (booking.userId === user.id || booking.guestEmail.toLowerCase() === user.email.toLowerCase());
-    const isRestStaff = (user.role === 'RESTAURANT_STAFF' || user.role === 'RESTAURANT_ADMIN') && Number(user.restaurantId) === booking.restaurantId;
+    const isRestStaff = await userCanOperateRestaurant(user, booking.restaurantId);
     const isSuperAdmin = user.role === 'SUPER_ADMIN';
 
     if (!isOwner && !isRestStaff && !isSuperAdmin) {
@@ -331,10 +367,19 @@ router.patch('/:id/cancel', authenticateToken, validate(cancelBookingSchema), as
       return res.status(400).json({ success: false, error: `Booking is already ${booking.status.toLowerCase()}` });
     }
 
-    const updated = await prisma.booking.update({
-      where: { id },
-      data: { status: 'CANCELLED' },
-      include: { orders: true, payment: true }
+    const updated = await prisma.$transaction(async (tx) => {
+      const cancelled = await tx.booking.update({
+        where: { id },
+        data: { status: 'CANCELLED' },
+        include: { orders: true, payment: true }
+      });
+      if (booking.slotId) {
+        await tx.availabilitySlot.updateMany({
+          where: { id: booking.slotId, bookedCount: { gte: booking.guests } },
+          data: { bookedCount: { decrement: booking.guests } }
+        });
+      }
+      return cancelled;
     });
 
     // Release table
@@ -404,7 +449,7 @@ router.patch('/:id/status', authenticateToken, async (req, res) => {
 
     // Role-based authorization
     const isOwner = (booking.userId === user.id || booking.guestEmail.toLowerCase() === user.email.toLowerCase());
-    const isStaffOfRestaurant = (user.role === 'RESTAURANT_STAFF' || user.role === 'RESTAURANT_ADMIN') && Number(user.restaurantId) === booking.restaurantId;
+    const isStaffOfRestaurant = await userCanOperateRestaurant(user, booking.restaurantId);
     const isSuperAdmin = user.role === 'SUPER_ADMIN';
 
     if (user.role === 'STUDENT') {
@@ -458,6 +503,12 @@ router.patch('/:id/status', authenticateToken, async (req, res) => {
           }
         });
       }
+      if (status === 'CANCELLED' && booking.slotId && booking.status !== 'CANCELLED') {
+        await prisma.availabilitySlot.updateMany({
+          where: { id: booking.slotId, bookedCount: { gte: booking.guests } },
+          data: { bookedCount: { decrement: booking.guests } }
+        });
+      }
     }
 
     await recordAuditLog(req, {
@@ -485,21 +536,32 @@ router.patch('/:id/status', authenticateToken, async (req, res) => {
 router.post('/:id/orders', authenticateToken, async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, price, quantity = 1 } = req.body;
+    const { name, price, quantity = 1, menuItemId } = req.body;
     const user = req.user;
-
-    if (!name || price === undefined) {
-      return res.status(400).json({ success: false, error: 'Item name and price are required' });
-    }
 
     const booking = await prisma.booking.findUnique({ where: { id } });
     if (!booking) {
       return res.status(404).json({ success: false, error: 'Booking reservation not found' });
     }
 
+    let itemName = name;
+    let itemPrice = price;
+    if (menuItemId) {
+      const menuItem = await prisma.menuItem.findFirst({
+        where: { id: String(menuItemId), restaurantId: booking.restaurantId, isAvailable: true }
+      });
+      if (!menuItem) {
+        return res.status(400).json({ success: false, error: 'Menu item not found for this restaurant' });
+      }
+      itemName = menuItem.name;
+      itemPrice = menuItem.price;
+    } else if (user.role === 'STUDENT' || !name || price === undefined) {
+      return res.status(400).json({ success: false, error: 'Students must add priced menu items by id' });
+    }
+
     // Authorization check
     const isOwner = (booking.userId === user.id || booking.guestEmail.toLowerCase() === user.email.toLowerCase());
-    const isStaffOfRest = (user.role === 'RESTAURANT_STAFF' || user.role === 'RESTAURANT_ADMIN') && Number(user.restaurantId) === booking.restaurantId;
+    const isStaffOfRest = await userCanOperateRestaurant(user, booking.restaurantId);
     const isSuperAdmin = user.role === 'SUPER_ADMIN';
 
     if (!isOwner && !isStaffOfRest && !isSuperAdmin) {
@@ -510,7 +572,7 @@ router.post('/:id/orders', authenticateToken, async (req, res) => {
       return res.status(400).json({ success: false, error: `Cannot add orders to a ${booking.status.toLowerCase()} reservation` });
     }
 
-    const cleanName = sanitizeInput(name);
+    const cleanName = sanitizeInput(itemName);
     const existing = await prisma.bookingOrder.findFirst({
       where: { bookingId: id, name: cleanName }
     });
@@ -525,7 +587,7 @@ router.post('/:id/orders', authenticateToken, async (req, res) => {
         data: {
           bookingId: id,
           name: cleanName,
-          price: Number(price),
+          price: Number(itemPrice),
           quantity: Number(quantity)
         }
       });
