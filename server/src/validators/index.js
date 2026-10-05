@@ -15,7 +15,7 @@ export const verifyOtpSchema = z.object({
 
 export const loginSchema = z.object({
   email: z.string().min(2, 'Please provide a valid email or roll number'),
-  password: z.string().min(1, 'Password is required').optional(),
+  password: z.string().min(8, 'Password is required'),
   roleHint: z.string().optional()
 });
 

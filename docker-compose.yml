@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: dine_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword123
+      POSTGRES_DB: dining_platform
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    container_name: dine_api
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: "postgresql://postgres:postgrespassword123@postgres:5432/dining_platform"
+      DIRECT_URL: "postgresql://postgres:postgrespassword123@postgres:5432/dining_platform"
+      JWT_SECRET: "dine_bennett_super_secret_jwt_key_2026_docker_prod_32chars"
+      OTP_PEPPER: "dine_bennett_super_secret_otp_pepper_2026_docker_prod"
+      CRON_SECRET: "docker_prod_cron_secret_key_123"
+      CORS_ORIGINS: "http://localhost:1574,http://localhost:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres_data:

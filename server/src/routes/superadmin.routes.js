@@ -305,13 +305,20 @@ router.post('/restaurants', async (req, res) => {
       popularDishes = [],
       ownerEmail,
       ownerName,
-      ownerPassword = 'password123'
+      ownerPassword
     } = req.body;
 
     if (!name || !cuisine || !address || !phone) {
       return res.status(400).json({
         success: false,
         error: 'Restaurant name, cuisine, address, and phone are required.'
+      });
+    }
+
+    if (ownerEmail && (!ownerPassword || String(ownerPassword).length < 10)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Owner password must be at least 10 characters when creating manager login'
       });
     }
 
@@ -358,9 +365,9 @@ router.post('/restaurants', async (req, res) => {
     let ownerInfo = null;
     if (ownerEmail) {
       const emailLower = ownerEmail.toLowerCase().trim();
-      const pass = ownerPassword || 'password123';
+      const pass = ownerPassword;
       const bcrypt = await import('bcryptjs');
-      const passwordHash = bcrypt.default.hashSync(pass, 10);
+      const passwordHash = bcrypt.default.hashSync(pass, 12);
       const existingUser = await prisma.user.findUnique({ where: { email: emailLower } });
 
       if (!existingUser) {
@@ -379,6 +386,18 @@ router.post('/restaurants', async (req, res) => {
           }
         });
         ownerInfo = { email: newOwner.email, name: newOwner.name };
+        await prisma.restaurantMember.upsert({
+          where: {
+            restaurantId_userId: { restaurantId: restaurant.id, userId: newOwner.id }
+          },
+          update: { role: 'RESTAURANT_ADMIN', status: 'ACTIVE' },
+          create: {
+            restaurantId: restaurant.id,
+            userId: newOwner.id,
+            role: 'RESTAURANT_ADMIN',
+            status: 'ACTIVE'
+          }
+        }).catch(() => {});
 
         try {
           await prisma.notification.create({
@@ -406,6 +425,18 @@ router.post('/restaurants', async (req, res) => {
           }
         });
         ownerInfo = { email: updated.email, name: updated.name };
+        await prisma.restaurantMember.upsert({
+          where: {
+            restaurantId_userId: { restaurantId: restaurant.id, userId: updated.id }
+          },
+          update: { role: 'RESTAURANT_ADMIN', status: 'ACTIVE' },
+          create: {
+            restaurantId: restaurant.id,
+            userId: updated.id,
+            role: 'RESTAURANT_ADMIN',
+            status: 'ACTIVE'
+          }
+        }).catch(() => {});
       }
     }
 

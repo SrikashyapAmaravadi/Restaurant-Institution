@@ -257,4 +257,95 @@ router.delete('/:id', authenticateToken, requireRole('SUPER_ADMIN'), async (req,
   }
 });
 
+/**
+ * GET /api/users/privacy/export-data
+ * DPDPA / GDPR Right to Data Portability: Export full user data in structured JSON
+ */
+router.get('/privacy/export-data', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const userData = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        department: true,
+        rollNumber: true,
+        institution: true,
+        createdAt: true,
+        bookings: {
+          select: {
+            id: true,
+            restaurantName: true,
+            date: true,
+            time: true,
+            guests: true,
+            totalAmount: true,
+            status: true,
+            createdAt: true
+          }
+        },
+        reviews: {
+          select: {
+            id: true,
+            rating: true,
+            comment: true,
+            createdAt: true
+          }
+        }
+      }
+    });
+
+    res.json({
+      success: true,
+      exportTimestamp: new Date().toISOString(),
+      compliance: 'DPDPA 2023 & GDPR Compliant',
+      userData
+    });
+  } catch (err) {
+    console.error('Error exporting user data:', err);
+    res.status(500).json({ success: false, error: 'Failed to export user privacy data' });
+  }
+});
+
+/**
+ * POST /api/users/privacy/anonymize-account
+ * DPDPA / GDPR Right to Erasure / Right to be Forgotten: Anonymize personal identity
+ */
+router.post('/privacy/anonymize-account', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const anonymizedEmail = `deleted_user_${Date.now()}@anonymized.local`;
+
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        name: 'Anonymized User',
+        email: anonymizedEmail,
+        avatar: null,
+        department: null,
+        rollNumber: null,
+        verified: false
+      }
+    });
+
+    await recordAuditLog(req, {
+      action: 'USER_DATA_ANONYMIZED',
+      entityType: 'USER',
+      entityId: userId,
+      details: { compliance: 'DPDPA_RIGHT_TO_BE_FORGOTTEN' }
+    });
+
+    res.json({
+      success: true,
+      message: 'Your personal data has been anonymized in accordance with DPDPA & GDPR privacy regulations.'
+    });
+  } catch (err) {
+    console.error('Error anonymizing user account:', err);
+    res.status(500).json({ success: false, error: 'Failed to anonymize user data' });
+  }
+});
+
 export default router;

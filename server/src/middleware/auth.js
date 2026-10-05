@@ -1,23 +1,17 @@
 import jwt from 'jsonwebtoken';
 import prisma from '../config/db.js';
+import { getAccessTokenFromRequest } from '../lib/cookies.js';
 
 function getJwtSecret() {
   const secret = process.env.JWT_SECRET;
   if (!secret) {
-    if (process.env.NODE_ENV === 'production') {
-      throw new Error('JWT_SECRET environment variable is missing in production!');
-    }
-    return 'dine_bennett_dev_insecure_secret_key_change_in_production';
+    throw new Error('JWT_SECRET environment variable is missing');
   }
   return secret;
 }
 
-/**
- * Middleware: Authenticate Bearer JWT Token
- */
 export async function authenticateToken(req, res, next) {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
+  const token = getAccessTokenFromRequest(req);
 
   if (!token) {
     return res.status(401).json({
@@ -28,35 +22,27 @@ export async function authenticateToken(req, res, next) {
 
   try {
     const decoded = jwt.verify(token, getJwtSecret());
-    let user = null;
-    try {
-      user = await prisma.user.findUnique({
-        where: { id: decoded.userId }
-      });
-    } catch (dbErr) {
-      console.warn('authenticateToken: DB lookup error, using decoded token payload:', dbErr.message);
-    }
-
-    if (!user) {
-      if (decoded.userId && decoded.email) {
-        req.user = {
-          id: decoded.userId,
-          email: decoded.email,
-          role: decoded.role || 'STUDENT',
-          name: decoded.name || decoded.email.split('@')[0],
-          verified: true
-        };
-        return next();
-      }
+    if (!decoded.userId) {
       return res.status(401).json({
         success: false,
-        error: 'Invalid session: User not found in database'
+        error: 'Invalid session'
+      });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: decoded.userId }
+    });
+
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        error: 'Invalid session: User not found'
       });
     }
 
     req.user = user;
     next();
-  } catch (err) {
+  } catch {
     return res.status(403).json({
       success: false,
       error: 'Invalid or expired authentication token'
@@ -64,13 +50,8 @@ export async function authenticateToken(req, res, next) {
   }
 }
 
-/**
- * Middleware: Optional Authentication (attaches user if present)
- */
 export async function optionalAuth(req, res, next) {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
-
+  const token = getAccessTokenFromRequest(req);
   if (!token) {
     req.user = null;
     return next();
@@ -78,31 +59,15 @@ export async function optionalAuth(req, res, next) {
 
   try {
     const decoded = jwt.verify(token, getJwtSecret());
-    let user = null;
-    try {
-      user = await prisma.user.findUnique({
-        where: { id: decoded.userId }
-      });
-    } catch {
-      // fallback
-    }
-    req.user = user || (decoded.userId ? {
-      id: decoded.userId,
-      email: decoded.email,
-      role: decoded.role || 'STUDENT',
-      name: decoded.name || decoded.email.split('@')[0],
-      verified: true
-    } : null);
+    req.user = decoded.userId
+      ? await prisma.user.findUnique({ where: { id: decoded.userId } })
+      : null;
   } catch {
     req.user = null;
   }
   next();
 }
 
-/**
- * Middleware: Require specific RBAC roles
- * @param  {...string} allowedRoles (e.g. 'SUPER_ADMIN', 'RESTAURANT_STAFF')
- */
 export function requireRole(...allowedRoles) {
   return (req, res, next) => {
     if (!req.user) {
@@ -123,9 +88,16 @@ export function requireRole(...allowedRoles) {
   };
 }
 
-/**
- * Helper: Generate JWT Token
- */
+export function requireVerified(req, res, next) {
+  if (!req.user?.verified) {
+    return res.status(403).json({
+      success: false,
+      error: 'Institutional verification required before using this feature'
+    });
+  }
+  next();
+}
+
 export function generateToken(user) {
   return jwt.sign(
     {
@@ -134,17 +106,12 @@ export function generateToken(user) {
       role: user.role
     },
     getJwtSecret(),
-    { expiresIn: process.env.JWT_EXPIRES_IN || '24h' }
+    { expiresIn: process.env.JWT_EXPIRES_IN || '15m' }
   );
 }
 
-/**
- * Middleware: Enforce Tenancy / Restaurant Scoping (Anti-IDOR)
- * Ensures restaurant admins and staff can only access data belonging to their assigned restaurant.
- * Super Admins are granted global scope.
- */
 export function requireRestaurantScope(paramKey = 'id') {
-  return (req, res, next) => {
+  return async (req, res, next) => {
     if (!req.user) {
       return res.status(401).json({
         success: false,
@@ -152,7 +119,6 @@ export function requireRestaurantScope(paramKey = 'id') {
       });
     }
 
-    // Super Admin has global bypass privileges
     if (req.user.role === 'SUPER_ADMIN') {
       return next();
     }
@@ -170,21 +136,52 @@ export function requireRestaurantScope(paramKey = 'id') {
     const targetRestaurantId = parseInt(rawTarget, 10);
     const userRestaurantId = parseInt(req.user.restaurantId, 10);
 
-    if (isNaN(userRestaurantId) || userRestaurantId !== targetRestaurantId) {
-      return res.status(403).json({
-        success: false,
-        error: 'Forbidden (IDOR Prevention): You do not have permissions to access or mutate resources for this restaurant'
-      });
+    if (!isNaN(userRestaurantId) && userRestaurantId === targetRestaurantId) {
+      return next();
     }
 
-    next();
+    try {
+      const membership = await prisma.restaurantMember.findFirst({
+        where: {
+          userId: req.user.id,
+          restaurantId: targetRestaurantId,
+          status: 'ACTIVE'
+        }
+      });
+      if (membership) {
+        return next();
+      }
+    } catch {
+      // membership table may be empty on older databases
+    }
+
+    return res.status(403).json({
+      success: false,
+      error: 'Forbidden (IDOR Prevention): You do not have permissions to access or mutate resources for this restaurant'
+    });
   };
 }
 
-/**
- * Helper: Non-blocking Audit Logger
- * Asynchronously logs administrative and operational events to the AuditLog table.
- */
+export async function userCanOperateRestaurant(user, restaurantId) {
+  if (!user) return false;
+  if (user.role === 'SUPER_ADMIN') return true;
+  const target = Number(restaurantId);
+  if (
+    (user.role === 'RESTAURANT_STAFF' || user.role === 'RESTAURANT_ADMIN') &&
+    Number(user.restaurantId) === target
+  ) {
+    return true;
+  }
+  const membership = await prisma.restaurantMember.findFirst({
+    where: {
+      userId: user.id,
+      restaurantId: target,
+      status: 'ACTIVE'
+    }
+  });
+  return Boolean(membership);
+}
+
 export async function recordAuditLog(req, { action, entityType, entityId, details = null }) {
   try {
     const ipAddress =
@@ -208,5 +205,3 @@ export async function recordAuditLog(req, { action, entityType, entityId, detail
     console.error('Failed to write audit log entry:', err.message);
   }
 }
-
-

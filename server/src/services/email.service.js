@@ -1,14 +1,27 @@
+import { Resend } from 'resend';
 import nodemailer from 'nodemailer';
 
 /**
  * Institutional Email Dispatch Service
  * Handles delivery of OTP verification codes, reservation confirmations, and receipts.
+ * Supports Resend API (preferred) and SMTP via Nodemailer, with a local dev fallback.
  */
 
-let transporter = null;
+let resendClient = null;
+let smtpTransporter = null;
 
-function getTransporter() {
-  if (transporter) return transporter;
+function getResendClient() {
+  if (resendClient) return resendClient;
+  const apiKey = process.env.RESEND_API_KEY;
+  if (apiKey) {
+    resendClient = new Resend(apiKey);
+    console.log('[EMAIL_SERVICE] Configured Resend API client');
+  }
+  return resendClient;
+}
+
+function getSmtpTransporter() {
+  if (smtpTransporter) return smtpTransporter;
 
   const host = process.env.SMTP_HOST;
   const port = parseInt(process.env.SMTP_PORT || '587', 10);
@@ -16,7 +29,7 @@ function getTransporter() {
   const pass = process.env.SMTP_PASS;
 
   if (host && user && pass) {
-    transporter = nodemailer.createTransport({
+    smtpTransporter = nodemailer.createTransport({
       host,
       port,
       secure: port === 465,
@@ -25,15 +38,78 @@ function getTransporter() {
     console.log(`[EMAIL_SERVICE] Configured SMTP transport via ${host}:${port}`);
   }
 
-  return transporter;
+  return smtpTransporter;
+}
+
+/**
+ * Low-level email dispatcher using Resend, SMTP, or Dev fallback
+ */
+async function sendEmail({ to, subject, html, text }) {
+  const resend = getResendClient();
+
+  if (resend) {
+    let from = process.env.EMAIL_FROM || 'Dine Security <onboarding@resend.dev>';
+    if (/@(hotmail\.com|gmail\.com|yahoo\.com|outlook\.com)/i.test(from)) {
+      from = 'Dine Security <onboarding@resend.dev>';
+    }
+    let { data, error } = await resend.emails.send({
+      from,
+      to,
+      subject,
+      html,
+      text
+    });
+
+    // If custom domain is still propagating verification, fallback to onboarding sender so delivery doesn't fail
+    if (error && error.message && error.message.includes('not verified') && from !== 'Dine Security <onboarding@resend.dev>') {
+      console.warn(`[EMAIL_SERVICE] Domain in sender "${from}" is pending verification. Temporarily falling back to onboarding sender.`);
+      const retry = await resend.emails.send({
+        from: 'Dine Security <onboarding@resend.dev>',
+        to,
+        subject,
+        html,
+        text
+      });
+      data = retry.data;
+      error = retry.error;
+    }
+
+    if (error) {
+      console.error(`[EMAIL_SERVICE_ERROR] Resend delivery failed to ${to}:`, error);
+      throw new Error(`Resend email delivery failed: ${error.message || JSON.stringify(error)}`);
+    }
+
+    console.log(`[EMAIL_SERVICE] Dispatched email to ${to} via Resend (ID: ${data?.id})`);
+    return { success: true, messageId: data?.id, provider: 'resend' };
+  }
+
+  const mailTransporter = getSmtpTransporter();
+
+  if (mailTransporter) {
+    const from = process.env.EMAIL_FROM || '"Dine Security" <sahi0045@hotmail.com>';
+    const info = await mailTransporter.sendMail({
+      from,
+      to,
+      subject,
+      text,
+      html
+    });
+    console.log(`[EMAIL_SERVICE] Dispatched email to ${to} via SMTP (MessageId: ${info.messageId})`);
+    return { success: true, messageId: info.messageId, provider: 'smtp' };
+  }
+
+  if (process.env.NODE_ENV === 'production' || process.env.VERCEL_ENV === 'production') {
+    throw new Error('Neither RESEND_API_KEY nor SMTP is configured. Email cannot be delivered in production.');
+  }
+
+  console.log(`[EMAIL DISPATCH] To: ${to} | Subject: "${subject}" logged locally because no email provider is set (development mode)`);
+  return { success: true, simulated: true };
 }
 
 /**
  * Send 6-digit OTP verification passkey to institutional user
  */
 export async function sendOtpEmail({ to, name, otp }) {
-  const mailTransporter = getTransporter();
-  const from = process.env.EMAIL_FROM || '"Dine@Bennett Security" <dining@bennett.edu.in>';
   const subject = 'Your Dine@Bennett Institutional Access Code';
 
   const html = `
@@ -71,50 +147,21 @@ export async function sendOtpEmail({ to, name, otp }) {
     </html>
   `;
 
-  if (mailTransporter) {
-    try {
-      const info = await mailTransporter.sendMail({
-        from,
-        to,
-        subject,
-        text: `Your Dine@Bennett one-time verification passkey is: ${otp}. It expires in 10 minutes.`,
-        html
-      });
-      console.log(`[EMAIL_SERVICE] Dispatched OTP to ${to} (MessageId: ${info.messageId})`);
-      return { success: true, messageId: info.messageId };
-    } catch (err) {
-      console.error(`[EMAIL_SERVICE_ERROR] Failed sending email to ${to}:`, err.message);
-      throw err;
-    }
-  } else {
-    // In dev mode when SMTP is not configured, log to server terminal only
-    console.log(`\n======================================================`);
-    console.log(`[EMAIL DISPATCH] To: ${to}`);
-    console.log(`[EMAIL SUBJECT]  ${subject}`);
-    console.log(`[SECURITY OTP]   ${otp}`);
-    console.log(`[NOTE] Set SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS in .env for live email delivery.`);
-    console.log(`======================================================\n`);
-    return { success: true, simulated: true };
-  }
+  const text = `Your Dine@Bennett one-time verification passkey is: ${otp}. It expires in 10 minutes.`;
+
+  return sendEmail({ to, subject, html, text });
 }
 
 /**
  * Send reservation confirmation email
  */
 export async function sendBookingConfirmationEmail({ to, name, booking }) {
-  const mailTransporter = getTransporter();
-  if (!mailTransporter) return { success: true, simulated: true };
-
-  const from = process.env.EMAIL_FROM || '"Dine@Bennett Reservations" <dining@bennett.edu.in>';
   const subject = `Confirmed: Table at ${booking.restaurantName} (#${booking.id})`;
+  const text = `Your reservation #${booking.id} at ${booking.restaurantName} is confirmed for ${booking.guests} guests on ${booking.date} at ${booking.time}. Table: ${booking.tableAssigned || 'TBD'}.`;
+  const html = `<p>Hello${name ? ` ${name}` : ''},</p><p>Your reservation <strong>#${booking.id}</strong> at <strong>${booking.restaurantName}</strong> is confirmed for ${booking.guests} guests on ${booking.date} at ${booking.time}. Table: ${booking.tableAssigned || 'TBD'}.</p>`;
 
   try {
-    await mailTransporter.sendMail({
-      from,
-      to,
-      subject,
-      text: `Your reservation #${booking.id} at ${booking.restaurantName} is confirmed for ${booking.guests} guests on ${booking.date} at ${booking.time}. Table: ${booking.tableAssigned || 'TBD'}.`
-    });
+    return await sendEmail({ to, subject, html, text });
   } catch (err) {
     console.warn('[EMAIL_SERVICE] Failed sending booking confirmation email:', err.message);
   }

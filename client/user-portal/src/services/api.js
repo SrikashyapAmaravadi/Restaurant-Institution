@@ -6,8 +6,22 @@
 const API_BASE = import.meta.env.VITE_API_URL || '/api';
 
 function getAuthHeader() {
-  const token = localStorage.getItem('dine_bennett_token');
-  return token ? { Authorization: `Bearer ${token}` } : {};
+  return {};
+}
+
+let refreshInFlight = null;
+
+async function refreshSession() {
+  if (!refreshInFlight) {
+    refreshInFlight = request('/auth/refresh', { method: 'POST', _skipRefresh: true })
+      .catch((err) => {
+        throw err;
+      })
+      .finally(() => {
+        refreshInFlight = null;
+      });
+  }
+  return refreshInFlight;
 }
 
 function handleOfflineFallback(endpoint, options = {}) {
@@ -558,28 +572,39 @@ function handleOfflineFallback(endpoint, options = {}) {
 
 async function request(endpoint, options = {}) {
   const url = `${API_BASE}${endpoint}`;
+  const { _skipRefresh, ...fetchOptions } = options;
   const headers = {
     'Content-Type': 'application/json',
     ...getAuthHeader(),
-    ...options.headers
+    ...fetchOptions.headers
   };
 
   let response;
   try {
     response = await fetch(url, {
-      ...options,
-      headers
+      ...fetchOptions,
+      headers,
+      credentials: 'include'
     });
   } catch (networkErr) {
-    if (endpoint.startsWith('/auth') || options.method === 'POST' || options.method === 'PATCH' || options.method === 'DELETE') {
-      throw new Error('Unable to connect to Nivix Dine-In server. Please verify your network connection.');
+    if (endpoint.startsWith('/auth') || fetchOptions.method === 'POST' || fetchOptions.method === 'PATCH' || fetchOptions.method === 'DELETE') {
+      throw new Error('Unable to connect to the dining server. Please verify your network connection.');
     }
-    const fallback = handleOfflineFallback(endpoint, options);
+    const fallback = handleOfflineFallback(endpoint, fetchOptions);
     if (fallback) return fallback;
     throw new Error('Unable to reach the campus dining server. Please verify your connection.');
   }
 
-  // Inspect content type: if HTML was returned (e.g. SPA index.html from static hosting / rewrites)
+  if (response.status === 401 && !_skipRefresh && endpoint !== '/auth/refresh' && endpoint !== '/auth/login') {
+    try {
+      await refreshSession();
+      return request(endpoint, { ...options, _skipRefresh: true });
+    } catch {
+      // Refresh also failed — the server already cleared cookies via clearAuthCookies().
+      // AuthContext's validateSession catch will update UI state on next render.
+    }
+  }
+
   const contentType = response.headers.get('content-type') || '';
   const isJson = contentType.includes('application/json');
 
@@ -612,6 +637,10 @@ export const api = {
       request('/auth/verify-otp', { method: 'POST', body: JSON.stringify({ email, otp, name }) }),
     googleLogin: (userData) =>
       request('/auth/google', { method: 'POST', body: JSON.stringify(userData || {}) }),
+    logout: () =>
+      request('/auth/logout', { method: 'POST' }),
+    refresh: () =>
+      request('/auth/refresh', { method: 'POST', _skipRefresh: true }),
     register: (userData) =>
       request('/auth/register', { method: 'POST', body: JSON.stringify(userData) }),
     getMe: () =>

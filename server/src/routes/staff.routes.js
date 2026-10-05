@@ -64,22 +64,27 @@ router.post(
         return res.status(400).json({ success: false, error: 'Staff email is required' });
       }
 
+      if (password && String(password).length < 10) {
+        return res.status(400).json({ success: false, error: 'Staff password must be at least 10 characters' });
+      }
+
       const emailLower = email.toLowerCase().trim();
+      const assignedRole = role === 'RESTAURANT_ADMIN' ? 'RESTAURANT_ADMIN' : 'RESTAURANT_STAFF';
       const existingUser = await prisma.user.findUnique({ where: { email: emailLower } });
 
       let staffMember;
       if (existingUser) {
         const updateData = {
           restaurantId,
-          role: role === 'RESTAURANT_ADMIN' ? 'RESTAURANT_ADMIN' : 'RESTAURANT_STAFF',
-          roleLabel: role === 'RESTAURANT_ADMIN' ? 'Restaurant Manager & Admin' : 'Front-Desk Host & Service Desk',
+          role: assignedRole,
+          roleLabel: assignedRole === 'RESTAURANT_ADMIN' ? 'Restaurant Manager & Admin' : 'Front-Desk Host & Service Desk',
           verified: true,
-          homePath: role === 'RESTAURANT_ADMIN' ? '/management/admin' : '/management/staff'
+          homePath: '/management/admin'
         };
         if (name) updateData.name = name.trim();
         if (department) updateData.department = department;
         if (password) {
-          updateData.passwordHash = await bcrypt.hash(password, 10);
+          updateData.passwordHash = await bcrypt.hash(password, 12);
         }
 
         staffMember = await prisma.user.update({
@@ -95,23 +100,39 @@ router.post(
           });
         }
 
-        const hashedPassword = await bcrypt.hash(password, 10);
+        const hashedPassword = await bcrypt.hash(password, 12);
         staffMember = await prisma.user.create({
           data: {
             name: name.trim(),
             email: emailLower,
             passwordHash: hashedPassword,
             department: department || 'Dining Operations',
-            role: role === 'RESTAURANT_ADMIN' ? 'RESTAURANT_ADMIN' : 'RESTAURANT_STAFF',
-            roleLabel: role === 'RESTAURANT_ADMIN' ? 'Restaurant Manager & Admin' : 'Front-Desk Host & Service Desk',
+            role: assignedRole,
+            roleLabel: assignedRole === 'RESTAURANT_ADMIN' ? 'Restaurant Manager & Admin' : 'Front-Desk Host & Service Desk',
             restaurantId,
             verified: true,
-            homePath: role === 'RESTAURANT_ADMIN' ? '/management/admin' : '/management/staff',
+            homePath: '/management/admin',
             avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(name.trim())}&background=11120D&color=fff`
           },
           select: { id: true, name: true, email: true, role: true, restaurantId: true, verified: true, department: true }
         });
       }
+
+      await prisma.restaurantMember.upsert({
+        where: {
+          restaurantId_userId: {
+            restaurantId,
+            userId: staffMember.id
+          }
+        },
+        update: { role: assignedRole, status: 'ACTIVE' },
+        create: {
+          restaurantId,
+          userId: staffMember.id,
+          role: assignedRole,
+          status: 'ACTIVE'
+        }
+      }).catch(() => {});
 
       await recordAuditLog(req, {
         action: 'STAFF_MEMBER_ASSIGNED',

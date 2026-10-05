@@ -1,11 +1,8 @@
-// Test OTP authentication flow
-const BASE_URL = 'http://localhost:3000';
+const BASE_URL = process.env.API_BASE_URL || 'http://localhost:3000';
 
 async function testOtpAuth() {
-  console.log('=== TESTING DIRECT INSTITUTIONAL OTP AUTH FLOW ===\n');
+  console.log('=== INSTITUTIONAL OTP AUTH CHECKS ===\n');
 
-  // 1. Rejection of personal email
-  console.log('[STEP 1] Testing non-institutional email rejection (test@gmail.com)...');
   const gmailRes = await fetch(`${BASE_URL}/api/auth/send-otp`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -13,57 +10,53 @@ async function testOtpAuth() {
   });
   const gmailData = await gmailRes.json();
   if (gmailRes.status === 400 && !gmailData.success) {
-    console.log('[PASS] Gmail correctly rejected:', gmailData.error);
+    console.log('[PASS] Personal Gmail rejected');
   } else {
-    console.error('[FAIL] Gmail was not rejected properly');
+    console.error('[FAIL] Gmail was not rejected', gmailData);
+    process.exit(1);
   }
 
-  // 2. Send OTP to institutional email (radhika.nair@bennett.edu.in)
-  console.log('\n[STEP 2] Sending OTP to institutional email (radhika.nair@bennett.edu.in)...');
   const sendRes = await fetch(`${BASE_URL}/api/auth/send-otp`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email: 'radhika.nair@bennett.edu.in' })
   });
   const sendData = await sendRes.json();
-  if (sendData.success && sendData.otp) {
-    console.log(`[PASS] OTP successfully issued: ${sendData.otp}`);
-  } else {
-    console.error('[FAIL] Failed to issue OTP:', sendData);
+  if (!sendData.success) {
+    console.error('[FAIL] Failed to send OTP:', sendData);
     process.exit(1);
   }
+  if (sendData.otp) {
+    console.error('[FAIL] OTP leaked in JSON response');
+    process.exit(1);
+  }
+  console.log('[PASS] OTP accepted without echoing the code');
 
-  const issuedOtp = sendData.otp;
-
-  // 3. Verify OTP and check instant auto-verification
-  console.log('\n[STEP 3] Verifying OTP and checking instant auto-provisioning...');
-  const verifyRes = await fetch(`${BASE_URL}/api/auth/verify-otp`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      email: 'radhika.nair@bennett.edu.in',
-      otp: issuedOtp
-    })
-  });
-  const verifyData = await verifyRes.json();
-  if (verifyData.success && verifyData.data?.user && verifyData.data?.token) {
-    const user = verifyData.data.user;
-    console.log(`[PASS] Logged in successfully as: ${user.name} (${user.email})`);
-    console.log(`[PASS] User role: ${user.role}`);
-    console.log(`[PASS] User verified status: ${user.verified}`);
-    if (user.verified === true) {
-      console.log('[PASS] User is officially a VERIFIED institutional member eligible for offers!');
+  if (sendData.devOtp) {
+    const verifyRes = await fetch(`${BASE_URL}/api/auth/verify-otp`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({
+        email: 'radhika.nair@bennett.edu.in',
+        otp: sendData.devOtp
+      })
+    });
+    const verifyData = await verifyRes.json();
+    if (verifyData.success && verifyData.data?.user?.verified) {
+      console.log('[PASS] OTP verification with OTP_ECHO succeeded');
     } else {
-      console.error('[FAIL] User verified status is false');
+      console.error('[FAIL] OTP verification failed:', verifyData);
+      process.exit(1);
     }
   } else {
-    console.error('[FAIL] OTP verification failed:', verifyData);
-    process.exit(1);
+    console.log('[INFO] OTP_ECHO is off — verify using the emailed code');
   }
 
-  console.log('\n========================================');
-  console.log('ALL OTP AUTH TESTS PASSED CLEANLY');
-  console.log('========================================');
+  console.log('\nOTP AUTH CHECKS COMPLETE');
 }
 
-testOtpAuth();
+testOtpAuth().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});
