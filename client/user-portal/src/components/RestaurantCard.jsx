@@ -34,7 +34,7 @@ export default function RestaurantCard({ restaurant, onQuickReserve, onViewOffer
       ? {
           id: `offer-${id}`,
           title: offerLabel ? `${offerLabel} Campus Exclusive` : 'Student Special Deal',
-          description: `Enjoy ${offerLabel || 'special discounts'} on all dining bills with your Bennett Student ID.`,
+          description: `Enjoy ${offerLabel || 'special discounts'} on all dining bills with your verified student or campus ID.`,
           discount: offerLabel || '20% OFF',
           promoCode: `CAMPUS${id || '20'}`,
           validTill: 'End of Semester',
@@ -283,51 +283,64 @@ export default function RestaurantCard({ restaurant, onQuickReserve, onViewOffer
           </div>
         </div>
 
-        {/* Coupon Ribbon */}
-        {activeOffer && (
-          <div
-            onClick={handleOfferClick}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              padding: '7px 12px',
-              borderRadius: 99,
-              background: 'rgba(86, 84, 73, 0.06)',
-              border: '1px dashed #565449',
-              cursor: 'pointer',
-              transition: 'all 0.35s ease',
-            }}
-            onMouseEnter={e => {
-              e.currentTarget.style.borderColor = '#11120D';
-              e.currentTarget.style.background = 'rgba(86, 84, 73, 0.12)';
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.borderColor = '#565449';
-              e.currentTarget.style.background = 'rgba(86, 84, 73, 0.06)';
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <Tag size={12} color="#565449" />
-              <span
-                style={{
-                  fontSize: 10.5,
-                  fontWeight: 700,
-                  background: '#11120D',
-                  color: '#FFFBF4',
-                  padding: '2px 8px',
-                  borderRadius: 99,
-                }}
-              >
-                {activeOffer.discount || '20% OFF'}
-              </span>
-              <span style={{ fontSize: 11, color: '#565449' }}>
-                · Code: <strong style={{ color: '#11120D' }}>{activeOffer.promoCode || 'CAMPUS20'}</strong>
-              </span>
+        {/* Campus Member Discount Pill */}
+        {activeOffer && (() => {
+          const discountBadge = activeOffer.discount?.match(/\d+%/)
+            ? `${activeOffer.discount.match(/\d+%/)[0]} OFF`
+            : (activeOffer.discount || '20% OFF');
+
+          return (
+            <div
+              onClick={handleOfferClick}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '6px 12px',
+                borderRadius: 99,
+                background: 'rgba(86, 84, 73, 0.06)',
+                border: '1px dashed #565449',
+                cursor: 'pointer',
+                transition: 'all 0.25s ease',
+                gap: 6,
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.borderColor = '#11120D';
+                e.currentTarget.style.background = 'rgba(86, 84, 73, 0.12)';
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.borderColor = '#565449';
+                e.currentTarget.style.background = 'rgba(86, 84, 73, 0.06)';
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0, overflow: 'hidden' }}>
+                <Tag size={12} color="#565449" style={{ flexShrink: 0 }} />
+                <span
+                  style={{
+                    fontSize: 10.5,
+                    fontWeight: 700,
+                    background: '#11120D',
+                    color: '#FFFBF4',
+                    padding: '2.5px 8px',
+                    borderRadius: 99,
+                    whiteSpace: 'nowrap',
+                    letterSpacing: '0.02em',
+                    lineHeight: 1.2,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    flexShrink: 0,
+                  }}
+                >
+                  {discountBadge}
+                </span>
+                <span style={{ fontSize: 11, color: '#565449', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  · Code: <strong style={{ color: '#11120D', fontFamily: 'monospace' }}>{activeOffer.promoCode || 'CAMPUS20'}</strong>
+                </span>
+              </div>
+              <ChevronRight size={13} color="#565449" style={{ flexShrink: 0 }} />
             </div>
-            <ChevronRight size={13} color="#565449" />
-          </div>
-        )}
+          );
+        })()}
 
         {/* Single Primary Action: Book Table */}
         <div style={{ paddingTop: 8, borderTop: '1px solid #F6F2EA' }}>

@@ -747,7 +747,7 @@ export default function RestaurantAdmin() {
               {restaurant.name} · {isOwner ? 'Operational Desk' : 'Guest Check-in Desk'}
             </h2>
             <div style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.75)', marginTop: 3 }}>
-              {restaurant.cuisine} Cuisine · Bennett University Approved Dining Partner
+              {restaurant.cuisine} Cuisine · Campus Approved Dining Partner
             </div>
           </div>
         </div>
@@ -1758,7 +1758,7 @@ export default function RestaurantAdmin() {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, flexWrap: 'wrap', gap: 12 }}>
             <div>
               <h3 className="font-display" style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--t1)' }}>
-                Active Bennett Campus Promotions &amp; Discounts
+                Active Campus Promotions &amp; Discounts
               </h3>
               <p style={{ fontSize: 12.5, color: 'var(--t3)' }}>
                 Configure promo codes, discount percentages, and minimum spends for university diners.
@@ -1788,7 +1788,7 @@ export default function RestaurantAdmin() {
                   {offer.title} ({offer.discountPercent}% Off)
                 </h4>
                 <p style={{ fontSize: 12, color: '#92400E', marginBottom: 12 }}>
-                  {offer.description || 'Exclusive campus dining discount for Bennett students and faculty.'}
+                  {offer.description || 'Exclusive dining discount for verified campus students and faculty.'}
                 </p>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 11.5, color: '#B45309' }}>
                   <span>Min Spend: ₹{offer.minOrderAmount || 0}</span>
@@ -2293,7 +2293,7 @@ export default function RestaurantAdmin() {
                   <input
                     className="form-input"
                     required
-                    placeholder="e.g. 20% Bennett Student Special"
+                    placeholder="e.g. 20% Campus Student Special"
                     value={offerForm.title}
                     onChange={e => setOfferForm({ ...offerForm, title: e.target.value })}
                   />
@@ -2351,7 +2351,7 @@ export default function RestaurantAdmin() {
                   <textarea
                     className="form-input"
                     rows="2"
-                    placeholder="Valid for Bennett University students with active student ID..."
+                    placeholder="Valid for verified university students with active student ID..."
                     value={offerForm.description}
                     onChange={e => setOfferForm({ ...offerForm, description: e.target.value })}
                   />
@@ -2534,12 +2534,12 @@ export default function RestaurantAdmin() {
                 </div>
 
                 <div>
-                  <label className="form-label">Bennett Email (for verification) *</label>
+                  <label className="form-label">Student / Campus Email (for verification) *</label>
                   <input
                     className="form-input"
                     type="email"
                     required
-                    placeholder="student@bennett.edu.in"
+                    placeholder="student@university.edu"
                     value={walkinForm.email}
                     onChange={e => setWalkinForm({ ...walkinForm, email: e.target.value })}
                   />

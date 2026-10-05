@@ -29,7 +29,7 @@ export default function Topbar({ onOpenMobileDrawer }) {
       <header
         style={{
           height: 68,
-          padding: '0 clamp(12px, 3vw, 36px)',
+          padding: '0 clamp(16px, 2vw, 32px)',
           background: 'rgba(255, 251, 244, 0.94)',
           backdropFilter: 'blur(12px)',
           WebkitBackdropFilter: 'blur(12px)',
@@ -95,7 +95,7 @@ export default function Topbar({ onOpenMobileDrawer }) {
                 marginTop: 3,
               }}
             >
-              CAMPUS DINING · BENNETT
+              INSTITUTION DINING NETWORK
             </span>
           </div>
 
@@ -115,7 +115,7 @@ export default function Topbar({ onOpenMobileDrawer }) {
               transition: 'all 0.45s cubic-bezier(0.16, 1, 0.3, 1)',
               flexShrink: 0,
             }}
-            title="Bennett Campus, Greater Noida"
+            title="Campus Hub, Greater Noida"
             onMouseEnter={e => {
               e.currentTarget.style.borderColor = '#11120D';
               e.currentTarget.style.transform = 'translateY(-1.5px)';
@@ -131,7 +131,7 @@ export default function Topbar({ onOpenMobileDrawer }) {
             <div className="header-location-text" style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.15 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
                 <span style={{ fontSize: 12.5, fontWeight: 600, color: '#11120D' }}>
-                  Bennett Campus
+                  Campus Hub
                 </span>
                 <ChevronDown size={12} color="#565449" />
               </div>

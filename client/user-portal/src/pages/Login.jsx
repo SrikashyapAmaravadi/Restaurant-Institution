@@ -83,11 +83,11 @@ export default function Login() {
 
   const from = location.state?.from?.pathname;
 
-  // Helper to normalize Bennett student emails or roll numbers
+  // Helper to normalize student emails or roll numbers
   const normalizeEmail = (val) => {
     const trimmed = (val || '').trim().toLowerCase();
     if (!trimmed) return '';
-    return trimmed.includes('@') ? trimmed : `${trimmed}@bennett.edu.in`;
+    return trimmed.includes('@') ? trimmed : `${trimmed}@campus.edu`;
   };
 
   // Resend countdown timer
@@ -98,12 +98,36 @@ export default function Login() {
     }
   }, [step, resendTimer]);
 
+  // Responsive slot sizing so OTP slots match the exact width of the card
+  const [slotMetrics, setSlotMetrics] = useState(() => {
+    if (typeof window === 'undefined') return { slotSize: 54, gap: 10, radius: 14 };
+    const w = window.innerWidth;
+    if (w < 380) return { slotSize: 44, gap: 7, radius: 10 };
+    if (w < 440) return { slotSize: 48, gap: 8, radius: 12 };
+    return { slotSize: 54, gap: 10, radius: 14 };
+  });
+
+  useEffect(() => {
+    const handleResize = () => {
+      const w = window.innerWidth;
+      if (w < 380) {
+        setSlotMetrics({ slotSize: 44, gap: 7, radius: 10 });
+      } else if (w < 440) {
+        setSlotMetrics({ slotSize: 48, gap: 8, radius: 12 });
+      } else {
+        setSlotMetrics({ slotSize: 54, gap: 10, radius: 14 });
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   // 1. Handle Send OTP
   const handleSendOtp = async (e) => {
     e?.preventDefault();
     const cleanEmail = normalizeEmail(otpEmail);
     if (!cleanEmail) {
-      setErrorMsg('Please enter your Bennett email or roll number.');
+      setErrorMsg('Please enter your campus email or roll number.');
       return;
     }
 
@@ -207,8 +231,8 @@ export default function Login() {
     setErrorMsg('');
     try {
       const loggedUser = await googleLogin({
-        email: 'student@bennett.edu.in',
-        name: 'Bennett Scholar'
+        email: 'student@university.edu',
+        name: 'Campus Scholar'
       });
       try {
         confetti({ particleCount: 70, spread: 60, origin: { y: 0.6 } });
@@ -216,7 +240,7 @@ export default function Login() {
       const destination = from || getAuthorizedDestination(loggedUser);
       navigate(destination, { replace: true });
     } catch (err) {
-      setErrorMsg(err.message || 'Bennett Google SSO failed. Please try again.');
+      setErrorMsg(err.message || 'Google SSO failed. Please try again.');
     } finally {
       setSubmitting(false);
     }
@@ -266,10 +290,10 @@ export default function Login() {
           className="auth-card-title"
           style={{
             fontFamily: "'Newsreader', 'Playfair Display', Georgia, serif",
-            fontSize: 24,
+            fontSize: 28,
             fontWeight: 600,
             color: '#11120D',
-            margin: '6px 0 4px',
+            margin: '8px 0 6px',
             textAlign: 'center',
             letterSpacing: '-0.02em',
           }}
@@ -279,10 +303,10 @@ export default function Login() {
         <p
           className="auth-card-subtitle"
           style={{
-            fontSize: 12.5,
+            fontSize: 14,
             fontWeight: 400,
             color: '#565449',
-            margin: '0 0 18px',
+            margin: '0 0 22px',
             textAlign: 'center',
           }}
         >
@@ -290,7 +314,7 @@ export default function Login() {
         </p>
 
         {/* Rubber Segment Auth Mode Switcher */}
-        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 18, width: '100%' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 22, width: '100%' }}>
           <RubberSegment
             items={[
               { value: 'OTP', label: 'Campus OTP', icon: <GraduationCap size={14} /> },
@@ -321,17 +345,17 @@ export default function Login() {
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: 8,
-              padding: '9px 12px',
-              borderRadius: 12,
+              gap: 9,
+              padding: '10px 14px',
+              borderRadius: 14,
               background: '#FEF2F2',
               border: '1px solid #FECACA',
               color: '#DC2626',
-              fontSize: 11.5,
+              fontSize: 12.5,
               marginBottom: 14,
             }}
           >
-            <AlertCircle size={14} style={{ flexShrink: 0 }} />
+            <AlertCircle size={15} style={{ flexShrink: 0 }} />
             <span>{errorMsg}</span>
           </div>
         )}
@@ -342,17 +366,17 @@ export default function Login() {
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: 8,
-              padding: '9px 12px',
-              borderRadius: 12,
+              gap: 9,
+              padding: '10px 14px',
+              borderRadius: 14,
               background: '#F0FDF4',
               border: '1px solid #BBF7D0',
               color: '#16A34A',
-              fontSize: 11.5,
+              fontSize: 12.5,
               marginBottom: 14,
             }}
           >
-            <CheckCircle2 size={14} style={{ flexShrink: 0 }} />
+            <CheckCircle2 size={15} style={{ flexShrink: 0 }} />
             <span>{successMsg}</span>
           </div>
         )}
@@ -367,15 +391,15 @@ export default function Login() {
                   inputMode="email"
                   autoComplete="email"
                   required
-                  placeholder="Bennett email or Roll No (e.g. e23cseu1350)"
+                  placeholder="Campus email or Roll No (e.g. scholar@university.edu)"
                   value={otpEmail}
                   onChange={e => setOtpEmail(e.target.value)}
                   disabled={submitting}
                   className="auth-card-input"
                   style={{
                     width: '100%',
-                    padding: '9px 14px',
-                    minHeight: 38,
+                    padding: '12px 18px',
+                    minHeight: 46,
                     borderRadius: 99,
                     background: '#FFFFFF',
                     border: '1px solid #E8E2D5',
@@ -397,14 +421,14 @@ export default function Login() {
                 disabled={submitting}
                 className="auth-card-btn"
                 style={{
-                  marginTop: 4,
+                  marginTop: 6,
                   width: '100%',
-                  padding: '10px 16px',
-                  minHeight: 38,
+                  padding: '12px 20px',
+                  minHeight: 46,
                   borderRadius: 99,
                   background: '#11120D',
                   color: '#FFFBF4',
-                  fontSize: 13,
+                  fontSize: 14,
                   fontWeight: 600,
                   border: '1px solid #11120D',
                   cursor: 'pointer',
@@ -439,19 +463,19 @@ export default function Login() {
                   style={{
                     background: '#F6F2EA',
                     border: '1px solid #E8E2D5',
-                    borderRadius: 14,
-                    padding: '10px 14px',
-                    marginBottom: 16,
+                    borderRadius: 16,
+                    padding: '12px 16px',
+                    marginBottom: 18,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
                   }}
                 >
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                    <span style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#767468' }}>
+                    <span style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#767468' }}>
                       Institutional Passkey
                     </span>
-                    <span style={{ fontSize: 16, fontWeight: 700, color: '#11120D', letterSpacing: '0.16em', fontFamily: 'monospace' }}>
+                    <span style={{ fontSize: 18, fontWeight: 700, color: '#11120D', letterSpacing: '0.18em', fontFamily: 'monospace' }}>
                       {serverOtp}
                     </span>
                   </div>
@@ -464,24 +488,24 @@ export default function Login() {
                       color: '#FFFBF4',
                       border: 'none',
                       borderRadius: 99,
-                      padding: '7px 13px',
-                      fontSize: 11.5,
+                      padding: '8px 16px',
+                      fontSize: 12,
                       fontWeight: 600,
                       cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: 5,
+                      gap: 6,
                       boxShadow: '0 2px 8px rgba(17, 18, 13, 0.15)',
                       transition: 'all 0.15s ease',
                     }}
                   >
-                    <Zap size={12} fill="#FFFBF4" /> Auto Fill &amp; Sign in
+                    <Zap size={13} fill="#FFFBF4" /> Auto Fill &amp; Sign in
                   </button>
                 </div>
               )}
 
               <form onSubmit={handleVerifyOtp}>
-                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
+                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 22, width: '100%' }}>
                   <CodeSlots
                     length={6}
                     value={otpCode}
@@ -502,9 +526,9 @@ export default function Login() {
                     slotColor="#F6F2EA"
                     digitColor="#FFFBF4"
                     dangerColor="#DC2626"
-                    slotSize={44}
-                    gap={8}
-                    radius={12}
+                    slotSize={slotMetrics.slotSize}
+                    gap={slotMetrics.gap}
+                    radius={slotMetrics.radius}
                     bounce={0.2}
                     settle={0.3}
                     rise={8}
@@ -515,6 +539,7 @@ export default function Login() {
                 <button
                   type="submit"
                   disabled={submitting || otpCode.length !== 6 || codeStatus === 'success'}
+                  className="auth-card-btn"
                   style={{
                     width: '100%',
                     padding: '13px 20px',
@@ -522,7 +547,7 @@ export default function Login() {
                     borderRadius: 99,
                     background: '#11120D',
                     color: '#FFFBF4',
-                    fontSize: 14,
+                    fontSize: 14.5,
                     fontWeight: 600,
                     border: '1px solid #11120D',
                     cursor: submitting || codeStatus === 'success' ? 'not-allowed' : 'pointer',
@@ -550,7 +575,7 @@ export default function Login() {
                 </button>
               </form>
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 14, fontSize: 11 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 16, fontSize: 12 }}>
                 <button
                   type="button"
                   onClick={() => {
@@ -601,13 +626,13 @@ export default function Login() {
                 className="auth-card-input"
                 style={{
                   width: '100%',
-                  padding: '9px 14px',
-                  minHeight: 38,
+                  padding: '12px 18px',
+                  minHeight: 46,
                   borderRadius: 99,
                   background: '#FFFFFF',
                   border: '1px solid #E8E2D5',
                   color: '#11120D',
-                  fontSize: '16px',
+                  fontSize: '15px',
                   boxSizing: 'border-box',
                   outline: 'none',
                   touchAction: 'manipulation',
@@ -629,13 +654,13 @@ export default function Login() {
                 className="auth-card-input"
                 style={{
                   width: '100%',
-                  padding: '9px 14px',
-                  minHeight: 38,
+                  padding: '12px 18px',
+                  minHeight: 46,
                   borderRadius: 99,
                   background: '#FFFFFF',
                   border: '1px solid #E8E2D5',
                   color: '#11120D',
-                  fontSize: '16px',
+                  fontSize: '15px',
                   boxSizing: 'border-box',
                   outline: 'none',
                   touchAction: 'manipulation',
@@ -644,10 +669,10 @@ export default function Login() {
                 onFocus={e => (e.target.style.borderColor = '#11120D')}
                 onBlur={e => (e.target.style.borderColor = '#E8E2D5')}
               />
-              <div style={{ textAlign: 'right', marginTop: 4, paddingRight: 4 }}>
+              <div style={{ textAlign: 'right', marginTop: 6, paddingRight: 6 }}>
                 <span
                   style={{
-                    fontSize: 11,
+                    fontSize: 12,
                     color: '#565449',
                     cursor: 'pointer',
                     transition: 'color 0.15s ease',
@@ -666,14 +691,14 @@ export default function Login() {
               disabled={submitting}
               className="auth-card-btn"
               style={{
-                marginTop: 4,
+                marginTop: 6,
                 width: '100%',
-                padding: '10px 16px',
-                minHeight: 38,
+                padding: '12px 20px',
+                minHeight: 46,
                 borderRadius: 99,
                 background: '#11120D',
                 color: '#FFFBF4',
-                fontSize: 13,
+                fontSize: 14,
                 fontWeight: 600,
                 border: '1px solid #11120D',
                 cursor: 'pointer',

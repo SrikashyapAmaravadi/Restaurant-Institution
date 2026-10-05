@@ -167,7 +167,7 @@ export default function StaffPortal() {
             {user?.restaurantName || 'Campus Partner Venue'} · Floor &amp; Service Desk
           </h2>
           <div style={{ fontSize: 12.5, color: 'rgba(255, 255, 255, 0.75)', marginTop: 4 }}>
-            Service: Lunch &amp; Dinner Shifts · Bennett University Partner Operations
+            Service: Lunch &amp; Dinner Shifts · Campus Partner Dining Operations
           </div>
         </div>
 
@@ -535,7 +535,7 @@ export default function StaffPortal() {
             <div className="modal-hd">
               <div>
                 <h3 className="modal-title font-display">Seat Walk-In Student</h3>
-                <div className="modal-sub">Direct table check-in for verified Bennett diner</div>
+                <div className="modal-sub">Direct table check-in for verified campus diner</div>
               </div>
               <button className="modal-close" onClick={() => setShowWalkinModal(false)}>
                 <X size={16} />
@@ -556,12 +556,12 @@ export default function StaffPortal() {
                 </div>
 
                 <div>
-                  <label className="form-label">Bennett Email (for verification)</label>
+                  <label className="form-label">Student / Campus Email (for verification)</label>
                   <input
                     className="form-input"
                     type="email"
                     required
-                    placeholder="name@bennett.edu.in"
+                    placeholder="name@university.edu"
                     value={walkinForm.email}
                     onChange={e => setWalkinForm({ ...walkinForm, email: e.target.value })}
                   />

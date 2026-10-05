@@ -15,7 +15,7 @@ const DEFAULT_RESTAURANTS = [
     hasOffer: true,
     offerLabel: '20% OFF',
     image: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80',
-    offers: [{ id: 'off-1', promoCode: 'BENNETT20', discount: '20% OFF', title: '20% OFF Campus Exclusive' }]
+    offers: [{ id: 'off-1', promoCode: 'CAMPUS20', discount: '20% OFF', title: '20% OFF Campus Exclusive' }]
   },
   {
     id: 2,

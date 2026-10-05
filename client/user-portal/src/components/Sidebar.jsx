@@ -91,7 +91,7 @@ export default function Sidebar() {
               marginTop: 5,
             }}
           >
-            CAMPUS DINING · BENNETT
+            INSTITUTION DINING NETWORK
           </span>
         </div>
 

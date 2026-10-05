@@ -14,8 +14,8 @@ export default function PendingApproval() {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  const email = location.state?.email || user?.email || 'student@bennett.edu.in';
-  const department = location.state?.department || user?.department || 'Bennett University';
+  const email = location.state?.email || user?.email || 'scholar@university.edu';
+  const department = location.state?.department || user?.department || 'Campus Department';
 
   const [checking, setChecking] = useState(false);
   const [statusMessage, setStatusMessage] = useState('');
@@ -25,7 +25,7 @@ export default function PendingApproval() {
     setStatusMessage('');
     setTimeout(() => {
       setChecking(false);
-      setStatusMessage('Request queued with Bennett University Super Admin Operations.');
+      setStatusMessage('Request queued with Campus Super Admin Operations.');
     }, 900);
   };
 
@@ -200,10 +200,10 @@ export default function PendingApproval() {
         <div style={{ marginTop: 12, fontSize: 10.5, color: '#565449' }}>
           <span>Need help? Contact </span>
           <a
-            href="mailto:superadmin@bennett.edu.in"
+            href="mailto:support@campusdining.edu"
             style={{ color: '#11120D', fontWeight: 600, textDecoration: 'none' }}
           >
-            superadmin@bennett.edu.in
+            support@campusdining.edu
           </a>
         </div>
       </div>

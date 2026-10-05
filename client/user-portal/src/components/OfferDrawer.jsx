@@ -6,7 +6,7 @@ export default function OfferDrawer({ offer, onClose, onApplyOffer }) {
 
   if (!offer) return null;
 
-  const codeToCopy = offer.code || offer.promoCode || 'BENNETT20';
+  const codeToCopy = offer.code || offer.promoCode || 'CAMPUS20';
 
   const copyCode = () => {
     navigator.clipboard?.writeText(codeToCopy);
@@ -98,7 +98,7 @@ export default function OfferDrawer({ offer, onClose, onApplyOffer }) {
               </div>
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
                 <ShieldCheck size={16} className="text-emerald-400 flex-shrink-0 mt-0.5" />
-                <span>Requires Bennett University Student/Faculty digital verification badge.</span>
+                <span>Requires verified Campus Student/Faculty digital verification badge.</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
                 <Tag size={16} className="text-indigo-400 flex-shrink-0 mt-0.5" />

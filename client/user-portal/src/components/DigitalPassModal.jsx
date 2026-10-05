@@ -27,19 +27,19 @@ export default function DigitalPassModal({ booking, onClose }) {
   const handleSavePass = async () => {
     setDownloading(true);
     try {
-      const qrUrl = booking.qrCode || `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${booking.id}-BENNETT-VERIFIED`;
+      const qrUrl = booking.qrCode || `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${booking.id}-CAMPUS-VERIFIED`;
       const res = await fetch(qrUrl);
       const blob = await res.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `Bennett-Dining-Pass-${booking.id}.png`;
+      a.download = `Campus-Dining-Pass-${booking.id}.png`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       window.URL.revokeObjectURL(url);
     } catch {
-      const qrUrl = booking.qrCode || `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${booking.id}-BENNETT-VERIFIED`;
+      const qrUrl = booking.qrCode || `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${booking.id}-CAMPUS-VERIFIED`;
       window.open(qrUrl, '_blank');
     } finally {
       setDownloading(false);
@@ -54,7 +54,7 @@ export default function DigitalPassModal({ booking, onClose }) {
 
   const handleDirections = () => {
     const venue = booking.restaurantName || 'The Spice Garden';
-    const query = encodeURIComponent(`${venue}, Bennett University, Greater Noida`);
+    const query = encodeURIComponent(`${venue}, Campus Hub, Greater Noida`);
     window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, '_blank');
   };
 
@@ -125,7 +125,7 @@ export default function DigitalPassModal({ booking, onClose }) {
               </div>
               <div>
                 <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', color: '#11120D' }}>
-                  Bennett University
+                  Campus Dining Pass
                 </div>
                 <div style={{ fontSize: 9.5, color: '#565449' }}>
                   Verified Hospitality Pass
@@ -297,7 +297,7 @@ export default function DigitalPassModal({ booking, onClose }) {
           <div style={{ textAlign: 'center', margin: '14px 0 12px' }}>
             <div className="wallet-qr-container">
               <img
-                src={booking.qrCode || `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${booking.id}-BENNETT-VERIFIED`}
+                src={booking.qrCode || `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${booking.id}-CAMPUS-VERIFIED`}
                 alt="Pass QR Code"
                 style={{
                   width: 140,

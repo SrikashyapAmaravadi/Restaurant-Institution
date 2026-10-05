@@ -193,7 +193,7 @@ export default function Profile() {
                 lineHeight: 1.1,
               }}
             >
-              BENNETT UNIVERSITY
+              {user?.institution?.toUpperCase() || 'INSTITUTION CAMPUS'}
             </div>
             <div
               style={{
@@ -303,7 +303,7 @@ export default function Profile() {
               {user?.department || user?.roleLabel || 'B.Tech Computer Science & Engineering'}
             </div>
             <div style={{ fontSize: 12, color: 'rgba(255, 251, 244, 0.75)', fontWeight: 500 }}>
-              {user?.email || 'authenticated@bennett.edu.in'}
+              {user?.email || 'scholar@university.edu'}
             </div>
           </div>
         </div>
@@ -381,7 +381,7 @@ export default function Profile() {
                 <input
                   type="email"
                   disabled
-                  value={user?.email || 'authenticated@bennett.edu.in'}
+                  value={user?.email || 'scholar@university.edu'}
                   style={{
                     width: '100%',
                     padding: '10px 14px 10px 38px',

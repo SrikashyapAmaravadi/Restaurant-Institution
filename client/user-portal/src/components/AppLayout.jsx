@@ -233,7 +233,7 @@ export default function AppLayout() {
                   nivix-dine-in
                 </span>
                 <span style={{ fontSize: 9, fontWeight: 650, letterSpacing: '0.12em', color: '#565449', textTransform: 'uppercase', marginTop: 3 }}>
-                  CAMPUS DINING · BENNETT
+                  INSTITUTION DINING NETWORK
                 </span>
               </div>
               <button

@@ -246,7 +246,7 @@ export default function NivixSearchModal({ isOpen, onClose }) {
             }}
           >
             <Sparkles size={13} color="#565449" />
-            Trending at Bennett University
+            Trending Across Campus Hubs
           </span>
           <span style={{ fontSize: 11.5, color: '#565449', fontWeight: 600 }}>
             {filteredList.length} destinations

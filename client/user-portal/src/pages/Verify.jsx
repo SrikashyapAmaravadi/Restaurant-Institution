@@ -157,7 +157,7 @@ export default function Verify() {
             }}
           >
             <Sparkles size={10} color="#565449" />
-            <span>Bennett University</span>
+            <span>Campus Institution</span>
           </div>
 
           <h2
@@ -182,7 +182,7 @@ export default function Verify() {
               marginBottom: 16,
             }}
           >
-            Your Bennett University identity is verified. You now have full access to campus dining privileges.
+            Your institutional identity is verified. You now have full access to campus dining privileges.
           </p>
 
           <div

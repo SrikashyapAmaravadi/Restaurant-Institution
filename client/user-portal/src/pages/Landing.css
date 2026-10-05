@@ -1,6 +1,7 @@
 /* ══════════════════════════════════════════════════════════════════════════
-   NIVIX DINE-IN — MINIMALIST BIG-CAPTION LANDING PAGE
-   Aesthetic: Simple, airy, bold editorial serif typography, curated imagery
+   NIVIX DINE-IN — DISTRICT-INSPIRED MINIMALIST EDITORIAL LANDING PAGE
+   Pillars: Discover · Book · Pay (Tabs & Interactive Showcase)
+   Canvas Doodle Friendly: Transparent section wrappers so doodle art is fully visible
    ══════════════════════════════════════════════════════════════════════════ */
 
 .simple-landing-root {
@@ -14,13 +15,13 @@
   position: relative;
 }
 
-/* ── Minimal Topbar ──────────────────────────────────────────────────────── */
+/* ── Minimalist Sticky Topbar ────────────────────────────────────────────── */
 .simple-landing-header {
   position: sticky;
   top: 0;
   z-index: 50;
   height: 72px;
-  background: rgba(255, 251, 244, 0.94);
+  background: rgba(255, 251, 244, 0.92);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid #E8E2D5;
@@ -55,6 +56,29 @@
   text-transform: uppercase;
 }
 
+.simple-header-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.simple-nav-link-btn {
+  background: none;
+  border: none;
+  color: #565449;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 99px;
+  transition: all 0.2s ease;
+}
+
+.simple-nav-link-btn:hover {
+  color: #11120D;
+  background: rgba(17, 18, 13, 0.05);
+}
+
 .simple-header-btn {
   display: inline-flex;
   align-items: center;
@@ -78,44 +102,22 @@
 
 /* ── Hero: Bold Big Caption ──────────────────────────────────────────────── */
 .simple-hero-section {
-  padding: clamp(60px, 9vw, 110px) clamp(20px, 5vw, 64px) clamp(40px, 6vw, 70px);
+  padding: clamp(50px, 8vw, 84px) clamp(20px, 5vw, 64px) clamp(36px, 5vw, 56px);
   max-width: 1200px;
   margin: 0 auto;
   width: 100%;
   text-align: center;
   position: relative;
   z-index: 1;
-}
-
-.simple-badge-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 16px;
-  border-radius: 99px;
-  background: #F6F2EA;
-  border: 1px solid #E8E2D5;
-  color: #565449;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  margin-bottom: 24px;
-}
-
-.simple-pulse-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #16A34A;
+  background: transparent;
 }
 
 .simple-hero-caption {
   font-family: 'Newsreader', 'Playfair Display', Georgia, serif;
-  font-size: clamp(3.2rem, 7.5vw, 6rem);
+  font-size: clamp(3.2rem, 7.5vw, 5.8rem);
   font-weight: 600;
   color: #11120D;
-  line-height: 1.04;
+  line-height: 1.05;
   letter-spacing: -0.035em;
   max-width: 1000px;
   margin: 0 auto 24px;
@@ -132,7 +134,7 @@
 .simple-hero-subcaption {
   font-size: clamp(16px, 2.2vw, 20px);
   color: #565449;
-  max-width: 640px;
+  max-width: 660px;
   margin: 0 auto 36px;
   line-height: 1.5;
   font-weight: 400;
@@ -144,7 +146,7 @@
   justify-content: center;
   gap: 14px;
   flex-wrap: wrap;
-  margin-bottom: 48px;
+  margin-bottom: 40px;
 }
 
 .simple-btn-primary {
@@ -159,7 +161,7 @@
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.25s ease;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   box-shadow: 0 4px 18px rgba(17, 18, 13, 0.16);
 }
 
@@ -222,32 +224,25 @@
   transform: translateY(-1px);
 }
 
-/* ── Section Titles with Big Captions ────────────────────────────────────── */
+/* ── Transparent Section Wrappers (Doodle art fully visible) ─────────────── */
 .simple-section {
-  padding: clamp(50px, 8vw, 90px) clamp(20px, 5vw, 64px);
+  padding: clamp(40px, 6vw, 72px) clamp(20px, 5vw, 64px);
   max-width: 1240px;
   margin: 0 auto;
   width: 100%;
   position: relative;
   z-index: 1;
-}
-
-.simple-section-outlets {
-  background: rgba(250, 246, 238, 0.86);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-top: 1px solid #E8E2D5;
-  border-bottom: 1px solid #E8E2D5;
+  background: transparent !important;
 }
 
 .simple-section-header {
   text-align: center;
-  margin-bottom: clamp(32px, 5vw, 54px);
+  margin-bottom: clamp(28px, 4.5vw, 46px);
 }
 
 .simple-section-caption {
   font-family: 'Newsreader', 'Playfair Display', Georgia, serif;
-  font-size: clamp(2.4rem, 5vw, 4rem);
+  font-size: clamp(2.4rem, 5.2vw, 4.2rem);
   font-weight: 600;
   color: #11120D;
   letter-spacing: -0.025em;
@@ -264,106 +259,690 @@
 .simple-section-sub {
   font-size: clamp(15px, 1.8vw, 17px);
   color: #565449;
-  max-width: 540px;
+  max-width: 620px;
   margin: 0 auto;
-  line-height: 1.5;
+  line-height: 1.55;
 }
 
-/* ── Curated Outlet Showcase ─────────────────────────────────────────────── */
-.simple-gallery-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 270px), 1fr));
-  gap: 24px;
+/* ══════════════════════════════════════════════════════════════════════════
+   DISTRICT EXPERIENCE SECTION (BACKGROUND REMOVED FOR DOODLE ART)
+   ══════════════════════════════════════════════════════════════════════════ */
+.district-experience-section {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-top: none !important;
+  border-bottom: none !important;
+  margin: 0 auto 30px;
 }
 
-.simple-gallery-card {
-  background: #FFFFFF;
-  border: 1px solid #E8E2D5;
-  border-radius: 22px;
-  overflow: hidden;
-  cursor: pointer;
-  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 4px 16px rgba(17, 18, 13, 0.03);
+.district-prebadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 14px;
+  border-radius: 99px;
+  background: #EFE9DC;
+  border: 1px solid #E0D7C6;
+  color: #565449;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+
+/* District Tabs Switcher */
+.district-tabs-bar {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  max-width: 780px;
+  margin: 0 auto 36px;
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  padding: 8px;
+  border-radius: 99px;
+  border: 1px solid #E8E2D5;
+  box-shadow: 0 4px 16px rgba(17, 18, 13, 0.05);
 }
 
-.simple-gallery-card:hover {
-  transform: translateY(-6px);
-  border-color: #11120D;
-  box-shadow: 0 16px 36px rgba(17, 18, 13, 0.1);
+.district-tab-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 22px;
+  border-radius: 99px;
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  text-align: left;
 }
 
-.simple-card-image-wrap {
-  width: 100%;
-  height: 220px;
-  overflow: hidden;
-  position: relative;
+.district-tab-btn:hover {
   background: #F6F2EA;
 }
 
-.simple-card-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.5s ease;
-}
-
-.simple-gallery-card:hover .simple-card-image {
-  transform: scale(1.06);
-}
-
-.simple-card-tag {
-  position: absolute;
-  top: 14px;
-  left: 14px;
+.district-tab-btn.active {
   background: #11120D;
   color: #FFFBF4;
-  padding: 4px 11px;
-  border-radius: 99px;
-  font-size: 10.5px;
+  box-shadow: 0 4px 16px rgba(17, 18, 13, 0.15);
+}
+
+.district-tab-icon-wrap {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #F6F2EA;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #11120D;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.district-tab-btn.active .district-tab-icon-wrap {
+  background: rgba(255, 251, 244, 0.2);
+  color: #FFFBF4;
+}
+
+.district-tab-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.district-tab-num {
+  font-size: 9.5px;
   font-weight: 700;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.12em;
+  color: #8C887B;
   text-transform: uppercase;
 }
 
-.simple-card-body {
-  padding: 24px;
-  display: flex;
-  flex-direction: column;
-  flex: 1;
+.district-tab-btn.active .district-tab-num {
+  color: #D8CFBC;
 }
 
-.simple-card-title {
-  font-family: 'Newsreader', Georgia, serif;
-  font-size: 22px;
+.district-tab-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #11120D;
+  letter-spacing: -0.01em;
+}
+
+.district-tab-btn.active .district-tab-title {
+  color: #FFFBF4;
+}
+
+/* District Showcase Box (Clean Crisp Card) */
+.district-showcase-box {
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid #E8E2D5;
+  border-radius: 28px;
+  padding: clamp(28px, 4vw, 48px);
+  box-shadow: 0 16px 40px rgba(17, 18, 13, 0.04);
+  margin-bottom: 36px;
+}
+
+.district-pillar-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(28px, 5vw, 60px);
+  align-items: center;
+}
+
+.animate-fade-in {
+  animation: districtFadeIn 0.35s ease-out forwards;
+}
+
+@keyframes districtFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.district-text-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.district-step-pill {
+  align-self: flex-start;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #16A34A;
+  background: #DCFCE7;
+  padding: 4px 12px;
+  border-radius: 99px;
+  margin-bottom: 16px;
+}
+
+.district-showcase-title {
+  font-family: 'Newsreader', 'Playfair Display', Georgia, serif;
+  font-size: clamp(2rem, 3.5vw, 2.8rem);
   font-weight: 600;
+  color: #11120D;
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+  margin: 0 0 16px;
+}
+
+.district-showcase-desc {
+  font-size: 15.5px;
+  color: #565449;
+  line-height: 1.6;
+  margin: 0 0 24px;
+}
+
+.district-feature-bullets {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 28px;
+}
+
+.district-bullet-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 14px;
+  color: #2B2C24;
+  line-height: 1.45;
+}
+
+.district-bullet-icon {
+  color: #16A34A;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.district-cta-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.district-micro-hint {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #565449;
+}
+
+/* Interactive Simulation Mockup Card */
+.district-interactive-col {
+  width: 100%;
+}
+
+.district-mockup-card {
+  background: #FAF7F2;
+  border: 1px solid #E8E2D5;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(17, 18, 13, 0.06);
+}
+
+.district-mockup-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 18px;
+  background: #FFFFFF;
+  border-bottom: 1px solid #E8E2D5;
+}
+
+.district-mockup-dots {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mockup-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+}
+
+.mockup-dot.red { background: #EF4444; }
+.mockup-dot.yellow { background: #F59E0B; }
+.mockup-dot.green { background: #10B981; }
+
+.district-mockup-label {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #565449;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.district-live-badge {
+  font-size: 10px;
+  font-weight: 800;
+  color: #16A34A;
+  letter-spacing: 0.08em;
+}
+
+.district-mockup-body {
+  padding: 20px;
+}
+
+/* Category Filter Chips */
+.district-mockup-chips {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 12px;
+  margin-bottom: 14px;
+}
+
+.mockup-chip {
+  padding: 6px 14px;
+  border-radius: 99px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid #E8E2D5;
+  background: #FFFFFF;
+  color: #565449;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.mockup-chip.active {
+  background: #11120D;
+  color: #FFFBF4;
+  border-color: #11120D;
+}
+
+/* Venue Preview */
+.district-venue-preview {
+  background: #FFFFFF;
+  border: 1px solid #E8E2D5;
+  border-radius: 16px;
+  padding: 18px;
+  box-shadow: 0 4px 14px rgba(17, 18, 13, 0.03);
+}
+
+.venue-preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.venue-preview-title {
+  font-family: 'Newsreader', Georgia, serif;
+  font-size: 18px;
+  font-weight: 600;
+  color: #11120D;
+}
+
+.venue-preview-sub {
+  font-size: 12px;
+  color: #6B7280;
+  margin-top: 2px;
+}
+
+.venue-rating-badge {
+  background: #F6F2EA;
+  color: #11120D;
+  font-size: 12.5px;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 8px;
+}
+
+.venue-status-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.status-indicator-live {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #16A34A;
+}
+
+.pulse-ping {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #16A34A;
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.25);
+}
+
+.venue-discount-tag {
+  background: #11120D;
+  color: #FFFBF4;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 99px;
+  letter-spacing: 0.05em;
+}
+
+.venue-amenities {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.venue-pill {
+  font-size: 11px;
+  background: #F6F2EA;
+  color: #565449;
+  padding: 3px 9px;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+.venue-action-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #11120D;
+  color: #FFFBF4;
+  border: none;
+  padding: 11px 18px;
+  border-radius: 99px;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.venue-action-btn:hover {
+  background: #2B2C24;
+}
+
+/* Booking Mockup Details */
+.mockup-section-label {
+  font-size: 11.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #565449;
+  margin-bottom: 8px;
+}
+
+.district-slot-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.mockup-slot-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 8px 4px;
+  border-radius: 10px;
+  border: 1px solid #E8E2D5;
+  background: #FFFFFF;
+  color: #11120D;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.mockup-slot-btn.active {
+  background: #11120D;
+  color: #FFFBF4;
+  border-color: #11120D;
+}
+
+.district-party-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.mockup-party-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 8px 6px;
+  border-radius: 10px;
+  border: 1px solid #E8E2D5;
+  background: #FFFFFF;
+  color: #11120D;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.mockup-party-btn.active {
+  background: #11120D;
+  color: #FFFBF4;
+  border-color: #11120D;
+}
+
+.booking-pass-preview {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #FFFFFF;
+  border: 1px dashed #D8CFBC;
+  padding: 14px 16px;
+  border-radius: 14px;
+  margin-bottom: 16px;
+}
+
+.pass-preview-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pass-preview-qr {
+  color: #11120D;
+  background: #F6F2EA;
+  padding: 4px;
+  border-radius: 8px;
+}
+
+.pass-code {
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  font-weight: 800;
+  color: #11120D;
+}
+
+.pass-details {
+  font-size: 12px;
+  color: #565449;
+  margin-top: 2px;
+}
+
+.pass-status-pill {
+  background: #DCFCE7;
+  color: #16A34A;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 99px;
+  letter-spacing: 0.06em;
+}
+
+/* Pay Mockup Details */
+.pay-breakdown-card {
+  background: #FFFFFF;
+  border: 1px solid #E8E2D5;
+  border-radius: 16px;
+  padding: 16px 18px;
+  margin-bottom: 14px;
+}
+
+.pay-breakdown-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  color: #565449;
+  margin-bottom: 8px;
+}
+
+.pay-item-name {
+  color: #11120D;
+  font-weight: 500;
+}
+
+.pay-item-val {
+  font-weight: 600;
+  color: #11120D;
+}
+
+.pay-divider {
+  height: 1px;
+  background: #F1ECE1;
+  margin: 10px 0;
+}
+
+.pay-divider.bold {
+  height: 1.5px;
+  background: #E8E2D5;
+}
+
+.privilege-row {
+  color: #16A34A;
+  font-weight: 600;
+}
+
+.privilege-label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.privilege-val {
+  font-weight: 700;
+}
+
+.total-row {
+  font-size: 15px;
+  font-weight: 700;
+  color: #11120D;
+  margin-bottom: 0;
+}
+
+.total-amount {
+  font-size: 18px;
+  font-weight: 800;
+  color: #11120D;
+}
+
+.pay-settle-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #11120D;
+  color: #FFFBF4;
+  border: none;
+  padding: 13px 18px;
+  border-radius: 99px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.pay-settle-btn:hover {
+  background: #2B2C24;
+}
+
+.pay-settle-btn.settled {
+  background: #16A34A;
+  color: #FFFFFF;
+}
+
+.pay-footnote {
+  text-align: center;
+  font-size: 11px;
+  color: #6B7280;
+  margin-top: 10px;
+}
+
+/* Bottom Triplet Cards */
+.district-triplet-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+  gap: 20px;
+}
+
+.district-mini-card {
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid #E8E2D5;
+  border-radius: 18px;
+  padding: 24px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 16px rgba(17, 18, 13, 0.03);
+}
+
+.district-mini-card:hover {
+  transform: translateY(-4px);
+  border-color: #11120D;
+  box-shadow: 0 10px 25px rgba(17, 18, 13, 0.08);
+}
+
+.mini-card-icon-wrap {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: #F6F2EA;
+  color: #11120D;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+
+.mini-card-title {
+  font-size: 16px;
+  font-weight: 700;
   color: #11120D;
   margin: 0 0 6px;
 }
 
-.simple-card-meta {
-  font-size: 13px;
+.mini-card-desc {
+  font-size: 13.5px;
   color: #565449;
-  margin-bottom: 18px;
-}
-
-.simple-card-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-top: 16px;
-  border-top: 1px solid #F6F2EA;
-  margin-top: auto;
-}
-
-.simple-card-action {
-  font-size: 13px;
-  font-weight: 700;
-  color: #11120D;
-  display: flex;
-  align-items: center;
-  gap: 5px;
+  line-height: 1.5;
+  margin: 0;
 }
 
 /* ── Big Voucher Ticket Card ─────────────────────────────────────────────── */
@@ -430,30 +1009,409 @@
   transition: all 0.2s ease;
 }
 
-/* ── Minimal Clean Footer ────────────────────────────────────────────────── */
-.simple-footer {
+/* ══════════════════════════════════════════════════════════════════════════
+   COMPREHENSIVE MODERN FOOTER
+   ══════════════════════════════════════════════════════════════════════════ */
+.modern-footer-root {
   border-top: 1px solid #E8E2D5;
-  background: rgba(255, 255, 255, 0.88);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  padding: 36px 20px;
-  margin-top: auto;
-  text-align: center;
+  background: transparent;
+  margin-top: 40px;
   position: relative;
   z-index: 1;
 }
 
-.simple-footer-content {
+.modern-footer-container {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: clamp(48px, 6vw, 80px) clamp(20px, 5vw, 64px) 36px;
+}
+
+.footer-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 36px;
+  flex-wrap: wrap;
+  padding-bottom: 48px;
+  border-bottom: 1px solid #F1ECE1;
+  margin-bottom: 48px;
+}
+
+.footer-brand-col {
+  max-width: 480px;
+}
+
+.footer-brand-logo-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.footer-brand-title {
+  font-family: 'Newsreader', Georgia, serif;
+  font-size: 28px;
+  font-weight: 600;
+  font-style: italic;
+  color: #11120D;
+  letter-spacing: -0.02em;
+}
+
+.footer-brand-pill {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: #565449;
+  background: #F6F2EA;
+  border: 1px solid #E8E2D5;
+  padding: 3px 9px;
+  border-radius: 99px;
+}
+
+.footer-brand-tagline {
+  font-size: 14.5px;
+  color: #565449;
+  line-height: 1.55;
+  margin: 0 0 16px;
+}
+
+.footer-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #16A34A;
+  background: #DCFCE7;
+  padding: 5px 12px;
+  border-radius: 99px;
+}
+
+.status-dot-pulse {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #16A34A;
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.2);
+}
+
+.footer-quick-actions {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.footer-stat-box {
+  background: #FAF7F2;
+  border: 1px solid #E8E2D5;
+  border-radius: 16px;
+  padding: 16px 22px;
+  display: flex;
+  flex-direction: column;
+  min-width: 120px;
+}
+
+.footer-stat-number {
+  font-family: 'Newsreader', Georgia, serif;
+  font-size: 26px;
+  font-weight: 700;
+  color: #11120D;
+}
+
+.footer-stat-label {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #6B7280;
+  margin-top: 2px;
+}
+
+/* Multi-Column Grid */
+.footer-columns-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 36px;
+  margin-bottom: 54px;
+}
+
+.footer-nav-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.footer-col-heading {
+  font-size: 13.5px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #11120D;
+  margin: 0 0 18px;
+}
+
+.footer-links-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.footer-links-list li button {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 14px;
+  color: #565449;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s ease;
+}
+
+.footer-links-list li button:hover {
+  color: #11120D;
+  transform: translateX(2px);
+}
+
+.footer-social-intro {
+  font-size: 13px;
+  color: #6B7280;
+  line-height: 1.45;
+  margin: 0 0 14px;
+}
+
+.footer-social-handles-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.footer-social-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: #FAF7F2;
+  border: 1px solid #E8E2D5;
+  border-radius: 12px;
+  text-decoration: none;
+  color: #11120D;
+  transition: all 0.2s ease;
+}
+
+.footer-social-card:hover {
+  background: #11120D;
+  color: #FFFBF4;
+  border-color: #11120D;
+  transform: translateY(-1.5px);
+}
+
+.social-pill-icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 14px;
-  flex-wrap: wrap;
-  font-size: 13px;
-  color: #565449;
 }
 
-/* ── Mobile Tweaks ───────────────────────────────────────────────────────── */
+.social-pill-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.social-pill-name {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.social-pill-handle {
+  font-size: 11px;
+  color: #6B7280;
+}
+
+.footer-social-card:hover .social-pill-handle {
+  color: #D8CFBC;
+}
+
+/* Bottom Bar */
+.footer-bottom-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  flex-wrap: wrap;
+  padding-top: 28px;
+  border-top: 1px solid #F1ECE1;
+  font-size: 13px;
+  color: #6B7280;
+}
+
+.footer-bottom-copy {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.footer-divider-dot {
+  color: #D8CFBC;
+}
+
+.footer-trust-chips {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.trust-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #11120D;
+  background: #FAF7F2;
+  padding: 4px 10px;
+  border-radius: 99px;
+  border: 1px solid #E8E2D5;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   LEGAL / POLICIES MODAL
+   ══════════════════════════════════════════════════════════════════════════ */
+.legal-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 18, 13, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 20px;
+  animation: modalFade 0.2s ease-out;
+}
+
+@keyframes modalFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.legal-modal-card {
+  background: #FFFFFF;
+  border: 1px solid #E8E2D5;
+  border-radius: 24px;
+  max-width: 680px;
+  width: 100%;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 25px 60px rgba(17, 18, 13, 0.25);
+  animation: cardScale 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes cardScale {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.legal-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px 28px;
+  border-bottom: 1px solid #F1ECE1;
+}
+
+.legal-modal-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.legal-modal-title {
+  font-family: 'Newsreader', Georgia, serif;
+  font-size: 22px;
+  font-weight: 600;
+  color: #11120D;
+  margin: 0;
+}
+
+.legal-modal-close-btn {
+  background: #F6F2EA;
+  border: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #11120D;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.legal-modal-close-btn:hover {
+  background: #11120D;
+  color: #FFFBF4;
+}
+
+.legal-modal-body {
+  padding: 24px 28px;
+  overflow-y: auto;
+  line-height: 1.6;
+}
+
+.legal-text-content h4 {
+  font-size: 15px;
+  font-weight: 700;
+  color: #11120D;
+  margin: 18px 0 6px;
+}
+
+.legal-text-content h4:first-child {
+  margin-top: 0;
+}
+
+.legal-text-content p {
+  font-size: 14px;
+  color: #565449;
+  margin: 0 0 12px;
+}
+
+.legal-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 28px;
+  border-top: 1px solid #F1ECE1;
+  background: #FAF7F2;
+  border-bottom-left-radius: 24px;
+  border-bottom-right-radius: 24px;
+}
+
+.legal-footer-note {
+  font-size: 12px;
+  color: #6B7280;
+}
+
+/* ── Responsive Queries ──────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .district-pillar-content {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  .footer-columns-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 @media (max-width: 640px) {
   .simple-hero-actions {
     flex-direction: column;
@@ -464,6 +1422,32 @@
   .simple-btn-secondary {
     width: 100%;
     justify-content: center;
+  }
+
+  .district-tabs-bar {
+    flex-direction: column;
+    border-radius: 24px;
+  }
+
+  .district-tab-btn {
+    width: 100%;
+  }
+
+  .district-slot-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .footer-columns-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-top-row {
+    flex-direction: column;
+  }
+
+  .footer-bottom-bar {
+    flex-direction: column;
+    align-items: flex-start;
   }
 
   .simple-voucher-card {

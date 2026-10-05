@@ -81,7 +81,7 @@ export default function Register() {
   const [submitted, setSubmitted] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
-  const isBennettEmail = email.trim().toLowerCase().endsWith('@bennett.edu.in');
+  const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
 
   const roleOptions = [
     { key: 'STUDENT', label: 'Student / Faculty', icon: GraduationCap },
@@ -91,8 +91,8 @@ export default function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (role === 'STUDENT' && !isBennettEmail) {
-      setErrorMsg('Student & Faculty accounts require an official @bennett.edu.in email.');
+    if (role === 'STUDENT' && !isValidEmail) {
+      setErrorMsg('Please provide a valid student or institutional email.');
       return;
     }
 
@@ -128,8 +128,8 @@ export default function Register() {
     setErrorMsg('');
     try {
       const loggedUser = await googleLogin({
-        email: 'student@bennett.edu.in',
-        name: 'Bennett Scholar'
+        email: 'student@university.edu',
+        name: 'Campus Scholar'
       });
       try {
         confetti({ particleCount: 70, spread: 60, origin: { y: 0.6 } });
@@ -182,7 +182,7 @@ export default function Register() {
               display: 'inline-block',
             }}
           >
-            nivix-dine-in · Bennett
+            nivix-dine-in · Campus Network
           </span>
         </div>
 
@@ -191,10 +191,10 @@ export default function Register() {
           className="auth-card-title"
           style={{
             fontFamily: "'Newsreader', 'Playfair Display', Georgia, serif",
-            fontSize: 24,
+            fontSize: 28,
             fontWeight: 600,
             color: '#11120D',
-            margin: '6px 0 4px',
+            margin: '8px 0 6px',
             textAlign: 'center',
             letterSpacing: '-0.02em',
           }}
@@ -204,10 +204,10 @@ export default function Register() {
         <p
           className="auth-card-subtitle"
           style={{
-            fontSize: 12.5,
+            fontSize: 14,
             fontWeight: 400,
             color: '#565449',
-            margin: '0 0 18px',
+            margin: '0 0 22px',
             textAlign: 'center',
           }}
         >
@@ -320,7 +320,7 @@ export default function Register() {
             <input
               type="email"
               required
-              placeholder={role === 'STUDENT' ? 'name@bennett.edu.in' : 'name@restaurant.com'}
+              placeholder={role === 'STUDENT' ? 'name@university.edu or student email' : 'name@restaurant.com'}
               value={email}
               onChange={e => setEmail(e.target.value)}
               disabled={submitted}
@@ -331,7 +331,7 @@ export default function Register() {
                 minHeight: 38,
                 borderRadius: 99,
                 background: '#FFFFFF',
-                border: role === 'STUDENT' && email && !isBennettEmail ? '1.5px solid #DC2626' : '1px solid #E8E2D5',
+                border: role === 'STUDENT' && email && !isValidEmail ? '1.5px solid #DC2626' : '1px solid #E8E2D5',
                 color: '#11120D',
                 fontSize: '16px',
                 boxSizing: 'border-box',
@@ -343,9 +343,9 @@ export default function Register() {
               onBlur={e => (e.target.style.borderColor = '#E8E2D5')}
             />
             {role === 'STUDENT' && email && (
-              <div style={{ marginTop: 3, paddingLeft: 6, fontSize: 10.5, display: 'flex', alignItems: 'center', gap: 4, color: isBennettEmail ? '#16A34A' : '#DC2626' }}>
-                {isBennettEmail ? <CheckCircle2 size={11} /> : <AlertCircle size={11} />}
-                <span>{isBennettEmail ? 'Verified institutional email' : 'Requires @bennett.edu.in domain'}</span>
+              <div style={{ marginTop: 3, paddingLeft: 6, fontSize: 10.5, display: 'flex', alignItems: 'center', gap: 4, color: isValidEmail ? '#16A34A' : '#DC2626' }}>
+                {isValidEmail ? <CheckCircle2 size={11} /> : <AlertCircle size={11} />}
+                <span>{isValidEmail ? 'Valid institutional / student email' : 'Please enter a valid email address'}</span>
               </div>
             )}
           </div>
@@ -410,7 +410,7 @@ export default function Register() {
           {/* Primary Button — Pill shape in Smoky Black with Floral White text */}
           <button
             type="submit"
-            disabled={submitted || (role === 'STUDENT' && email && !isBennettEmail)}
+            disabled={submitted || (role === 'STUDENT' && email && !isValidEmail)}
             className="auth-card-btn"
             style={{
               marginTop: 4,

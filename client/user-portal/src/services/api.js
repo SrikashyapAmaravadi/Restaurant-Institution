@@ -56,9 +56,9 @@ function handleOfflineFallback(endpoint, options = {}) {
       data: [
         {
           id: 'off-1',
-          code: 'BENNETT20',
+          code: 'CAMPUS20',
           title: 'Flat 20% Off for Verified Students',
-          description: 'Show Bennett Student passkey to redeem 20% discount on total billing across all partner restaurants.',
+          description: 'Show verified student or campus passkey to redeem 20% discount on total billing across all partner restaurants.',
           discountPercentage: 20,
           maxDiscount: 150,
           minBill: 300,
@@ -90,6 +90,30 @@ function handleOfflineFallback(endpoint, options = {}) {
           domain: '@bennett.edu.in',
           location: 'Plot 8-11, TechZone II, Greater Noida, UP 201310',
           activeUsers: 3420,
+          status: 'ACTIVE'
+        },
+        {
+          id: 'inst-2',
+          name: 'Shiv Nadar University',
+          domain: '@snu.edu.in',
+          location: 'NH91, Greater Noida, UP 203207',
+          activeUsers: 2850,
+          status: 'ACTIVE'
+        },
+        {
+          id: 'inst-3',
+          name: 'Amity University',
+          domain: '@amity.edu',
+          location: 'Sector 125, Noida, UP 201313',
+          activeUsers: 6200,
+          status: 'ACTIVE'
+        },
+        {
+          id: 'inst-4',
+          name: 'Sharda University',
+          domain: '@sharda.ac.in',
+          location: 'Knowledge Park III, Greater Noida, UP 201310',
+          activeUsers: 4100,
           status: 'ACTIVE'
         }
       ]
@@ -548,7 +572,7 @@ async function request(endpoint, options = {}) {
     });
   } catch (networkErr) {
     if (endpoint.startsWith('/auth') || options.method === 'POST' || options.method === 'PATCH' || options.method === 'DELETE') {
-      throw new Error('Unable to connect to Dine@Bennett server. Please verify your network connection.');
+      throw new Error('Unable to connect to Nivix Dine-In server. Please verify your network connection.');
     }
     const fallback = handleOfflineFallback(endpoint, options);
     if (fallback) return fallback;

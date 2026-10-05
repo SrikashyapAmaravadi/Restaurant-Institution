@@ -49,12 +49,12 @@ const DINNER_SLOTS = [
 ];
 
 const OCCASIONS = [
-  { label: 'Casual Dining', emoji: '🍽️' },
-  { label: 'Study Group', emoji: '📚' },
-  { label: 'Birthday Celebration', emoji: '🎂' },
-  { label: 'Faculty / Club Meet', emoji: '🤝' },
-  { label: 'Date Night', emoji: '✨' },
-  { label: 'Exam Treat', emoji: '🎉' },
+  { label: 'Casual Dining' },
+  { label: 'Study Group' },
+  { label: 'Birthday Celebration' },
+  { label: 'Faculty / Club Meet' },
+  { label: 'Date Night' },
+  { label: 'Exam Treat' },
 ];
 
 const BADGE_COLOR = {
@@ -148,7 +148,7 @@ export default function BookingModal({ restaurant, onClose, onBookingSuccess }) 
       specialRequest: `${occasion}${specialNotes ? ` · ${specialNotes}` : ''}`,
       tableAssigned: null,
       orders: preOrderList.map(p => ({ name: p.name, price: p.price, quantity: p.qty })),
-      qrCode: `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${bookingCode}-BENNETT-VERIFIED`,
+      qrCode: `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${bookingCode}-CAMPUS-VERIFIED`,
     };
     try {
       const saved = await createReservation(bookingPayload);
@@ -239,7 +239,7 @@ export default function BookingModal({ restaurant, onClose, onBookingSuccess }) 
                     border: '1px solid rgba(216,207,188,0.25)',
                     display: 'inline-flex', alignItems: 'center', gap: 3, whiteSpace: 'nowrap',
                   }}>
-                    <Check size={9} /> Bennett Partner
+                    <Check size={9} /> Campus Partner
                   </span>
                 </div>
                 <div style={{ fontSize: 12, color: 'rgba(255,251,244,0.65)', display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -645,7 +645,6 @@ export default function BookingModal({ restaurant, onClose, onBookingSuccess }) 
                             boxShadow: isSel ? '0 3px 10px rgba(17,18,13,0.15)' : 'none',
                           }}
                         >
-                          <span>{occ.emoji}</span>
                           <span>{occ.label}</span>
                         </button>
                       );
@@ -717,7 +716,7 @@ export default function BookingModal({ restaurant, onClose, onBookingSuccess }) 
                   Dining Pass Confirmed!
                 </h3>
                 <p style={{ fontSize: 13, color: '#565449', margin: '0 0 20px', lineHeight: 1.5 }}>
-                  Your table at <strong style={{ color: '#11120D' }}>{restaurant.name}</strong> is reserved with Bennett Tier-1 priority.
+                  Your table at <strong style={{ color: '#11120D' }}>{restaurant.name}</strong> is reserved with verified campus priority.
                 </p>
 
                 {/* Digital ticket */}

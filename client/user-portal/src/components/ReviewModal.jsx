@@ -62,7 +62,7 @@ export default function ReviewModal({ restaurant, onClose, onReviewSubmitted }) 
         <div className="modal-hd" style={{ padding: '22px 28px 18px', background: '#FFFFFF', borderBottom: '1px solid #E8E2D5' }}>
           <div>
             <div className="modal-title font-display" style={{ color: '#11120D', fontSize: '1.4rem' }}>Write a Verified Review</div>
-            <div className="modal-sub" style={{ color: '#565449', fontSize: 12.5 }}>{restaurant.name} · Bennett Dining Network</div>
+            <div className="modal-sub" style={{ color: '#565449', fontSize: 12.5 }}>{restaurant.name} · Campus Dining Network</div>
           </div>
           <button className="modal-close" onClick={onClose}><X size={18} /></button>
         </div>
@@ -190,7 +190,7 @@ export default function ReviewModal({ restaurant, onClose, onReviewSubmitted }) 
 
             <div style={{ fontSize: 11.5, color: '#565449', display: 'flex', alignItems: 'center', gap: 6 }}>
               <Sparkles size={14} color="#D97706" />
-              <span>Reviews are verified with your official @bennett.edu.in profile.</span>
+              <span>Reviews are verified with your official institutional student/faculty profile.</span>
             </div>
           </div>
 

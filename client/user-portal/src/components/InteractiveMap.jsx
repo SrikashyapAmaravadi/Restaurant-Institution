@@ -107,7 +107,7 @@ export default function InteractiveMap({ restaurants, onSelectRestaurant }) {
             whiteSpace: 'nowrap',
             boxShadow: 'var(--shadow-sm)'
           }}>
-            Bennett Campus (Center)
+            Campus Center Hub
           </div>
         </div>
 
@@ -184,7 +184,7 @@ export default function InteractiveMap({ restaurants, onSelectRestaurant }) {
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <span style={{ width: 10, height: 10, borderRadius: '50%', background: 'var(--primary)' }} />
-            <span>Bennett University</span>
+            <span>Campus Hub (Center)</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#FFFFFF', border: '1.5px solid var(--border)' }} />
@@ -227,7 +227,7 @@ export default function InteractiveMap({ restaurants, onSelectRestaurant }) {
                 </span>
                 <span>·</span>
                 <span style={{ color: 'var(--primary)', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-                  <MapPin size={13} /> {activeRest.distance} km from Bennett
+                  <MapPin size={13} /> {activeRest.distance} km from Campus Hub
                 </span>
               </div>
             </div>

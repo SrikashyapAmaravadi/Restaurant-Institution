@@ -351,15 +351,15 @@ export default function RestaurantDetail() {
       }))
     : [
         {
-          id: `offer-bennett-${restaurant?.id || 1}`,
-          title: 'Bennett Scholar Privilege',
+          id: `offer-campus-${restaurant?.id || 1}`,
+          title: 'Campus Scholar Privilege',
           description: 'Flat 20% discount on entire dining bill with verified student or faculty identification.',
           discount: '20% OFF',
           validTill: 'End of Semester',
-          code: 'BENNETT20',
-          promoCode: 'BENNETT20',
+          code: 'CAMPUS20',
+          promoCode: 'CAMPUS20',
           minOrderAmount: 300,
-          terms: 'Valid on table dine-in with Bennett institutional pass.'
+          terms: 'Valid on table dine-in with campus institutional pass.'
         }
       ];
 
@@ -551,7 +551,7 @@ export default function RestaurantDetail() {
                   alignItems: 'center',
                   gap: 5
                 }}>
-                  <GraduationCap size={13} /> Bennett Partner
+                  <GraduationCap size={13} /> Campus Partner
                 </span>
 
                 <span style={{
@@ -623,7 +623,7 @@ export default function RestaurantDetail() {
                 </span>
                 <span>·</span>
                 <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                  <MapPin size={14} /> {restaurant.distance} km from Bennett Campus
+                  <MapPin size={14} /> {restaurant.distance} km from Campus Hub
                 </span>
                 <span>·</span>
                 <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
@@ -1216,8 +1216,8 @@ export default function RestaurantDetail() {
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                   {reviewsList.map(rev => {
-                    const authorName = rev.user?.name || rev.author || 'Bennett Scholar';
-                    const authorDept = rev.user?.department || rev.dept || 'Bennett Member';
+                    const authorName = rev.user?.name || rev.author || 'Campus Scholar';
+                    const authorDept = rev.user?.department || rev.dept || 'Campus Member';
                     const avatarUrl = rev.user?.avatar || rev.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(authorName)}&background=F6F2EA&color=11120D`;
                     const dateStr = rev.createdAt ? new Date(rev.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : (rev.date || 'Recently');
                     const isUpvoted = !!upvotedMap[rev.id];
@@ -1364,7 +1364,7 @@ export default function RestaurantDetail() {
               }}>
                 <div>
                   <div style={{ fontSize: 14, fontWeight: 700, color: '#11120D', marginBottom: 2 }}>
-                    {restaurant.distance} km from Bennett University Main Gate
+                    {restaurant.distance} km from Campus Center Hub
                   </div>
                   <div style={{ fontSize: 12.5, color: '#565449' }}>
                     Approx. 4 mins by auto-rickshaw or 10-12 mins walking distance.
@@ -1375,7 +1375,7 @@ export default function RestaurantDetail() {
                   type="button"
                   className="btn btn-primary btn-sm"
                   onClick={() => {
-                    const query = encodeURIComponent(`${restaurant.name}, Bennett University, Greater Noida`);
+                    const query = encodeURIComponent(`${restaurant.name}, Campus Hub, Greater Noida`);
                     window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, '_blank');
                   }}
                   style={{ borderRadius: 99, fontWeight: 600, gap: 6, padding: '9px 20px' }}
@@ -1411,7 +1411,7 @@ export default function RestaurantDetail() {
           </div>
 
           <p style={{ fontSize: 12.5, color: '#565449', lineHeight: 1.5, marginBottom: 18 }}>
-            Guaranteed seating for Bennett students &amp; faculty members with digital QR entry.
+            Guaranteed seating for verified students &amp; faculty members with digital QR entry.
           </p>
 
           <div style={{

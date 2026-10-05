@@ -348,7 +348,7 @@ export default function SuperAdmin() {
         setModerationReviews(res.data.map(r => ({
           id: r.id,
           restaurant: r.restaurant?.name || 'Partner Outlet',
-          author: `${r.user?.name || r.userName || 'Student'} (${r.user?.department || r.userDept || 'Bennett'})`,
+          author: `${r.user?.name || r.userName || 'Student'} (${r.user?.department || r.userDept || 'Campus'})`,
           rating: r.rating,
           date: new Date(r.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }),
           text: r.comment,
@@ -403,7 +403,7 @@ export default function SuperAdmin() {
                 <span className="status-pill" style={{ background: 'rgba(255, 255, 255, 0.12)', color: '#FFFFFF', border: '1px solid rgba(255, 255, 255, 0.22)', padding: '3px 10px', fontSize: 11 }}>
                   ● Super Admin Governance
                 </span>
-                <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.75)' }}>Institution: Bennett University</span>
+                <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.75)' }}>Multi-Institution Campus Network</span>
               </div>
               <h2 className="font-display" style={{ fontSize: '1.75rem', fontWeight: 800, color: '#fff', margin: '4px 0 2px' }}>
                 Platform Operations &amp; Verification Gate
@@ -804,7 +804,7 @@ export default function SuperAdmin() {
                 Live Campus Dining Reservations &amp; Queue
               </h3>
               <p style={{ fontSize: 12.5, color: '#565449' }}>
-                Unified real-time feed of table bookings across all Bennett University partner restaurants.
+                Unified real-time feed of table bookings across all campus partner restaurants.
               </p>
             </div>
             <span className="status-pill">{reservations.length} Active Reservations</span>
@@ -837,7 +837,7 @@ export default function SuperAdmin() {
                       </td>
                       <td>
                         <div style={{ fontWeight: 700, color: '#11120D' }}>{b.guestName || b.guest || 'Campus Member'}</div>
-                        <div style={{ fontSize: 11.5, color: '#565449' }}>{b.guestEmail || b.email || 'student@bennett.edu.in'}</div>
+                        <div style={{ fontSize: 11.5, color: '#565449' }}>{b.guestEmail || b.email || 'scholar@university.edu'}</div>
                       </td>
                       <td style={{ fontWeight: 600, color: '#334155' }}>
                         {b.restaurantName || 'The Spice Garden'}
@@ -1078,7 +1078,7 @@ export default function SuperAdmin() {
             <div className="modal-hd">
               <div>
                 <h3 className="modal-title font-display">Onboard Partner Restaurant</h3>
-                <p className="modal-sub">Add a verified dining partner to Bennett University dining network</p>
+                <p className="modal-sub">Add a verified dining partner to institutional campus dining network</p>
               </div>
               <button className="modal-close" onClick={() => setShowAddRestModal(false)}>
                 <X size={18} />
