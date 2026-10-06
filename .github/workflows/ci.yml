@@ -11,6 +11,28 @@ jobs:
     name: Build, Lint & Automated Testing
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d test_db"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: 'postgresql://postgres:postgres@localhost:5432/test_db'
+      DIRECT_URL: 'postgresql://postgres:postgres@localhost:5432/test_db'
+      JWT_SECRET: 'ci-jwt-secret-minimum-32-characters'
+      OTP_PEPPER: 'ci-otp-pepper-minimum-32-characters'
+      CRON_SECRET: 'ci-cron-secret-minimum-32-characters'
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -25,20 +47,15 @@ jobs:
         run: npm ci
 
       - name: Validate Prisma Schema
-        env:
-          DATABASE_URL: 'postgresql://postgres:password@localhost:5432/test_db'
-          DIRECT_URL: 'postgresql://postgres:password@localhost:5432/test_db'
         run: npx prisma validate --schema=prisma/schema.prisma
+
+      - name: Apply Test Database Schema
+        run: npx prisma db push --schema=prisma/schema.prisma --skip-generate
 
       - name: Run Linter (Oxlint)
         run: npx oxlint
 
       - name: Run Backend Integration & Security Tests
-        env:
-          DATABASE_URL: 'postgresql://postgres:password@localhost:5432/test_db'
-          DIRECT_URL: 'postgresql://postgres:password@localhost:5432/test_db'
-          JWT_SECRET: 'dine_bennett_super_secret_jwt_key_2026_ci_testing_32chars'
-          OTP_PEPPER: 'dine_bennett_super_secret_otp_pepper_2026_ci_testing'
         run: npm --prefix server test
 
       - name: Verify Frontend Production Build
