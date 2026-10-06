@@ -29,9 +29,9 @@ https://supabase.com/dashboard/project/wwlyizwrrtaziosuwswh/settings/secrets
 
 Add these 3 secrets:
 ```
-RESEND_API_KEY = re_YOUR_RESEND_API_KEY
-SUPABASE_URL = https://wwlyizwrrtaziosuwswh.supabase.co
-SUPABASE_SERVICE_ROLE_KEY = (Get from API settings page)
+RESEND_API_KEY = Copy from server/.env
+SUPABASE_URL = Copy from server/.env
+SUPABASE_SERVICE_ROLE_KEY = Copy from server/.env
 ```
 
 ### 2. Run Database Schema Update (2 min)

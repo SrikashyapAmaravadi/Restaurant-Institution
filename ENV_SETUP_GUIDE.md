@@ -25,22 +25,14 @@ Your `.env` file has `[YOUR-PASSWORD]` placeholders. You must replace these with
 
 Open `server/.env` and replace **both instances** of `[YOUR-PASSWORD]`:
 
-```bash
-# Before:
-DATABASE_URL="postgresql://postgres.wwlyizwrrtaziosuwswh:[YOUR-PASSWORD]@aws-0-ap-south-1..."
-DIRECT_URL="postgresql://postgres.wwlyizwrrtaziosuwswh:[YOUR-PASSWORD]@aws-0-ap-south-1..."
-
-# After (example with password "MySecurePass123"):
-DATABASE_URL="postgresql://postgres.wwlyizwrrtaziosuwswh:MySecurePass123@aws-0-ap-south-1..."
-DIRECT_URL="postgresql://postgres.wwlyizwrrtaziosuwswh:MySecurePass123@aws-0-ap-south-1..."
-```
+Keep the actual values only in `server/.env` and in the hosting provider's encrypted environment variables.
 
 **⚠️ Important:** If your password has special characters like `@`, `#`, `!`, etc., you need to URL-encode them:
 - `@` becomes `%40`
 - `#` becomes `%23`
 - `!` becomes `%21`
 
-Example: Password `Pass@123` becomes `Pass%40123`
+For example, URL-encode special characters before putting the password in `.env`.
 
 ---
 
@@ -55,14 +47,14 @@ https://vercel.com/srikashyapamaravadis-projects/restaurant-institution/settings
 
 | Variable | Value |
 |----------|-------|
-| `DATABASE_URL` | `postgresql://postgres.wwlyizwrrtaziosuwswh:YOUR_PASSWORD@aws-0-ap-south-1.pooler.supabase.com:6543/postgres?pgbouncer=true&connection_limit=1` |
-| `DIRECT_URL` | `postgresql://postgres.wwlyizwrrtaziosuwswh:YOUR_PASSWORD@aws-0-ap-south-1.pooler.supabase.com:5432/postgres` |
-| `JWT_SECRET` | `dine_bennett_production_secret_key_2026_minimum_32_characters_required_here` |
-| `OTP_PEPPER` | `dine_bennett_otp_pepper_secret_2026_minimum_32_characters_required_here` |
-| `CORS_ORIGINS` | `https://restaurant-institution.vercel.app` |
-| `RESEND_API_KEY` | `re_YOUR_RESEND_API_KEY_HERE` |
-| `EMAIL_FROM` | `Dine Security <sahith@nivixpe.com>` |
-| `CRON_SECRET` | `cron_secret_random_string_for_background_jobs_2026` |
+| `DATABASE_URL` | Copy from `server/.env` |
+| `DIRECT_URL` | Copy from `server/.env` |
+| `JWT_SECRET` | Copy from `server/.env` |
+| `OTP_PEPPER` | Copy from `server/.env` |
+| `CORS_ORIGINS` | Copy from `server/.env` |
+| `RESEND_API_KEY` | Copy from `server/.env` |
+| `EMAIL_FROM` | Copy from `server/.env` |
+| `CRON_SECRET` | Copy from `server/.env` |
 
 ### For Each Variable:
 1. Click **"Add New"**
@@ -171,9 +163,4 @@ vercel logs restaurant-institution --prod --limit 50
 
 ## 🎯 Next Step
 
-**Tell me:** What is your Supabase database password?
-
-I'll help you:
-1. URL-encode it if it has special characters
-2. Create the complete DATABASE_URL and DIRECT_URL
-3. Verify everything is correct before you add to Vercel
+Keep the Supabase database password only in `server/.env` and in Vercel environment variables.

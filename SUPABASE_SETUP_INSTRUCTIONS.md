@@ -56,15 +56,17 @@ node -e "import('./src/config/db.js').then(m => m.default.$queryRaw\`SELECT 1\`.
 
 If you see **"✅ Database connected!"** - your database is ready!
 
-## 🔑 Login Credentials (All use password: `password123`)
+## Login Credentials
+
+Development seed users are created by the setup SQL. Keep any passwords in your local `.env` or reset them in your local database after seeding.
 
 | Role | Email | Password |
 |------|-------|----------|
-| **Super Admin** | superadmin@bennett.edu.in | password123 |
-| **Student (Verified)** | priya.sharma@bennett.edu.in | password123 |
-| **Student SSO** | student@bennett.edu.in | password123 |
-| **Student (Unverified)** | rohan.deshmukh@bennett.edu.in | password123 |
-| **Faculty (Unverified)** | radhika.nair@bennett.edu.in | password123 |
+| **Super Admin** | superadmin@bennett.edu.in | Set locally |
+| **Student (Verified)** | priya.sharma@bennett.edu.in | Set locally |
+| **Student SSO** | student@bennett.edu.in | Set locally |
+| **Student (Unverified)** | rohan.deshmukh@bennett.edu.in | Set locally |
+| **Faculty (Unverified)** | radhika.nair@bennett.edu.in | Set locally |
 
 ## Step 5: Update Your .env File
 
@@ -81,12 +83,9 @@ Now that database is ready, update `server/.env`:
      - `#` → `%23`
      - `!` → `%21`
 
-Example:
+Example format:
 ```bash
-# If password is: Pass@123
-# Encode it as: Pass%40123
-
-DATABASE_URL="postgresql://postgres.wwlyizwrrtaziosuwswh:Pass%40123@aws-0-ap-south-1.pooler.supabase.com:6543/postgres?pgbouncer=true&connection_limit=1"
+DATABASE_URL="Copy from server/.env"
 ```
 
 ## Step 6: Test Locally

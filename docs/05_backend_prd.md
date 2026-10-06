@@ -405,11 +405,11 @@ All schema changes and database relations are managed via **Prisma ORM** with ve
 
 ```env
 # Database (PostgreSQL via Prisma ORM)
-DATABASE_URL="postgresql://postgres:password@localhost:5432/institutional_restaurant?schema=public&connection_limit=10"
-DIRECT_URL="postgresql://postgres:password@localhost:5432/institutional_restaurant?schema=public"
+DATABASE_URL=<set-in-env>
+DIRECT_URL=<set-in-env>
 
 # Auth & Security
-JWT_SECRET=<secure-random-256bit-secret>
+JWT_SECRET=<set-in-env>
 JWT_ACCESS_EXPIRES=15m
 JWT_REFRESH_EXPIRES=7d
 

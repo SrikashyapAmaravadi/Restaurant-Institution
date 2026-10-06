@@ -61,10 +61,10 @@ Add to Supabase Secrets: https://supabase.com/dashboard/project/wwlyizwrrtaziosu
 
 | Secret Name | Value | Purpose |
 |-------------|-------|---------|
-| `RESEND_API_KEY` | `re_YOUR_KEY` | Email notifications |
-| `SUPABASE_URL` | `https://wwlyizwrrtaziosuwswh.supabase.co` | Database connection |
-| `SUPABASE_SERVICE_ROLE_KEY` | Get from API settings | Admin operations |
-| `FCM_SERVER_KEY` | Get from Firebase Console | Push notifications (optional) |
+| `RESEND_API_KEY` | Copy from `server/.env` | Email notifications |
+| `SUPABASE_URL` | Copy from `server/.env` | Database connection |
+| `SUPABASE_SERVICE_ROLE_KEY` | Copy from `server/.env` | Admin operations |
+| `FCM_SERVER_KEY` | Copy from `server/.env` if used | Push notifications (optional) |
 
 ---
 
@@ -172,7 +172,7 @@ import { initializeApp } from 'firebase/app'
 import { getMessaging, getToken } from 'firebase/messaging'
 
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
+  apiKey: process.env.FIREBASE_API_KEY,
   projectId: "YOUR_PROJECT_ID",
   messagingSenderId: "YOUR_SENDER_ID",
   appId: "YOUR_APP_ID"
@@ -187,7 +187,7 @@ export async function requestPushPermission(userId) {
     
     if (permission === 'granted') {
       const token = await getToken(messaging, {
-        vapidKey: 'YOUR_VAPID_KEY'
+        vapidKey: process.env.FIREBASE_VAPID_KEY
       })
       
       // Save token to user profile

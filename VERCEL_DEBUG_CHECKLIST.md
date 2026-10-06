@@ -31,10 +31,10 @@ vercel logs restaurant-institution --prod --limit 50
 
 ```bash
 # Connection Pooling URL (Port 6543) - REQUIRED for serverless
-DATABASE_URL="postgresql://postgres.[PROJECT-REF]:[PASSWORD]@aws-0-[REGION].pooler.supabase.com:6543/postgres?pgbouncer=true&connection_limit=1"
+DATABASE_URL="Copy from .env"
 
 # Direct URL (Port 5432) - REQUIRED for migrations
-DIRECT_URL="postgresql://postgres.[PROJECT-REF]:[PASSWORD]@aws-0-[REGION].pooler.supabase.com:5432/postgres"
+DIRECT_URL="Copy from .env"
 ```
 
 ### ❌ WRONG Formats (will cause 500 errors):
@@ -64,13 +64,7 @@ DATABASE_URL="postgresql://localhost:5432/postgres"
 4. Copy the **URI** (should have `:6543`)
 5. Add `?pgbouncer=true&connection_limit=1` at the end
 
-**Example:**
-```
-From Supabase: postgresql://postgres.abcdefgh:password@aws-0-ap-south-1.pooler.supabase.com:6543/postgres
-
-Add to Vercel as DATABASE_URL:
-postgresql://postgres.abcdefgh:password@aws-0-ap-south-1.pooler.supabase.com:6543/postgres?pgbouncer=true&connection_limit=1
-```
+Copy the value into `.env` first, then copy that same value into Vercel's encrypted environment variables.
 
 ### For DIRECT_URL:
 1. Go to **"Direct connection"** tab
@@ -87,14 +81,14 @@ Go to: https://vercel.com/srikashyapamaravadis-projects/restaurant-institution/s
 
 | Variable | Example | Status |
 |----------|---------|--------|
-| `DATABASE_URL` | `postgresql://....:6543/postgres?pgbouncer=true&connection_limit=1` | ⬜ |
-| `DIRECT_URL` | `postgresql://....:5432/postgres` | ⬜ |
-| `JWT_SECRET` | `dine_bennett_secret_production_2026_32chars_minimum` | ⬜ |
-| `OTP_PEPPER` | `otp_pepper_secret_2026_32chars_minimum` | ⬜ |
-| `CORS_ORIGINS` | `https://restaurant-institution.vercel.app` | ⬜ |
-| `RESEND_API_KEY` | `re_123456789abcdefg` (from resend.com) | ⬜ |
-| `EMAIL_FROM` | `Dine Security <noreply@yourdomain.com>` | ⬜ |
-| `CRON_SECRET` | `cron_secret_random_string_123` | ⬜ |
+| `DATABASE_URL` | Copy from `.env` | ⬜ |
+| `DIRECT_URL` | Copy from `.env` | ⬜ |
+| `JWT_SECRET` | Copy from `.env` | ⬜ |
+| `OTP_PEPPER` | Copy from `.env` | ⬜ |
+| `CORS_ORIGINS` | Copy from `.env` | ⬜ |
+| `RESEND_API_KEY` | Copy from `.env` | ⬜ |
+| `EMAIL_FROM` | Copy from `.env` | ⬜ |
+| `CRON_SECRET` | Copy from `.env` | ⬜ |
 
 **Check each one:**
 - ✅ Variable exists

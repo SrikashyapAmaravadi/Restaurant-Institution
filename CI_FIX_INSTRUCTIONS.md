@@ -16,16 +16,16 @@ Updated `.github/workflows/ci.yml` to include database connection strings in tes
 ```yaml
 - name: Validate Prisma Schema
   env:
-    DATABASE_URL: 'postgresql://postgres:password@localhost:5432/test_db'
-    DIRECT_URL: 'postgresql://postgres:password@localhost:5432/test_db'
+    DATABASE_URL: ${{ secrets.CI_DATABASE_URL }}
+    DIRECT_URL: ${{ secrets.CI_DIRECT_URL }}
   run: npx prisma validate --schema=prisma/schema.prisma
 
 - name: Run Backend Integration & Security Tests
   env:
-    DATABASE_URL: 'postgresql://postgres:password@localhost:5432/test_db'
-    DIRECT_URL: 'postgresql://postgres:password@localhost:5432/test_db'
-    JWT_SECRET: 'dine_bennett_super_secret_jwt_key_2026_ci_testing_32chars'
-    OTP_PEPPER: 'dine_bennett_super_secret_otp_pepper_2026_ci_testing'
+    DATABASE_URL: ${{ secrets.CI_DATABASE_URL }}
+    DIRECT_URL: ${{ secrets.CI_DIRECT_URL }}
+    JWT_SECRET: ${{ secrets.CI_JWT_SECRET }}
+    OTP_PEPPER: ${{ secrets.CI_OTP_PEPPER }}
   run: npm --prefix server test
 ```
 
@@ -63,7 +63,7 @@ jobs:
         image: postgres:16-alpine
         env:
           POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
+          POSTGRES_PASSWORD: ${{ secrets.CI_POSTGRES_PASSWORD }}
           POSTGRES_DB: test_db
         ports:
           - 5432:5432
@@ -78,10 +78,10 @@ jobs:
       
       - name: Run Backend Integration & Security Tests
         env:
-          DATABASE_URL: 'postgresql://postgres:postgres@localhost:5432/test_db'
-          DIRECT_URL: 'postgresql://postgres:postgres@localhost:5432/test_db'
-          JWT_SECRET: 'dine_bennett_super_secret_jwt_key_2026_ci_testing_32chars'
-          OTP_PEPPER: 'dine_bennett_super_secret_otp_pepper_2026_ci_testing'
+          DATABASE_URL: ${{ secrets.CI_DATABASE_URL }}
+          DIRECT_URL: ${{ secrets.CI_DIRECT_URL }}
+          JWT_SECRET: ${{ secrets.CI_JWT_SECRET }}
+          OTP_PEPPER: ${{ secrets.CI_OTP_PEPPER }}
         run: |
           npx prisma migrate deploy
           npm --prefix server test

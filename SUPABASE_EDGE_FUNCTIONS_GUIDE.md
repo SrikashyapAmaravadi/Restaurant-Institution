@@ -57,10 +57,10 @@ supabase functions deploy cleanup-expired-bookings \
 
 Go to: https://supabase.com/dashboard/project/wwlyizwrrtaziosuwswh/settings/functions
 
-Add these secrets:
-- `RESEND_API_KEY` = `re_YOUR_API_KEY` (your actual key)
-- `SUPABASE_URL` = `https://wwlyizwrrtaziosuwswh.supabase.co`
-- `SUPABASE_SERVICE_ROLE_KEY` = Get from https://supabase.com/dashboard/project/wwlyizwrrtaziosuwswh/settings/api
+Add these secrets from `server/.env`:
+- `RESEND_API_KEY`
+- `SUPABASE_URL`
+- `SUPABASE_SERVICE_ROLE_KEY`
 
 ---
 

@@ -20,9 +20,9 @@ Click **"Add new secret"** for each:
 
 | Secret Name | Value | How to Get |
 |-------------|-------|------------|
-| `RESEND_API_KEY` | `re_YOUR_RESEND_API_KEY` | Get from Resend dashboard |
-| `SUPABASE_URL` | `https://wwlyizwrrtaziosuwswh.supabase.co` | Already known |
-| `SUPABASE_SERVICE_ROLE_KEY` | `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...` | Get from Step 3 below |
+| `RESEND_API_KEY` | Copy from `server/.env` | Get from Resend dashboard |
+| `SUPABASE_URL` | Copy from `server/.env` | Supabase project URL |
+| `SUPABASE_SERVICE_ROLE_KEY` | Copy from `server/.env` | Get from Step 3 below |
 
 ### Step 3: Get Service Role Key
 

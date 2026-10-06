@@ -54,14 +54,14 @@ This ensures a **single PrismaClient instance is reused** across serverless func
 Make sure these are set in **Vercel Dashboard → Settings → Environment Variables**:
 
 ```bash
-DATABASE_URL="postgresql://user:password@host:6543/db?pgbouncer=true&connection_limit=1"
-DIRECT_URL="postgresql://user:password@host:5432/db"
-JWT_SECRET="your-production-secret-32-chars-min"
-OTP_PEPPER="your-production-otp-pepper"
-CORS_ORIGINS="https://restaurant-institution.vercel.app,https://your-domain.com"
-RESEND_API_KEY="re_your_resend_key"
-EMAIL_FROM="Dine Security <noreply@yourdomain.com>"
-CRON_SECRET="your-cron-secret"
+DATABASE_URL="Copy from .env"
+DIRECT_URL="Copy from .env"
+JWT_SECRET="Copy from .env"
+OTP_PEPPER="Copy from .env"
+CORS_ORIGINS="Copy from .env"
+RESEND_API_KEY="Copy from .env"
+EMAIL_FROM="Copy from .env"
+CRON_SECRET="Copy from .env"
 ```
 
 **Critical:** Use `?pgbouncer=true&connection_limit=1` in `DATABASE_URL` for serverless.
@@ -119,13 +119,13 @@ In your **Supabase Dashboard**:
 2. Use **Connection Pooling** URL (port `6543`) for `DATABASE_URL`
 3. Use **Direct Connection** URL (port `5432`) for `DIRECT_URL`
 
-Example:
+Example format:
 ```bash
 # Connection pooling for serverless (Vercel)
-DATABASE_URL="postgresql://postgres.xxx:password@aws-0-ap-south-1.pooler.supabase.com:6543/postgres?pgbouncer=true&connection_limit=1"
+DATABASE_URL="Copy from .env"
 
 # Direct connection for migrations
-DIRECT_URL="postgresql://postgres.xxx:password@aws-0-ap-south-1.pooler.supabase.com:5432/postgres"
+DIRECT_URL="Copy from .env"
 ```
 
 ## Deployment Steps

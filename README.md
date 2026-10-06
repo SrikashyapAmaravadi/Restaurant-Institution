@@ -76,10 +76,10 @@ npm run dev:client
 
 | Role | Email | Password | Assigned Outlet |
 | :--- | :--- | :--- | :--- |
-| **Student** | `priya.sharma@bennett.edu.in` | `password123` | Campus Dining |
-| **Staff Host** | `staff@spicegarden.com` | `password123` | The Spice Garden (#1) |
-| **Restaurant Manager** | `manager@spicegarden.com` | `password123` | The Spice Garden (#1) |
-| **Super Admin** | `superadmin@bennett.edu.in` | `password123` | Bennett University |
+| **Student** | `priya.sharma@bennett.edu.in` | Set locally | Campus Dining |
+| **Staff Host** | `staff@spicegarden.com` | Set locally | The Spice Garden (#1) |
+| **Restaurant Manager** | `manager@spicegarden.com` | Set locally | The Spice Garden (#1) |
+| **Super Admin** | `superadmin@bennett.edu.in` | Set locally | Bennett University |
 
 ---
 

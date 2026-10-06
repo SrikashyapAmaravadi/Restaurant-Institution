@@ -129,8 +129,8 @@ if (process.env.NODE_ENV !== 'production') {
 ```yaml
 # Added to each step that uses Prisma
 env:
-  DATABASE_URL: 'postgresql://postgres:password@localhost:5432/test_db'
-  DIRECT_URL: 'postgresql://postgres:password@localhost:5432/test_db'
+  DATABASE_URL: ${{ secrets.CI_DATABASE_URL }}
+  DIRECT_URL: ${{ secrets.CI_DIRECT_URL }}
 ```
 
 ## Monitoring Post-Deployment
